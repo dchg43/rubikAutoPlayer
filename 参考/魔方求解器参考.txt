@@ -1,0 +1,29 @@
+https://rubiks-cube-solver.com/zh/     部分求解失败
+说明：https://www.shanjiejingshuo.com/quzhan/263.html
+
+页面打不开，一致是loading状态：
+https://cube-solver.com/#id=3
+
+
+java自动求解，标星多：https://github.com/cs0x7f/min2phase  // ok, 有界面
+java求解器带界面：https://github.com/BrianUribe6/CubeRD	// Android
+
+https://github.com/thatc0der/3x3x3-Rubiks-Cube-Solver	// Android
+
+Using the Lego Mindstorm NXT, this code can be used to solve a 3x3 Rubik's cube. It uses leJOS plugin for Eclipse
+java：https://github.com/shubham7109/Rubik-s-Cube-Solving-Algorithm.git
+
+无界面：https://github.com/jpasko/rubiks_cube_solver  // 死循环不会退出
+
+java use AI：https://github.com/ChauhanRohan-RC/Cube?tab=readme-ov-file
+
+
+
+
+
+python
+
+https://github.com/hkociemba/RubiksCube-TwophaseSolver
+https://github.com/kkoomen/qbr
+https://github.com/muodov/kociemba
+https://github.com/adrianliaw/PyCuber
