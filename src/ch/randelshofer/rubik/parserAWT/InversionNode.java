@@ -13,9 +13,9 @@ public class InversionNode extends ScriptNode
     public InversionNode()
     {}
 
-    public InversionNode(int i, int i2)
+    public InversionNode(int startpos, int endpos)
     {
-        super(i, i2);
+        super(startpos, endpos);
     }
 
     @Override
@@ -25,8 +25,8 @@ public class InversionNode extends ScriptNode
     }
 
     @Override
-    public Enumeration<DefaultMutableTreeNode> resolvedEnumeration(boolean z)
+    public Enumeration<DefaultMutableTreeNode> resolvedEnumeration(boolean inverse)
     {
-        return super.resolvedEnumeration(!z);
+        return super.resolvedEnumeration(!inverse);
     }
 }

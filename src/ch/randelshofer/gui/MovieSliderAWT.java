@@ -99,49 +99,49 @@ public class MovieSliderAWT extends Canvas implements ChangeListener
     }
 
     @Override
-    public boolean mouseDown(Event event, int i, int i2)
+    public boolean mouseDown(Event event, int x, int y)
     {
         if (isEnabled())
         {
-            moveThumb(i);
+            moveThumb(x);
         }
         return true;
     }
 
     @Override
-    public boolean mouseDrag(Event event, int i, int i2)
+    public boolean mouseDrag(Event event, int x, int y)
     {
         if (isEnabled())
         {
-            moveThumb(i);
+            moveThumb(x);
         }
         return true;
     }
 
     @Override
-    public boolean mouseUp(Event event, int i, int i2)
+    public boolean mouseUp(Event event, int x, int y)
     {
         if (isEnabled())
         {
-            moveThumb(i);
+            moveThumb(x);
         }
         return true;
     }
 
-    protected void moveThumb(int i)
+    protected void moveThumb(int x)
     {
         int p = computeProgressPos();
-        if (i <= 4)
+        if (x <= 4)
         {
-            i = 5;
+            x = 5;
         }
-        if (i >= p - 4)
+        if (x >= p - 4)
         {
-            i = (p - 4) - 1;
+            x = (p - 4) - 1;
         }
         int h = this.model_.getMaximum() - this.model_.getMinimum();
         int j = Math.max(1, 2 * h);
-        int f = ((i - 4 - 1) * h + p * h / j) / (p - 10);
+        int f = ((x - 4 - 1) * h + p * h / j) / (p - 10);
         this.model_.setValue(f);
     }
 
@@ -186,36 +186,36 @@ public class MovieSliderAWT extends Canvas implements ChangeListener
         paint(graphics, this.thumbPos_, this.progressPos_);
     }
 
-    public void paint(Graphics graphics, int i, int i2)
+    public void paint(Graphics graphics, int x, int y)
     {
         Dimension size = getSize();
-        int i3 = size.width;
-        int i4 = size.height;
-        int iMin = Math.min(Math.max(i, 0), i3);
+        int width = size.width;
+        int height = size.height;
+        int xMin = Math.min(Math.max(x, 0), width);
         if (!isEnabled())
         {
             graphics.setColor(Color.gray);
         }
-        graphics.drawRect(0, 0, i3 - 1, i4 - 1);
-        graphics.drawRect(4, 4, (i3 - 8) - 1, i4 - 9);
+        graphics.drawRect(0, 0, width - 1, height - 1);
+        graphics.drawRect(4, 4, (width - 8) - 1, height - 9);
         if (isEnabled())
         {
             graphics.setColor(Color.white);
-            graphics.drawLine(1, 1, i3 - 2, 1);
-            graphics.drawLine(1, 2, 1, i4 - 2);
-            graphics.drawLine(5, 5, (i3 - 4) - 3, 5);
-            graphics.drawLine(5, 6, 5, i4 - 6);
-            if (i2 > 0)
+            graphics.drawLine(1, 1, width - 2, 1);
+            graphics.drawLine(1, 2, 1, height - 2);
+            graphics.drawLine(5, 5, (width - 4) - 3, 5);
+            graphics.drawLine(5, 6, 5, height - 6);
+            if (y > 0)
             {
                 graphics.setColor(Color.gray);
-                graphics.fillRect(6, 6, i2 - 4, i4 - 11);
+                graphics.fillRect(6, 6, y - 4, height - 11);
             }
             graphics.setColor(Color.white);
-            graphics.drawRect((iMin - 4) + 1, 1, 6, i4 - 3);
+            graphics.drawRect((xMin - 4) + 1, 1, 6, height - 3);
             graphics.setColor(getForeground());
         }
-        graphics.drawRect(iMin - 4, 0, 8, i4 - 1);
-        graphics.drawRect((iMin - 4) + 2, 2, 4, i4 - 5);
+        graphics.drawRect(xMin - 4, 0, 8, height - 1);
+        graphics.drawRect((xMin - 4) + 2, 2, 4, height - 5);
     }
 
     protected int computeProgressPos()
@@ -244,11 +244,11 @@ public class MovieSliderAWT extends Canvas implements ChangeListener
     }
 
     @Override
-    public void setEnabled(boolean z)
+    public void setEnabled(boolean enabled)
     {
-        if (z != isEnabled())
+        if (enabled != isEnabled())
         {
-            super.setEnabled(z);
+            super.setEnabled(enabled);
             repaint();
         }
     }

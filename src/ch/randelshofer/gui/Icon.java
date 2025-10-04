@@ -7,7 +7,7 @@ import java.awt.Graphics;
 
 public interface Icon
 {
-    void paintIcon(Component component, Graphics graphics, int i, int i2);
+    void paintIcon(Component component, Graphics graphics, int x, int y);
 
     int getIconWidth();
 

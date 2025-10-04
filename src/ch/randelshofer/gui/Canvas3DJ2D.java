@@ -126,9 +126,9 @@ public class Canvas3DJ2D extends Canvas3DAWT
     }
 
     @Override
-    protected void createBackGraphics(Dimension dimension)
+    protected void createBackGraphics(Dimension size)
     {
-        this.backImg = createImage(dimension.width, dimension.height);
+        this.backImg = createImage(size.width, size.height);
         this.backGfx = this.backImg.getGraphics();
         setGraphicHints(this.backGfx);
     }
@@ -139,59 +139,59 @@ public class Canvas3DJ2D extends Canvas3DAWT
         try
         {
             Insets insets = this.paintInsets;
-            Object[] objArr = new Double[2];
+            Object[] point = new Double[2];
             Dimension size = getSize();
             Transform3D transform = this.transformModel.getTransform();
-            double f = insets.left + (((size.width - insets.left) - insets.right) / 2);
-            double f2 = insets.top + (((size.height - insets.top) - insets.bottom) / 2);
-            double fMin = Math.min(((size.width - insets.left) - insets.right) / 2,
+            double width = insets.left + (((size.width - insets.left) - insets.right) / 2);
+            double height = insets.top + (((size.height - insets.top) - insets.bottom) / 2);
+            double scale = Math.min(((size.width - insets.left) - insets.right) / 2,
                 ((size.height - insets.top) - insets.bottom) / 2) * this.scaleFactor;
-            double f3 = -fMin;
-            Vector<Face3D> vector = new Vector<>();
+            double scaleNeg = -scale;
+            Vector<Face3D> visibleFaces = new Vector<>();
             this.activeFaces.removeAllElements();
-            this.scene.addVisibleFaces(vector, transform, this.observer);
-            Face3D[] face3DArr = new Face3D[vector.size()];
-            vector.copyInto(face3DArr);
-            Arrays.sort(face3DArr);
-            double f4 = this.observer.x;
-            double f5 = this.observer.y;
-            double f6 = this.observer.z;
-            for (Face3D face3D : face3DArr)
+            this.scene.addVisibleFaces(visibleFaces, transform, this.observer);
+            Face3D[] visibleFacesArr = new Face3D[visibleFaces.size()];
+            visibleFaces.copyInto(visibleFacesArr);
+            Arrays.sort(visibleFacesArr);
+            double x = this.observer.x;
+            double y = this.observer.y;
+            double z = this.observer.z;
+            for (Face3D face3D : visibleFacesArr)
             {
                 if (face3D != null)
                 {
                     double[] coords = face3D.getCoords();
                     int[] vertices = face3D.getVertices();
                     Object objNewInstance = generalPathClass.getDeclaredConstructor().newInstance();
-                    int i = vertices[0] * 3;
-                    double f7 = coords[(vertices[0] * 3) + 2] - f6;
-                    if (f7 != 0.0d)
+                    double d1 = coords[(vertices[0] * 3) + 2] - z;
+                    if (d1 != 0.0d)
                     {
-                        objArr[0] = f + ((f4 - (((f6 * coords[i]) - f4) / f7)) * fMin);
-                        objArr[1] = f2 + ((f5 - (((f6 * coords[i + 1]) - f5) / f7)) * f3);
-                        moveToMethod.invoke(objNewInstance, objArr);
+                        int j = vertices[0] * 3;
+                        point[0] = width + ((x - (((z * coords[j]) - x) / d1)) * scale);
+                        point[1] = height + ((y - (((z * coords[j + 1]) - y) / d1)) * scaleNeg);
+                        moveToMethod.invoke(objNewInstance, point);
                     }
                     else
                     {
-                        objArr[0] = f + (f4 * fMin);
-                        objArr[1] = f2 + (f5 * f3);
-                        moveToMethod.invoke(objNewInstance, objArr);
+                        point[0] = width + (x * scale);
+                        point[1] = height + (y * scaleNeg);
+                        moveToMethod.invoke(objNewInstance, point);
                     }
-                    for (int i2 = 1; i2 < vertices.length; i2++)
+                    for (int i = 1; i < vertices.length; i++)
                     {
-                        int i3 = vertices[i2] * 3;
-                        double f8 = coords[(vertices[i2] * 3) + 2] - f6;
-                        if (f8 != 0.0d)
+                        double d = coords[(vertices[i] * 3) + 2] - z;
+                        if (d != 0.0d)
                         {
-                            objArr[0] = f + ((f4 - (((f6 * coords[i3]) - f4) / f8)) * fMin);
-                            objArr[1] = f2 + ((f5 - (((f6 * coords[i3 + 1]) - f5) / f8)) * f3);
-                            lineToMethod.invoke(objNewInstance, objArr);
+                            int j = vertices[i] * 3;
+                            point[0] = width + ((x - (((z * coords[j]) - x) / d)) * scale);
+                            point[1] = height + ((y - (((z * coords[j + 1]) - y) / d)) * scaleNeg);
+                            lineToMethod.invoke(objNewInstance, point);
                         }
                         else
                         {
-                            objArr[0] = f + (f4 * fMin);
-                            objArr[1] = f2 + (f5 * f3);
-                            lineToMethod.invoke(objNewInstance, objArr);
+                            point[0] = width + (x * scale);
+                            point[1] = height + (y * scaleNeg);
+                            lineToMethod.invoke(objNewInstance, point);
                         }
                     }
                     closePathMethod.invoke(objNewInstance);

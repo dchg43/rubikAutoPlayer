@@ -104,10 +104,10 @@ public class MovieControlAWT extends Panel implements ActionListener, ItemListen
     public void doLayout()
     {
         super.doLayout();
-        Point location = this.startButton.getLocation();
-        this.startButton.setLocation(location.x - 1, location.y);
-        Point location2 = this.rewindButton.getLocation();
-        this.rewindButton.setLocation(location2.x + 1, location2.y);
+        Point startLocation = this.startButton.getLocation();
+        this.startButton.setLocation(startLocation.x - 1, startLocation.y);
+        Point rewindLocation = this.rewindButton.getLocation();
+        this.rewindButton.setLocation(rewindLocation.x + 1, rewindLocation.y);
         Rectangle bounds = this.slider.getBounds();
         this.slider.setBounds(bounds.x - 2, bounds.y, bounds.width + 4, bounds.height);
     }

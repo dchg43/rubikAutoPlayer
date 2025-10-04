@@ -24,7 +24,6 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -273,10 +272,10 @@ public class AutoPlayer extends Panel implements Runnable
     private void readParameters()
         throws IllegalArgumentException
     {
-        AbstractCube3DAWT cube3D = this.player.getCube3D();
-        Color color = new Color(getParameter("backgroundColor", 0xFFFFFF));
-        this.player.getControlPanelComponent().setBackground(color);
-        this.controlsPanel.setBackground(color);
+        AbstractCube3DAWT cube = this.player.getCube3D();
+        Color colorBack = new Color(getParameter("backgroundColor", 0xFFFFFF));
+        this.player.getControlPanelComponent().setBackground(colorBack);
+        this.controlsPanel.setBackground(colorBack);
         Transform3D transform3D = new Transform3D();
         transform3D.rotateY((getParameter("beta", 45) / 180.0d) * Math.PI);
         transform3D.rotateX((getParameter("alpha", -25) / 180.0d) * Math.PI);
@@ -308,115 +307,115 @@ public class AutoPlayer extends Panel implements Runnable
                         new StringBuffer().append("Invalid parameter 'colorTable', entry number ").append(i).append(
                             " missing.").toString());
                 }
-                for (int i2 = 0; i2 < 9; i2++)
+                for (int j = 0; j < 9; j++)
                 {
-                    cube3D.setStickerColor(i, i2, this.colors[i]);
+                    cube.setStickerColor(i, j, this.colors[i]);
                 }
             }
         }
-        String[] parameters = getParameters("faces", (String[])null);
-        if (parameters != null)
+        String[] faceColors = getParameters("faces", (String[])null);
+        if (faceColors != null)
         {
-            if (parameters.length != 6)
+            if (faceColors.length != 6)
             {
                 throw new IllegalArgumentException(
-                    new StringBuffer().append("Invalid parameter 'faces' provides ").append(parameters.length).append(
+                    new StringBuffer().append("Invalid parameter 'faces' provides ").append(faceColors.length).append(
                         " instead of 6 entries.").toString());
             }
-            for (int i3 = 0; i3 < 6; i3++)
+            for (int i = 0; i < 6; i++)
             {
-                int param = Integer.parseInt(parameters[i3]);
-                if (this.colors.length <= param)
+                int entry = Integer.parseInt(faceColors[i]);
+                if (this.colors.length <= entry)
                 {
                     throw new IllegalArgumentException(
                         new StringBuffer().append("Invalid parameter 'faces', unknown entry '").append(
-                            parameters[i3]).append("'.").toString());
+                            faceColors[i]).append("'.").toString());
                 }
-                Color color3 = this.colors[param];
-                for (int i4 = 0; i4 < 9; i4++)
+                Color color = this.colors[entry];
+                for (int j = 0; j < 9; j++)
                 {
-                    cube3D.setStickerColor(i3, i4, color3);
+                    cube.setStickerColor(i, j, color);
                 }
             }
         }
-        String[] parameters2 = getParameters("stickers", (String[])null);
-        if (parameters2 != null)
+        String[] stickerColors = getParameters("stickers", (String[])null);
+        if (stickerColors != null)
         {
-            if (parameters2.length != 54)
+            if (stickerColors.length != 54)
             {
                 throw new IllegalArgumentException(
                     new StringBuffer().append("Invalid parameter 'stickers' provides ").append(
-                        parameters2.length).append(" instead of 54 entries.").toString());
+                        stickerColors.length).append(" instead of 54 entries.").toString());
             }
-            int i = 0;
-            for (int i5 = 0; i5 < 6; i5++)
+            int index = 0;
+            for (int i = 0; i < 6; i++)
             {
-                for (int i6 = 0; i6 < 9; i6++)
+                for (int j = 0; j < 9; j++)
                 {
-                    int param = Integer.parseInt(parameters2[i++]);
-                    if (this.colors.length <= param)
+                    int entry = Integer.parseInt(stickerColors[index++]);
+                    if (this.colors.length <= entry)
                     {
                         throw new IllegalArgumentException(
                             new StringBuffer().append("Invalid parameter 'stickers', unknown entry '").append(
-                                param).append("'.").toString());
+                                entry).append("'.").toString());
                     }
-                    cube3D.setStickerColor(i5, i6, this.colors[param]);
+                    cube.setStickerColor(i, j, this.colors[entry]);
                 }
             }
         }
         String[] strArr = {"stickersFront", "stickersRight", "stickersDown", "stickersBack", "stickersLeft",
             "stickersUp"};
-        for (int i7 = 0; i7 < 6; i7++)
+        for (int i = 0; i < 6; i++)
         {
-            String[] parameters3 = getParameters(strArr[i7], (String[])null);
-            if (parameters3 != null)
+            String[] colorLists = getParameters(strArr[i], (String[])null);
+            if (colorLists != null)
             {
-                if (parameters3.length != 9)
+                if (colorLists.length != 9)
                 {
                     throw new IllegalArgumentException(
-                        new StringBuffer().append("Invalid parameter '").append(strArr[i7]).append(
-                            "' provides ").append(parameters3.length).append(" instead of 9 entries.").toString());
+                        new StringBuffer().append("Invalid parameter '").append(strArr[i]).append("' provides ").append(
+                            colorLists.length).append(" instead of 9 entries.").toString());
                 }
-                for (int i8 = 0; i8 < 9; i8++)
+                for (int j = 0; j < 9; j++)
                 {
-                    int param = Integer.parseInt(parameters3[i8]);
-                    if (this.colors.length <= param)
+                    int entry = Integer.parseInt(colorLists[j]);
+                    if (this.colors.length <= entry)
                     {
                         throw new IllegalArgumentException(
-                            new StringBuffer().append("Invalid parameter '").append(strArr[i7]).append(
-                                "', unknown entry '").append(parameters3[i8]).append("'.").toString());
+                            new StringBuffer().append("Invalid parameter '").append(strArr[i]).append(
+                                "', unknown entry '").append(colorLists[j]).append("'.").toString());
                     }
-                    cube3D.setStickerColor(i7, i8, this.colors[param]);
+                    cube.setStickerColor(i, j, this.colors[entry]);
                 }
             }
         }
 
-        String parameter = getParameter("scriptLanguage");
-        if (parameter == null || parameter.equals("BandelowENG"))
+        String language = getParameter("scriptLanguage");
+        if (language == null || language.equals("BandelowENG"))
         {
             this.scriptParser = new BandelowENGParser();
         }
-        else if (parameter.equals("RandelshoferGER"))
+        else if (language.equals("RandelshoferGER"))
         {
             this.scriptParser = new RandelshoferGERParser();
         }
-        else if (parameter.equals("ScriptFRA"))
+        else if (language.equals("ScriptFRA"))
         {
             this.scriptParser = new ScriptFRAParser();
         }
-        else if (parameter.equals("SupersetENG"))
+        else if (language.equals("SupersetENG"))
         {
             this.scriptParser = new SupersetENGParser();
         }
-        else if (parameter.equals("HarrisENG"))
+        else if (language.equals("HarrisENG"))
         {
             this.scriptParser = new HarrisENGParser();
         }
-        else if (parameter.equals("TouchardDeledicqFRA"))
+        else if (language.equals("TouchardDeledicqFRA"))
         {
             this.scriptParser = new TouchardDeledicqFRAParser();
         }
-        else if (parameter.equals("Castella"))
+        else if (language.equals("Castella"))
         {
             this.scriptParser = new CastellaParser();
         }
@@ -424,14 +423,14 @@ public class AutoPlayer extends Panel implements Runnable
         {
             throw new IllegalArgumentException(
                 new StringBuffer().append("Invalid parameter 'scriptLanguage': Unsupported language '").append(
-                    parameter).append("'").toString());
+                    language).append("'").toString());
         }
-        String parameter2 = getParameter("scriptType", "Generator");
-        if (parameter2.equals("Solver"))
+        String scriptType = getParameter("scriptType", "Generator");
+        if (scriptType.equals("Solver"))
         {
             this.isSolver = true;
         }
-        else if (parameter2.equals("Generator"))
+        else if (scriptType.equals("Generator"))
         {
             this.isSolver = false;
         }
@@ -439,15 +438,15 @@ public class AutoPlayer extends Panel implements Runnable
         {
             throw new IllegalArgumentException(
                 new StringBuffer().append("Invalid parameter 'scriptType': Unsupported type '").append(
-                    parameter2).append("'").toString());
+                    scriptType).append("'").toString());
         }
 
-        String parameter3 = getParameter("script", "");
-        parameter3 = parameter3.replace("\\n", "\n");
+        String script = getParameter("script", "");
+        script = script.replace("\\n", "\n");
         try
         {
-            ScriptNode scriptNode = scriptParser.parse(new StringReader(parameter3));
-            this.scriptTextArea.setText(parameter3);
+            ScriptNode scriptNode = scriptParser.parse(new StringReader(script));
+            this.scriptTextArea.setText(script);
             this.player.setScript(scriptNode);
         }
         catch (Exception e2)
@@ -462,13 +461,13 @@ public class AutoPlayer extends Panel implements Runnable
         }
 
         this.initCube.reset();
-        String parameter4 = getParameter("initScript");
-        if (parameter4 != null)
+        String initScript = getParameter("initScript");
+        if (initScript != null)
         {
-            parameter4 = parameter4.replace("\\n", "\n");
+            initScript = initScript.replace("\\n", "\n");
             try
             {
-                scriptParser.parse(new StringReader(parameter4)).applySubtreeTo(this.initCube, false);
+                scriptParser.parse(new StringReader(initScript)).applySubtreeTo(this.initCube, false);
             }
             catch (Exception e3)
             {
@@ -489,13 +488,13 @@ public class AutoPlayer extends Panel implements Runnable
         this.player.reset();
         try
         {
-            int parameter5 = getParameter("scriptProgress",
+            int scriptProgress = getParameter("scriptProgress",
                 (this.isSolver || getParameter("autoPlay", false)) ? 0 : -1);
-            if (parameter5 < 0)
+            if (scriptProgress < 0)
             {
-                parameter5 = (this.player.getBoundedRangeModel().getMaximum() - parameter5) + 1;
+                scriptProgress = (this.player.getBoundedRangeModel().getMaximum() - scriptProgress) + 1;
             }
-            this.player.getBoundedRangeModel().setValue(parameter5);
+            this.player.getBoundedRangeModel().setValue(scriptProgress);
         }
         catch (IndexOutOfBoundsException e8)
         {
@@ -503,11 +502,11 @@ public class AutoPlayer extends Panel implements Runnable
                 new StringBuffer().append("Invalid parameter 'scriptProgress':\n").append(e8.getMessage()).toString());
         }
 
-        String parameter6 = getParameter("displayLines", "1");
-        int iCountTokens = parameter3 == null ? 1 : new StringTokenizer(parameter3, "\n").countTokens();
+        String displayLines = getParameter("displayLines", "1");
+        int iCountTokens = script == null ? 1 : new StringTokenizer(script, "\n").countTokens();
         try
         {
-            iCountTokens = Math.max(Integer.parseInt(parameter6), iCountTokens);
+            iCountTokens = Math.max(Integer.parseInt(displayLines), iCountTokens);
         }
         catch (NumberFormatException e4)
         {
@@ -530,30 +529,30 @@ public class AutoPlayer extends Panel implements Runnable
 
         // 配置魔方视图
         Canvas3DAWT visualComponent = (Canvas3DAWT)this.player.getVisualComponent();
-        visualComponent.setBackground(color);
+        visualComponent.setBackground(colorBack);
         visualComponent.setLightSourceIntensity(getParameter("lightSourceIntensity", 1.0d));
         visualComponent.setAmbientLightIntensity(getParameter("ambientLightIntensity", 0.6d));
         visualComponent.setPreferredSize(new Dimension(1, 1));
-        int[] parameters4 = getParameters("lightSourcePosition", new int[] {-500, 500, 1000});
-        if (parameters4.length != 3)
+        int[] lightSource = getParameters("lightSourcePosition", new int[] {-500, 500, 1000});
+        if (lightSource.length != 3)
         {
             throw new IllegalArgumentException(
                 new StringBuffer().append("Invalid parameter 'lightSourcePosition' provides ").append(
-                    parameters4.length).append(" instead of 3 entries.").toString());
+                    lightSource.length).append(" instead of 3 entries.").toString());
         }
-        visualComponent.setLightSource(new Point3D(parameters4[0], parameters4[1], parameters4[2]));
-        String parameter7 = getParameter("backgroundImage");
-        if (parameter7 != null)
+        visualComponent.setLightSource(new Point3D(lightSource[0], lightSource[1], lightSource[2]));
+        String backgroundImage = getParameter("backgroundImage");
+        if (backgroundImage != null)
         {
             try
             {
-                visualComponent.setBackgroundImage(getImage(new URL(getDocumentBase(), parameter7)));
+                visualComponent.setBackgroundImage(getImage(new URL(getDocumentBase(), backgroundImage)));
             }
             catch (MalformedURLException e6)
             {
                 throw new IllegalArgumentException(
                     new StringBuffer().append("Invalid parameter 'backgroundImage' malformed URL: ").append(
-                        parameter7).toString());
+                        backgroundImage).toString());
             }
         }
 
@@ -601,37 +600,37 @@ public class AutoPlayer extends Panel implements Runnable
 
         rearCanvas3D.setBackground(
             new Color(getParameter("rearViewBackgroundColor", getParameter("backgroundColor", 0xFFFFFF))));
-        String parameter8 = getParameter("rearViewBackgroundImage", getParameter("backgroundImage"));
-        if (parameter8 != null)
+        String rearImage = getParameter("rearViewBackgroundImage", getParameter("backgroundImage"));
+        if (rearImage != null)
         {
             try
             {
-                rearCanvas3D.setBackgroundImage(getImage(new URL(getDocumentBase(), parameter8)));
+                rearCanvas3D.setBackgroundImage(getImage(new URL(getDocumentBase(), rearImage)));
             }
             catch (MalformedURLException e7)
             {
                 throw new IllegalArgumentException(
                     new StringBuffer().append("Invalid parameter 'backgroundImage' malformed URL: ").append(
-                        parameter8).toString());
+                        rearImage).toString());
             }
         }
         rearCanvas3D.setLightSourceIntensity(getParameter("lightSourceIntensity", 1.0d));
         rearCanvas3D.setAmbientLightIntensity(getParameter("ambientLightIntensity", 0.6d));
-        int[] parameters5 = getParameters("lightSourcePosition", new int[] {-500, 500, 1000});
-        if (parameters5.length != 3)
+        int[] lightSource = getParameters("lightSourcePosition", new int[] {-500, 500, 1000});
+        if (lightSource.length != 3)
         {
             throw new IllegalArgumentException(
                 new StringBuffer().append("Invalid parameter 'lightSourcePosition' provides ").append(
-                    parameters5.length).append(" instead of 3 entries.").toString());
+                    lightSource.length).append(" instead of 3 entries.").toString());
         }
-        rearCanvas3D.setLightSource(new Point3D(parameters5[0], parameters5[1], parameters5[2]));
+        rearCanvas3D.setLightSource(new Point3D(lightSource[0], lightSource[1], lightSource[2]));
 
         this.player.getCube3D().addChangeListener(rearCanvas3D);
-        Panel panel2 = new Panel();
-        panel2.setLayout(new RatioLayout(1.0d - (0.5d * fMax)));
-        panel2.add(visualComponent);
-        panel2.add(rearCanvas3D);
-        this.rearComponent = panel2;
+        Panel panel = new Panel();
+        panel.setLayout(new RatioLayout(1.0d - (0.5d * fMax)));
+        panel.add(visualComponent);
+        panel.add(rearCanvas3D);
+        this.rearComponent = panel;
     }
 
     private URL getDocumentBase()
@@ -794,11 +793,11 @@ public class AutoPlayer extends Panel implements Runnable
                 @Override
                 public void actionPerformed(ActionEvent evt)
                 {
-                    if (!player.getCube3D().isEditMode())
-                    {
-                        JOptionPane.showMessageDialog(null, "非编辑状态", "错误", JOptionPane.ERROR_MESSAGE);
-                        return;
-                    }
+//                    if (!player.getCube3D().isEditMode())
+//                    {
+//                        JOptionPane.showMessageDialog(null, "非编辑状态", "错误", JOptionPane.ERROR_MESSAGE);
+//                        return;
+//                    }
                     for (int j = 0; j < 6; j++)
                     {
                         if (j == value)
@@ -825,11 +824,14 @@ public class AutoPlayer extends Panel implements Runnable
             @Override
             public void actionPerformed(ActionEvent evt)
             {
+                if (player.isActive())
+                {
+                    // 移到最后，player会自动停止
+                    player.getBoundedRangeModel().setValue(player.getBoundedRangeModel().getMaximum());
+                }
+
                 // 判断魔方是否有旋转，因为编辑功能是基于魔方未旋转状态，如果有旋转，设置方块颜色时错位
-                if (!(Arrays.equals(player.getCube3D().getModel().getCornerLocations(),
-                    new int[] {0, 1, 2, 3, 4, 5, 6, 7})
-                      && Arrays.equals(player.getCube3D().getModel().getEdgeOrientations(),
-                          new int[] {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0})))
+                if (!player.getCube3D().getModel().isSolved())
                 {
                     Color[] colorArr = new Color[7];
                     HashSet<Color> colorSet = new HashSet<>();
@@ -899,8 +901,8 @@ public class AutoPlayer extends Panel implements Runnable
             @Override
             public void actionPerformed(ActionEvent evt)
             {
-                AbstractCube3DAWT cube3D = player.getCube3D();
-                cube3D.getModel().reset();
+                AbstractCube3DAWT cube = player.getCube3D();
+                cube.getModel().reset();
                 // Random stick by Call Random function
                 setCubeString(Tools.randomCube(), colors);
             }
@@ -1081,18 +1083,6 @@ public class AutoPlayer extends Panel implements Runnable
 //        scriptPlayer.setParameter("initScript", "F R2 D F R B2 L2 U F B R L' B' U2 R'");
 //        scriptPlayer.setParameter("initScript", "R' L' B  L' D' F  R  L  B2 U  F2 R2 L2 D' R2 U  R2 D2 L2 D' B' ");
 
-//        scriptPlayer.setParameter("initScript", "L");
-//      scriptPlayer.setParameter("initScript", "L'");
-
-//      scriptPlayer.setParameter("initScript", "F R2 D F R B2 L2 U F B R L' B' U2 R'");
-//        scriptPlayer.setParameter("initScript",
-//            "B L' F' D L D L' F U2 F' U B U B' U R U' R' F' U2 F D' U L U' L' D2 U' F U F' D' B2 U SR B2 SR' U B2");
-
-//        scriptPlayer.setParameter("script", "R  F2 L' F2 U2 B2 D  R' D' B2 D' L' D  L  U2 R'");
-
-//        scriptPlayer.setParameter("initScript", "B  R  F  D2 F2 R' F  B  L2 F' R2 F  R2 L2 B2 ");
-//        scriptPlayer.setParameter("initScript", "B' L' B2 U2 F' R' F' R2 B  U2 B  D2 F2 L2 B  D2 ");
-
         scriptPlayer.init(); // 启动
         scriptPlayer.initGUI();
 
@@ -1252,7 +1242,7 @@ public class AutoPlayer extends Panel implements Runnable
 
     public String getParameter(String key)
     {
-        return atts.get(key);
+        return this.atts.get(key);
     }
 
     public String getParameter(String key, String default_value)
@@ -1421,7 +1411,7 @@ public class AutoPlayer extends Panel implements Runnable
     public void setParameter(String key, String value)
         throws IOException
     {
-        atts.put(key, value);
+        this.atts.put(key, value);
         if (this.initialized)
         {
             doParameter(key, value);
@@ -1438,7 +1428,7 @@ public class AutoPlayer extends Panel implements Runnable
         throws IOException
     {
         // 运行中修改配置
-        int index = keyMap.getOrDefault(key, -1);
+        int index = this.keyMap.getOrDefault(key, -1);
         switch (index)
         {
             case 0: // "autoPlay"
@@ -1471,12 +1461,12 @@ public class AutoPlayer extends Panel implements Runnable
                 if (value != null)
                 {
                     value = value.replace("\\n", "\n");
-                    scriptParser.parse(new StringReader(value)).applySubtreeTo(this.initCube, false);
+                    this.scriptParser.parse(new StringReader(value)).applySubtreeTo(this.initCube, false);
                     this.player.reset();
                 }
                 break;
             case 8: // "stickers"
-                AbstractCube3DAWT cube3D = this.player.getCube3D();
+                AbstractCube3DAWT cube = this.player.getCube3D();
                 String[] parameters2 = getParameters(key, (String[])null);
                 if (parameters2 != null)
                 {
@@ -1498,7 +1488,7 @@ public class AutoPlayer extends Panel implements Runnable
                                     new StringBuffer().append("Invalid parameter 'stickers', unknown entry '").append(
                                         param).append("'.").toString());
                             }
-                            cube3D.setStickerColor(i5, i6, this.colors[param]);
+                            cube.setStickerColor(i5, i6, this.colors[param]);
                         }
                     }
                     this.player.reset();

@@ -33,11 +33,11 @@ public class ScriptNode extends DefaultMutableTreeNode
 
         boolean inverse;
 
-        public ResolvedEnumeration(ScriptNode scriptNode, boolean z)
+        public ResolvedEnumeration(ScriptNode root, boolean inverse)
         {
-            this.root = scriptNode;
-            this.inverse = z;
-            this.children = z ? this.root.enumerateChildrenReversed() : this.root.children();
+            this.root = root;
+            this.inverse = inverse;
+            this.children = inverse ? this.root.enumerateChildrenReversed() : this.root.children();
             this.subtree = new SingletonEnumeration((DefaultMutableTreeNode)this.root.clone());
         }
 
@@ -50,10 +50,10 @@ public class ScriptNode extends DefaultMutableTreeNode
         @Override
         public DefaultMutableTreeNode nextElement()
         {
-            DefaultMutableTreeNode objNextElement;
+            DefaultMutableTreeNode nextElement;
             if (this.subtree.hasMoreElements())
             {
-                objNextElement = this.subtree.nextElement();
+                nextElement = this.subtree.nextElement();
             }
             else
             {
@@ -62,9 +62,9 @@ public class ScriptNode extends DefaultMutableTreeNode
                     throw new NoSuchElementException();
                 }
                 this.subtree = ((ScriptNode)this.children.nextElement()).resolvedEnumeration(this.inverse);
-                objNextElement = this.subtree.nextElement();
+                nextElement = this.subtree.nextElement();
             }
-            return objNextElement;
+            return nextElement;
         }
     }
 
@@ -73,10 +73,10 @@ public class ScriptNode extends DefaultMutableTreeNode
         setAllowsChildren(true);
     }
 
-    public ScriptNode(int i, int i2)
+    public ScriptNode(int startpos, int endpos)
     {
-        this.startpos = i;
-        this.endpos = i2;
+        this.startpos = startpos;
+        this.endpos = endpos;
         setAllowsChildren(true);
     }
 
@@ -85,9 +85,9 @@ public class ScriptNode extends DefaultMutableTreeNode
         return this.startpos;
     }
 
-    public void setStartPosition(int i)
+    public void setStartPosition(int startpos)
     {
-        this.startpos = i;
+        this.startpos = startpos;
     }
 
     public int getEndPosition()
@@ -95,17 +95,17 @@ public class ScriptNode extends DefaultMutableTreeNode
         return this.endpos;
     }
 
-    public void setEndPosition(int i)
+    public void setEndPosition(int endpos)
     {
-        this.endpos = i;
+        this.endpos = endpos;
     }
 
     public void applyTo(RubiksCubeCore rubiksCubeCore)
     {}
 
-    public void applySubtreeTo(RubiksCubeCore rubiksCubeCore, boolean z)
+    public void applySubtreeTo(RubiksCubeCore rubiksCubeCore, boolean inverse)
     {
-        Enumeration<DefaultMutableTreeNode> enumerationResolvedEnumeration = resolvedEnumeration(z);
+        Enumeration<DefaultMutableTreeNode> enumerationResolvedEnumeration = resolvedEnumeration(inverse);
         while (enumerationResolvedEnumeration.hasMoreElements())
         {
             ((ScriptNode)enumerationResolvedEnumeration.nextElement()).applyTo(rubiksCubeCore);
@@ -120,12 +120,12 @@ public class ScriptNode extends DefaultMutableTreeNode
         return 113;
     }
 
-    public void transform(int i)
+    public void transform(int axis)
     {
         Enumeration<DefaultMutableTreeNode> enumerationChildren = children();
         while (enumerationChildren.hasMoreElements())
         {
-            ((ScriptNode)enumerationChildren.nextElement()).transform(i);
+            ((ScriptNode)enumerationChildren.nextElement()).transform(axis);
         }
     }
 
@@ -175,9 +175,9 @@ public class ScriptNode extends DefaultMutableTreeNode
         }
     }
 
-    public Enumeration<DefaultMutableTreeNode> resolvedEnumeration(boolean z)
+    public Enumeration<DefaultMutableTreeNode> resolvedEnumeration(boolean inverse)
     {
-        return new ResolvedEnumeration(this, z);
+        return new ResolvedEnumeration(this, inverse);
     }
 
     public Enumeration<DefaultMutableTreeNode> enumerateChildrenReversed()

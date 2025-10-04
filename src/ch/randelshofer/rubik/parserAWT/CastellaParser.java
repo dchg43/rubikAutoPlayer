@@ -16,7 +16,7 @@ public class CastellaParser extends ScriptParser
 
     private static String[] getTokens()
     {
-        String[] strArr = new String[113];
+        String[] tokens = new String[113];
         int i = 0;
         StringTokenizer stringTokenizer = new StringTokenizer(COMPRESSED_TOKENS, ";", true);
         while (stringTokenizer.hasMoreTokens())
@@ -28,9 +28,9 @@ public class CastellaParser extends ScriptParser
             }
             else
             {
-                strArr[i] = strNextToken;
+                tokens[i] = strNextToken;
             }
         }
-        return strArr;
+        return tokens;
     }
 }

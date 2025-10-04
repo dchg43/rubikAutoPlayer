@@ -355,55 +355,53 @@ public class ScriptParser
         this(getDefaultTokens(), 1, 1, -1, 0, 0);
     }
 
-    public ScriptParser(String[] strArr, int i, int i2, int i3, int i4, int i5)
+    public ScriptParser(String[] tokens, int repetitorPos, int invertorPos, int reflectorPos, int conjugatorPos,
+                        int commutatorPos)
     {
-        this(strArr, null, i, i2, i3, i4, i5, true);
+        this(tokens, null, repetitorPos, invertorPos, reflectorPos, conjugatorPos, commutatorPos, true);
     }
 
-    public ScriptParser(String[] strArr, Hashtable<String, Object> hashtable, int i, int i2, int i3, int i4, int i5,
-                        boolean z)
+    public ScriptParser(String[] tokens, Hashtable<String, Object> hashtable, int repetitorPos, int invertorPos,
+                        int reflectorPos, int conjugatorPos, int commutatorPos, boolean isSequenceSupported)
     {
         this.DEBUG = false;
         this.transformationMap = new Hashtable<>();
         this.permutationMap = new Hashtable<>();
-        this.macroMap = new Hashtable<>();
-        this.commutatorPos = -1;
-        this.conjugatorPos = -1;
-        this.invertorPos = -1;
-        this.repetitorPos = -1;
-        this.reflectorPos = -1;
         if (hashtable != null)
         {
             this.macroMap = hashtable;
         }
-        this.isSequenceSupported = z;
-        this.repetitorPos = i;
-        this.invertorPos = i2;
-        this.reflectorPos = i3;
-        this.conjugatorPos = i4;
-        this.commutatorPos = i5;
-        this.tokens = new String[strArr.length][0];
-        for (int i6 = 0; i6 < strArr.length; i6++)
+        else
         {
-            if (strArr[i6] != null)
+            this.macroMap = new Hashtable<>();
+        }
+        this.isSequenceSupported = isSequenceSupported;
+        this.repetitorPos = repetitorPos;
+        this.invertorPos = invertorPos;
+        this.reflectorPos = reflectorPos;
+        this.conjugatorPos = conjugatorPos;
+        this.commutatorPos = commutatorPos;
+        this.tokens = new String[tokens.length][0];
+        for (int i = 0; i < tokens.length; i++)
+        {
+            if (tokens[i] != null)
             {
-                Integer num = i6;
-                StringTokenizer stringTokenizer = new StringTokenizer(strArr[i6], " ", false);
-                this.tokens[i6] = new String[stringTokenizer.countTokens()];
-                for (int i7 = 0; i7 < this.tokens[i6].length; i7++)
+                StringTokenizer stringTokenizer = new StringTokenizer(tokens[i], " ", false);
+                this.tokens[i] = new String[stringTokenizer.countTokens()];
+                for (int j = 0; j < this.tokens[i].length; j++)
                 {
                     String strNextToken = stringTokenizer.nextToken();
-                    this.tokens[i6][i7] = strNextToken;
-                    if (85 > i6 || i6 > 93)
+                    this.tokens[i][j] = strNextToken;
+                    if (85 > i || i > 93)
                     {
                         if (strNextToken != null)
                         {
-                            this.transformationMap.put(strNextToken, num);
+                            this.transformationMap.put(strNextToken, i);
                         }
                     }
                     else if (strNextToken != null)
                     {
-                        this.permutationMap.put(strNextToken, num);
+                        this.permutationMap.put(strNextToken, i);
                     }
                 }
             }

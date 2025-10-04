@@ -12,11 +12,11 @@ public class ParseException extends IOException
 
     private int endpos;
 
-    public ParseException(String str, int i, int i2)
+    public ParseException(String message, int startpos, int endpos)
     {
-        super(str);
-        this.startpos = i;
-        this.endpos = i2;
+        super(message);
+        this.startpos = startpos;
+        this.endpos = endpos;
     }
 
     public int getStartPosition()

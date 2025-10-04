@@ -16,16 +16,16 @@ public class PolygonIcon implements Icon
 
     private Color color;
 
-    public PolygonIcon(Polygon[] polygonArr, Dimension dimension)
+    public PolygonIcon(Polygon[] polygons, Dimension size)
     {
-        this.polygons = polygonArr;
-        this.size = dimension;
+        this.polygons = polygons;
+        this.size = size;
     }
 
-    public PolygonIcon(Polygon polygon, Dimension dimension)
+    public PolygonIcon(Polygon polygon, Dimension size)
     {
         this.polygons = new Polygon[] {polygon};
-        this.size = dimension;
+        this.size = size;
     }
 
     public void setForeground(Color color)
@@ -34,11 +34,11 @@ public class PolygonIcon implements Icon
     }
 
     @Override
-    public void paintIcon(Component component, Graphics graphics, int i, int i2)
+    public void paintIcon(Component component, Graphics graphics, int x, int y)
     {
         graphics.setColor(
             component.isEnabled() ? this.color != null ? this.color : component.getForeground() : Color.gray);
-        graphics.translate(i, i2);
+        graphics.translate(x, y);
         if (this.polygons != null)
         {
             for (Polygon polygon : this.polygons)
@@ -47,7 +47,7 @@ public class PolygonIcon implements Icon
                 graphics.drawPolygon(polygon);
             }
         }
-        graphics.translate(-i, -i2);
+        graphics.translate(-x, -y);
     }
 
     @Override

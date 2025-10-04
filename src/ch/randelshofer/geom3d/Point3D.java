@@ -11,11 +11,11 @@ public class Point3D
     public Point3D()
     {}
 
-    public Point3D(double d, double d2, double d3)
+    public Point3D(double x, double y, double z)
     {
-        this.x = d;
-        this.y = d2;
-        this.z = d3;
+        this.x = x;
+        this.y = y;
+        this.z = z;
     }
 
     @Override

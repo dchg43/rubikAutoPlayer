@@ -46,12 +46,12 @@ public class AbstractButton extends Canvas implements ItemSelectable
 
     protected ButtonGroup group;
 
-    public void setPressed(boolean z)
+    public void setPressed(boolean isPressed)
     {
-        if (z != this.isPressed)
+        if (isPressed != this.isPressed)
         {
-            this.isPressed = z;
-            if (!z)
+            this.isPressed = isPressed;
+            if (!isPressed)
             {
                 fireActionPerformed(new ActionEvent(this, 1001, getActionCommand()));
             }
@@ -70,12 +70,12 @@ public class AbstractButton extends Canvas implements ItemSelectable
         return this.isPressed;
     }
 
-    public void setSelected(boolean z)
+    public void setSelected(boolean isSelected)
     {
-        if (z != this.isSelected)
+        if (isSelected != this.isSelected)
         {
-            this.isSelected = z;
-            fireItemStateChanged(new ItemEvent(this, 701, this, z ? 1 : 2));
+            this.isSelected = isSelected;
+            fireItemStateChanged(new ItemEvent(this, 701, this, isSelected ? 1 : 2));
             fireStateChanged();
             repaint();
         }
@@ -86,11 +86,11 @@ public class AbstractButton extends Canvas implements ItemSelectable
         return this.isSelected;
     }
 
-    public void setArmed(boolean z)
+    public void setArmed(boolean isArmed)
     {
-        if (z != this.isArmed)
+        if (isArmed != this.isArmed)
         {
-            this.isArmed = z;
+            this.isArmed = isArmed;
             fireStateChanged();
             repaint();
         }
@@ -101,9 +101,9 @@ public class AbstractButton extends Canvas implements ItemSelectable
         return this.isArmed;
     }
 
-    public void setActionCommand(String str)
+    public void setActionCommand(String actionCommand)
     {
-        this.actionCommand = str;
+        this.actionCommand = actionCommand;
     }
 
     public String getActionCommand()
@@ -145,38 +145,38 @@ public class AbstractButton extends Canvas implements ItemSelectable
     public void paint(Graphics graphics)
     {
         Dimension size = getSize();
-        int i = size.width;
-        int i2 = size.height;
+        int width = size.width;
+        int height = size.height;
         if (!isEnabled())
         {
             graphics.setColor(Color.gray);
         }
-        graphics.drawRect(0, 0, i - 1, i2 - 1);
+        graphics.drawRect(0, 0, width - 1, height - 1);
         if (this.isPressed && this.isArmed)
         {
             graphics.setColor(Color.gray.darker());
-            graphics.fillRect(1, 1, i - 3, i2 - 3);
+            graphics.fillRect(1, 1, width - 3, height - 3);
             graphics.setColor(Color.darkGray);
-            graphics.drawLine(1, 1, i - 2, 1);
-            graphics.drawLine(1, 1, 1, i2 - 2);
+            graphics.drawLine(1, 1, width - 2, 1);
+            graphics.drawLine(1, 1, 1, height - 2);
             graphics.setColor(Color.gray);
-            graphics.drawLine(2, i2 - 2, i - 2, i2 - 2);
-            graphics.drawLine(i - 2, i2 - 2, i - 2, 2);
+            graphics.drawLine(2, height - 2, width - 2, height - 2);
+            graphics.drawLine(width - 2, height - 2, width - 2, 2);
         }
         else
         {
             graphics.setColor((!this.isSelected || this.group == null) ? Color.lightGray : new Color(160, 160, 160));
-            graphics.fillRect(1, 1, i - 2, i2 - 2);
+            graphics.fillRect(1, 1, width - 2, height - 2);
             if (isEnabled())
             {
                 graphics.setColor(this.isSelected ? Color.gray : Color.white);
-                graphics.drawLine(1, 1, i - 3, 1);
-                graphics.drawLine(1, 1, 1, i2 - 3);
+                graphics.drawLine(1, 1, width - 3, 1);
+                graphics.drawLine(1, 1, 1, height - 3);
                 if (!this.isSelected && this.group != null)
                 {
                     graphics.setColor(Color.gray);
-                    graphics.drawLine(1, i2 - 2, i - 2, i2 - 2);
-                    graphics.drawLine(i - 2, i2 - 2, i - 2, 2);
+                    graphics.drawLine(1, height - 2, width - 2, height - 2);
+                    graphics.drawLine(width - 2, height - 2, width - 2, 2);
                 }
             }
         }
@@ -207,9 +207,9 @@ public class AbstractButton extends Canvas implements ItemSelectable
     }
 
     @Override
-    public void setPreferredSize(Dimension dimension)
+    public void setPreferredSize(Dimension preferredSize)
     {
-        this.preferredSize = dimension;
+        this.preferredSize = preferredSize;
     }
 
     @Override
@@ -225,9 +225,9 @@ public class AbstractButton extends Canvas implements ItemSelectable
     }
 
     @Override
-    public void setMinimumSize(Dimension dimension)
+    public void setMinimumSize(Dimension minimumSize)
     {
-        this.minimumSize = dimension;
+        this.minimumSize = minimumSize;
     }
 
     @Override
@@ -262,7 +262,7 @@ public class AbstractButton extends Canvas implements ItemSelectable
     }
 
     @Override
-    public boolean mouseEnter(Event event, int i, int i2)
+    public boolean mouseEnter(Event event, int x, int y)
     {
         setArmed(true);
         repaint();
@@ -270,7 +270,7 @@ public class AbstractButton extends Canvas implements ItemSelectable
     }
 
     @Override
-    public boolean mouseExit(Event event, int i, int i2)
+    public boolean mouseExit(Event event, int x, int y)
     {
         setArmed(false);
         repaint();
@@ -278,7 +278,7 @@ public class AbstractButton extends Canvas implements ItemSelectable
     }
 
     @Override
-    public boolean mouseDown(Event event, int i, int i2)
+    public boolean mouseDown(Event event, int x, int y)
     {
         setArmed(true);
         setPressed(true);
@@ -287,7 +287,7 @@ public class AbstractButton extends Canvas implements ItemSelectable
     }
 
     @Override
-    public boolean mouseUp(Event event, int i, int i2)
+    public boolean mouseUp(Event event, int x, int y)
     {
         setPressed(false);
         repaint();
@@ -379,11 +379,11 @@ public class AbstractButton extends Canvas implements ItemSelectable
     }
 
     @Override
-    public void setEnabled(boolean z)
+    public void setEnabled(boolean enabled)
     {
-        if (z != isEnabled())
+        if (enabled != isEnabled())
         {
-            super.setEnabled(z);
+            super.setEnabled(enabled);
             repaint();
         }
     }

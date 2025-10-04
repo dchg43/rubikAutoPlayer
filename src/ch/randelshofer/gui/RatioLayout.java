@@ -11,9 +11,9 @@ public class RatioLayout implements LayoutManager
 {
     private double ratio;
 
-    public RatioLayout(double f)
+    public RatioLayout(double ratio)
     {
-        this.ratio = f;
+        this.ratio = ratio;
     }
 
     public RatioLayout()
@@ -21,24 +21,24 @@ public class RatioLayout implements LayoutManager
         this.ratio = 0.5d;
     }
 
-    public void setRatio(double f)
+    public void setRatio(double ratio)
     {
-        this.ratio = f;
+        this.ratio = ratio;
     }
 
     @Override
-    public void addLayoutComponent(String str, Component component)
+    public void addLayoutComponent(String name, Component comp)
     {}
 
     @Override
-    public void layoutContainer(Container container)
+    public void layoutContainer(Container parent)
     {
-        Dimension size = container.getSize();
+        Dimension size = parent.getSize();
         int i = (int)(size.width * this.ratio);
-        int iMin = Math.min(container.getComponentCount(), 2);
+        int iMin = Math.min(parent.getComponentCount(), 2);
         for (int i2 = 0; i2 < iMin; i2++)
         {
-            Component component = container.getComponent(i2);
+            Component component = parent.getComponent(i2);
             if (i2 == 0)
             {
                 component.setBounds(0, 0, i, size.height);
@@ -51,13 +51,13 @@ public class RatioLayout implements LayoutManager
     }
 
     @Override
-    public Dimension minimumLayoutSize(Container container)
+    public Dimension minimumLayoutSize(Container parent)
     {
         Dimension dimension = new Dimension();
-        int iMin = Math.min(container.getComponentCount(), 2);
-        for (int i = 0; i < iMin; i++)
+        int count = Math.min(parent.getComponentCount(), 2);
+        for (int i = 0; i < count; i++)
         {
-            Dimension minimumSize = container.getComponent(i).getMinimumSize();
+            Dimension minimumSize = parent.getComponent(i).getMinimumSize();
             dimension.height = Math.max(dimension.height, minimumSize.height);
             dimension.width += minimumSize.width;
         }
@@ -65,13 +65,13 @@ public class RatioLayout implements LayoutManager
     }
 
     @Override
-    public Dimension preferredLayoutSize(Container container)
+    public Dimension preferredLayoutSize(Container parent)
     {
         Dimension dimension = new Dimension();
-        int iMin = Math.min(container.getComponentCount(), 2);
-        for (int i = 0; i < iMin; i++)
+        int count = Math.min(parent.getComponentCount(), 2);
+        for (int i = 0; i < count; i++)
         {
-            Dimension preferredSize = container.getComponent(i).getPreferredSize();
+            Dimension preferredSize = parent.getComponent(i).getPreferredSize();
             dimension.height = Math.max(dimension.height, preferredSize.height);
             dimension.width += preferredSize.width;
         }
@@ -79,6 +79,6 @@ public class RatioLayout implements LayoutManager
     }
 
     @Override
-    public void removeLayoutComponent(Component component)
+    public void removeLayoutComponent(Component comp)
     {}
 }

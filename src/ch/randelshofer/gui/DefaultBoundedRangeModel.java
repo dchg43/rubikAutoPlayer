@@ -28,16 +28,16 @@ public class DefaultBoundedRangeModel implements BoundedRangeModel
     public DefaultBoundedRangeModel()
     {}
 
-    public DefaultBoundedRangeModel(int i1, int i2, int i3, int i4)
+    public DefaultBoundedRangeModel(int value, int extent, int min, int max)
     {
-        if (i4 < i3 || i1 < i3 || i1 + i2 > i4)
+        if (max < min || value < min || value + extent > max)
         {
             throw new IllegalArgumentException("invalid range properties");
         }
-        this.value = i1;
-        this.extent = i2;
-        this.min = i3;
-        this.max = i4;
+        this.value = value;
+        this.extent = extent;
+        this.min = min;
+        this.max = max;
     }
 
     @Override
@@ -65,49 +65,49 @@ public class DefaultBoundedRangeModel implements BoundedRangeModel
     }
 
     @Override
-    public void setValue(int i)
+    public void setValue(int value)
     {
-        int iMax = Math.max(i, this.min);
-        if (iMax + this.extent > this.max)
+        int valueMax = Math.max(value, this.min);
+        if (valueMax > this.max - this.extent)
         {
-            iMax = this.max - this.extent;
+            valueMax = this.max - this.extent;
         }
-        setRangeProperties(iMax, this.extent, this.min, this.max, this.isAdjusting);
+        setRangeProperties(valueMax, this.extent, this.min, this.max, this.isAdjusting);
     }
 
     @Override
-    public void setExtent(int i)
+    public void setExtent(int extent)
     {
-        int iMax = Math.max(0, i);
-        if (this.value + iMax > this.max)
+        int extentMax = Math.max(0, extent);
+        if (extentMax > this.max - this.value)
         {
-            iMax = this.max - this.value;
+            extentMax = this.max - this.value;
         }
-        setRangeProperties(this.value, iMax, this.min, this.max, this.isAdjusting);
+        setRangeProperties(this.value, extentMax, this.min, this.max, this.isAdjusting);
     }
 
     @Override
-    public void setMinimum(int i)
+    public void setMinimum(int min)
     {
-        int maxMax = Math.max(i, this.max);
-        int valueMax = Math.max(i, this.value);
-        int extentMin = Math.min(maxMax - valueMax, this.extent);
-        setRangeProperties(valueMax, extentMin, i, maxMax, this.isAdjusting);
+        int max = Math.max(min, this.max);
+        int value = Math.max(min, this.value);
+        int extent = Math.min(max - value, this.extent);
+        setRangeProperties(value, extent, min, max, this.isAdjusting);
     }
 
     @Override
-    public void setMaximum(int i)
+    public void setMaximum(int max)
     {
-        int minMin = Math.min(i, this.min);
-        int valueMin = Math.min(i, this.value);
-        int extentMin = Math.min(i - valueMin, this.extent);
-        setRangeProperties(valueMin, extentMin, minMin, i, this.isAdjusting);
+        int min = Math.min(max, this.min);
+        int value = Math.min(max, this.value);
+        int extent = Math.min(max - value, this.extent);
+        setRangeProperties(value, extent, min, max, this.isAdjusting);
     }
 
     @Override
-    public void setValueIsAdjusting(boolean z)
+    public void setValueIsAdjusting(boolean isAdjusting)
     {
-        setRangeProperties(this.value, this.extent, this.min, this.max, z);
+        setRangeProperties(this.value, this.extent, this.min, this.max, isAdjusting);
     }
 
     @Override
@@ -117,35 +117,36 @@ public class DefaultBoundedRangeModel implements BoundedRangeModel
     }
 
     @Override
-    public void setRangeProperties(int i, int i2, int i3, int i4, boolean z)
+    public void setRangeProperties(int value, int extent, int min, int max, boolean isAdjusting)
     {
-        if (i3 > i4)
+        if (min > max)
         {
-            i3 = i4;
+            min = max;
         }
-        if (i > i4)
+        if (value > max)
         {
-            i4 = i;
+            max = value;
         }
-        if (i < i3)
+        if (value < min)
         {
-            i3 = i;
+            min = value;
         }
-        if (i2 + i > i4)
+        if (extent + value > max)
         {
-            i2 = i4 - i;
+            extent = max - value;
         }
-        if (i2 < 0)
+        if (extent < 0)
         {
-            i2 = 0;
+            extent = 0;
         }
-        if (i != this.value || i2 != this.extent || i3 != this.min || i4 != this.max || z != this.isAdjusting)
+        if (value != this.value || extent != this.extent || min != this.min || max != this.max
+            || isAdjusting != this.isAdjusting)
         {
-            this.value = i;
-            this.extent = i2;
-            this.min = i3;
-            this.max = i4;
-            this.isAdjusting = z;
+            this.value = value;
+            this.extent = extent;
+            this.min = min;
+            this.max = max;
+            this.isAdjusting = isAdjusting;
             fireStateChanged();
         }
     }

@@ -114,10 +114,10 @@ public class StreamPosTokenizer
 
     public void resetSyntax()
     {
-        int length = this.ctype.length;
-        while (--length >= 0)
+        int i = this.ctype.length;
+        while (--i >= 0)
         {
-            this.ctype[length] = 0;
+            this.ctype[i] = 0;
         }
     }
 
@@ -204,24 +204,24 @@ public class StreamPosTokenizer
         this.ctype[45] = (byte)(this.ctype[45] | 0x2);
     }
 
-    public void eolIsSignificant(boolean z)
+    public void eolIsSignificant(boolean eolIsSignificantP)
     {
-        this.eolIsSignificantP = z;
+        this.eolIsSignificantP = eolIsSignificantP;
     }
 
-    public void slashStarComments(boolean z)
+    public void slashStarComments(boolean slashStarCommentsP)
     {
-        this.slashStarCommentsP = z;
+        this.slashStarCommentsP = slashStarCommentsP;
     }
 
-    public void slashSlashComments(boolean z)
+    public void slashSlashComments(boolean slashSlashCommentsP)
     {
-        this.slashSlashCommentsP = z;
+        this.slashSlashCommentsP = slashSlashCommentsP;
     }
 
-    public void lowerCaseMode(boolean z)
+    public void lowerCaseMode(boolean forceLower)
     {
-        this.forceLower = z;
+        this.forceLower = forceLower;
     }
 
     private int read()
@@ -250,21 +250,19 @@ public class StreamPosTokenizer
         this.readpos--;
     }
 
+    // TODO:
     public int nextToken()
         throws IOException
     {
         int i;
-        int i2;
-        int i3;
-        int i4;
         int i5;
         int i6;
         int i7;
         int i8;
         int i9;
-        double d;
         int i10;
         int i11;
+        double d;
         if (this.pushedBack)
         {
             this.pushedBack = false;
@@ -549,6 +547,7 @@ public class StreamPosTokenizer
                 this.ttype = i;
                 return i;
             }
+            int i2;
             do
             {
                 i2 = read();
@@ -556,8 +555,7 @@ public class StreamPosTokenizer
                 {
                     break;
                 }
-            }
-            while (i2 >= 0);
+            } while (i2 >= 0);
             this.peekc = i2;
             return nextToken();
         }
@@ -584,8 +582,7 @@ public class StreamPosTokenizer
                     this.LINENO++;
                     i6 = read();
                 }
-            }
-            while (i6 >= 0);
+            } while (i6 >= 0);
             this.endpos = this.readpos;
             this.ttype = -1;
             return -1;
@@ -599,8 +596,7 @@ public class StreamPosTokenizer
                 {
                     break;
                 }
-            }
-            while (i5 >= 0);
+            } while (i5 >= 0);
             this.peekc = i5;
             return nextToken();
         }
@@ -633,14 +629,14 @@ public class StreamPosTokenizer
                 {
                     i31 = i32;
                 }
-            }
-            while (i31 >= 0);
+            } while (i31 >= 0);
             this.endpos = this.readpos;
             this.ttype = -1;
             return -1;
         }
         if (i30 == this.slashSlash[1] && this.slashSlashCommentsP)
         {
+            int i4;
             do
             {
                 i4 = read();
@@ -648,8 +644,7 @@ public class StreamPosTokenizer
                 {
                     break;
                 }
-            }
-            while (i4 >= 0);
+            } while (i4 >= 0);
             this.peekc = i4;
             return nextToken();
         }
@@ -661,6 +656,7 @@ public class StreamPosTokenizer
             this.ttype = c;
             return c;
         }
+        int i3;
         do
         {
             i3 = read();
@@ -668,40 +664,39 @@ public class StreamPosTokenizer
             {
                 break;
             }
-        }
-        while (i3 >= 0);
+        } while (i3 >= 0);
         this.peekc = i3;
         return nextToken();
     }
 
-    public void setSlashStarTokens(String str, String str2)
+    public void setSlashStarTokens(String slashStar, String starSlash)
     {
-        if (str.length() != str2.length())
+        if (slashStar.length() != starSlash.length())
         {
             throw new IllegalArgumentException(
                 new StringBuffer().append("SlashStar and StarSlash tokens must be of same length: '").append(
-                    str).append("' '").append(str2).append("'").toString());
+                    slashStar).append("' '").append(starSlash).append("'").toString());
         }
-        if (str.length() < 1 || str.length() > 2)
+        if (slashStar.length() < 1 || slashStar.length() > 2)
         {
             throw new IllegalArgumentException(
                 new StringBuffer().append("SlashStar and StarSlash tokens must be of length 1 or 2: '").append(
-                    str).append("' '").append(str2).append("'").toString());
+                    slashStar).append("' '").append(starSlash).append("'").toString());
         }
-        this.slashStar = str.toCharArray();
-        this.starSlash = str2.toCharArray();
+        this.slashStar = slashStar.toCharArray();
+        this.starSlash = starSlash.toCharArray();
         commentChar(this.slashStar[0]);
     }
 
-    public void setSlashSlashToken(String str)
+    public void setSlashSlashToken(String slashSlash)
     {
-        if (str.length() < 1 || str.length() > 2)
+        if (slashSlash.length() < 1 || slashSlash.length() > 2)
         {
             throw new IllegalArgumentException(
-                new StringBuffer().append("SlashSlash token must be of length 1 or 2: '").append(str).append(
+                new StringBuffer().append("SlashSlash token must be of length 1 or 2: '").append(slashSlash).append(
                     "'").toString());
         }
-        this.slashSlash = str.toCharArray();
+        this.slashSlash = slashSlash.toCharArray();
         commentChar(this.slashSlash[0]);
     }
 

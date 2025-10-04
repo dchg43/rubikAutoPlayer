@@ -28,21 +28,21 @@ public class Shape3D implements SceneNode
 
     private Transform3D transform;
 
-    public Shape3D(double[] fArr, int[][] iArr, Color[][] colorArr)
+    public Shape3D(double[] coords, int[][] faces, Color[][] colors)
     {
-        this(fArr, iArr, colorArr, iArr.length);
+        this(coords, faces, colors, faces.length);
     }
 
-    public Shape3D(double[] fArr, int[][] iArr, Color[][] colorArr, int i)
+    public Shape3D(double[] coords, int[][] faces, Color[][] colors, int reducedFaceCount)
     {
         this.isVisible = true;
         this.isWireframe = false;
         this.isReduced = false;
         this.transform = new Transform3D();
-        this.coords = fArr;
-        this.faces = iArr;
-        this.colors = colorArr;
-        this.reducedFaceCount = i;
+        this.coords = coords;
+        this.faces = faces;
+        this.colors = colors;
+        this.reducedFaceCount = reducedFaceCount;
     }
 
     public double[] getCoords()
@@ -60,9 +60,9 @@ public class Shape3D implements SceneNode
         return this.isVisible;
     }
 
-    public void setVisible(boolean z)
+    public void setVisible(boolean isVisible)
     {
-        this.isVisible = z;
+        this.isVisible = isVisible;
     }
 
     public boolean isRecuced()
@@ -70,14 +70,14 @@ public class Shape3D implements SceneNode
         return this.isReduced;
     }
 
-    public void setReduced(boolean z)
+    public void setReduced(boolean isReduced)
     {
-        this.isReduced = z;
+        this.isReduced = isReduced;
     }
 
-    public void setTransform(Transform3D transform3D)
+    public void setTransform(Transform3D transform)
     {
-        this.transform = transform3D;
+        this.transform = transform;
     }
 
     private void createFaces()
@@ -98,7 +98,7 @@ public class Shape3D implements SceneNode
     }
 
     @Override
-    public void addVisibleFaces(Vector<Face3D> vector, Transform3D transform3D, Point3D point3D)
+    public void addVisibleFaces(Vector<Face3D> visibleFaces, Transform3D transform3D, Point3D point3D)
     {
         if (this.isVisible)
         {
@@ -113,7 +113,7 @@ public class Shape3D implements SceneNode
                 this.faces3D[i].setCoords(fArr);
                 if (this.faces3D[i].isVisible(point3D))
                 {
-                    vector.addElement(this.faces3D[i]);
+                    visibleFaces.addElement(this.faces3D[i]);
                 }
             }
         }

@@ -23,15 +23,15 @@ public class EventListenerList
 
     public int getListenerCount(Class<?> cls)
     {
-        int i = 0;
+        int count = 0;
         for (ListenerNode listenerNode : listenerList)
         {
             if (cls == listenerNode.clazz)
             {
-                i++;
+                count++;
             }
         }
-        return i;
+        return count;
     }
 
     public synchronized void add(Class<?> cls, EventListener eventListener)

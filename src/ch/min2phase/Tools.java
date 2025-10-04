@@ -358,8 +358,7 @@ public class Tools
                 do
                 {
                     cpVal = gen.nextInt(40320);
-                }
-                while (Util.getNParity(cpVal, 8) != parity);
+                } while (Util.getNParity(cpVal, 8) != parity);
             }
             else
             {
@@ -388,8 +387,7 @@ public class Tools
                 do
                 {
                     epVal = gen.nextInt(479001600);
-                }
-                while (Util.getNParity(epVal, 12) != parity);
+                } while (Util.getNParity(epVal, 12) != parity);
             }
             else
             {

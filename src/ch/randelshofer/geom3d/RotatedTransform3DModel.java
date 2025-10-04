@@ -12,16 +12,16 @@ public class RotatedTransform3DModel extends AbstractStateModel implements Trans
 
     private Transform3DModel model;
 
-    public RotatedTransform3DModel(double d, double d2, double d3)
+    public RotatedTransform3DModel(double x, double y, double z)
     {
-        this.rotator = new Transform3D(d, d2, d3);
+        this.rotator = new Transform3D(x, y, z);
         this.model = new DefaultTransform3DModel();
         this.model.addChangeListener(this);
     }
 
-    public RotatedTransform3DModel(double d, double d2, double d3, Transform3DModel transform3DModel)
+    public RotatedTransform3DModel(double x, double y, double z, Transform3DModel transform3DModel)
     {
-        this.rotator = new Transform3D(d, d2, d3);
+        this.rotator = new Transform3D(x, y, z);
         this.model = transform3DModel;
         this.model.addChangeListener(this);
     }
@@ -56,45 +56,45 @@ public class RotatedTransform3DModel extends AbstractStateModel implements Trans
     }
 
     @Override
-    public void rotate(double d, double d2, double d3)
+    public void rotate(double x, double y, double z)
     {
         Transform3D transform = getTransform();
-        transform.rotate(d, d2, d3);
+        transform.rotate(x, y, z);
         transform.concatenate(this.rotator);
         this.model.setTransform(transform);
     }
 
     @Override
-    public void rotateX(double d)
+    public void rotateX(double x)
     {
         Transform3D transform = getTransform();
-        transform.rotateX(d);
+        transform.rotateX(x);
         transform.concatenate(this.rotator);
         this.model.setTransform(transform);
     }
 
     @Override
-    public void rotateY(double d)
+    public void rotateY(double y)
     {
         Transform3D transform = getTransform();
-        transform.rotateY(d);
+        transform.rotateY(y);
         transform.concatenate(this.rotator);
         this.model.setTransform(transform);
     }
 
     @Override
-    public void rotateZ(double d)
+    public void rotateZ(double z)
     {
         Transform3D transform = getTransform();
-        transform.rotateZ(d);
+        transform.rotateZ(z);
         transform.concatenate(this.rotator);
         this.model.setTransform(transform);
     }
 
     @Override
-    public void scale(double d, double d2, double d3)
+    public void scale(double x, double y, double z)
     {
-        this.model.scale(d, d2, d3);
+        this.model.scale(x, y, z);
     }
 
     @Override
@@ -110,9 +110,9 @@ public class RotatedTransform3DModel extends AbstractStateModel implements Trans
     }
 
     @Override
-    public void translate(double d, double d2, double d3)
+    public void translate(double x, double y, double z)
     {
-        this.model.translate(d, d2, d3);
+        this.model.translate(x, y, z);
     }
 
     @Override

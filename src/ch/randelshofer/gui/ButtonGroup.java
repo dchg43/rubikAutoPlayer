@@ -56,9 +56,9 @@ public class ButtonGroup implements Serializable, ItemListener
         return this.selection;
     }
 
-    public void setSelected(AbstractButton abstractButton, boolean z)
+    public void setSelected(AbstractButton abstractButton, boolean isSelected)
     {
-        if (!z || abstractButton == this.selection)
+        if (!isSelected || abstractButton == this.selection)
         {
             return;
         }

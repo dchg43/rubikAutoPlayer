@@ -8,8 +8,8 @@ public class ChangeEvent extends EventObject
 {
     private static final long serialVersionUID = 1280599909353806955L;
 
-    public ChangeEvent(Object obj)
+    public ChangeEvent(Object source)
     {
-        super(obj);
+        super(source);
     }
 }

@@ -18,10 +18,10 @@ public class MacroNode extends ScriptNode
     private String script;
 
     @Override
-    public void transform(int i)
+    public void transform(int axis)
     {
         this.identifier = null;
-        super.transform(i);
+        super.transform(axis);
     }
 
     public String getIdentifier()
@@ -35,11 +35,11 @@ public class MacroNode extends ScriptNode
         return ScriptParser.MACRO_EXPRESSION;
     }
 
-    public MacroNode(String str, String str2, int i, int i2)
+    public MacroNode(String identifier, String script, int startpos, int endpos)
     {
-        super(i, i2);
-        this.identifier = str;
-        this.script = str2;
+        super(startpos, endpos);
+        this.identifier = identifier;
+        this.script = script;
         setAllowsChildren(true);
     }
 

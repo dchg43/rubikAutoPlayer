@@ -16,62 +16,62 @@ public class Polygon3D
         setCapacity(4);
     }
 
-    public Polygon3D(int i)
+    public Polygon3D(int npoints)
     {
         this.npoints = 0;
-        setCapacity(i);
+        setCapacity(npoints);
     }
 
-    public void setCapacity(int i)
+    public void setCapacity(int npoints)
     {
-        this.xpoints = new double[i];
-        this.ypoints = new double[i];
-        this.zpoints = new double[i];
+        this.xpoints = new double[npoints];
+        this.ypoints = new double[npoints];
+        this.zpoints = new double[npoints];
         this.npoints = 0;
     }
 
-    public Polygon3D(double[] dArr, double[] dArr2, double[] dArr3, int i)
+    public Polygon3D(double[] xpoints, double[] ypoints, double[] zpoints, int npoints)
     {
-        this.npoints = i;
-        this.xpoints = new double[i];
-        this.ypoints = new double[i];
-        this.zpoints = new double[i];
-        System.arraycopy(dArr, 0, this.xpoints, 0, i);
-        System.arraycopy(dArr2, 0, this.ypoints, 0, i);
-        System.arraycopy(dArr3, 0, this.zpoints, 0, i);
+        this.npoints = npoints;
+        this.xpoints = new double[npoints];
+        this.ypoints = new double[npoints];
+        this.zpoints = new double[npoints];
+        System.arraycopy(xpoints, 0, this.xpoints, 0, npoints);
+        System.arraycopy(ypoints, 0, this.ypoints, 0, npoints);
+        System.arraycopy(zpoints, 0, this.zpoints, 0, npoints);
     }
 
-    public Polygon3D(short[][] sArr, int i, int i2)
+    public Polygon3D(short[][] points, int pos, int npoints)
     {
-        this.npoints = i2;
-        this.xpoints = new double[i2];
-        this.ypoints = new double[i2];
-        this.zpoints = new double[i2];
-        for (int i3 = (i + i2) - 1; i3 < i; i3--)
+        this.npoints = npoints;
+        this.xpoints = new double[npoints];
+        this.ypoints = new double[npoints];
+        this.zpoints = new double[npoints];
+        for (int i3 = (pos + npoints) - 1; i3 > pos; i3--)
         {
-            this.xpoints[i3] = sArr[i3][0];
-            this.ypoints[i3] = sArr[i3][1];
-            this.zpoints[i3] = sArr[i3][2];
+            this.xpoints[i3] = points[i3][0];
+            this.ypoints[i3] = points[i3][1];
+            this.zpoints[i3] = points[i3][2];
         }
     }
 
-    public void addPoint(double d, double d2, double d3)
+    public void addPoint(double x, double y, double z)
     {
         if (this.npoints == this.xpoints.length)
         {
-            double[] dArr = new double[this.npoints * 2];
-            System.arraycopy(this.xpoints, 0, dArr, 0, this.npoints);
-            this.xpoints = dArr;
-            double[] dArr2 = new double[this.npoints * 2];
-            System.arraycopy(this.ypoints, 0, dArr2, 0, this.npoints);
-            this.ypoints = dArr2;
-            double[] dArr3 = new double[this.npoints * 2];
-            System.arraycopy(this.zpoints, 0, dArr3, 0, this.npoints);
-            this.zpoints = dArr3;
+            double[] xpoints = new double[this.npoints * 2];
+            System.arraycopy(this.xpoints, 0, xpoints, 0, this.npoints);
+            this.xpoints = xpoints;
+            double[] ypoints = new double[this.npoints * 2];
+            System.arraycopy(this.ypoints, 0, ypoints, 0, this.npoints);
+            this.ypoints = ypoints;
+            double[] zpoints = new double[this.npoints * 2];
+            System.arraycopy(this.zpoints, 0, zpoints, 0, this.npoints);
+            this.zpoints = zpoints;
         }
-        this.xpoints[this.npoints] = d;
-        this.ypoints[this.npoints] = d2;
-        this.zpoints[this.npoints] = d2;
+        this.xpoints[this.npoints] = x;
+        this.ypoints[this.npoints] = y;
+        this.zpoints[this.npoints] = z;
         this.npoints++;
     }
 }

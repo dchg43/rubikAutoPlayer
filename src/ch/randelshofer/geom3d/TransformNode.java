@@ -39,7 +39,7 @@ public class TransformNode implements SceneNode
     }
 
     @Override
-    public void addVisibleFaces(Vector<Face3D> vector, Transform3D transform3D, Point3D point3D)
+    public void addVisibleFaces(Vector<Face3D> visibleFaces, Transform3D transform3D, Point3D point3D)
     {
         if (this.isVisible)
         {
@@ -48,7 +48,7 @@ public class TransformNode implements SceneNode
             Enumeration<SceneNode> enumerationElements = this.children.elements();
             while (enumerationElements.hasMoreElements())
             {
-                enumerationElements.nextElement().addVisibleFaces(vector, transform3D2, point3D);
+                enumerationElements.nextElement().addVisibleFaces(visibleFaces, transform3D2, point3D);
             }
         }
     }

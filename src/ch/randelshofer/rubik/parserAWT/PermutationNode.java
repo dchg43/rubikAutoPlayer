@@ -65,9 +65,9 @@ public class PermutationNode extends ScriptNode
         setAllowsChildren(false);
     }
 
-    public PermutationNode(int i, int i2)
+    public PermutationNode(int startpos, int endpos)
     {
-        super(i, i2);
+        super(startpos, endpos);
         setAllowsChildren(false);
     }
 
@@ -89,6 +89,7 @@ public class PermutationNode extends ScriptNode
         return 0;
     }
 
+    // TODO:
     public void addPermItem(int i, int i2, int[] iArr)
     {
         int i3;
@@ -425,9 +426,9 @@ public class PermutationNode extends ScriptNode
         return this.sequence.size();
     }
 
-    public void applyTo(RubiksCubeCore rubiksCubeCore, boolean z)
+    public void applyTo(RubiksCubeCore rubiksCubeCore, boolean inverse)
     {
-        if (z)
+        if (inverse)
         {
             applyInverseTo(rubiksCubeCore);
         }

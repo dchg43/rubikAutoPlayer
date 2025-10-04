@@ -96,11 +96,11 @@ public abstract class AbstractCube3DAWT implements RubikListener
 
         private final AbstractCube3DAWT awtInstance;
 
-        public CornerAction(AbstractCube3DAWT abstractCube3DAWT, int i, int i2)
+        public CornerAction(AbstractCube3DAWT awtInstance, int corner, int orientation)
         {
-            this.awtInstance = abstractCube3DAWT;
-            this.corner = i;
-            this.orientation = i2;
+            this.awtInstance = awtInstance;
+            this.corner = corner;
+            this.orientation = orientation;
         }
 
         @Override
@@ -140,11 +140,11 @@ public abstract class AbstractCube3DAWT implements RubikListener
 
         private final AbstractCube3DAWT awtInstance;
 
-        public EdgeAction(AbstractCube3DAWT abstractCube3DAWT, int i, int i2)
+        public EdgeAction(AbstractCube3DAWT awtInstance, int edge, int orientation)
         {
-            this.awtInstance = abstractCube3DAWT;
-            this.edge = i;
-            this.orientation = i2;
+            this.awtInstance = awtInstance;
+            this.edge = edge;
+            this.orientation = orientation;
         }
 
         @Override
@@ -186,10 +186,10 @@ public abstract class AbstractCube3DAWT implements RubikListener
 
         private final AbstractCube3DAWT awtInstance;
 
-        public SideAction(AbstractCube3DAWT abstractCube3DAWT, int i)
+        public SideAction(AbstractCube3DAWT awtInstance, int side)
         {
-            this.awtInstance = abstractCube3DAWT;
-            this.side = i;
+            this.awtInstance = awtInstance;
+            this.side = side;
         }
 
         @Override
@@ -224,11 +224,11 @@ public abstract class AbstractCube3DAWT implements RubikListener
          * @param i 所在面
          * @param z 旋转方向
          */
-        public EdgeEvent(AbstractCube3DAWT abstractCube3DAWT, int i, boolean z)
+        public EdgeEvent(AbstractCube3DAWT awtInstance, int side, boolean isClockwise)
         {
-            this.awtInstance = abstractCube3DAWT;
-            this.side = i;
-            this.isClockwise = z;
+            this.awtInstance = awtInstance;
+            this.side = side;
+            this.isClockwise = isClockwise;
         }
 
         @Override
@@ -251,11 +251,11 @@ public abstract class AbstractCube3DAWT implements RubikListener
          * @param i 所在面
          * @param z 旋转方向
          */
-        public SideEvent(AbstractCube3DAWT abstractCube3DAWT, int i, boolean z)
+        public SideEvent(AbstractCube3DAWT awtInstance, int side, boolean isClockwise)
         {
-            this.awtInstance = abstractCube3DAWT;
-            this.side = i;
-            this.isClockwise = z;
+            this.awtInstance = awtInstance;
+            this.side = side;
+            this.isClockwise = isClockwise;
         }
 
         @Override
@@ -283,12 +283,12 @@ public abstract class AbstractCube3DAWT implements RubikListener
                     SIDE_EXPLODE_TRANSLATION[sideLocation][2] * this.explosion);
                 this.sideTransforms[i].setTransform(transform3D);
             }
-            for (int i2 = 0; i2 < this.edgeTransforms.length; i2++)
+            for (int i = 0; i < this.edgeTransforms.length; i++)
             {
-                int edgeLocation = this.model.getEdgeLocation(i2);
-                Transform3D transform = this.edgeTransforms[i2].getTransform();
+                int edgeLocation = this.model.getEdgeLocation(i);
+                Transform3D transform = this.edgeTransforms[i].getTransform();
                 transform.setToIdentity();
-                if (this.model.getEdgeOrientation(i2) == 1)
+                if (this.model.getEdgeOrientation(i) == 1)
                 {
                     transform.rotateZ(Math.PI);
                     transform.rotateX(Math.PI / 2);
@@ -299,12 +299,12 @@ public abstract class AbstractCube3DAWT implements RubikListener
                     EDGE_EXPLODE_TRANSLATION[edgeLocation][2] * this.explosion);
                 transform.concatenate(transform3D2);
             }
-            for (int i3 = 0; i3 < this.cornerTransforms.length; i3++)
+            for (int i = 0; i < this.cornerTransforms.length; i++)
             {
-                int cornerLocation = this.model.getCornerLocation(i3);
-                Transform3D transform2 = this.cornerTransforms[i3].getTransform();
+                int cornerLocation = this.model.getCornerLocation(i);
+                Transform3D transform2 = this.cornerTransforms[i].getTransform();
                 transform2.setToIdentity();
-                switch (this.model.getCornerOrientation(i3))
+                switch (this.model.getCornerOrientation(i))
                 {
                     case 1:
                         transform2.rotateZ(-Math.PI / 2);
@@ -334,13 +334,13 @@ public abstract class AbstractCube3DAWT implements RubikListener
         fireStateChanged();
     }
 
-    public void setModel(RubiksCubeCore rubiksCubeCore)
+    public void setModel(RubiksCubeCore model)
     {
         if (this.model != null)
         {
             this.model.removeRubikListener(this);
         }
-        this.model = rubiksCubeCore;
+        this.model = model;
         if (this.model != null)
         {
             this.model.addRubikListener(this);
@@ -353,33 +353,33 @@ public abstract class AbstractCube3DAWT implements RubikListener
         return this.model;
     }
 
-    public void setCornerVisible(int i, boolean z)
+    public void setCornerVisible(int index, boolean isVisible)
     {
-        this.cornerShapes[i].setVisible(z);
+        this.cornerShapes[index].setVisible(isVisible);
         fireStateChanged();
     }
 
-    public void setEdgeVisible(int i, boolean z)
+    public void setEdgeVisible(int index, boolean isVisible)
     {
-        this.edgeShapes[i].setVisible(z);
+        this.edgeShapes[index].setVisible(isVisible);
         fireStateChanged();
     }
 
-    public void setSideVisible(int i, boolean z)
+    public void setSideVisible(int index, boolean isVisible)
     {
-        this.sideShapes[i].setVisible(z);
+        this.sideShapes[index].setVisible(isVisible);
         fireStateChanged();
     }
 
-    public void setCenterVisible(boolean z)
+    public void setCenterVisible(boolean isVisible)
     {
-        this.centerShape.setVisible(z);
+        this.centerShape.setVisible(isVisible);
         fireStateChanged();
     }
 
-    public void setExplosion(double d)
+    public void setExplosion(double explosion)
     {
-        this.explosion = 27.0d * d;
+        this.explosion = 27.0d * explosion;
         computeTransformation();
         fireStateChanged();
     }
@@ -511,17 +511,17 @@ public abstract class AbstractCube3DAWT implements RubikListener
             this.cornerTransforms[i].addChild(this.cornerShapes[i]);
             this.sceneTransform.addChild(this.cornerTransforms[i]);
         }
-        for (int i2 = 0; i2 < 12; i2++)
+        for (int i = 0; i < 12; i++)
         {
-            this.edgeTransforms[i2] = new TransformNode();
-            this.edgeTransforms[i2].addChild(this.edgeShapes[i2]);
-            this.sceneTransform.addChild(this.edgeTransforms[i2]);
+            this.edgeTransforms[i] = new TransformNode();
+            this.edgeTransforms[i].addChild(this.edgeShapes[i]);
+            this.sceneTransform.addChild(this.edgeTransforms[i]);
         }
-        for (int i3 = 0; i3 < 6; i3++)
+        for (int i = 0; i < 6; i++)
         {
-            this.sideTransforms[i3] = new TransformNode();
-            this.sideTransforms[i3].addChild(this.sideShapes[i3]);
-            this.sceneTransform.addChild(this.sideTransforms[i3]);
+            this.sideTransforms[i] = new TransformNode();
+            this.sideTransforms[i].addChild(this.sideShapes[i]);
+            this.sceneTransform.addChild(this.sideTransforms[i]);
         }
         this.centerTransform = new TransformNode();
         this.centerTransform.addChild(this.centerShape);
@@ -684,7 +684,7 @@ public abstract class AbstractCube3DAWT implements RubikListener
         catch (InterruptedException e)
         {}
         long jCurrentTimeMillis = System.currentTimeMillis();
-        for (int i2 = 1; i2 < i; i2++)
+        for (int j = 1; j < i; j++)
         {
             synchronized (this.model)
             {
@@ -739,9 +739,9 @@ public abstract class AbstractCube3DAWT implements RubikListener
         this.listenerList.remove(ChangeListener.class, changeListener);
     }
 
-    public void setAnimated(boolean z)
+    public void setAnimated(boolean isAnimated)
     {
-        this.isAnimated = z;
+        this.isAnimated = isAnimated;
     }
 
     public boolean isAnimated()
@@ -765,9 +765,9 @@ public abstract class AbstractCube3DAWT implements RubikListener
         }
     }
 
-    public void setDispatcher(PooledSequentialDispatcherAWT pooledSequentialDispatcherAWT)
+    public void setDispatcher(PooledSequentialDispatcherAWT dispatcher)
     {
-        this.dispatcher = pooledSequentialDispatcherAWT;
+        this.dispatcher = dispatcher;
     }
 
     public PooledSequentialDispatcherAWT getDispatcher()
@@ -779,79 +779,79 @@ public abstract class AbstractCube3DAWT implements RubikListener
         return this.dispatcher;
     }
 
-    public void setMode(int i)
+    public void setMode(int mode)
     {
-        switch (i)
+        switch (mode)
         {
             case 0:
-                for (int i2 = 0; i2 < 8; i2++)
+                for (int i = 0; i < 8; i++)
                 {
-                    Shape3D shape3D = this.cornerShapes[i2];
-                    if (shape3D.isWireframe())
+                    Shape3D corner = this.cornerShapes[i];
+                    if (corner.isWireframe())
                     {
-                        shape3D.setWireframe(false);
-                        shape3D.setVisible(false);
+                        corner.setWireframe(false);
+                        corner.setVisible(false);
                     }
                 }
-                for (int i3 = 0; i3 < 12; i3++)
+                for (int i = 0; i < 12; i++)
                 {
-                    Shape3D shape3D2 = this.edgeShapes[i3];
-                    if (shape3D2.isWireframe())
+                    Shape3D edge = this.edgeShapes[i];
+                    if (edge.isWireframe())
                     {
-                        shape3D2.setWireframe(false);
-                        shape3D2.setVisible(false);
+                        edge.setWireframe(false);
+                        edge.setVisible(false);
                     }
                 }
-                for (int i4 = 0; i4 < 6; i4++)
+                for (int i = 0; i < 6; i++)
                 {
-                    Shape3D shape3D3 = this.sideShapes[i4];
-                    if (shape3D3.isWireframe())
+                    Shape3D side = this.sideShapes[i];
+                    if (side.isWireframe())
                     {
-                        shape3D3.setWireframe(false);
-                        shape3D3.setVisible(false);
+                        side.setWireframe(false);
+                        side.setVisible(false);
                     }
                 }
-                Shape3D shape3D4 = this.centerShape;
-                if (shape3D4.isWireframe())
+                Shape3D center = this.centerShape;
+                if (center.isWireframe())
                 {
-                    shape3D4.setWireframe(false);
-                    shape3D4.setVisible(false);
+                    center.setWireframe(false);
+                    center.setVisible(false);
                     break;
                 }
                 break;
             case 1:
-                for (int i5 = 0; i5 < 8; i5++)
+                for (int i = 0; i < 8; i++)
                 {
-                    Shape3D shape3D5 = this.cornerShapes[i5];
-                    if (!shape3D5.isVisible())
+                    Shape3D corner = this.cornerShapes[i];
+                    if (!corner.isVisible())
                     {
-                        shape3D5.setWireframe(true);
-                        shape3D5.setVisible(true);
+                        corner.setWireframe(true);
+                        corner.setVisible(true);
                     }
                 }
-                for (int i6 = 0; i6 < 12; i6++)
+                for (int i = 0; i < 12; i++)
                 {
-                    Shape3D shape3D6 = this.edgeShapes[i6];
-                    if (!shape3D6.isVisible())
+                    Shape3D edge = this.edgeShapes[i];
+                    if (!edge.isVisible())
                     {
-                        shape3D6.setWireframe(true);
-                        shape3D6.setVisible(true);
+                        edge.setWireframe(true);
+                        edge.setVisible(true);
                     }
                 }
-                for (int i7 = 0; i7 < 6; i7++)
+                for (int i = 0; i < 6; i++)
                 {
-                    Shape3D shape3D7 = this.sideShapes[i7];
-                    if (!shape3D7.isVisible())
+                    Shape3D side = this.sideShapes[i];
+                    if (!side.isVisible())
                     {
-                        shape3D7.setWireframe(true);
-                        shape3D7.setVisible(true);
+                        side.setWireframe(true);
+                        side.setVisible(true);
                     }
                 }
-                Shape3D shape3D8 = this.centerShape;
-                if (!shape3D8.isVisible())
+                Shape3D center1 = this.centerShape;
+                if (!center1.isVisible())
                 {
-                    shape3D8.setWireframe(true);
-                    shape3D8.setVisible(true);
+                    center1.setWireframe(true);
+                    center1.setVisible(true);
                     break;
                 }
                 break;
@@ -864,31 +864,31 @@ public abstract class AbstractCube3DAWT implements RubikListener
     public String getCubeStringForAutoSearch()
     {
         StringBuffer result = new StringBuffer();
-        for (int i5 = 0; i5 < 8; i5++)
+        for (int i = 0; i < 8; i++)
         {
-            Shape3D shape3D5 = this.cornerShapes[i5];
-            if (!shape3D5.isVisible())
+            Shape3D corner = this.cornerShapes[i];
+            if (!corner.isVisible())
             {
-                shape3D5.setWireframe(true);
-                shape3D5.setVisible(true);
+                corner.setWireframe(true);
+                corner.setVisible(true);
             }
         }
-        for (int i6 = 0; i6 < 12; i6++)
+        for (int i = 0; i < 12; i++)
         {
-            Shape3D shape3D6 = this.edgeShapes[i6];
-            if (!shape3D6.isVisible())
+            Shape3D edge = this.edgeShapes[i];
+            if (!edge.isVisible())
             {
-                shape3D6.setWireframe(true);
-                shape3D6.setVisible(true);
+                edge.setWireframe(true);
+                edge.setVisible(true);
             }
         }
-        for (int i7 = 0; i7 < 6; i7++)
+        for (int i = 0; i < 6; i++)
         {
-            Shape3D shape3D7 = this.sideShapes[i7];
-            if (!shape3D7.isVisible())
+            Shape3D side = this.sideShapes[i];
+            if (!side.isVisible())
             {
-                shape3D7.setWireframe(true);
-                shape3D7.setVisible(true);
+                side.setWireframe(true);
+                side.setVisible(true);
             }
         }
 

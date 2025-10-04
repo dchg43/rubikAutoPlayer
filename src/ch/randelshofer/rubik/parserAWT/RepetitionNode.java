@@ -30,12 +30,12 @@ public class RepetitionNode extends ScriptNode
 
         int repeatCount;
 
-        public ResolvedEnumeration(RepetitionNode repetitionNode, boolean z, int i)
+        public ResolvedEnumeration(RepetitionNode root, boolean inverse, int repeatCount)
         {
-            this.root = repetitionNode;
-            this.inverse = z;
-            this.repeatCount = i;
-            this.children = z ? this.root.enumerateChildrenReversed() : this.root.children();
+            this.root = root;
+            this.inverse = inverse;
+            this.repeatCount = repeatCount;
+            this.children = inverse ? this.root.enumerateChildrenReversed() : this.root.children();
             while (this.children.hasMoreElements())
             {
                 this.cachedChildren.addElement(this.children.nextElement());
@@ -79,14 +79,14 @@ public class RepetitionNode extends ScriptNode
     public RepetitionNode()
     {}
 
-    public RepetitionNode(int i, int i2)
+    public RepetitionNode(int startpos, int endpos)
     {
-        super(i, i2);
+        super(startpos, endpos);
     }
 
-    public void setRepeatCount(int i)
+    public void setRepeatCount(int repeatCount)
     {
-        this.repeatCount = i;
+        this.repeatCount = repeatCount;
     }
 
     public int getRepeatCount()
@@ -113,9 +113,9 @@ public class RepetitionNode extends ScriptNode
     }
 
     @Override
-    public Enumeration<DefaultMutableTreeNode> resolvedEnumeration(boolean z)
+    public Enumeration<DefaultMutableTreeNode> resolvedEnumeration(boolean inverse)
     {
-        return new ResolvedEnumeration(this, z, this.repeatCount);
+        return new ResolvedEnumeration(this, inverse, this.repeatCount);
     }
 
     @Override

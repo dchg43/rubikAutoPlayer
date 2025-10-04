@@ -19,9 +19,9 @@ public class DefaultTransform3DModel extends AbstractStateModel implements Trans
         this.transform = new Transform3D(d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12);
     }
 
-    public DefaultTransform3DModel(double[][] dArr)
+    public DefaultTransform3DModel(double[][] transform)
     {
-        this.transform = new Transform3D(dArr);
+        this.transform = new Transform3D(transform);
     }
 
     @Override
@@ -32,37 +32,37 @@ public class DefaultTransform3DModel extends AbstractStateModel implements Trans
     }
 
     @Override
-    public void rotateX(double d)
+    public void rotateX(double x)
     {
-        this.transform.rotateX(d);
+        this.transform.rotateX(x);
         fireStateChanged();
     }
 
     @Override
-    public void rotateY(double d)
+    public void rotateY(double y)
     {
-        this.transform.rotateY(d);
+        this.transform.rotateY(y);
         fireStateChanged();
     }
 
     @Override
-    public void rotateZ(double d)
+    public void rotateZ(double z)
     {
-        this.transform.rotateZ(d);
+        this.transform.rotateZ(z);
         fireStateChanged();
     }
 
     @Override
-    public void scale(double d, double d2, double d3)
+    public void scale(double x, double y, double z)
     {
-        this.transform.scale(d, d2, d3);
+        this.transform.scale(x, y, z);
         fireStateChanged();
     }
 
     @Override
-    public void translate(double d, double d2, double d3)
+    public void translate(double x, double y, double z)
     {
-        this.transform.translate(d, d2, d3);
+        this.transform.translate(x, y, z);
         fireStateChanged();
     }
 
@@ -94,9 +94,9 @@ public class DefaultTransform3DModel extends AbstractStateModel implements Trans
     }
 
     @Override
-    public void rotate(double d, double d2, double d3)
+    public void rotate(double d1, double d2, double d3)
     {
-        this.transform.rotate(d, d2, d3);
+        this.transform.rotate(d1, d2, d3);
         fireStateChanged();
     }
 }

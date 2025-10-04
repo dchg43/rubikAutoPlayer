@@ -14,12 +14,12 @@ public class RubikEvent extends EventObject
 
     private int angle;
 
-    public RubikEvent(Object obj, int i, int i2, int i3)
+    public RubikEvent(Object source, int axis, int layerMask, int angle)
     {
-        super(obj);
-        this.axis = i;
-        this.layerMask = i2;
-        this.angle = i3;
+        super(source);
+        this.axis = axis;
+        this.layerMask = layerMask;
+        this.angle = angle;
     }
 
     public int getPartType()

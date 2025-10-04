@@ -11,17 +11,17 @@ public class ToggleButton extends AbstractButton implements ChangeListener
     private static final long serialVersionUID = 6416655922539824065L;
 
     @Override
-    public boolean mouseUp(Event event, int i, int i2)
+    public boolean mouseUp(Event event, int x, int y)
     {
         if (isEnabled() && isArmed())
         {
-            boolean z = !isSelected();
-            if (z || this.group == null)
+            boolean isSelected = !isSelected();
+            if (isSelected || this.group == null)
             {
-                setSelected(z);
+                setSelected(isSelected);
             }
         }
-        super.mouseUp(event, i, i2);
+        super.mouseUp(event, x, y);
         return true;
     }
 }

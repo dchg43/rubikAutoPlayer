@@ -103,12 +103,12 @@ public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener
         return this.transformModel;
     }
 
-    public void setRotateOnMouseDrag(boolean z)
+    public void setRotateOnMouseDrag(boolean isRotateOnMouseDrag)
     {
-        if (z != this.isRotateOnMouseDrag)
+        if (isRotateOnMouseDrag != this.isRotateOnMouseDrag)
         {
-            this.isRotateOnMouseDrag = z;
-            if (z)
+            this.isRotateOnMouseDrag = isRotateOnMouseDrag;
+            if (isRotateOnMouseDrag)
             {
                 addMouseMotionListener(this);
             }
@@ -119,17 +119,17 @@ public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener
         }
     }
 
-    public void setPaintInsets(int i, int i2, int i3, int i4)
+    public void setPaintInsets(int top, int left, int bottom, int right)
     {
         if (this.paintInsets == null)
         {
-            this.paintInsets = new Insets(i, i2, i3, i4);
+            this.paintInsets = new Insets(top, left, bottom, right);
             return;
         }
-        this.paintInsets.top = i;
-        this.paintInsets.left = i2;
-        this.paintInsets.bottom = i3;
-        this.paintInsets.right = i4;
+        this.paintInsets.top = top;
+        this.paintInsets.left = left;
+        this.paintInsets.bottom = bottom;
+        this.paintInsets.right = right;
     }
 
     public void setSyncObject(Object obj)
@@ -169,9 +169,9 @@ public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener
         graphics.drawImage(this.backImg, 0, 0, this);
     }
 
-    protected void createBackGraphics(Dimension dimension)
+    protected void createBackGraphics(Dimension size)
     {
-        this.backImg = createImage(dimension.width, dimension.height);
+        this.backImg = createImage(size.width, size.height);
         this.backGfx = this.backImg.getGraphics();
     }
 
@@ -180,24 +180,24 @@ public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener
         this.transformModel.setToIdentity();
     }
 
-    public void setObserver(double f)
+    public void setObserver(double z)
     {
-        this.observer = new Point3D(0.0d, 0.0d, f);
+        this.observer = new Point3D(0.0d, 0.0d, z);
     }
 
-    public void setAmbientLightIntensity(double d)
+    public void setAmbientLightIntensity(double ambientLightIntensity)
     {
-        this.ambientLightIntensity = d;
+        this.ambientLightIntensity = ambientLightIntensity;
     }
 
-    public void setLightSourceIntensity(double d)
+    public void setLightSourceIntensity(double lightSourceIntensity)
     {
-        this.lightSourceIntensity = d;
+        this.lightSourceIntensity = lightSourceIntensity;
     }
 
-    public void setLightSource(Point3D point3D)
+    public void setLightSource(Point3D lightSource)
     {
-        this.lightSource = point3D;
+        this.lightSource = lightSource;
     }
 
     public void setBackgroundImage(Image image)
@@ -219,19 +219,19 @@ public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener
     }
 
     @Override
-    public boolean imageUpdate(Image image, int i, int i2, int i3, int i4, int i5)
+    public boolean imageUpdate(Image image, int infoflags, int x, int y, int w, int h)
     {
         this.unpaintedStates++;
-        if ((i & 64) != 0 && image == this.backgroundImage)
+        if ((infoflags & 64) != 0 && image == this.backgroundImage)
         {
             this.backgroundImage = null;
         }
-        return super.imageUpdate(image, i, i2, i3, i4, i5);
+        return super.imageUpdate(image, infoflags, x, y, w, h);
     }
 
-    public void setScaleFactor(double d)
+    public void setScaleFactor(double scaleFactor)
     {
-        this.scaleFactor = d;
+        this.scaleFactor = scaleFactor;
         stateChanged(null);
     }
 
@@ -240,9 +240,9 @@ public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener
         return this.scaleFactor;
     }
 
-    public void setScene(SceneNode sceneNode)
+    public void setScene(SceneNode scene)
     {
-        this.scene = sceneNode;
+        this.scene = scene;
         stateChanged(null);
     }
 
@@ -264,43 +264,43 @@ public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener
         }
         Transform3D transform = this.transformModel.getTransform();
         Dimension size = getSize();
-        int i = size.width / 2;
-        int i2 = size.height / 2;
-        double dMin = Math.min(i, i2) * this.scaleFactor;
-        double d = -dMin;
-        Vector<Face3D> vector = new Vector<>();
+        int width = size.width / 2;
+        int height = size.height / 2;
+        double scale = Math.min(width, height) * this.scaleFactor;
+        double scaleNeg = -scale;
+        Vector<Face3D> visibleFaces = new Vector<>();
         this.activeFaces.removeAllElements();
-        this.scene.addVisibleFaces(vector, transform, this.observer);
-        Face3D[] face3DArr = new Face3D[vector.size()];
-        vector.copyInto(face3DArr);
-        Arrays.sort(face3DArr);
-        int[] iArr = new int[5];
-        int[] iArr2 = new int[5];
-        double d2 = this.observer.x;
-        double d3 = this.observer.y;
-        double d4 = this.observer.z;
-        for (Face3D face3D : face3DArr)
+        this.scene.addVisibleFaces(visibleFaces, transform, this.observer);
+        Face3D[] visibleFacesArr = new Face3D[visibleFaces.size()];
+        visibleFaces.copyInto(visibleFacesArr);
+        Arrays.sort(visibleFacesArr);
+        int[] xpoints = new int[5];
+        int[] ypoints = new int[5];
+        double x = this.observer.x;
+        double y = this.observer.y;
+        double z = this.observer.z;
+        for (Face3D face3D : visibleFacesArr)
         {
             double[] coords = face3D.getCoords();
             int[] vertices = face3D.getVertices();
-            if (iArr.length < vertices.length + 1)
+            if (xpoints.length < vertices.length + 1)
             {
-                iArr = new int[vertices.length + 1];
-                iArr2 = new int[vertices.length + 1];
+                xpoints = new int[vertices.length + 1];
+                ypoints = new int[vertices.length + 1];
             }
-            for (int i3 = 0; i3 < vertices.length; i3++)
+            for (int i = 0; i < vertices.length; i++)
             {
-                int i4 = vertices[i3] * 3;
-                double d5 = coords[(vertices[i3] * 3) + 2] - d4;
-                if (d5 != 0.0d)
+                double d = coords[(vertices[i] * 3) + 2] - z;
+                if (d != 0.0d)
                 {
-                    iArr[i3] = i + ((int)((d2 - (((d4 * coords[i4]) - d2) / d5)) * dMin));
-                    iArr2[i3] = i2 + ((int)((d3 - (((d4 * coords[i4 + 1]) - d3) / d5)) * d));
+                    int j = vertices[i] * 3;
+                    xpoints[i] = width + ((int)((x - (((z * coords[j]) - x) / d)) * scale));
+                    ypoints[i] = height + ((int)((y - (((z * coords[j + 1]) - y) / d)) * scaleNeg));
                 }
                 else
                 {
-                    iArr[i3] = i + ((int)(d2 * dMin));
-                    iArr2[i3] = i2 + ((int)(d3 * d));
+                    xpoints[i] = width + ((int)(x * scale));
+                    ypoints[i] = height + ((int)(y * scaleNeg));
                 }
             }
             Color color = face3D.getFillColor();
@@ -311,19 +311,19 @@ public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener
                 graphics.setColor(new Color(Math.min(255, (int)(color.getRed() * brightness)),
                     Math.min(255, (int)(color.getGreen() * brightness)),
                     Math.min(255, (int)(color.getBlue() * brightness))));
-                graphics.fillPolygon(iArr, iArr2, vertices.length);
+                graphics.fillPolygon(xpoints, ypoints, vertices.length);
             }
             Color borderColor = face3D.getBorderColor();
             if (borderColor != null)
             {
                 graphics.setColor(borderColor);
-                iArr[vertices.length] = iArr[0];
-                iArr2[vertices.length] = iArr2[0];
-                graphics.drawPolygon(iArr, iArr2, vertices.length + 1);
+                xpoints[vertices.length] = xpoints[0];
+                ypoints[vertices.length] = ypoints[0];
+                graphics.drawPolygon(xpoints, ypoints, vertices.length + 1);
             }
             if (face3D.getAction() != null)
             {
-                this.activeFaces.addElement(new Polygon(iArr, iArr2, vertices.length));
+                this.activeFaces.addElement(new Polygon(xpoints, ypoints, vertices.length));
                 this.activeFaces.addElement(face3D);
             }
         }
@@ -421,9 +421,9 @@ public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener
     }
 
     @Override
-    public void setPreferredSize(Dimension dimension)
+    public void setPreferredSize(Dimension preferredSize)
     {
-        this.preferredSize = dimension;
+        this.preferredSize = preferredSize;
     }
 
     @Override
@@ -457,13 +457,13 @@ public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener
     }
 
     @Override
-    protected void firePropertyChange(String str, Object obj, Object obj2)
+    protected void firePropertyChange(String propertyName, Object oldValue, Object newValue)
     {
         PropertyChangeSupport propertyChangeSupport = this.changeSupport;
         if (propertyChangeSupport == null)
         {
             return;
         }
-        propertyChangeSupport.firePropertyChange(str, obj, obj2);
+        propertyChangeSupport.firePropertyChange(propertyName, oldValue, newValue);
     }
 }

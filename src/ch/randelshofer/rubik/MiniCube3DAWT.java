@@ -423,9 +423,6 @@ public class MiniCube3DAWT extends AbstractCube3DAWT
             {
                 colorArr[i][j] = colorArr2;
             }
-        }
-        for (int i = 0; i < 8; i++)
-        {
             this.cornerShapes[i] = new Shape3D(fArr, iArr, colorArr[i]);
         }
     }
@@ -472,9 +469,6 @@ public class MiniCube3DAWT extends AbstractCube3DAWT
             {
                 colorArr[i][j] = colorArr2;
             }
-        }
-        for (int i = 0; i < 12; i++)
-        {
             this.edgeShapes[i] = new Shape3D(fArr, iArr, colorArr[i]);
         }
     }
@@ -502,9 +496,6 @@ public class MiniCube3DAWT extends AbstractCube3DAWT
             {
                 colorArr[i][j] = colorArr2;
             }
-        }
-        for (int i = 0; i < 6; i++)
-        {
             this.sideShapes[i] = new Shape3D(fArr, iArr, colorArr[i]);
         }
     }

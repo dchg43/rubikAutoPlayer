@@ -8,25 +8,25 @@ public interface BoundedRangeModel
 {
     int getMinimum();
 
-    void setMinimum(int i);
+    void setMinimum(int min);
 
     int getMaximum();
 
-    void setMaximum(int i);
+    void setMaximum(int max);
 
     int getValue();
 
-    void setValue(int i);
+    void setValue(int value);
 
-    void setValueIsAdjusting(boolean z);
+    void setValueIsAdjusting(boolean isAdjusting);
 
     boolean getValueIsAdjusting();
 
     int getExtent();
 
-    void setExtent(int i);
+    void setExtent(int extent);
 
-    void setRangeProperties(int i, int i2, int i3, int i4, boolean z);
+    void setRangeProperties(int value, int extent, int min, int max, boolean isAdjusting);
 
     void addChangeListener(ChangeListener changeListener);
 

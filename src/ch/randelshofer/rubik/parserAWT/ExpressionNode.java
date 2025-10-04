@@ -7,9 +7,9 @@ public class ExpressionNode extends ScriptNode
     public ExpressionNode()
     {}
 
-    public ExpressionNode(int i, int i2)
+    public ExpressionNode(int startpos, int endpos)
     {
-        super(i, i2);
+        super(startpos, endpos);
     }
 
     @Override

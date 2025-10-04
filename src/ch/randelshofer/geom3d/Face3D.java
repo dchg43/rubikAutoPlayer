@@ -23,11 +23,11 @@ public class Face3D implements Comparable
 
     private Point3D normal;
 
-    public Face3D(double[] fArr, int[] iArr, Color[] colorArr)
+    public Face3D(double[] coords, int[] vertices, Color[] colors)
     {
-        this.coords = fArr;
-        this.vertices = iArr;
-        this.colors = colorArr;
+        this.coords = coords;
+        this.vertices = vertices;
+        this.colors = colors;
         updateValues();
     }
 
@@ -39,15 +39,15 @@ public class Face3D implements Comparable
             this.zAvg += this.coords[(vertex * 3) + 2];
         }
         this.zAvg /= this.vertices.length;
-        int i2 = this.vertices[0] * 3;
-        int i3 = this.vertices[1] * 3;
-        int i4 = this.vertices[2] * 3;
-        double d1 = this.coords[i3] - this.coords[i2];
-        double d2 = this.coords[i3 + 1] - this.coords[i2 + 1];
-        double d3 = this.coords[i3 + 2] - this.coords[i2 + 2];
-        double d4 = this.coords[i4] - this.coords[i2];
-        double d5 = this.coords[i4 + 1] - this.coords[i2 + 1];
-        double d6 = this.coords[i4 + 2] - this.coords[i2 + 2];
+        int i0 = this.vertices[0] * 3;
+        int i1 = this.vertices[1] * 3;
+        int i2 = this.vertices[2] * 3;
+        double d1 = this.coords[i1] - this.coords[i0];
+        double d2 = this.coords[i1 + 1] - this.coords[i0 + 1];
+        double d3 = this.coords[i1 + 2] - this.coords[i0 + 2];
+        double d4 = this.coords[i2] - this.coords[i0];
+        double d5 = this.coords[i2 + 1] - this.coords[i0 + 1];
+        double d6 = this.coords[i2 + 2] - this.coords[i0 + 2];
         this.normal = new Point3D((d2 * d6) - (d3 * d5), (d3 * d4) - (d1 * d6), (d1 * d5) - (d2 * d4));
     }
 
@@ -98,23 +98,23 @@ public class Face3D implements Comparable
         return this.coords;
     }
 
-    public void setCoords(double[] fArr)
+    public void setCoords(double[] coords)
     {
-        this.coords = fArr;
+        this.coords = coords;
         updateValues();
     }
 
-    public double getBrightness(Point3D point3D, double d, double d2)
+    public double getBrightness(Point3D point3D, double sourceIntensity, double ambientIntensity)
     {
         getNormal();
-        double d3 = point3D.x - this.normal.x;
-        double d4 = point3D.y - this.normal.y;
-        double d5 = point3D.z - this.normal.z;
-        double dSqrt = (((this.normal.x * d3) + (this.normal.y * d4)) + (this.normal.z * d5))
+        double x = point3D.x - this.normal.x;
+        double y = point3D.y - this.normal.y;
+        double z = point3D.z - this.normal.z;
+        double dSqrt = (((this.normal.x * x) + (this.normal.y * y)) + (this.normal.z * z))
                        / Math.sqrt((((this.normal.x * this.normal.x) + (this.normal.y * this.normal.y))
                                     + (this.normal.z * this.normal.z))
-                                   * (((d3 * d3) + (d4 * d4)) + (d5 * d5)));
-        return dSqrt < 0.0d ? d2 - (dSqrt * d) : d2;
+                                   * (((x * x) + (y * y)) + (z * z)));
+        return dSqrt < 0.0d ? ambientIntensity - (dSqrt * sourceIntensity) : ambientIntensity;
     }
 
     @Override

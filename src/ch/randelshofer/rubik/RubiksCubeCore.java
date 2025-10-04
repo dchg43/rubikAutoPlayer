@@ -87,15 +87,15 @@ public class RubiksCubeCore implements Cloneable
             this.cornerLoc[i] = i;
             this.cornerOrient[i] = 0;
         }
-        for (int i2 = 0; i2 < 12; i2++)
+        for (int i = 0; i < 12; i++)
         {
-            this.edgeLoc[i2] = i2;
-            this.edgeOrient[i2] = 0;
+            this.edgeLoc[i] = i;
+            this.edgeOrient[i] = 0;
         }
-        for (int i3 = 0; i3 < 6; i3++)
+        for (int i = 0; i < 6; i++)
         {
-            this.sideLoc[i3] = i3;
-            this.sideOrient[i3] = 0;
+            this.sideLoc[i] = i;
+            this.sideOrient[i] = 0;
         }
         fireRubikChanged(new RubikEvent(this, 0, 0, 0));
     }
@@ -129,30 +129,30 @@ public class RubiksCubeCore implements Cloneable
     /**
      * 旋转面
      *
-     * @param i 面序号
-     * @param z true逆时针 false顺时针
+     * @param face 面序号
+     * @param clockwise true逆时针 false顺时针
      */
-    public void twistSide(int i, boolean z)
+    public void twistSide(int face, boolean clockwise)
     {
-        switch (i)
+        switch (face)
         {
             case ScriptParser.R: /* 0 */
-                transform(2, 4, z ? -1 : 1);
+                transform(2, 4, clockwise ? -1 : 1);
                 break;
             case ScriptParser.U: /* 1 */
-                transform(0, 4, z ? -1 : 1);
+                transform(0, 4, clockwise ? -1 : 1);
                 break;
             case ScriptParser.F: /* 2 */
-                transform(1, 1, z ? 1 : -1);
+                transform(1, 1, clockwise ? 1 : -1);
                 break;
             case ScriptParser.L: /* 3 */
-                transform(2, 1, z ? 1 : -1);
+                transform(2, 1, clockwise ? 1 : -1);
                 break;
             case ScriptParser.D: /* 4 */
-                transform(0, 1, z ? 1 : -1);
+                transform(0, 1, clockwise ? 1 : -1);
                 break;
             case ScriptParser.B: /* 5 */
-                transform(1, 4, z ? -1 : 1);
+                transform(1, 4, clockwise ? -1 : 1);
                 break;
         }
     }
@@ -160,62 +160,62 @@ public class RubiksCubeCore implements Cloneable
     /**
      * 旋转棱
      *
-     * @param i 面序号
-     * @param z true逆时针 false顺时针
+     * @param face 面序号
+     * @param clockwise true逆时针 false顺时针
      */
-    public void twistEdge(int i, boolean z)
+    public void twistEdge(int face, boolean clockwise)
     {
-        switch (i)
+        switch (face)
         {
             case ScriptParser.R: /* 0 */
-                transform(2, 2, z ? -1 : 1);
+                transform(2, 2, clockwise ? -1 : 1);
                 break;
             case ScriptParser.U: /* 1 */
-                transform(0, 2, z ? -1 : 1);
+                transform(0, 2, clockwise ? -1 : 1);
                 break;
             case ScriptParser.F: /* 2 */
-                transform(1, 2, z ? 1 : -1);
+                transform(1, 2, clockwise ? 1 : -1);
                 break;
             case ScriptParser.L: /* 3 */
-                transform(2, 2, z ? 1 : -1);
+                transform(2, 2, clockwise ? 1 : -1);
                 break;
             case ScriptParser.D: /* 4 */
-                transform(0, 2, z ? 1 : -1);
+                transform(0, 2, clockwise ? 1 : -1);
                 break;
             case ScriptParser.B: /* 5 */
-                transform(1, 2, z ? -1 : 1);
+                transform(1, 2, clockwise ? -1 : 1);
                 break;
         }
     }
 
     /**
-     * @param i
-     * @param i2
-     * @param i3 旋转次数，负数表示逆时针
+     * @param axis
+     * @param layerMask
+     * @param times 旋转次数，负数表示逆时针
      */
-    public void transform(int i, int i2, int i3)
+    public void transform(int axis, int layerMask, int times)
     {
 //        synchronized (this) {
-        if (i < 0 || i > 2)
+        if (axis < 0 || axis > 2)
         {
-            throw new IllegalArgumentException("axis: " + i);
+            throw new IllegalArgumentException("axis: " + axis);
         }
-        if (i2 < 0 || i2 > 7)
+        if (layerMask < 0 || layerMask > 7)
         {
-            throw new IllegalArgumentException("layerMask: " + i2);
+            throw new IllegalArgumentException("layerMask: " + layerMask);
         }
-        if (i3 < -2 || i3 > 2)
+        if (times < -2 || times > 2)
         {
-            throw new IllegalArgumentException("angle: " + i3);
+            throw new IllegalArgumentException("angle: " + times);
         }
-        if (i3 == 0)
+        if (times == 0)
         {
             return;
         }
-        int i4 = i3 == -2 ? 2 : i3;
-        if ((i2 & 0x1) != 0)
+        int i4 = times == -2 ? 2 : times;
+        if ((layerMask & 0x1) != 0)
         {
-            switch (i)
+            switch (axis)
             {
                 case 0:
                     switch (i4)
@@ -261,9 +261,9 @@ public class RubiksCubeCore implements Cloneable
                     break;
             }
         }
-        if ((i2 & 0x2) != 0)
+        if ((layerMask & 0x2) != 0)
         {
-            switch (i)
+            switch (axis)
             {
                 case 0:
                     switch (i4)
@@ -309,9 +309,9 @@ public class RubiksCubeCore implements Cloneable
                     break;
             }
         }
-        if ((i2 & 0x4) != 0)
+        if ((layerMask & 0x4) != 0)
         {
-            switch (i)
+            switch (axis)
             {
                 case 0:
                     switch (i4)
@@ -357,7 +357,7 @@ public class RubiksCubeCore implements Cloneable
                     break;
             }
         }
-        fireRubikTwisted(new RubikEvent(this, i, i2, i3));
+        fireRubikTwisted(new RubikEvent(this, axis, layerMask, times));
     }
 //    }
 
@@ -927,35 +927,35 @@ public class RubiksCubeCore implements Cloneable
         return this.cornerOrient;
     }
 
-    public void setCorners(int[] iArr, int[] iArr2)
+    public void setCorners(int[] cornerLoc, int[] cornerOrient)
     {
-        this.cornerLoc = iArr;
-        this.cornerOrient = iArr2;
+        this.cornerLoc = cornerLoc;
+        this.cornerOrient = cornerOrient;
         fireRubikChanged(new RubikEvent(this, 0, 0, 0));
     }
 
-    public int getCornerAt(int i)
+    public int getCornerAt(int index)
     {
-        return this.cornerLoc[i];
+        return this.cornerLoc[index];
     }
 
-    public int getCornerLocation(int i)
+    public int getCornerLocation(int index)
     {
-        if (this.cornerLoc[i] == i)
+        if (this.cornerLoc[index] == index)
         {
-            return i;
+            return index;
         }
         int length = this.cornerLoc.length - 1;
-        while (length >= 0 && this.cornerLoc[length] != i)
+        while (length >= 0 && this.cornerLoc[length] != index)
         {
             length--;
         }
         return length;
     }
 
-    public int getCornerOrientation(int i)
+    public int getCornerOrientation(int index)
     {
-        return this.cornerOrient[getCornerLocation(i)];
+        return this.cornerOrient[getCornerLocation(index)];
     }
 
     public int[] getEdgeLocations()
@@ -968,35 +968,35 @@ public class RubiksCubeCore implements Cloneable
         return this.edgeOrient;
     }
 
-    public void setEdges(int[] iArr, int[] iArr2)
+    public void setEdges(int[] edgeLoc, int[] edgeOrient)
     {
-        this.edgeLoc = iArr;
-        this.edgeOrient = iArr2;
+        this.edgeLoc = edgeLoc;
+        this.edgeOrient = edgeOrient;
         fireRubikChanged(new RubikEvent(this, 0, 0, 0));
     }
 
-    public int getEdgeAt(int i)
+    public int getEdgeAt(int index)
     {
-        return this.edgeLoc[i];
+        return this.edgeLoc[index];
     }
 
-    public int getEdgeLocation(int i)
+    public int getEdgeLocation(int index)
     {
-        if (this.edgeLoc[i] == i)
+        if (this.edgeLoc[index] == index)
         {
-            return i;
+            return index;
         }
         int length = this.edgeLoc.length - 1;
-        while (length >= 0 && this.edgeLoc[length] != i)
+        while (length >= 0 && this.edgeLoc[length] != index)
         {
             length--;
         }
         return length;
     }
 
-    public int getEdgeOrientation(int i)
+    public int getEdgeOrientation(int index)
     {
-        return this.edgeOrient[getEdgeLocation(i)];
+        return this.edgeOrient[getEdgeLocation(index)];
     }
 
     public int[] getSideLocations()
@@ -1009,35 +1009,35 @@ public class RubiksCubeCore implements Cloneable
         return this.sideOrient;
     }
 
-    public void setSides(int[] iArr, int[] iArr2)
+    public void setSides(int[] sideLoc, int[] sideOrient)
     {
-        this.sideLoc = iArr;
-        this.sideOrient = iArr2;
+        this.sideLoc = sideLoc;
+        this.sideOrient = sideOrient;
         fireRubikChanged(new RubikEvent(this, 0, 0, 0));
     }
 
-    public int getSideAt(int i)
+    public int getSideAt(int index)
     {
-        return this.sideLoc[i];
+        return this.sideLoc[index];
     }
 
-    public int getSideLocation(int i)
+    public int getSideLocation(int index)
     {
-        if (this.sideLoc[i] == i)
+        if (this.sideLoc[index] == index)
         {
-            return i;
+            return index;
         }
         int length = this.sideLoc.length - 1;
-        while (length >= 0 && this.sideLoc[length] != i)
+        while (length >= 0 && this.sideLoc[length] != index)
         {
             length--;
         }
         return length;
     }
 
-    public int getSideOrientation(int i)
+    public int getSideOrientation(int index)
     {
-        return this.sideOrient[getSideLocation(i)];
+        return this.sideOrient[getSideLocation(index)];
     }
 
     public int getCubeOrientation()
@@ -1107,21 +1107,22 @@ public class RubiksCubeCore implements Cloneable
         }
     }
 
-    public int getPartSide(int i, int i2)
+    public int getPartSide(int index, int orient)
     {
-        return i < 8 ? getCornerSide(i, i2) : i < 20 ? getEdgeSide(i - 8, i2) : i < 26 ? getSideLocation(i - 20) : i2;
+        return index < 8 ? getCornerSide(index,
+            orient) : index < 20 ? getEdgeSide(index - 8, orient) : index < 26 ? getSideLocation(index - 20) : orient;
     }
 
-    public int getCornerSide(int i, int i2)
+    public int getCornerSide(int index, int orient)
     {
-        int cornerLocation = getCornerLocation(i);
-        return CORNER_TRANSLATION[cornerLocation][((6 + (i2 * 2)) - (this.cornerOrient[cornerLocation] * 2)) % 6];
+        int cornerLocation = getCornerLocation(index);
+        return CORNER_TRANSLATION[cornerLocation][((6 + (orient * 2)) - (this.cornerOrient[cornerLocation] * 2)) % 6];
     }
 
-    public int getEdgeSide(int i, int i2)
+    public int getEdgeSide(int index, int orient)
     {
-        int edgeLocation = getEdgeLocation(i);
-        switch (i2)
+        int edgeLocation = getEdgeLocation(index);
+        switch (orient)
         {
             case 0:
                 return EDGE_TRANSLATION[edgeLocation][(4 - (this.edgeOrient[edgeLocation] * 2)) % 4];
@@ -1129,14 +1130,14 @@ public class RubiksCubeCore implements Cloneable
                 return EDGE_TRANSLATION[edgeLocation][(6 - (this.edgeOrient[edgeLocation] * 2)) % 4];
             default:
                 throw new IllegalArgumentException(
-                    new StringBuffer().append("invalid orientation:").append(i2).toString());
+                    new StringBuffer().append("invalid orientation:").append(orient).toString());
         }
     }
 
-    public int getEdgeLayerSide(int i, int i2)
+    public int getEdgeLayerSide(int index, int orient)
     {
-        int edgeLocation = getEdgeLocation(i);
-        return EDGE_SIDE_MAP[edgeLocation][(i2 + this.edgeOrient[edgeLocation]) % 2];
+        int edgeLocation = getEdgeLocation(index);
+        return EDGE_SIDE_MAP[edgeLocation][(orient + this.edgeOrient[edgeLocation]) % 2];
     }
 
     public void addRubikListener(RubikListener rubikListener)
@@ -1182,11 +1183,11 @@ public class RubiksCubeCore implements Cloneable
         }
     }
 
-    public void setQuiet(boolean z)
+    public void setQuiet(boolean quiet)
     {
-        if (z != this.quiet)
+        if (quiet != this.quiet)
         {
-            this.quiet = z;
+            this.quiet = quiet;
             if (this.quiet)
             {
                 return;

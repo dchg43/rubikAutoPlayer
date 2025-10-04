@@ -46,7 +46,7 @@ public class Transform3D implements Cloneable
         this.m32 = 0.0d;
     }
 
-    public Transform3D(double d1, double d2, double d3)
+    public Transform3D(double x, double y, double z)
     {
         this.m00 = 1.0d;
         this.m10 = 0.0d;
@@ -60,7 +60,7 @@ public class Transform3D implements Cloneable
         this.m12 = 0.0d;
         this.m22 = 1.0d;
         this.m32 = 0.0d;
-        rotate(d1, d2, d3);
+        rotate(x, y, z);
     }
 
     public Transform3D(double d1, double d2, double d3, double d4, double d5, double d6, double d7, double d8,
@@ -80,20 +80,20 @@ public class Transform3D implements Cloneable
         this.m32 = d12;
     }
 
-    public Transform3D(double[][] dArr)
+    public Transform3D(double[][] transform)
     {
-        this.m00 = dArr[0][0];
-        this.m10 = dArr[1][0];
-        this.m20 = dArr[2][0];
-        this.m30 = dArr[3][0];
-        this.m01 = dArr[0][1];
-        this.m11 = dArr[1][1];
-        this.m21 = dArr[2][1];
-        this.m31 = dArr[3][1];
-        this.m02 = dArr[0][2];
-        this.m12 = dArr[1][2];
-        this.m22 = dArr[2][2];
-        this.m32 = dArr[3][2];
+        this.m00 = transform[0][0];
+        this.m10 = transform[1][0];
+        this.m20 = transform[2][0];
+        this.m30 = transform[3][0];
+        this.m01 = transform[0][1];
+        this.m11 = transform[1][1];
+        this.m21 = transform[2][1];
+        this.m31 = transform[3][1];
+        this.m02 = transform[0][2];
+        this.m12 = transform[1][2];
+        this.m22 = transform[2][2];
+        this.m32 = transform[3][2];
     }
 
     public void setToIdentity()
@@ -112,42 +112,42 @@ public class Transform3D implements Cloneable
         this.m32 = 0.0d;
     }
 
-    public void rotate(double d1, double d2, double d3)
+    public void rotate(double x, double y, double z)
     {
-        rotateX(d1);
-        rotateY(d2);
-        rotateZ(d3);
+        rotateX(x);
+        rotateY(y);
+        rotateZ(z);
     }
 
-    public void rotateX(double d)
+    public void rotateX(double x)
     {
-        double dSin = Math.sin(d);
-        double dCos = Math.cos(d);
+        double dSin = Math.sin(x);
+        double dCos = Math.cos(x);
         concatenate(new Transform3D(1.0d, 0.0d, 0.0d, 0.0d, 0.0d, dCos, dSin, 0.0d, 0.0d, -dSin, dCos, 0.0d));
     }
 
-    public void rotateY(double d)
+    public void rotateY(double y)
     {
-        double dSin = Math.sin(d);
-        double dCos = Math.cos(d);
+        double dSin = Math.sin(y);
+        double dCos = Math.cos(y);
         concatenate(new Transform3D(dCos, 0.0d, -dSin, 0.0d, 0.0d, 1.0d, 0.0d, 0.0d, dSin, 0.0d, dCos, 0.0d));
     }
 
-    public void rotateZ(double d)
+    public void rotateZ(double z)
     {
-        double dSin = Math.sin(d);
-        double dCos = Math.cos(d);
+        double dSin = Math.sin(z);
+        double dCos = Math.cos(z);
         concatenate(new Transform3D(dCos, dSin, 0.0d, 0.0d, -dSin, dCos, 0.0d, 0.0d, 0.0d, 0.0d, 1.0d, 0.0d));
     }
 
-    public void scale(double d1, double d2, double d3)
+    public void scale(double x, double y, double z)
     {
-        concatenate(new Transform3D(d1, 0.0d, 0.0d, 0.0d, 0.0d, d2, 0.0d, 0.0d, 0.0d, 0.0d, d3, 0.0d));
+        concatenate(new Transform3D(x, 0.0d, 0.0d, 0.0d, 0.0d, y, 0.0d, 0.0d, 0.0d, 0.0d, z, 0.0d));
     }
 
-    public void translate(double d1, double d2, double d3)
+    public void translate(double x, double y, double z)
     {
-        concatenate(new Transform3D(1.0d, 0.0d, 0.0d, d1, 0.0d, 1.0d, 0.0d, d2, 0.0d, 0.0d, 1.0d, d3));
+        concatenate(new Transform3D(1.0d, 0.0d, 0.0d, x, 0.0d, 1.0d, 0.0d, y, 0.0d, 0.0d, 1.0d, z));
     }
 
     public void concatenate(Transform3D trans)
@@ -223,39 +223,39 @@ public class Transform3D implements Cloneable
 
     public Point3D transform(Point3D point3D1, Point3D point3D2)
     {
-        double d1 = (point3D1.x * this.m00) + (point3D1.y * this.m10) + (point3D1.z * this.m20) + this.m30;
-        double d2 = (point3D1.x * this.m01) + (point3D1.y * this.m11) + (point3D1.z * this.m21) + this.m31;
-        double d3 = (point3D1.x * this.m02) + (point3D1.y * this.m12) + (point3D1.z * this.m22) + this.m32;
+        double x = (point3D1.x * this.m00) + (point3D1.y * this.m10) + (point3D1.z * this.m20) + this.m30;
+        double y = (point3D1.x * this.m01) + (point3D1.y * this.m11) + (point3D1.z * this.m21) + this.m31;
+        double z = (point3D1.x * this.m02) + (point3D1.y * this.m12) + (point3D1.z * this.m22) + this.m32;
         if (point3D2 == null)
         {
-            return new Point3D(d1, d2, d3);
+            return new Point3D(x, y, z);
         }
-        point3D2.x = d1;
-        point3D2.y = d2;
-        point3D2.z = d3;
+        point3D2.x = x;
+        point3D2.y = y;
+        point3D2.z = z;
         return point3D2;
     }
 
-    public Polygon3D transform(Polygon3D polygon3D1, Polygon3D polygon3D2)
+    public Polygon3D transform(Polygon3D p1, Polygon3D p2)
     {
-        if (polygon3D2 == null)
+        if (p2 == null)
         {
-            polygon3D2 = new Polygon3D(polygon3D1.npoints);
+            p2 = new Polygon3D(p1.npoints);
         }
-        if (polygon3D2.xpoints.length < polygon3D1.npoints)
+        if (p2.xpoints.length < p1.npoints)
         {
-            polygon3D2.setCapacity(polygon3D1.npoints);
+            p2.setCapacity(p1.npoints);
         }
-        for (int i = polygon3D1.npoints - 2; i >= 0; i--)
+        for (int i = p1.npoints - 2; i >= 0; i--)
         {
-            polygon3D2.xpoints[i] = (polygon3D1.xpoints[i] * this.m00) + (polygon3D1.ypoints[i] * this.m10)
-                                    + (polygon3D1.zpoints[i] * this.m20) + this.m30;
-            polygon3D2.ypoints[i] = (polygon3D1.xpoints[i] * this.m01) + (polygon3D1.ypoints[i] * this.m11)
-                                    + (polygon3D1.zpoints[i] * this.m21) + this.m31;
-            polygon3D2.ypoints[i] = (polygon3D1.xpoints[i] * this.m02) + (polygon3D1.ypoints[i] * this.m12)
-                                    + (polygon3D1.zpoints[i] * this.m22) + this.m32;
+            p2.xpoints[i] = (p1.xpoints[i] * this.m00) + (p1.ypoints[i] * this.m10) + (p1.zpoints[i] * this.m20)
+                            + this.m30;
+            p2.ypoints[i] = (p1.xpoints[i] * this.m01) + (p1.ypoints[i] * this.m11) + (p1.zpoints[i] * this.m21)
+                            + this.m31;
+            p2.ypoints[i] = (p1.xpoints[i] * this.m02) + (p1.ypoints[i] * this.m12) + (p1.zpoints[i] * this.m22)
+                            + this.m32;
         }
-        return polygon3D2;
+        return p2;
     }
 
     public void transformTo(double[] src, int srcPos, double[] dest, int destPos, int length)

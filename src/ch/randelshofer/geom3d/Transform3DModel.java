@@ -8,17 +8,17 @@ public interface Transform3DModel
 {
     void setToIdentity();
 
-    void rotate(double d, double d2, double d3);
+    void rotate(double x, double y, double z);
 
-    void rotateX(double d);
+    void rotateX(double x);
 
-    void rotateY(double d);
+    void rotateY(double y);
 
-    void rotateZ(double d);
+    void rotateZ(double z);
 
-    void scale(double d, double d2, double d3);
+    void scale(double x, double y, double z);
 
-    void translate(double d, double d2, double d3);
+    void translate(double x, double y, double z);
 
     void concatenate(Transform3D transform3D);
 
