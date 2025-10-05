@@ -76,6 +76,7 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
 
     private AbstractCube3DAWT cube3D = new MiniCube3DAWT();
 
+    // 魔方图像
     private Canvas3DAWT canvas = Canvas3DJ2D.createCanvas3D();
 
     public ScriptPlayer()
@@ -91,7 +92,7 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
         this.progress.addChangeListener(this);
         this.controlPanel = new Panel();
         this.controlPanel.setLayout(new BorderLayout());
-        this.controls = new MovieControlAWT();
+        this.controls = new MovieControlAWT(); // 滚动条
         this.controls.setVisible(false);
         this.controls.setPlayer(this);
         this.controlPanel.add("Center", this.controls);

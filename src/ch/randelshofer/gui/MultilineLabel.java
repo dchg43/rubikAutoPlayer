@@ -74,7 +74,8 @@ public class MultilineLabel extends Canvas
     public void setText(String text)
     {
         this.text = text;
-        invalidate();
+        repaint();
+        revalidate();
     }
 
     private void wrapText()

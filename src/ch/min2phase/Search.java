@@ -36,6 +36,8 @@ public class Search
 
     protected static boolean inited = false;
 
+    private boolean initSearch = false;
+
     private int[] move = new int[31];
 
     private CoordCube[] nodeUD = new CoordCube[21];
@@ -192,11 +194,15 @@ public class Search
      * @param verbose
      *            determins the format of the solution(s). see USE_SEPARATOR, INVERSE_SOLUTION, APPEND_LENGTH,
      *            OPTIMAL_SOLUTION
-     * @return The solution string or an error code:<br> Error 1: There is not exactly one facelet of each colour<br>
-     *         Error 2: Not all 12 edges exist exactly once<br> Error 3: Flip error: One edge has to be flipped<br>
-     *         Error 4: Not all corners exist exactly once<br> Error 5: Twist error: One corner has to be twisted<br>
-     *         Error 6: Parity error: Two corners or two edges have to be exchanged<br> Error 7: No solution exists for
-     *         the given maxDepth<br> Error 8: Probe limit exceeded, no solution within given probMax
+     * @return The solution string or an error code:<br>
+     *         Error 1: There is not exactly one facelet of each colour<br>
+     *         Error 2: Not all 12 edges exist exactly once<br>
+     *         Error 3: Flip error: One edge has to be flipped<br>
+     *         Error 4: Not all corners exist exactly once<br>
+     *         Error 5: Twist error: One corner has to be twisted<br>
+     *         Error 6: Parity error: Two corners or two edges have to be exchanged<br>
+     *         Error 7: No solution exists for the given maxDepth<br>
+     *         Error 8: Probe limit exceeded, no solution within given probMax
      */
     public synchronized String solution(String facelets, int maxDepth, long probeMax, long probeMin, int verbose)
     {
@@ -213,8 +219,11 @@ public class Search
         this.solution = null;
         this.isRec = false;
 
-        CoordCube.init(false);
-        initSearch();
+        if (!initSearch)
+        {
+            CoordCube.init(false);
+            initSearch();
+        }
 
         return (verbose & OPTIMAL_SOLUTION) == 0 ? search() : searchopt();
     }

@@ -200,7 +200,7 @@ public class AutoPlayer extends Panel implements Runnable
         this.controlsPanel.setLayout(new BorderLayout());
         this.controlsPanel.add("North", this.player.getControlPanelComponent()); // 进度条和控制按钮
         this.controlsPanel.add("South", this.scriptTextArea); // 执行文本显示
-        this.scriptTextArea.setFont(new Font("Dialog", 0, 12));
+        this.scriptTextArea.setFont(new Font("Dialog", Font.BOLD, 16));
         this.scriptTextArea.addMouseListener(new MouseAdapter()
         {
             @Override
@@ -897,8 +897,8 @@ public class AutoPlayer extends Panel implements Runnable
                 if (AutoPlayer.this.scriptTextArea.getText().length() > 0)
                 {
                     // 重置步骤为空
-                    AutoPlayer.this.player.setScript(null);
                     AutoPlayer.this.scriptTextArea.setText("");
+                    AutoPlayer.this.player.setScript(null);
                     AutoPlayer.this.player.stop();
                 }
 
@@ -986,12 +986,23 @@ public class AutoPlayer extends Panel implements Runnable
                 String result = searchSolution();
                 if (result.contains("Error"))
                 {
-                    JOptionPane.showMessageDialog(AutoPlayer.this, "校验不通过：" + getErrMessage(result), "失败",
-                        JOptionPane.ERROR_MESSAGE);
+                    String message = "校验不通过：" + getErrMessage(result);
+                    AutoPlayer.this.scriptTextArea.setText(message);
+                    JOptionPane.showMessageDialog(AutoPlayer.this, message, "失败", JOptionPane.ERROR_MESSAGE);
+                    if (AutoPlayer.this.player.getScript() != null)
+                    {
+                        AutoPlayer.this.player.setScript(null);
+                    }
                 }
                 else
                 {
-                    JOptionPane.showMessageDialog(AutoPlayer.this, "校验通过", "成功", JOptionPane.INFORMATION_MESSAGE);
+                    String message = "校验通过。";
+                    AutoPlayer.this.scriptTextArea.setText(message);
+                    JOptionPane.showMessageDialog(AutoPlayer.this, message, "成功", JOptionPane.INFORMATION_MESSAGE);
+                    if (AutoPlayer.this.player.getScript() != null)
+                    {
+                        AutoPlayer.this.player.setScript(null);
+                    }
                 }
             }
         });
@@ -1020,8 +1031,13 @@ public class AutoPlayer extends Panel implements Runnable
                 String result = searchSolution();
                 if (result.contains("Error"))
                 {
-                    JOptionPane.showMessageDialog(AutoPlayer.this, "校验不通过：" + getErrMessage(result), "失败",
-                        JOptionPane.ERROR_MESSAGE);
+                    String message = "校验不通过：" + getErrMessage(result);
+                    AutoPlayer.this.scriptTextArea.setText(message);
+                    JOptionPane.showMessageDialog(AutoPlayer.this, message, "失败", JOptionPane.ERROR_MESSAGE);
+                    if (AutoPlayer.this.player.getScript() != null)
+                    {
+                        AutoPlayer.this.player.setScript(null);
+                    }
                 }
                 else
                 {
@@ -1116,20 +1132,23 @@ public class AutoPlayer extends Panel implements Runnable
         }
 
         int mask = 0;
-        int depth = 18; // 15 ~ 18
-        int maxDepth = 22;
-        int maxTries = 200; // 200 ~ 1000
-        String result = "Error";
-        while (result.contains("Error") && depth < maxDepth)
+        int depth = 18; // 建议 Step: 15 ~ 18
+        int maxDepth = 25;
+        int maxTries = 200; // 建议 200 ~ 1000
+        String result = "Error 8";
+        char errkey = '8';
+        while ((errkey == '8' && depth <= maxDepth) || errkey == '7')
         {
             result = this.search.solution(cubeString, depth, 100, 0, mask);
+            errkey = result.length() > 0 ? result.charAt(result.length() - 1) : '0';
             int tries = maxTries;
-            while (result.startsWith("Error 8") && tries > 0)
+            while (errkey == '8' && tries > 0)
             {
                 result = this.search.next(100, 0, mask);
+                errkey = result.charAt(result.length() - 1);
                 tries--;
             }
-            System.out.println("maxDepth:" + depth + ", result: " + result);
+            System.out.println("depth:" + depth + ", result: " + result);
             depth++;
         }
         return result;
