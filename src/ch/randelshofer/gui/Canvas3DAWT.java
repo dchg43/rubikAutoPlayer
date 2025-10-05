@@ -27,6 +27,7 @@ import ch.randelshofer.gui.event.ChangeListener;
 import ch.randelshofer.util.Arrays;
 
 
+/** 控制魔方3D展示 */
 public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener, MouseMotionListener
 {
     private static final long serialVersionUID = -8917036824539916552L;
@@ -414,8 +415,13 @@ public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener
     public void stateChanged(ChangeEvent changeEvent)
     {
         this.unpaintedStates++;
-        if (this.unpaintedStates == 1 || this.unpaintedStates > 10)
+        if (this.unpaintedStates == 1)
         {
+            repaint();
+        }
+        else if (this.unpaintedStates > 10)
+        {
+            this.unpaintedStates = 1;
             repaint();
         }
     }

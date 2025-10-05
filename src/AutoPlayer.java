@@ -106,6 +106,8 @@ public class AutoPlayer extends Panel implements Runnable
 
     private boolean autoPlay = false;
 
+    private int selectColor = -1;
+
     private Search search = new Search();
 
     public AutoPlayer()
@@ -218,6 +220,7 @@ public class AutoPlayer extends Panel implements Runnable
                 @Override
                 public void stateChanged(ChangeEvent changeEvent)
                 {
+                    // 刷新步骤序列
                     AutoPlayer.this.selectCurrentSymbol();
                 }
             };
@@ -250,6 +253,7 @@ public class AutoPlayer extends Panel implements Runnable
         initialized = true;
     }
 
+    /** 更新选择的步骤状态 */
     protected void selectCurrentSymbol()
     {
         int startPosition;
@@ -755,12 +759,56 @@ public class AutoPlayer extends Panel implements Runnable
                 "Set this value to true, to start playing the script automatically. Default: false"}};
     }
 
+    private static String getErrMessage(String result)
+    {
+        switch (result.charAt(result.length() - 1))
+        {
+            case '1':
+                // "There are not exactly nine facelets of each color!"
+                result = "需要每种颜色都有9个块。";
+                break;
+            case '2':
+                // "Not all 12 edges exist exactly once!"
+                result = "12种棱块需要各存在一个。";
+                break;
+            case '3':
+                // "Flip error: One edge has to be flipped!"
+                result = "至少有一个棱块方向是反的。";
+                break;
+            case '4':
+                // "Not all 8 corners exist exactly once!"
+                result = "8种角块需要各存在一个。";
+                break;
+            case '5':
+                // "Twist error: One corner has to be twisted!"
+                result = "至少有一个角块需要扭一下。";
+                break;
+            case '6':
+                // "Parity error: Two corners or two edges have to be exchanged!"
+                result = "需要交换两个角块或两个棱块的位置。";
+                break;
+            case '7':
+                // "No solution exists for the given maximum move number!"
+                result = "没有低于25次移动的方案。";
+                break;
+            case '8':
+                // "Timeout, no solution found within given maximum time!"
+                result = "计算超时。";
+                break;
+            case '9':
+                result = "6个面的中心块需要各有一个颜色且不相同。";
+                break;
+        }
+        return result;
+    }
+
     private void initGUI()
     {
         JFrame frame = new JFrame("RubikPlayer"); // 初始化画布
         frame.setTitle("三阶魔方求解器");
         frame.setSize(600, 600); // 设置画布大小
         frame.setPreferredSize(new java.awt.Dimension(600, 600));
+        frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.addWindowListener(new WindowAdapter() // 添加退出事件
         {
@@ -793,23 +841,16 @@ public class AutoPlayer extends Panel implements Runnable
                 @Override
                 public void actionPerformed(ActionEvent evt)
                 {
-//                    if (!player.getCube3D().isEditMode())
-//                    {
-//                        JOptionPane.showMessageDialog(null, "非编辑状态", "错误", JOptionPane.ERROR_MESSAGE);
-//                        return;
-//                    }
-                    for (int j = 0; j < 6; j++)
+                    if (AutoPlayer.this.selectColor != value)
                     {
-                        if (j == value)
+                        if (AutoPlayer.this.selectColor != -1)
                         {
-                            colorSel[j].setBorder(selectBorder);
+                            colorSel[AutoPlayer.this.selectColor].setBorder(defaultBorder);
                         }
-                        else
-                        {
-                            colorSel[j].setBorder(defaultBorder);
-                        }
+                        colorSel[value].setBorder(selectBorder);
+                        AutoPlayer.this.selectColor = value;
+                        AutoPlayer.this.player.getCube3D().setSelectColor(AutoPlayer.this.colors[value]);
                     }
-                    player.getCube3D().setSelectColor(colors[value]);
                 }
             });
         }
@@ -824,46 +865,57 @@ public class AutoPlayer extends Panel implements Runnable
             @Override
             public void actionPerformed(ActionEvent evt)
             {
-                if (player.isActive())
+                if (AutoPlayer.this.player.isActive())
                 {
-                    // 移到最后，player会自动停止
-                    player.getBoundedRangeModel().setValue(player.getBoundedRangeModel().getMaximum());
+//                    AutoPlayer.this.player.stop();
+                    return;
                 }
 
-                // 判断魔方是否有旋转，因为编辑功能是基于魔方未旋转状态，如果有旋转，设置方块颜色时错位
-                if (!player.getCube3D().getModel().isSolved())
+                // 判断魔方是否有旋转，因为编辑功能是基于魔方未旋转状态，如果有旋转，设置方块颜色时会错位
+                if (!AutoPlayer.this.player.getCube3D().getModel().isSolved())
                 {
                     Color[] colorArr = new Color[7];
                     HashSet<Color> colorSet = new HashSet<>();
                     for (int i = 0; i < 6; i++)
                     {
                         // 以中心块的颜色为基准
-                        colorArr[i] = player.getCube3D().getStickerColor(i, 4);
+                        colorArr[i] = AutoPlayer.this.player.getCube3D().getStickerColor(i, 4);
                         colorSet.add(colorArr[i]);
                     }
+
+                    // 只有6个面都有颜色时才执行重置
                     if (colorSet.size() == 6)
                     {
-                        colorArr[6] = colors[6];
+                        colorArr[6] = AutoPlayer.this.colors[6];
                         // 重置魔方状态，保留块的颜色和顺序
                         String cube = getCubeString();
-                        player.getCube3D().getModel().reset();
-                        setCubeString(cube, colorArr);
+                        AutoPlayer.this.player.getCube3D().getModel().reset();
+                        setCubeByString(cube, colorArr);
                     }
                 }
 
-                if (player.getCube3D().isEditMode())
+                if (AutoPlayer.this.scriptTextArea.getText().length() > 0)
+                {
+                    // 重置步骤为空
+                    AutoPlayer.this.player.setScript(null);
+                    AutoPlayer.this.scriptTextArea.setText("");
+                    AutoPlayer.this.player.stop();
+                }
+
+                if (AutoPlayer.this.player.getCube3D().isEditMode())
                 {
                     ((JButton)evt.getSource()).setBackground(new ColorUIResource(238, 238, 238));
-                    player.getCube3D().setEditMode(false);
+                    AutoPlayer.this.player.getCube3D().setEditMode(false);
                 }
                 else
                 {
                     ((JButton)evt.getSource()).setBackground(new Color(184, 207, 229));
-                    player.getCube3D().setEditMode(true);
-                    if (player.getCube3D().getSelectColor() == null)
+                    AutoPlayer.this.player.getCube3D().setEditMode(true);
+                    if (AutoPlayer.this.selectColor == -1)
                     {
-                        player.getCube3D().setSelectColor(colors[0]);
-                        colorSel[0].setBorder(selectBorder);
+                        AutoPlayer.this.selectColor = 0;
+                        player.getCube3D().setSelectColor(AutoPlayer.this.colors[AutoPlayer.this.selectColor]);
+                        colorSel[AutoPlayer.this.selectColor].setBorder(selectBorder);
                     }
                 }
             }
@@ -879,13 +931,17 @@ public class AutoPlayer extends Panel implements Runnable
             @Override
             public void actionPerformed(ActionEvent evt)
             {
-                player.getCube3D().getModel().reset();
+                if (AutoPlayer.this.player.isActive())
+                {
+                    return;
+                }
+                AutoPlayer.this.player.getCube3D().getModel().reset();
 
                 for (int i = 0; i < 6; i++)
                 {
                     for (int j = 0; j < 9; j++)
                     {
-                        player.getCube3D().setStickerColor(i, j, colors[6]);
+                        AutoPlayer.this.player.getCube3D().setStickerColor(i, j, AutoPlayer.this.colors[6]);
                     }
                 }
             }
@@ -901,10 +957,14 @@ public class AutoPlayer extends Panel implements Runnable
             @Override
             public void actionPerformed(ActionEvent evt)
             {
-                AbstractCube3DAWT cube = player.getCube3D();
-                cube.getModel().reset();
+                if (AutoPlayer.this.player.isActive())
+                {
+                    return;
+                }
+                AutoPlayer.this.player.getCube3D().getModel().reset();
+
                 // Random stick by Call Random function
-                setCubeString(Tools.randomCube(), colors);
+                setCubeByString(Tools.randomCube(), AutoPlayer.this.colors);
             }
         });
 
@@ -918,52 +978,20 @@ public class AutoPlayer extends Panel implements Runnable
             @Override
             public void actionPerformed(ActionEvent evt)
             {
+                if (AutoPlayer.this.player.isActive())
+                {
+                    return;
+                }
+
                 String result = searchSolution();
                 if (result.contains("Error"))
                 {
-                    switch (result.charAt(result.length() - 1))
-                    {
-                        case '1':
-                            // "There are not exactly nine facelets of each color!"
-                            result = "需要每种颜色都有9个块。";
-                            break;
-                        case '2':
-                            // "Not all 12 edges exist exactly once!"
-                            result = "12种棱块需要各存在一个。";
-                            break;
-                        case '3':
-                            // "Flip error: One edge has to be flipped!"
-                            result = "至少有一个棱块方向是反的。";
-                            break;
-                        case '4':
-                            // "Not all 8 corners exist exactly once!"
-                            result = "8种角块需要各存在一个。";
-                            break;
-                        case '5':
-                            // "Twist error: One corner has to be twisted!"
-                            result = "至少有一个角块需要扭一下。";
-                            break;
-                        case '6':
-                            // "Parity error: Two corners or two edges have to be exchanged!"
-                            result = "需要交换两个角块或两个棱块的位置。";
-                            break;
-                        case '7':
-                            // "No solution exists for the given maximum move number!"
-                            result = "没有低于25次移动的方案。";
-                            break;
-                        case '8':
-                            // "Timeout, no solution found within given maximum time!"
-                            result = "计算超时。";
-                            break;
-                        case '9':
-                            result = "6个面的中心块需要各有一个颜色且不相同。";
-                            break;
-                    }
-                    JOptionPane.showMessageDialog(null, "校验不通过：" + result, "失败", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(AutoPlayer.this, "校验不通过：" + getErrMessage(result), "失败",
+                        JOptionPane.ERROR_MESSAGE);
                 }
                 else
                 {
-                    JOptionPane.showMessageDialog(null, "校验通过", "成功", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(AutoPlayer.this, "校验通过", "成功", JOptionPane.INFORMATION_MESSAGE);
                 }
             }
         });
@@ -978,55 +1006,29 @@ public class AutoPlayer extends Panel implements Runnable
             @Override
             public void actionPerformed(ActionEvent evt)
             {
+                if (AutoPlayer.this.player.isActive())
+                {
+                    // 正在执行中
+                    return;
+                }
+                if (!AutoPlayer.this.player.getCube3D().getModel().isSolved())
+                {
+                    // 有旋转，重置为旋转前状态
+                    AutoPlayer.this.player.getCube3D().getModel().reset();
+                }
+
                 String result = searchSolution();
                 if (result.contains("Error"))
                 {
-                    switch (result.charAt(result.length() - 1))
-                    {
-                        case '1':
-                            // "There are not exactly nine facelets of each color!"
-                            result = "需要每种颜色都有9个块。";
-                            break;
-                        case '2':
-                            // "Not all 12 edges exist exactly once!"
-                            result = "12种棱块需要各存在一个。";
-                            break;
-                        case '3':
-                            // "Flip error: One edge has to be flipped!"
-                            result = "至少有一个棱块方向是反的。";
-                            break;
-                        case '4':
-                            // "Not all 8 corners exist exactly once!"
-                            result = "8种角块需要各存在一个。";
-                            break;
-                        case '5':
-                            // "Twist error: One corner has to be twisted!"
-                            result = "至少有一个角块需要扭一下。";
-                            break;
-                        case '6':
-                            // "Parity error: Two corners or two edges have to be exchanged!"
-                            result = "需要交换两个角块或两个棱块的位置。";
-                            break;
-                        case '7':
-                            // "No solution exists for the given maximum move number!"
-                            result = "没有低于25次移动的方案。";
-                            break;
-                        case '8':
-                            // "Timeout, no solution found within given maximum time!"
-                            result = "计算超时。";
-                            break;
-                        case '9':
-                            result = "6个面的中心块不能有相同颜色。";
-                            break;
-                    }
-                    JOptionPane.showMessageDialog(null, "校验不通过：" + result, "失败", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(AutoPlayer.this, "校验不通过：" + getErrMessage(result), "失败",
+                        JOptionPane.ERROR_MESSAGE);
                 }
                 else
                 {
-                    if (player.getCube3D().isEditMode())
+                    if (AutoPlayer.this.player.getCube3D().isEditMode())
                     {
                         buttonEdit.setBackground(new ColorUIResource(238, 238, 238));
-                        player.getCube3D().setEditMode(false);
+                        AutoPlayer.this.player.getCube3D().setEditMode(false);
                     }
 
                     // 自动计算复位方法
@@ -1167,11 +1169,11 @@ public class AutoPlayer extends Panel implements Runnable
             {7, 0, 0, 5, 0, 0, 1, 0, 0, 3, 0, 0}}; // 5
 
         // input产生顺序：up 0, right 9, front 18, down 27, left 36, back 45 （详见图片<求解映射表>）
-        final int[][] CORNER_INDEX = {{6, 18, 38}, {27, 44, 24}, {8, 9, 20}, {29, 26, 15}, {2, 45, 11}, {35, 17, 51},
+        final int[][] cornerFacelet = {{6, 18, 38}, {27, 44, 24}, {8, 9, 20}, {29, 26, 15}, {2, 45, 11}, {35, 17, 51},
             {0, 36, 47}, {33, 53, 42}};
-        final int[][] EDGE_INDEX = {{19, 7}, {41, 21}, {25, 28}, {5, 10}, {12, 23}, {32, 16}, {46, 1}, {14, 48},
+        final int[][] edgeFacelet = {{19, 7}, {41, 21}, {25, 28}, {5, 10}, {12, 23}, {32, 16}, {46, 1}, {14, 48},
             {52, 34}, {3, 37}, {39, 50}, {30, 43}};
-        final int[] SIDE_INDEX = {22, 13, 31, 49, 40, 4};
+        final int[] sideFacelet = {22, 13, 31, 49, 40, 4};
         RubiksCubeCore initModel = new RubiksCubeCore();
 
         // 从RubiksCubeCore中根据旋转情况计算每个块的实际位置
@@ -1185,7 +1187,7 @@ public class AutoPlayer extends Panel implements Runnable
                 int cornerSide = initModel.getCornerSide(cornerLoc[i], (cornerOrient[i] + j) % 3);
                 int mapindex = (cornerSide == 2 || cornerSide == 5) ? (cornerLoc[i] / 2) : (cornerLoc[i] % 4);
                 int cornerIndex = CORNER_MAP[cornerSide][mapindex];
-                searchInput[CORNER_INDEX[i][j]] = colorMap.get(cube.getStickerColor(cornerSide, cornerIndex));
+                searchInput[cornerFacelet[i][j]] = colorMap.get(cube.getStickerColor(cornerSide, cornerIndex));
             }
         }
 
@@ -1197,7 +1199,7 @@ public class AutoPlayer extends Panel implements Runnable
             {
                 int edgeSide = initModel.getEdgeSide(edgeLoc[i], (edgeOrient[i] + j) % 2);
                 int edgeIndex = EDGE_MAP[edgeSide][edgeLoc[i]];
-                searchInput[EDGE_INDEX[i][j]] = colorMap.get(cube.getStickerColor(edgeSide, edgeIndex));
+                searchInput[edgeFacelet[i][j]] = colorMap.get(cube.getStickerColor(edgeSide, edgeIndex));
             }
         }
 
@@ -1205,14 +1207,14 @@ public class AutoPlayer extends Panel implements Runnable
         for (int i = 0; i < sideLoc.length; i++)
         {
             int sideLocation = initModel.getSideLocation(sideLoc[i]);
-            searchInput[SIDE_INDEX[i]] = colorMap.get(cube.getStickerColor(sideLocation, 4));
+            searchInput[sideFacelet[i]] = colorMap.get(cube.getStickerColor(sideLocation, 4));
         }
 
         return new String(searchInput);
     }
 
     // cubeString形如：UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB
-    private void setCubeString(String cubeString, Color[] colorSet)
+    private void setCubeByString(String cubeString, Color[] colorSet)
     {
         AbstractCube3DAWT cube = this.player.getCube3D();
 
@@ -1450,7 +1452,7 @@ public class AutoPlayer extends Panel implements Runnable
                 }
                 value = value.replace("\\n", "\n");
                 ScriptNode scriptNode = this.scriptParser.parse(new StringReader(value));
-                this.scriptTextArea.setText(value);
+                this.scriptTextArea.setText(value + " (Step: " + (value.length() + 2) / 3 + ")");
                 this.player.setScript(scriptNode);
                 if (this.autoPlay)
                 {

@@ -4,14 +4,14 @@ package ch.min2phase;
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+//import java.io.BufferedInputStream;
+//import java.io.BufferedOutputStream;
+//import java.io.DataInputStream;
+//import java.io.DataOutputStream;
+//import java.io.FileInputStream;
+//import java.io.FileNotFoundException;
+//import java.io.FileOutputStream;
+//import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -98,33 +98,33 @@ public class MainProgram extends JFrame
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     public static void main(String[] args)
     {
-        String fileName = "m2p" + (Search.USE_TWIST_FLIP_PRUN ? "T" : "") + ".data";
-        try
-        {
-            DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(fileName)));
-            Tools.initFrom(dis);
-        }
-        catch (FileNotFoundException e)
-        {}
-        catch (IOException e)
-        {
-            e.printStackTrace();
-            System.exit(1);
-        }
+//        String fileName = "m2p" + (Search.USE_TWIST_FLIP_PRUN ? "T" : "") + ".data";
+//        try
+//        {
+//            DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(fileName)));
+//            Tools.initFrom(dis);
+//        }
+//        catch (FileNotFoundException e)
+//        {}
+//        catch (IOException e)
+//        {
+//            e.printStackTrace();
+//            System.exit(1);
+//        }
         if (!Search.isInited())
         {
             Search.init();
-            try
-            {
-                DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fileName)));
-                Tools.saveTo(dos);
-                dos.close();
-            }
-            catch (IOException e)
-            {
-                e.printStackTrace();
-                System.exit(1);
-            }
+//            try
+//            {
+//                DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fileName)));
+//                Tools.saveTo(dos);
+//                dos.close();
+//            }
+//            catch (IOException e)
+//            {
+//                e.printStackTrace();
+//                System.exit(1);
+//            }
         }
 
         SwingUtilities.invokeLater(new Runnable()

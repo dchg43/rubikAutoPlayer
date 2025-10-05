@@ -12,6 +12,7 @@ import ch.randelshofer.gui.event.ChangeEvent;
 import ch.randelshofer.gui.event.ChangeListener;
 
 
+/** 控制进度条的展示 */
 public class MovieSliderAWT extends Canvas implements ChangeListener
 {
     private static final long serialVersionUID = -8332266206293355378L;

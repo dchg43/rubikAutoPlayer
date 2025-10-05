@@ -19,6 +19,7 @@ import ch.randelshofer.gui.event.ChangeListener;
 import ch.randelshofer.media.Player;
 
 
+/** 控制步骤列表的操作 */
 public class MovieControlAWT extends Panel implements ActionListener, ItemListener, ChangeListener
 {
     private static final long serialVersionUID = -1687732120831089973L;

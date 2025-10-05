@@ -157,14 +157,12 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
     {
         stop();
         this.script = scriptNode;
+        this.progress.setRangeProperties(0, 0, 0, 0, false);
         this.scriptVector.removeAllElements();
         this.scriptIndex = 0;
-        this.controls.setVisible(scriptNode != null);
-        if (scriptNode == null)
-        {
-            this.progress.setRangeProperties(0, 0, 0, 0, false);
-        }
-        else
+//        this.controls.setVisible(scriptNode != null);
+        this.controls.setVisible(true);
+        if (scriptNode != null)
         {
             Enumeration<DefaultMutableTreeNode> enumerationResolvedEnumeration = scriptNode.resolvedEnumeration(false);
             while (enumerationResolvedEnumeration.hasMoreElements())

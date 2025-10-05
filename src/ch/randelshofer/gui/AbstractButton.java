@@ -20,6 +20,7 @@ import ch.randelshofer.gui.event.EventListenerList;
 import ch.randelshofer.gui.event.EventListenerList.ListenerNode;
 
 
+/** 底部进度条两边小按钮 */
 public class AbstractButton extends Canvas implements ItemSelectable
 {
     private static final long serialVersionUID = 5800391645017871439L;

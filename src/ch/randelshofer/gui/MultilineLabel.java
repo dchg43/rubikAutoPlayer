@@ -157,7 +157,7 @@ public class MultilineLabel extends Canvas
     @Override
     public Dimension getPreferredSize()
     {
-        Dimension dimension = new Dimension();
+        Dimension size = new Dimension();
         Insets insets = getInsets();
         if (this.lines == null)
         {
@@ -166,12 +166,12 @@ public class MultilineLabel extends Canvas
         FontMetrics fontMetrics = getFontMetrics(getFont());
         for (String line : this.lines)
         {
-            dimension.width = Math.max(dimension.width, fontMetrics.stringWidth(line));
+            size.width = Math.max(size.width, fontMetrics.stringWidth(line));
         }
-        dimension.height = fontMetrics.getHeight() * Math.max(this.minRows, this.lines.length);
-        dimension.width += insets.left + insets.right;
-        dimension.height += insets.top + insets.bottom;
-        return dimension;
+        size.height = fontMetrics.getHeight() * Math.max(this.minRows, this.lines.length);
+        size.width += insets.left + insets.right;
+        size.height += insets.top + insets.bottom;
+        return size;
     }
 
     public void setMinRows(int minRows)

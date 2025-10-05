@@ -69,7 +69,7 @@ public class CoordCube
 
     public static synchronized void init(boolean fullInit)
     {
-        if (initLevel == 2 || initLevel == 1 && !fullInit)
+        if (initLevel == 2 || (initLevel == 1 && !fullInit))
         {
             return;
         }
