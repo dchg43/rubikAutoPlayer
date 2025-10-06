@@ -983,7 +983,8 @@ public class AutoPlayer extends Panel implements Runnable
                     return;
                 }
 
-                String result = searchSolution();
+                String cubeString = getCubeString();
+                String result = searchSolution(cubeString);
                 if (result.contains("Error"))
                 {
                     String message = "校验不通过：" + getErrMessage(result);
@@ -1022,13 +1023,31 @@ public class AutoPlayer extends Panel implements Runnable
                     // 正在执行中
                     return;
                 }
+
+                String cubeString = getCubeString();
+                // 有旋转，重置为旋转前状态
                 if (!AutoPlayer.this.player.getCube3D().getModel().isSolved())
                 {
-                    // 有旋转，重置为旋转前状态
-                    AutoPlayer.this.player.getCube3D().getModel().reset();
+                    Color[] colorArr = new Color[7];
+                    HashSet<Color> colorSet = new HashSet<>();
+                    for (int i = 0; i < 6; i++)
+                    {
+                        // 以中心块的颜色为基准
+                        colorArr[i] = AutoPlayer.this.player.getCube3D().getStickerColor(i, 4);
+                        colorSet.add(colorArr[i]);
+                    }
+
+                    // 只有6个面都有颜色时才执行重置
+                    if (colorSet.size() == 6)
+                    {
+                        colorArr[6] = AutoPlayer.this.colors[6];
+                        // 重置魔方状态，保留块的颜色和顺序
+                        AutoPlayer.this.player.getCube3D().getModel().reset();
+                        setCubeByString(cubeString, colorArr);
+                    }
                 }
 
-                String result = searchSolution();
+                String result = searchSolution(cubeString);
                 if (result.contains("Error"))
                 {
                     String message = "校验不通过：" + getErrMessage(result);
@@ -1117,9 +1136,8 @@ public class AutoPlayer extends Panel implements Runnable
 
     }
 
-    public String searchSolution()
+    public String searchSolution(String cubeString)
     {
-        String cubeString = this.getCubeString();
         if (cubeString.contains("Error"))
         {
             return cubeString;
@@ -1470,8 +1488,15 @@ public class AutoPlayer extends Panel implements Runnable
                     this.player.reset();
                 }
                 value = value.replace("\\n", "\n");
+                if (value.length() == 0)
+                {
+                    this.scriptTextArea.setText(value);
+                }
+                else
+                {
+                    this.scriptTextArea.setText(value + " (Step: " + (value.length() + 2) / 3 + ")");
+                }
                 ScriptNode scriptNode = this.scriptParser.parse(new StringReader(value));
-                this.scriptTextArea.setText(value + " (Step: " + (value.length() + 2) / 3 + ")");
                 this.player.setScript(scriptNode);
                 if (this.autoPlay)
                 {

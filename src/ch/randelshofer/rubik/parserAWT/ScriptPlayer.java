@@ -421,61 +421,57 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
     {
         if (changeEvent.getSource() == this.progress && !isActive())
         {
-            update();
+            Runnable runnable = new Runnable()
+            {
+                private final ScriptPlayer playerInstance = ScriptPlayer.this;
+
+                @Override
+                public void run()
+                {
+                    playerInstance.update();
+                }
+            };
+            if (this.cube3D.isAnimated())
+            {
+                this.cube3D.getDispatcher().dispatch(runnable);
+            }
+            else
+            {
+                runnable.run();
+            }
         }
     }
 
     private void update()
     {
-        Runnable runnable = new Runnable()
+        int value = this.progress.getValue();
+        this.isProcessingCurrentSymbol = true;
+        if (this.scriptIndex == value - 1)
         {
-            private final ScriptPlayer playerInstance = ScriptPlayer.this;
-
-            @Override
-            public void run()
-            {
-                int value = this.playerInstance.progress.getValue();
-                this.playerInstance.isProcessingCurrentSymbol = true;
-                if (this.playerInstance.scriptIndex == value - 1)
-                {
-                    this.playerInstance.fireStateChanged();
-                    this.playerInstance.scriptVector.elementAt(this.playerInstance.scriptIndex++).applyTo(
-                        this.playerInstance.model);
-                }
-                else if (this.playerInstance.scriptIndex == value + 1)
-                {
-                    ScriptNode scriptNode = this.playerInstance.scriptVector.elementAt(
-                        --this.playerInstance.scriptIndex);
-                    this.playerInstance.fireStateChanged();
-                    scriptNode.applyInverseTo(this.playerInstance.model);
-                }
-                else
-                {
-                    this.playerInstance.model.setQuiet(true);
-                    while (this.playerInstance.scriptIndex < value)
-                    {
-                        this.playerInstance.scriptVector.elementAt(this.playerInstance.scriptIndex++).applyTo(
-                            this.playerInstance.model);
-                    }
-                    while (this.playerInstance.scriptIndex > value)
-                    {
-                        this.playerInstance.scriptVector.elementAt(--this.playerInstance.scriptIndex).applyInverseTo(
-                            this.playerInstance.model);
-                    }
-                    this.playerInstance.model.setQuiet(false);
-                }
-                this.playerInstance.isProcessingCurrentSymbol = false;
-                this.playerInstance.fireStateChanged();
-            }
-        };
-        if (this.cube3D.isAnimated())
+            fireStateChanged();
+            this.scriptVector.elementAt(this.scriptIndex++).applyTo(this.model);
+        }
+        else if (this.scriptIndex == value + 1)
         {
-            this.cube3D.getDispatcher().dispatch(runnable);
+            ScriptNode scriptNode = this.scriptVector.elementAt(--this.scriptIndex);
+            fireStateChanged();
+            scriptNode.applyInverseTo(this.model);
         }
         else
         {
-            runnable.run();
+            this.model.setQuiet(true);
+            while (this.scriptIndex < value)
+            {
+                this.scriptVector.elementAt(this.scriptIndex++).applyTo(this.model);
+            }
+            while (this.scriptIndex > value)
+            {
+                this.scriptVector.elementAt(--this.scriptIndex).applyInverseTo(this.model);
+            }
+            this.model.setQuiet(false);
         }
+        this.isProcessingCurrentSymbol = false;
+        fireStateChanged();
     }
 
     @Override
