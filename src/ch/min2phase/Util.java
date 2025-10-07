@@ -175,7 +175,7 @@ public class Util {
 
     static int[] ckmv2bit = new int[11];
 
-    static class Solution {
+    public static class Solution {
         int length = 0;
 
         int depth1 = 0;

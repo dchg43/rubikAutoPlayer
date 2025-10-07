@@ -105,6 +105,23 @@ public class AutoPlayer extends Panel implements Runnable {
 
     private Search search = new Search();
 
+    public static void main(String[] args) throws IOException {
+        AutoPlayer scriptPlayer = new AutoPlayer();
+
+        // 解析命令行参数
+        scriptPlayer.getCmd().parse(args);
+        // 启动
+        scriptPlayer.init();
+
+        // 等待自动执行完成
+        while (scriptPlayer.getPlayer().isActive()) {
+            try {
+                Thread.sleep(500L);
+            } catch (InterruptedException e) {
+            }
+        }
+    }
+
     public AutoPlayer() {
         this.cmd = new CommandParser();
 
@@ -270,6 +287,7 @@ public class AutoPlayer extends Panel implements Runnable {
         transform3D.rotateY((this.cmd.getParameter("beta", 45) / 180.0d) * Math.PI);
         transform3D.rotateX((this.cmd.getParameter("alpha", -25) / 180.0d) * Math.PI);
         this.player.setTransform(transform3D);
+
         // 设置各面颜色, 顺序：正面, 右面, 底面, 背面, 左面, 顶面
         String[] dflt = {"0x8c000f", "0xffd200", "0x00732f", "0xff4600", "0xf8f8f8", "0x003373", "0x707070"};
         String[] colors_str = this.cmd.getParameters("colorTable", dflt);
@@ -287,7 +305,8 @@ public class AutoPlayer extends Panel implements Runnable {
                     " is illegal.").toString(), e);
         }
 
-        if (this.cmd.getParameter("faces") == null) {
+        String[] faceColors = this.cmd.getParameters("faces", (String[]) null);
+        if (faceColors == null) {
             for (int i = 0; i < 6; i++) {
                 if (this.colors.length <= i) {
                     throw new IllegalArgumentException(new StringBuffer().append("Invalid parameter 'colorTable', entry number ").append(i).append(
@@ -297,9 +316,7 @@ public class AutoPlayer extends Panel implements Runnable {
                     cube.setStickerColor(i, j, this.colors[i]);
                 }
             }
-        }
-        String[] faceColors = this.cmd.getParameters("faces", (String[]) null);
-        if (faceColors != null) {
+        } else {
             if (faceColors.length != 6) {
                 throw new IllegalArgumentException(new StringBuffer().append("Invalid parameter 'faces' provides ").append(faceColors.length).append(
                         " instead of 6 entries.").toString());
@@ -316,6 +333,7 @@ public class AutoPlayer extends Panel implements Runnable {
                 }
             }
         }
+
         String[] stickerColors = this.cmd.getParameters("stickers", (String[]) null);
         if (stickerColors != null) {
             if (stickerColors.length != 54) {
@@ -334,6 +352,7 @@ public class AutoPlayer extends Panel implements Runnable {
                 }
             }
         }
+
         String[] strArr = {"stickersFront", "stickersRight", "stickersDown", "stickersBack", "stickersLeft", "stickersUp"};
         for (int i = 0; i < 6; i++) {
             String[] colorLists = this.cmd.getParameters(strArr[i], (String[]) null);
@@ -377,6 +396,7 @@ public class AutoPlayer extends Panel implements Runnable {
             throw new IllegalArgumentException(new StringBuffer().append("Invalid parameter 'scriptLanguage': Unsupported language '").append(language).append(
                     "'").toString());
         }
+
         String scriptType = this.cmd.getParameter("scriptType", "Generator");
         if (scriptType.equalsIgnoreCase("Solver")) {
             this.isSolver = true;
@@ -475,7 +495,6 @@ public class AutoPlayer extends Panel implements Runnable {
             panelComponent = visualComponent; // 不包含后视图
         }
         add("Center", panelComponent);
-
     }
 
     private void initRearComponent() {
@@ -829,6 +848,7 @@ public class AutoPlayer extends Panel implements Runnable {
             }
         });
 
+        // 调整窗口大小
         frame.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
@@ -847,32 +867,8 @@ public class AutoPlayer extends Panel implements Runnable {
         // 添加魔方
         frame.add(this, "Center");
 
-        frame.setVisible(true); // 显示
-    }
-
-    public static void main(String[] args) throws IOException {
-        AutoPlayer scriptPlayer = new AutoPlayer();
-
-        // 解析命令行参数
-        scriptPlayer.getCmd().parse(args);
-        // 启动
-        scriptPlayer.init();
-
-        // 等待自动执行完成
-        while (scriptPlayer.getPlayer().isActive()) {
-            try {
-                Thread.sleep(500L);
-            } catch (InterruptedException e) {
-            }
-        }
-    }
-
-    public ScriptPlayer getPlayer() {
-        return player;
-    }
-
-    public CommandParser getCmd() {
-        return cmd;
+        // 显示
+        frame.setVisible(true);
     }
 
     public String searchSolution(String cubeString) {
@@ -1103,6 +1099,14 @@ public class AutoPlayer extends Panel implements Runnable {
                     " is illegal.").toString());
         //                break;
         }
-
     }
+
+    public ScriptPlayer getPlayer() {
+        return player;
+    }
+
+    public CommandParser getCmd() {
+        return cmd;
+    }
+
 }

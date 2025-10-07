@@ -28,7 +28,9 @@ public class CommandParser {
     public static final String copyright = "© 2025-2030 Deng";
 
     // 格式：长key，短key，类型(null表示没有value，比如h)，中文描述，英文描述
-    private static final String[][] parameterInfo = {{"help", "h", null, "显示帮助信息", "show help"},
+    private static final String[][] parameterInfo = {
+            // 帮助
+            {"help", "h", null, "显示帮助信息", "show help"},
             // 垂直方向倾斜角度
             {"alpha", "", "int", "垂直方向倾斜角度 -90 ~ 90，默认值-25", "Vertical orientation of the cube, -90..+90. Default: -25"},
             // 水平方向倾斜角度
@@ -67,31 +69,39 @@ public class CommandParser {
             //        // 自定义上面每块颜色
             //        {"stickersUp", "", "(name|int), ...",
             //            "Maps colors from the color table to the stickers on the side of the cube; 9 integer values. Default: 5,5,5,5,5,5,5,5,5"},
-
             // 是否自动播放
             {"autoPlay", "a", "boolean", "是否自动播放，true/false", "Set this value to true, to start playing the script automatically. Default: false"},
             // 设置自动播放脚本
-            {"script", "", "string", "设置自动播放脚本，例如\"R F' D2\"", "Script. Default: no script."}, {"initScript", "", "string", "设置初始化的脚本，例如\"L B' U2\"",
-                    "This script is used to initialize the cube, and when the reset button is pressed. Default: no script."}, {"scriptLanguage", "", "string",
-                            "设置脚本的语法",
-                            "Language of the Script: 'ScriptFRA','BandelowENG','RandelshoferGER','SupersetENG','TouchardDeledicqFRA','Castella'. Default: BandelowENG"},
-            {"scriptType", "", "string", "设置脚本的类型", "The type of the script: 'Solver' or 'Generator'. Default: 'Solver'."}, {"scriptProgress", "", "int",
-                    "设置初始处于的步骤", "Position of the progress bar. Default: end of script if scriptType is 'Generator', 0 if script type is 'Solver'."},
-            //        {"displayLines", "", "int",
-            //            "Number of lines of the Script display: set to 0 to switch the display off. Default: 1"},
-            //        // 模拟光线强度、光源、位置
-            //        {"ambientLightIntensity", "", "double", "Intensity of ambient light. Default: 0.6"},
-            //        {"lightSourceIntensity", "", "double",
-            //            "Intensity of the light source: set to 0 to switch the light source off. Default: 1.0"},
-            //        {"lightSourcePosition", "", "int,int,int",
-            //            "X, Y and Z coordinate of the light source. Default: -500, 500, 1000"},
+            {"script", "", "string", "设置自动播放脚本，例如\"R F' D2\"", "Script. Default: no script."},
+            // 初始化脚本
+            {"initScript", "", "string", "设置初始化的脚本，例如\"L B' U2\"",
+                    "This script is used to initialize the cube, and when the reset button is pressed. Default: no script."},
+            // 语言
+            {"scriptLanguage", "", "string", "设置脚本的语法",
+                    "Language of the Script: 'ScriptFRA','BandelowENG','RandelshoferGER','SupersetENG','TouchardDeledicqFRA','Castella'. Default: BandelowENG"},
+            // 类型
+            {"scriptType", "", "string", "设置脚本的类型", "The type of the script: 'Solver' or 'Generator'. Default: 'Solver'."},
+            // 步数
+            {"scriptProgress", "", "int", "设置初始处于的步骤",
+                    "Position of the progress bar. Default: end of script if scriptType is 'Generator', 0 if script type is 'Solver'."},
+            //            // 是否显示步骤脚本
+            //            {"displayLines", "", "int", "Number of lines of the Script display: set to 0 to switch the display off. Default: 1"},
+            //            // 模拟光线强度
+            //            {"ambientLightIntensity", "", "double", "Intensity of ambient light. Default: 0.6"},
+            //            // 模拟光线光源
+            //            {"lightSourceIntensity", "", "double", "Intensity of the light source: set to 0 to switch the light source off. Default: 1.0"},
+            //            // 模拟光线位置
+            //            {"lightSourcePosition", "", "int,int,int", "X, Y and Z coordinate of the light source. Default: -500, 500, 1000"},
             // 是否展示后视图
-            {"rearView", "", "boolean", "是否展示后视图，true/false", "Set this value to true, to turn the rear view on. Default: false"}, {"rearViewBackgroundColor",
-                    "", "int", "后视图背景色，默认值0xffffff", "Background color. Default: use value of parameter 'backgroundColor'"}, {"rearViewBackgroundImage", "",
-                            "URL", "后视图背景图，默认正视图背景图", "Background image. Default: use value of parameter 'backgroundImage'"}, {"rearViewScaleFactor", "",
-                                    "double", "后视图缩放比 0.1 ~ 1.0，默认0.75", "Scale factor of the rear view. Value between 0.1 and 1.0. Default: 0.75"},
-            //        {"rearViewRotation", "", "int,int,int",
-            //            "Rotation of the rear view on the X, Y and Z axis in degrees. Default: 180,0,0"}
+            {"rearView", "", "boolean", "是否展示后视图，true/false", "Set this value to true, to turn the rear view on. Default: false"},
+            // 后视图背景色
+            {"rearViewBackgroundColor", "", "int", "后视图背景色，默认值0xffffff", "Background color. Default: use value of parameter 'backgroundColor'"},
+            // 后视图背景图
+            {"rearViewBackgroundImage", "", "URL", "后视图背景图，默认正视图背景图", "Background image. Default: use value of parameter 'backgroundImage'"},
+            // 后视图缩放
+            {"rearViewScaleFactor", "", "double", "后视图缩放比 0.1 ~ 1.0，默认0.75", "Scale factor of the rear view. Value between 0.1 and 1.0. Default: 0.75"},
+            //            // 后视图旋转角度
+            //            {"rearViewRotation", "", "int,int,int", "Rotation of the rear view on the X, Y and Z axis in degrees. Default: 180,0,0"}
     };
 
     private Hashtable<String, String> atts;
