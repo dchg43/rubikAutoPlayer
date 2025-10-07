@@ -31,6 +31,7 @@ public class CommandParser {
     private static final String[][] parameterInfo = {
             // 帮助
             {"help", "h", null, "显示帮助信息", "show help"},
+
             // 垂直方向倾斜角度
             {"alpha", "", "int", "垂直方向倾斜角度 -90 ~ 90，默认值-25", "Vertical orientation of the cube, -90..+90. Default: -25"},
             // 水平方向倾斜角度
@@ -39,15 +40,16 @@ public class CommandParser {
             {"backgroundColor", "", "int", "背景色，默认值0xffffff", "Background color. Default: 0xffffff"},
             // 背景图
             {"backgroundImage", "", "URL", "背景图，例如D:/照片/001.jpg", "Background image. Default: none"},
-            // 设置颜色，编号分别为0~5，十六进制RGB格式，下边定义每面颜色时指定编号
-            {"colorTable", "", "[name=]int, ...", "每面颜色，顺序为前右下后左上，例如 \n0x8c000f, ... ,0x003373",
+            // 设置颜色，编号分别为0~5，十六进制RGB格式
+            {"colorTable", "", "[name=]int, ...", "每面颜色，顺序为前右下后左上，例如 \n0x8c001f, ... ,0x0033a3",
                     "RGB color look up table, 6..n entries. Each entry consists of an optional name and a hex value. Default: 0x003373,0xff4600,0xf8f8f8,0x00732f,0x8c000f,0xffd200"},
-            // 按块自定义颜色
-            {"stickers", "", "name, ...", "每块的颜色，顺序为前右下后左上，共54个数字，\n0~5各需出现9次，例如0,0,0,...5,5,5",
-                    "Maps colors from the color table to the stickers of the cube; 54 integer values; front, right, down, back, left, up. Default: 0,0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1,1, 2,2,2,2,2,2,2,2,2, 3,3,3,3,3,3,3,3,3, 4,4,4,4,4,4,4,4,4, 5,5,5,5,5,5,5,5,5"},
+
             // 用标准记号法按块自定义颜色
             {"facelets", "", "name, ...", "标准记号法定义颜色：上U右R前F下D左L后B，例如 \nUUUUUUUUURRRRRRRRRFFFFFFFFF \nDDDDDDDDDLLLLLLLLLBBBBBBBBB",
                     "up, right, front, down, left, back, example: UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB"},
+            // 按块自定义颜色
+            {"stickers", "", "name, ...", "每块的颜色，顺序为前右下后左上，共54个数字，\n0~5各需出现9次，例如0,0,0,...5,5,5",
+                    "Maps colors from the color table to the stickers of the cube; 54 integer values; front, right, down, back, left, up. Default: 0,0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1,1, 2,2,2,2,2,2,2,2,2, 3,3,3,3,3,3,3,3,3, 4,4,4,4,4,4,4,4,4, 5,5,5,5,5,5,5,5,5"},
             //        // 按面自定义颜色，顺序为正面 右面 底面 背面 左面 顶面
             //      {"faces", "", "name, ...",
             //          "Maps colors from the color table to the faces of the cube; 6 integer values; front, right, down, back, left, up. Default: 0,1,2,3,4,5"},
@@ -69,29 +71,32 @@ public class CommandParser {
             //        // 自定义上面每块颜色
             //        {"stickersUp", "", "(name|int), ...",
             //            "Maps colors from the color table to the stickers on the side of the cube; 9 integer values. Default: 5,5,5,5,5,5,5,5,5"},
+
             // 是否自动播放
             {"autoPlay", "a", "boolean", "是否自动播放，true/false", "Set this value to true, to start playing the script automatically. Default: false"},
             // 设置自动播放脚本
             {"script", "", "string", "设置自动播放脚本，例如\"R F' D2\"", "Script. Default: no script."},
-            // 初始化脚本
-            {"initScript", "", "string", "设置初始化的脚本，例如\"L B' U2\"",
+            // 初始化脚本。需要注意，每次点击reset按钮都会执行一次这个脚本
+            {"initScript", "", "string", "设置每次reset时预执行的脚本，例如\"L B' U2\"",
                     "This script is used to initialize the cube, and when the reset button is pressed. Default: no script."},
             // 语言
             {"scriptLanguage", "", "string", "设置脚本的语法",
                     "Language of the Script: 'ScriptFRA','BandelowENG','RandelshoferGER','SupersetENG','TouchardDeledicqFRA','Castella'. Default: BandelowENG"},
             // 类型
-            {"scriptType", "", "string", "设置脚本的类型", "The type of the script: 'Solver' or 'Generator'. Default: 'Solver'."},
+            {"scriptType", "", "string", "设置脚本的类型：Solver、Generator（默认）", "The type of the script: 'Solver' or 'Generator'. Default: 'Generator'."},
             // 步数
             {"scriptProgress", "", "int", "设置初始处于的步骤",
                     "Position of the progress bar. Default: end of script if scriptType is 'Generator', 0 if script type is 'Solver'."},
             //            // 是否显示步骤脚本
             //            {"displayLines", "", "int", "Number of lines of the Script display: set to 0 to switch the display off. Default: 1"},
+
             //            // 模拟光线强度
             //            {"ambientLightIntensity", "", "double", "Intensity of ambient light. Default: 0.6"},
             //            // 模拟光线光源
             //            {"lightSourceIntensity", "", "double", "Intensity of the light source: set to 0 to switch the light source off. Default: 1.0"},
             //            // 模拟光线位置
             //            {"lightSourcePosition", "", "int,int,int", "X, Y and Z coordinate of the light source. Default: -500, 500, 1000"},
+
             // 是否展示后视图
             {"rearView", "", "boolean", "是否展示后视图，true/false", "Set this value to true, to turn the rear view on. Default: false"},
             // 后视图背景色

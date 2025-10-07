@@ -33,6 +33,10 @@ public class MiniCube3DAWT extends AbstractCube3DAWT {
      */
     @Override
     public void setStickerColor(int face, int sticker, Color color) {
+        if (color == null) {
+            return;
+        }
+
         switch (face) {
         case 0:
             switch (sticker) {

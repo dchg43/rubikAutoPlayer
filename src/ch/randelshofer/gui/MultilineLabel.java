@@ -61,7 +61,11 @@ public class MultilineLabel extends Canvas {
     }
 
     public void setText(String text) {
-        this.text = text;
+        if (text == null) {
+            this.text = "";
+        } else {
+            this.text = text;
+        }
         repaint();
         revalidate();
     }
