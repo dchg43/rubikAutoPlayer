@@ -1,11 +1,8 @@
 package ch.randelshofer.rubik;
 
-
 import java.util.EventListener;
 
-
-public interface RubikListener extends EventListener
-{
+public interface RubikListener extends EventListener {
     void rubikTwisting(RubikEvent rubikEvent);
 
     void rubikTwisted(RubikEvent rubikEvent);

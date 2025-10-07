@@ -1,6 +1,5 @@
 package ch.randelshofer.gui;
 
-
 import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Component;
@@ -12,9 +11,7 @@ import java.awt.Insets;
 import java.util.StringTokenizer;
 import java.util.Vector;
 
-
-public class MultilineLabel extends Canvas
-{
+public class MultilineLabel extends Canvas {
     private static final long serialVersionUID = -1943567795692517989L;
 
     private String[] lines;
@@ -31,93 +28,78 @@ public class MultilineLabel extends Canvas
 
     private Color selectionBackground = new Color(181, 213, 255);
 
-    public MultilineLabel()
-    {
+    public MultilineLabel() {
         initComponents();
         setBackground(Color.white);
         setForeground(Color.black);
     }
 
-    public void setSelectionBackground(Color selectionBackground)
-    {
+    public void setSelectionBackground(Color selectionBackground) {
         this.selectionBackground = selectionBackground;
         repaint();
     }
 
-    public int viewToModel(int x, int y)
-    {
+    public int viewToModel(int x, int y) {
         FontMetrics fontMetrics = getFontMetrics(getFont());
         int height = (y - this.insets.top) / fontMetrics.getHeight();
-        if (height < 0 || this.lines == null)
-        {
+        if (height < 0 || this.lines == null) {
             return 0;
         }
-        if (height >= this.lines.length)
-        {
+        if (height >= this.lines.length) {
             return this.text.length();
         }
         int length = 0;
-        for (int i = 0; i < height; i++)
-        {
+        for (int i = 0; i < height; i++) {
             length += this.lines[i].length();
         }
-        for (int i = 1; i <= this.lines[height].length(); i++)
-        {
-            if (fontMetrics.stringWidth(this.lines[height].substring(0, i)) + this.insets.left > x)
-            {
+        for (int i = 1; i <= this.lines[height].length(); i++) {
+            if (fontMetrics.stringWidth(this.lines[height].substring(0, i)) + this.insets.left > x) {
                 return (length + i) - 1;
             }
         }
         return length + this.lines[height].length();
     }
 
-    public void setText(String text)
-    {
+    public void setText(String text) {
         this.text = text;
         repaint();
         revalidate();
     }
 
-    private void wrapText()
-    {
-        String text = this.text;
-        if (text == null)
-        {
+    private void wrapText() {
+        if (this.text == null) {
             return;
         }
         int width = (getSize().width - this.insets.left) - this.insets.right;
+        if (width <= 0) {
+            this.lines = new String[1];
+            this.lines[0] = this.text;
+            return;
+        }
+
         FontMetrics fontMetrics = getFontMetrics(getFont());
         Vector<String> vector = new Vector<>();
-        StringTokenizer stringTokenizer = new StringTokenizer(text, " \n", true);
+        StringTokenizer stringTokenizer = new StringTokenizer(this.text, " \n", true);
         StringBuffer stringBuffer = new StringBuffer();
-        while (stringTokenizer.hasMoreTokens())
-        {
+        while (stringTokenizer.hasMoreTokens()) {
             String strNextToken = stringTokenizer.nextToken();
-            if (strNextToken.equals("\n"))
-            {
+            if (strNextToken.equals("\n")) {
                 stringBuffer.append(strNextToken);
                 vector.addElement(stringBuffer.toString());
                 stringBuffer.setLength(0);
-            }
-            else if (fontMetrics.stringWidth(stringBuffer + strNextToken) <= width)
-            {
+            } else if (fontMetrics.stringWidth(stringBuffer + strNextToken) <= width) {
                 stringBuffer.append(strNextToken);
-            }
-            else if (strNextToken.equals(" "))
-            {
+            } else if (strNextToken.equals(" ")) {
                 stringBuffer.append(strNextToken);
                 vector.addElement(stringBuffer.toString());
                 stringBuffer.setLength(0);
-            }
-            else
-            {
+            } else {
                 vector.addElement(stringBuffer.toString());
                 stringBuffer.setLength(0);
                 stringBuffer.append(strNextToken);
             }
         }
-        if (stringBuffer.length() > 0)
-        {
+        if (stringBuffer.length() > 0) {
             vector.addElement(stringBuffer.toString());
         }
         String[] strArr = new String[vector.size()];
@@ -125,48 +107,40 @@ public class MultilineLabel extends Canvas
         this.lines = strArr;
     }
 
-    public String getText()
-    {
+    public String getText() {
         return this.text;
     }
 
-    public synchronized void select(int startPosition, int endPosition)
-    {
+    public synchronized void select(int startPosition, int endPosition) {
         this.selectionStart = Math.min(this.text.length(), Math.max(0, startPosition));
         this.selectionEnd = Math.min(this.text.length(), Math.max(startPosition, endPosition));
         repaint();
     }
 
     @Override
-    public void invalidate()
-    {
+    public void invalidate() {
         this.lines = null;
         super.invalidate();
     }
 
-    public void setInsets(Insets insets)
-    {
+    public void setInsets(Insets insets) {
         this.insets = insets;
         invalidate();
     }
 
-    public Insets getInsets()
-    {
+    public Insets getInsets() {
         return this.insets;
     }
 
     @Override
-    public Dimension getPreferredSize()
-    {
+    public Dimension getPreferredSize() {
         Dimension size = new Dimension();
         Insets insets = getInsets();
-        if (this.lines == null)
-        {
+        if (this.lines == null) {
             wrapText();
         }
         FontMetrics fontMetrics = getFontMetrics(getFont());
-        for (String line : this.lines)
-        {
+        for (String line : this.lines) {
             size.width = Math.max(size.width, fontMetrics.stringWidth(line));
         }
         size.height = fontMetrics.getHeight() * Math.max(this.minRows, this.lines.length);
@@ -175,30 +149,25 @@ public class MultilineLabel extends Canvas
         return size;
     }
 
-    public void setMinRows(int minRows)
-    {
+    public void setMinRows(int minRows) {
         this.minRows = minRows;
         invalidate();
     }
 
     @Override
-    public void paint(Graphics graphics)
-    {
+    public void paint(Graphics graphics) {
         Dimension size = getSize();
         graphics.setColor(Color.black);
         graphics.drawRect(0, -1, size.width - 1, size.height);
-        if (this.text == null)
-        {
+        if (this.text == null) {
             return;
         }
-        if (this.lines == null)
-        {
+        if (this.lines == null) {
             invalidate();
             wrapText();
             Component container = this;
             Container parent = this.getParent();
-            while (parent != null && parent.isValid())
-            {
+            while (parent != null && parent.isValid()) {
                 container = parent;
                 parent = parent.getParent();
             }
@@ -206,27 +175,22 @@ public class MultilineLabel extends Canvas
             return;
         }
         String[] strArr = this.lines;
-        if (strArr == null)
-        {
+        if (strArr == null) {
             return;
         }
         Insets insets = getInsets();
         FontMetrics fontMetrics = getFontMetrics(getFont());
-        if (this.selectionEnd > this.selectionStart)
-        {
+        if (this.selectionEnd > this.selectionStart) {
             graphics.setColor(this.selectionBackground);
             int l = 0;
             int y = insets.top;
             int height = fontMetrics.getHeight();
-            for (String element : strArr)
-            {
+            for (String element : strArr) {
                 int length = l + element.length();
-                if (length >= this.selectionStart && l <= this.selectionEnd)
-                {
+                if (length >= this.selectionStart && l <= this.selectionEnd) {
                     int iMax = Math.max(0, this.selectionStart - l);
                     int x = insets.left + fontMetrics.stringWidth(element.substring(0, iMax));
-                    int weight = fontMetrics.stringWidth(
-                        element.substring(iMax, Math.max(0, Math.min(element.length(), this.selectionEnd - l))));
+                    int weight = fontMetrics.stringWidth(element.substring(iMax, Math.max(0, Math.min(element.length(), this.selectionEnd - l))));
                     graphics.fillRect(x, y, weight, height);
                 }
                 l = length;
@@ -235,10 +199,8 @@ public class MultilineLabel extends Canvas
         }
         graphics.setColor(getForeground());
         int ascent = insets.top + fontMetrics.getAscent();
-        for (String sub : strArr)
-        {
-            if (sub.length() > 0 && sub.charAt(sub.length() - 1) == '\n')
-            {
+        for (String sub : strArr) {
+            if (sub.length() > 0 && sub.charAt(sub.length() - 1) == '\n') {
                 sub = sub.substring(0, sub.length() - 1);
             }
             graphics.drawString(sub, insets.left, ascent);
@@ -246,6 +208,6 @@ public class MultilineLabel extends Canvas
         }
     }
 
-    private void initComponents()
-    {}
+    private void initComponents() {
+    }
 }

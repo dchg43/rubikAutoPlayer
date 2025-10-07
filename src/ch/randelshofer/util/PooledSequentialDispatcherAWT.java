@@ -1,11 +1,8 @@
 package ch.randelshofer.util;
 
-
 import java.util.Vector;
 
-
-public class PooledSequentialDispatcherAWT implements Runnable
-{
+public class PooledSequentialDispatcherAWT implements Runnable {
     private static ConcurrentDispatcherAWT threadPool = new ConcurrentDispatcherAWT();
 
     private static final int STOPPED = 0;
@@ -20,92 +17,67 @@ public class PooledSequentialDispatcherAWT implements Runnable
 
     private final Vector<Runnable> queue = new Vector<>();
 
-    public static void dispatchConcurrently(Runnable runnable)
-    {
+    public static void dispatchConcurrently(Runnable runnable) {
         threadPool.dispatch(runnable);
     }
 
-    public void dispatch(Runnable runnable)
-    {
+    public void dispatch(Runnable runnable) {
         dispatch(runnable, threadPool);
     }
 
-    public void dispatch(Runnable runnable, ConcurrentDispatcherAWT concurrentDispatcherAWT)
-    {
-        synchronized (this.queue)
-        {
+    public void dispatch(Runnable runnable, ConcurrentDispatcherAWT concurrentDispatcherAWT) {
+        synchronized (this.queue) {
             this.queue.addElement(runnable);
-            if (this.state == STOPPED)
-            {
+            if (this.state == STOPPED) {
                 this.state = STARTING;
                 concurrentDispatcherAWT.dispatch(this);
             }
         }
     }
 
-    public void reassign()
-    {
-        synchronized (this.queue)
-        {
+    public void reassign() {
+        synchronized (this.queue) {
             stop();
-            if (!this.queue.isEmpty())
-            {
+            if (!this.queue.isEmpty()) {
                 this.state = STARTING;
                 threadPool.dispatch(this);
             }
         }
     }
 
-    public void stop()
-    {
-        synchronized (this.queue)
-        {
-            if (this.state == RUNNING)
-            {
+    public void stop() {
+        synchronized (this.queue) {
+            if (this.state == RUNNING) {
                 this.state = STOPPING;
-                while (this.state != STOPPED)
-                {
-                    try
-                    {
+                while (this.state != STOPPED) {
+                    try {
                         this.queue.wait();
+                    } catch (InterruptedException e) {
                     }
-                    catch (InterruptedException e)
-                    {}
                 }
-            }
-            else
-            {
+            } else {
                 this.state = STOPPED;
             }
         }
     }
 
     @Override
-    public void run()
-    {
+    public void run() {
         Runnable objElementAt;
-        synchronized (this.queue)
-        {
-            if (this.state == STARTING)
-            {
+        synchronized (this.queue) {
+            if (this.state == STARTING) {
                 this.state = RUNNING;
-                while (true)
-                {
-                    synchronized (this.queue)
-                    {
-                        if (this.queue.isEmpty() || this.state != RUNNING)
-                        {
+                while (true) {
+                    synchronized (this.queue) {
+                        if (this.queue.isEmpty() || this.state != RUNNING) {
                             break;
                         }
                         objElementAt = this.queue.elementAt(0);
                         this.queue.removeElementAt(0);
                     }
-                    try
-                    {
+                    try {
                         objElementAt.run();
-                    }
-                    catch (Throwable th)
-                    {
+                    } catch (Throwable th) {
                         th.printStackTrace();
                     }
                 }

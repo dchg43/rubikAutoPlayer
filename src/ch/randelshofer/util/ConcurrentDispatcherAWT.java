@@ -1,11 +1,8 @@
 package ch.randelshofer.util;
 
-
 import java.util.Vector;
 
-
-public class ConcurrentDispatcherAWT implements Runnable
-{
+public class ConcurrentDispatcherAWT implements Runnable {
     private int priority;
 
     private final Vector<Runnable> queue;
@@ -20,37 +17,28 @@ public class ConcurrentDispatcherAWT implements Runnable
 
     private int blockingPolicy;
 
-    public ConcurrentDispatcherAWT()
-    {
+    public ConcurrentDispatcherAWT() {
         this(5, 5);
     }
 
-    public ConcurrentDispatcherAWT(int i, int i2)
-    {
+    public ConcurrentDispatcherAWT(int i, int i2) {
         this.queue = new Vector<>();
         this.blockingPolicy = ENQUEUE_WHEN_BLOCKED;
         this.priority = i;
         this.threadMax = i2;
     }
 
-    public void setMaxThreads(int i)
-    {
+    public void setMaxThreads(int i) {
         this.threadMax = i;
     }
 
-    public void dispatch(Runnable runnable)
-    {
-        synchronized (this.queue)
-        {
-            if (this.threadCount >= this.threadMax)
-            {
-                if (this.blockingPolicy == ENQUEUE_WHEN_BLOCKED)
-                {
+    public void dispatch(Runnable runnable) {
+        synchronized (this.queue) {
+            if (this.threadCount >= this.threadMax) {
+                if (this.blockingPolicy == ENQUEUE_WHEN_BLOCKED) {
                     this.queue.addElement(runnable);
                     return;
-                }
-                else
-                {
+                } else {
                     runnable.run();
                     return;
                 }
@@ -58,47 +46,34 @@ public class ConcurrentDispatcherAWT implements Runnable
             this.queue.addElement(runnable);
             Thread thread = new Thread(this, new StringBuffer().append(this).append(" Processor").toString());
             this.threadCount++;
-            try
-            {
+            try {
                 thread.setDaemon(false);
+            } catch (SecurityException e) {
             }
-            catch (SecurityException e)
-            {}
-            try
-            {
+            try {
                 thread.setPriority(this.priority);
+            } catch (SecurityException e2) {
             }
-            catch (SecurityException e2)
-            {}
             thread.start();
         }
     }
 
     @Override
-    public void run()
-    {
+    public void run() {
         Runnable objElementAt;
-        while (true)
-        {
-            synchronized (this.queue)
-            {
-                if (this.queue.isEmpty())
-                {
+        while (true) {
+            synchronized (this.queue) {
+                if (this.queue.isEmpty()) {
                     this.threadCount--;
                     return;
-                }
-                else
-                {
+                } else {
                     objElementAt = this.queue.elementAt(0);
                     this.queue.removeElementAt(0);
                 }
             }
-            try
-            {
+            try {
                 objElementAt.run();
-            }
-            catch (Throwable th)
-            {
+            } catch (Throwable th) {
                 th.printStackTrace();
             }
         }

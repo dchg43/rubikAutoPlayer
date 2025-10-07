@@ -1,6 +1,5 @@
 package ch.min2phase;
 
-
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -32,7 +31,6 @@ import javax.swing.event.ChangeListener;
 //+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 //A simple GUI example to demonstrate how to use the package org.kociemba.twophase
 
-
 /**
  * This code was edited or generated using CloudGarden's Jigloo SWT/Swing GUI Builder, which is free for non-commercial
  * use. If Jigloo is being used commercially (ie, by a corporation, company or business for any purpose whatever) then
@@ -40,8 +38,7 @@ import javax.swing.event.ChangeListener;
  * Jigloo implies acceptance of these licensing terms. A COMMERCIAL LICENSE HAS NOT BEEN PURCHASED FOR THIS MACHINE, SO
  * JIGLOO OR THIS CODE CANNOT BE USED LEGALLY FOR ANY CORPORATE OR COMMERCIAL PURPOSE.
  */
-public class MainProgram extends JFrame
-{
+public class MainProgram extends JFrame {
 
     // +++++++++++++These variables used only in the
     // GUI-interface+++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -96,42 +93,38 @@ public class MainProgram extends JFrame
     Search search = new Search();
 
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    public static void main(String[] args)
-    {
-//        String fileName = "m2p" + (Search.USE_TWIST_FLIP_PRUN ? "T" : "") + ".data";
-//        try
-//        {
-//            DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(fileName)));
-//            Tools.initFrom(dis);
-//        }
-//        catch (FileNotFoundException e)
-//        {}
-//        catch (IOException e)
-//        {
-//            e.printStackTrace();
-//            System.exit(1);
-//        }
-        if (!Search.isInited())
-        {
+    public static void main(String[] args) {
+        //        String fileName = "m2p" + (Search.USE_TWIST_FLIP_PRUN ? "T" : "") + ".data";
+        //        try
+        //        {
+        //            DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(fileName)));
+        //            Tools.initFrom(dis);
+        //        }
+        //        catch (FileNotFoundException e)
+        //        {}
+        //        catch (IOException e)
+        //        {
+        //            e.printStackTrace();
+        //            System.exit(1);
+        //        }
+        if (!Search.isInited()) {
             Search.init();
-//            try
-//            {
-//                DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fileName)));
-//                Tools.saveTo(dos);
-//                dos.close();
-//            }
-//            catch (IOException e)
-//            {
-//                e.printStackTrace();
-//                System.exit(1);
-//            }
+            //            try
+            //            {
+            //                DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fileName)));
+            //                Tools.saveTo(dos);
+            //                dos.close();
+            //            }
+            //            catch (IOException e)
+            //            {
+            //                e.printStackTrace();
+            //                System.exit(1);
+            //            }
         }
 
-        SwingUtilities.invokeLater(new Runnable()
-        {
+        SwingUtilities.invokeLater(new Runnable() {
             @Override
-            public void run()
-            {
+            public void run() {
                 MainProgram inst = new MainProgram();
                 inst.setLocationRelativeTo(null);
                 inst.setVisible(true);
@@ -140,15 +133,13 @@ public class MainProgram extends JFrame
     }
 
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    public MainProgram()
-    {
+    public MainProgram() {
         super();
         initGUI();
     }
 
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-    private void initGUI()
-    {
+    private void initGUI() {
 
         getContentPane().setLayout(null);
         setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
@@ -160,11 +151,9 @@ public class MainProgram extends JFrame
         Solve = new JButton("Solve Cube");
         getContentPane().add(Solve);
         Solve.setBounds(422, 64, 114, 48);
-        Solve.addActionListener(new ActionListener()
-        {
+        Solve.addActionListener(new ActionListener() {
             @Override
-            public void actionPerformed(ActionEvent evt)
-            {
+            public void actionPerformed(ActionEvent evt) {
                 solveCube(evt);
             }
         });
@@ -183,12 +172,10 @@ public class MainProgram extends JFrame
             getContentPane().add(spinnerMaxMoves);
             spinnerMaxMoves.setBounds(354, 62, 56, 21);
             spinnerMaxMoves.getEditor().setPreferredSize(new java.awt.Dimension(37, 19));
-            spinnerMaxMoves.addChangeListener(new ChangeListener()
-            {
+            spinnerMaxMoves.addChangeListener(new ChangeListener() {
                 @Override
-                public void stateChanged(ChangeEvent evt)
-                {
-                    maxDepth = ((Integer)spinnerMaxMoves.getValue()).intValue();
+                public void stateChanged(ChangeEvent evt) {
+                    maxDepth = ((Integer) spinnerMaxMoves.getValue()).intValue();
                 }
             });
         }
@@ -208,12 +195,10 @@ public class MainProgram extends JFrame
             spinnerTimeout.setModel(model);
             spinnerTimeout.setBounds(354, 90, 56, 21);
             spinnerTimeout.getEditor().setPreferredSize(new java.awt.Dimension(36, 17));
-            spinnerTimeout.addChangeListener(new ChangeListener()
-            {
+            spinnerTimeout.addChangeListener(new ChangeListener() {
                 @Override
-                public void stateChanged(ChangeEvent evt)
-                {
-                    maxTime = ((Integer)spinnerTimeout.getValue()).intValue();
+                public void stateChanged(ChangeEvent evt) {
+                    maxTime = ((Integer) spinnerTimeout.getValue()).intValue();
                 }
             });
         }
@@ -224,22 +209,18 @@ public class MainProgram extends JFrame
             checkBoxInv = new JCheckBox("Inverse", true);
             getContentPane().add(checkBoxInv);
             checkBoxInv.setBounds(12, 297, 121, 20);
-            checkBoxInv.addActionListener(new ActionListener()
-            {
+            checkBoxInv.addActionListener(new ActionListener() {
                 @Override
-                public void actionPerformed(ActionEvent evt)
-                {
+                public void actionPerformed(ActionEvent evt) {
                     inverse = checkBoxInv.isSelected();
                 }
             });
             checkBoxUseSep = new JCheckBox("Use Separator", true);
             getContentPane().add(checkBoxUseSep);
             checkBoxUseSep.setBounds(12, 320, 121, 20);
-            checkBoxUseSep.addActionListener(new ActionListener()
-            {
+            checkBoxUseSep.addActionListener(new ActionListener() {
                 @Override
-                public void actionPerformed(ActionEvent evt)
-                {
+                public void actionPerformed(ActionEvent evt) {
                     useSeparator = checkBoxUseSep.isSelected();
                 }
             });
@@ -248,22 +229,18 @@ public class MainProgram extends JFrame
             checkBoxShowStr = new JCheckBox("Show String", false);
             getContentPane().add(checkBoxShowStr);
             checkBoxShowStr.setBounds(12, 343, 121, 20);
-            checkBoxShowStr.addActionListener(new ActionListener()
-            {
+            checkBoxShowStr.addActionListener(new ActionListener() {
                 @Override
-                public void actionPerformed(ActionEvent evt)
-                {
+                public void actionPerformed(ActionEvent evt) {
                     showString = checkBoxShowStr.isSelected();
                 }
             });
             checkBoxShowLen = new JCheckBox("Show Length", true);
             getContentPane().add(checkBoxShowLen);
             checkBoxShowLen.setBounds(12, 366, 121, 20);
-            checkBoxShowLen.addActionListener(new ActionListener()
-            {
+            checkBoxShowLen.addActionListener(new ActionListener() {
                 @Override
-                public void actionPerformed(ActionEvent evt)
-                {
+                public void actionPerformed(ActionEvent evt) {
                     showLength = checkBoxShowLen.isSelected();
                 }
             });
@@ -276,40 +253,35 @@ public class MainProgram extends JFrame
             getContentPane().add(buttonRandom);
             buttonRandom.setBounds(422, 17, 114, 22);
             buttonRandom.setText("Scramble");
-            buttonRandom.addActionListener(new ActionListener()
-            {
+            buttonRandom.addActionListener(new ActionListener() {
                 @Override
-                public void actionPerformed(ActionEvent evt)
-                {
+                public void actionPerformed(ActionEvent evt) {
                     // +++++++++++++++++++++++++++++ Call Random function from package org.kociemba.twophase
                     // ++++++++++++++++++++
                     String r = Tools.randomCube();
                     jTextPane1.setText(r);
                     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
-                    for (int i = 0; i < 6; i++)
-                    {
-                        for (int j = 0; j < 9; j++)
-                        {
-                            switch (r.charAt(9 * i + j))
-                            {
-                                case 'U':
-                                    facelet[i][j].setBackground(COLORS[0]);
-                                    break;
-                                case 'R':
-                                    facelet[i][j].setBackground(COLORS[1]);
-                                    break;
-                                case 'F':
-                                    facelet[i][j].setBackground(COLORS[2]);
-                                    break;
-                                case 'D':
-                                    facelet[i][j].setBackground(COLORS[3]);
-                                    break;
-                                case 'L':
-                                    facelet[i][j].setBackground(COLORS[4]);
-                                    break;
-                                case 'B':
-                                    facelet[i][j].setBackground(COLORS[5]);
-                                    break;
+                    for (int i = 0; i < 6; i++) {
+                        for (int j = 0; j < 9; j++) {
+                            switch (r.charAt(9 * i + j)) {
+                            case 'U':
+                                facelet[i][j].setBackground(COLORS[0]);
+                                break;
+                            case 'R':
+                                facelet[i][j].setBackground(COLORS[1]);
+                                break;
+                            case 'F':
+                                facelet[i][j].setBackground(COLORS[2]);
+                                break;
+                            case 'D':
+                                facelet[i][j].setBackground(COLORS[3]);
+                                break;
+                            case 'L':
+                                facelet[i][j].setBackground(COLORS[4]);
+                                break;
+                            case 'B':
+                                facelet[i][j].setBackground(COLORS[5]);
+                                break;
                             }
                         }
                     }
@@ -326,47 +298,37 @@ public class MainProgram extends JFrame
 
         // ++++++++++++++++++++++++++++++++++ Set up editable facelets
         // ++++++++++++++++++++++++++++++++++++++++++++++++++++
-        for (int i = 0; i < 6; i++)
-        {
-            for (int j = 0; j < 9; j++)
-            {
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 9; j++) {
                 facelet[i][j] = new JButton();
                 getContentPane().add(facelet[i][j]);
                 facelet[i][j].setBackground(Color.gray);
                 facelet[i][j].setRolloverEnabled(false);
                 facelet[i][j].setOpaque(true);
-                facelet[i][j].setBounds(FSIZE * XOFF[i] + FSIZE * (j % 3), FSIZE * YOFF[i] + FSIZE * (j / 3), FSIZE,
-                    FSIZE);
-                facelet[i][j].addActionListener(new ActionListener()
-                {
+                facelet[i][j].setBounds(FSIZE * XOFF[i] + FSIZE * (j % 3), FSIZE * YOFF[i] + FSIZE * (j / 3), FSIZE, FSIZE);
+                facelet[i][j].addActionListener(new ActionListener() {
                     @Override
-                    public void actionPerformed(ActionEvent evt)
-                    {
-                        ((JButton)evt.getSource()).setBackground(curCol);
+                    public void actionPerformed(ActionEvent evt) {
+                        ((JButton) evt.getSource()).setBackground(curCol);
                     }
                 });
             }
         }
         String[] txt = {"U", "R", "F", "D", "L", "B"};
-        for (int i = 0; i < 6; i++)
-        {
+        for (int i = 0; i < 6; i++) {
             facelet[i][4].setText(txt[i]);
         }
-        for (int i = 0; i < 6; i++)
-        {
+        for (int i = 0; i < 6; i++) {
             colorSel[i] = new JButton();
             getContentPane().add(colorSel[i]);
             colorSel[i].setBackground(COLORS[i]);
             colorSel[i].setOpaque(true);
-            colorSel[i].setBounds(FSIZE * (XOFF[1] + 1) + FSIZE / 4 * 3 * i, FSIZE * (YOFF[3] + 1), FSIZE / 4 * 3,
-                FSIZE / 4 * 3);
+            colorSel[i].setBounds(FSIZE * (XOFF[1] + 1) + FSIZE / 4 * 3 * i, FSIZE * (YOFF[3] + 1), FSIZE / 4 * 3, FSIZE / 4 * 3);
             colorSel[i].setName("" + i);
-            colorSel[i].addActionListener(new ActionListener()
-            {
+            colorSel[i].addActionListener(new ActionListener() {
                 @Override
-                public void actionPerformed(ActionEvent evt)
-                {
-                    curCol = COLORS[Integer.parseInt(((JButton)evt.getSource()).getName())];
+                public void actionPerformed(ActionEvent evt) {
+                    curCol = COLORS[Integer.parseInt(((JButton) evt.getSource()).getName())];
                 }
             });
 
@@ -380,29 +342,24 @@ public class MainProgram extends JFrame
 
     // +++++++++++++++++++++++++++++++ Generate cube from GUI-Input and solve it
     // ++++++++++++++++++++++++++++++++++++++++
-    private void solveCube(ActionEvent evt)
-    {
+    private void solveCube(ActionEvent evt) {
         final char[] chars = {'U', 'R', 'F', 'D', 'L', 'B'};
         Map<Color, Character> colorMap = new HashMap<>();
-        for (int i = 0; i < 6; i++)
-        {
+        for (int i = 0; i < 6; i++) {
             // 中间方块的颜色就是基准颜色
             colorMap.put(facelet[i][4].getBackground(), chars[i]);
         }
 
         StringBuffer s = new StringBuffer(54);
-        for (int i = 0; i < 6; i++)
-        {
+        for (int i = 0; i < 6; i++) {
             // read the 54 facelets
-            for (int j = 0; j < 9; j++)
-            {
+            for (int j = 0; j < 9; j++) {
                 s.append(colorMap.get(facelet[i][j].getBackground()));
             }
         }
 
         String cubeString = s.toString();
-        if (showString)
-        {
+        if (showString) {
             JOptionPane.showMessageDialog(null, "Cube Definiton String: " + cubeString);
         }
         int mask = 0;
@@ -414,8 +371,7 @@ public class MainProgram extends JFrame
         long n_probe = search.numberOfProbes();
         // ++++++++++++++++++++++++ Call Search.solution method from package org.kociemba.twophase
         // ++++++++++++++++++++++++
-        while (result.startsWith("Error 8") && ((System.nanoTime() - t) < maxTime * 1.0e9))
-        {
+        while (result.startsWith("Error 8") && ((System.nanoTime() - t) < maxTime * 1.0e9)) {
             result = search.next(100, 0, mask);
             n_probe += search.numberOfProbes();
         }
@@ -423,44 +379,39 @@ public class MainProgram extends JFrame
 
         // +++++++++++++++++++ Replace the error messages with more meaningful ones in your language
         // ++++++++++++++++++++++
-        if (result.contains("Error"))
-        {
-            switch (result.charAt(result.length() - 1))
-            {
-                case '1':
-                    result = "There are not exactly nine facelets of each color!";
-                    break;
-                case '2':
-                    result = "Not all 12 edges exist exactly once!";
-                    break;
-                case '3':
-                    result = "Flip error: One edge has to be flipped!";
-                    break;
-                case '4':
-                    result = "Not all 8 corners exist exactly once!";
-                    break;
-                case '5':
-                    result = "Twist error: One corner has to be twisted!";
-                    break;
-                case '6':
-                    result = "Parity error: Two corners or two edges have to be exchanged!";
-                    break;
-                case '7':
-                    result = "No solution exists for the given maximum move number!";
-                    break;
-                case '8':
-                    result = "Timeout, no solution found within given maximum time!";
-                    break;
+        if (result.contains("Error")) {
+            switch (result.charAt(result.length() - 1)) {
+            case '1':
+                result = "There are not exactly nine facelets of each color!";
+                break;
+            case '2':
+                result = "Not all 12 edges exist exactly once!";
+                break;
+            case '3':
+                result = "Flip error: One edge has to be flipped!";
+                break;
+            case '4':
+                result = "Not all 8 corners exist exactly once!";
+                break;
+            case '5':
+                result = "Twist error: One corner has to be twisted!";
+                break;
+            case '6':
+                result = "Parity error: Two corners or two edges have to be exchanged!";
+                break;
+            case '7':
+                result = "No solution exists for the given maximum move number!";
+                break;
+            case '8':
+                result = "Timeout, no solution found within given maximum time!";
+                break;
             }
-            JOptionPane.showMessageDialog(null, result,
-                Double.toString((t / 1000) / 1000.0) + " ms | " + n_probe + " probes", JOptionPane.INFORMATION_MESSAGE);
-        }
-        else
-        {
+            JOptionPane.showMessageDialog(null, result, Double.toString((t / 1000) / 1000.0) + " ms | " + n_probe + " probes", JOptionPane.INFORMATION_MESSAGE);
+        } else {
             int solLen = (result.length() - (useSeparator ? 3 : 0) - (showLength ? 4 : 0)) / 3;
             spinnerMaxMoves.setValue(solLen - 1);
-            jTextPane1.setText(String.format("%s\n" /* , %s ms, %d probes\n */,
-                result/* , Double.toString((t / 1000) / 1000.0), n_probe */) + jTextPane1.getText());
+            jTextPane1.setText(String.format("%s\n" /* , %s ms, %d probes\n */, result/* , Double.toString((t / 1000) / 1000.0), n_probe */)
+                               + jTextPane1.getText());
             jTextPane1.requestFocusInWindow();
             jTextPane1.select(0, result.length());
         }

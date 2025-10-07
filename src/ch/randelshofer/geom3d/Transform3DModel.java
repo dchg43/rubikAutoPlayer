@@ -1,11 +1,8 @@
 package ch.randelshofer.geom3d;
 
-
 import ch.randelshofer.gui.event.ChangeListener;
 
-
-public interface Transform3DModel
-{
+public interface Transform3DModel {
     void setToIdentity();
 
     void rotate(double x, double y, double z);

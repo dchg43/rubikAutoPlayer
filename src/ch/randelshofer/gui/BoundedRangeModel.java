@@ -1,11 +1,8 @@
 package ch.randelshofer.gui;
 
-
 import ch.randelshofer.gui.event.ChangeListener;
 
-
-public interface BoundedRangeModel
-{
+public interface BoundedRangeModel {
     int getMinimum();
 
     void setMinimum(int min);

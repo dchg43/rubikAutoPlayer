@@ -1,42 +1,35 @@
 package ch.randelshofer.geom3d;
 
-public class Point3D
-{
+public class Point3D {
     public double x;
 
     public double y;
 
     public double z;
 
-    public Point3D()
-    {}
+    public Point3D() {
+    }
 
-    public Point3D(double x, double y, double z)
-    {
+    public Point3D(double x, double y, double z) {
         this.x = x;
         this.y = y;
         this.z = z;
     }
 
     @Override
-    public String toString()
-    {
-        return new StringBuffer().append("Point3D[").append(this.x).append(", ").append(this.y).append(", ").append(
-            this.z).append("]").toString();
+    public String toString() {
+        return new StringBuffer().append("Point3D[").append(this.x).append(", ").append(this.y).append(", ").append(this.z).append("]").toString();
     }
 
-    public double getX()
-    {
+    public double getX() {
         return this.x;
     }
 
-    public double getY()
-    {
+    public double getY() {
         return this.y;
     }
 
-    public double getZ()
-    {
+    public double getZ() {
         return this.z;
     }
 }

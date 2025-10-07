@@ -4,7 +4,7 @@ cd /D "%~dp0"
 set "BASEDIR=%cd%"
 
 set "srcDir=src"
-set "destDir=%BASEDIR%\target"
+set "destDir=%BASEDIR%\dest"
 set "libDir=lib"
 echo "%destDir%"
 if "x%JAVA_HOME%" == "x" (
@@ -34,13 +34,14 @@ if exist "%destDir%" (
 
 mkdir "%destDir%"
 
-dir "%srcDir%"\*.java /s/b > srclist.txt
+dir "%srcDir%"\*.java /s/b > "%destDir%"\srclist.txt
 echo "javac -encoding utf-8 -d %destDir% -classpath %CLASSPATH% %srcDir%\*.java"
-"%JAVAC%" -encoding utf-8 -d "%destDir%" -classpath "%CLASSPATH%" @srclist.txt
+"%JAVAC%" -encoding utf-8 -d "%destDir%" -classpath "%CLASSPATH%" @"%destDir%"\srclist.txt
 if not "%errorlevel%" == "0" (
     pause
     exit /b %errorlevel%
 )
+del /f /q "%destDir%"\srclist.txt
 
 :: clean jar
 if exist "%BASEDIR%\rubikAutoPlayer.jar" (
@@ -54,12 +55,12 @@ if not "%errorlevel%" == "0" (
     pause
     exit /b %errorlevel%
 )
-
+rmdir /s /q "%destDir%"
 
 
 
 ::jpackage --type app-image --name spring --input target --main-jar spring-1.0.jar --win-console --dest dist
 
-jpackage --input dest --name rubikAutoPlayer --main-jar rubikAutoPlayer.jar --win-console --win-shortcut
+jpackage --input . --name rubikAutoPlayer --main-jar rubikAutoPlayer.jar --win-console --win-shortcut
 
 pause

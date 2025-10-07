@@ -1,6 +1,5 @@
 package ch.randelshofer.rubik;
 
-
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -19,9 +18,7 @@ import ch.randelshofer.gui.event.EventListenerList;
 import ch.randelshofer.gui.event.EventListenerList.ListenerNode;
 import ch.randelshofer.util.PooledSequentialDispatcherAWT;
 
-
-public abstract class AbstractCube3DAWT implements RubikListener
-{
+public abstract class AbstractCube3DAWT implements RubikListener {
     protected Shape3D centerShape;
 
     private TransformNode sceneTransform;
@@ -46,16 +43,15 @@ public abstract class AbstractCube3DAWT implements RubikListener
 
     public static final Color PART_BORDER_COLOR = Color.black;
 
-    public static final double[][] CORNER_EXPLODE_TRANSLATION = {{-1.0d, 1.0d, 1.0d}, {-1.0d, -1.0d, 1.0d},
-        {1.0d, 1.0d, 1.0d}, {1.0d, -1.0d, 1.0d}, {1.0d, 1.0d, -1.0d}, {1.0d, -1.0d, -1.0d}, {-1.0d, 1.0d, -1.0d},
-        {-1.0d, -1.0d, -1.0d}};
+    public static final double[][] CORNER_EXPLODE_TRANSLATION = {{-1.0d, 1.0d, 1.0d}, {-1.0d, -1.0d, 1.0d}, {1.0d, 1.0d, 1.0d}, {1.0d, -1.0d, 1.0d}, {1.0d,
+            1.0d, -1.0d}, {1.0d, -1.0d, -1.0d}, {-1.0d, 1.0d, -1.0d}, {-1.0d, -1.0d, -1.0d}};
 
-    public static final double[][] EDGE_EXPLODE_TRANSLATION = {{0.0d, 1.0d, 1.0d}, {-1.0d, 0.0d, 1.0d},
-        {0.0d, -1.0d, 1.0d}, {1.0d, 1.0d, 0.0d}, {1.0d, 0.0d, 1.0d}, {1.0d, -1.0d, 0.0d}, {0.0d, 1.0d, -1.0d},
-        {1.0d, 0.0d, -1.0d}, {0.0d, -1.0d, -1.0d}, {-1.0d, 1.0d, 0.0d}, {-1.0d, 0.0d, -1.0d}, {-1.0d, -1.0d, 0.0d}};
+    public static final double[][] EDGE_EXPLODE_TRANSLATION = {{0.0d, 1.0d, 1.0d}, {-1.0d, 0.0d, 1.0d}, {0.0d, -1.0d, 1.0d}, {1.0d, 1.0d, 0.0d}, {1.0d, 0.0d,
+            1.0d}, {1.0d, -1.0d, 0.0d}, {0.0d, 1.0d, -1.0d}, {1.0d, 0.0d, -1.0d}, {0.0d, -1.0d, -1.0d}, {-1.0d, 1.0d, 0.0d}, {-1.0d, 0.0d, -1.0d}, {-1.0d,
+                    -1.0d, 0.0d}};
 
-    public static final double[][] SIDE_EXPLODE_TRANSLATION = {{0.0d, 0.0d, 1.0d}, {1.0d, 0.0d, 0.0d},
-        {0.0d, -1.0d, 0.0d}, {0.0d, 0.0d, -1.0d}, {-1.0d, 0.0d, 0.0d}, {0.0d, 1.0d, 0.0d}};
+    public static final double[][] SIDE_EXPLODE_TRANSLATION = {{0.0d, 0.0d, 1.0d}, {1.0d, 0.0d, 0.0d}, {0.0d, -1.0d, 0.0d}, {0.0d, 0.0d, -1.0d}, {-1.0d, 0.0d,
+            0.0d}, {0.0d, 1.0d, 0.0d}};
 
     protected Shape3D[] cornerShapes = new Shape3D[8];
 
@@ -88,42 +84,32 @@ public abstract class AbstractCube3DAWT implements RubikListener
     /**
      * 点击四角方块的旋转，顺时针
      */
-    class CornerAction implements ActionListener
-    {
+    class CornerAction implements ActionListener {
         private int corner;
 
         private int orientation;
 
         private final AbstractCube3DAWT awtInstance;
 
-        public CornerAction(AbstractCube3DAWT awtInstance, int corner, int orientation)
-        {
+        public CornerAction(AbstractCube3DAWT awtInstance, int corner, int orientation) {
             this.awtInstance = awtInstance;
             this.corner = corner;
             this.orientation = orientation;
         }
 
         @Override
-        public void actionPerformed(ActionEvent actionEvent)
-        {
-            if (actionEvent.getSource() instanceof MouseEvent
-                && ((MouseEvent)actionEvent.getSource()).getClickCount() <= 1)
-            {
-                if (isEditMode())
-                {
+        public void actionPerformed(ActionEvent actionEvent) {
+            if (actionEvent.getSource() instanceof MouseEvent && ((MouseEvent) actionEvent.getSource()).getClickCount() <= 1) {
+                if (isEditMode()) {
                     // CORNER_MAP[CornerSide][cornerLoc % 4] （详见图片<块的命名>）
-                    final int[][] CORNER_MAP = {{0, 6, 2, 8}, {2, 8, 0, 6}, {0, 2, 8, 6}, {0, 6, 2, 8}, {2, 8, 0, 6},
-                        {6, 8, 2, 0}};
+                    final int[][] CORNER_MAP = {{0, 6, 2, 8}, {2, 8, 0, 6}, {0, 2, 8, 6}, {0, 6, 2, 8}, {2, 8, 0, 6}, {6, 8, 2, 0}};
                     int cornerSide = this.awtInstance.model.getCornerSide(this.corner, this.orientation);
                     int mapindex = (cornerSide == 2 || cornerSide == 5) ? (this.corner / 2) : (this.corner % 4);
                     int cornerIndex = CORNER_MAP[cornerSide][mapindex];
                     this.awtInstance.setStickerColor(cornerSide, cornerIndex, getSelectColor());
-                }
-                else
-                {
-                    this.awtInstance.getDispatcher().dispatch(new SideEvent(this.awtInstance,
-                        this.awtInstance.model.getCornerSide(this.corner, this.orientation),
-                        (actionEvent.getModifiers() & 0x9) != 0));
+                } else {
+                    this.awtInstance.getDispatcher().dispatch(new SideEvent(this.awtInstance, this.awtInstance.model.getCornerSide(this.corner,
+                            this.orientation), (actionEvent.getModifiers() & 0x9) != 0));
                 }
             }
         }
@@ -132,46 +118,37 @@ public abstract class AbstractCube3DAWT implements RubikListener
     /**
      * 点击棱上方块的旋转，包括顺时针和逆时针
      */
-    class EdgeAction implements ActionListener
-    {
+    class EdgeAction implements ActionListener {
         private int edge;
 
         private int orientation;
 
         private final AbstractCube3DAWT awtInstance;
 
-        public EdgeAction(AbstractCube3DAWT awtInstance, int edge, int orientation)
-        {
+        public EdgeAction(AbstractCube3DAWT awtInstance, int edge, int orientation) {
             this.awtInstance = awtInstance;
             this.edge = edge;
             this.orientation = orientation;
         }
 
         @Override
-        public void actionPerformed(ActionEvent actionEvent)
-        {
-            if (actionEvent.getSource() instanceof MouseEvent
-                && ((MouseEvent)actionEvent.getSource()).getClickCount() <= 1)
-            {
-                if (isEditMode())
-                {
+        public void actionPerformed(ActionEvent actionEvent) {
+            if (actionEvent.getSource() instanceof MouseEvent && ((MouseEvent) actionEvent.getSource()).getClickCount() <= 1) {
+                if (isEditMode()) {
                     // EDGE_MAP[edgeSide][edgeLoc] （详见图片<块的命名>）
                     final int[][] EDGE_MAP = { //
-                        {1, 3, 7, 0, 5, 0, 0, 0, 0, 0, 0, 0}, // 0
-                        {0, 0, 0, 1, 3, 7, 0, 5, 0, 0, 0, 0}, // 1
-                        {0, 0, 1, 0, 0, 5, 0, 0, 7, 0, 0, 3}, // 2
-                        {0, 0, 0, 0, 0, 0, 1, 3, 7, 0, 5, 0}, // 3
-                        {0, 5, 0, 0, 0, 0, 0, 0, 0, 1, 3, 7}, // 4
-                        {7, 0, 0, 5, 0, 0, 1, 0, 0, 3, 0, 0}}; // 5
+                            {1, 3, 7, 0, 5, 0, 0, 0, 0, 0, 0, 0}, // 0
+                            {0, 0, 0, 1, 3, 7, 0, 5, 0, 0, 0, 0}, // 1
+                            {0, 0, 1, 0, 0, 5, 0, 0, 7, 0, 0, 3}, // 2
+                            {0, 0, 0, 0, 0, 0, 1, 3, 7, 0, 5, 0}, // 3
+                            {0, 5, 0, 0, 0, 0, 0, 0, 0, 1, 3, 7}, // 4
+                            {7, 0, 0, 5, 0, 0, 1, 0, 0, 3, 0, 0}}; // 5
                     int edgeSide = this.awtInstance.model.getEdgeSide(this.edge, this.orientation ^ 1);
                     int edgeIndex = EDGE_MAP[edgeSide][this.edge];
                     this.awtInstance.setStickerColor(edgeSide, edgeIndex, getSelectColor());
-                }
-                else
-                {
-                    this.awtInstance.getDispatcher().dispatch(new EdgeEvent(this.awtInstance,
-                        this.awtInstance.model.getEdgeLayerSide(this.edge, this.orientation),
-                        (actionEvent.getModifiers() & 0x9) != 0));
+                } else {
+                    this.awtInstance.getDispatcher().dispatch(new EdgeEvent(this.awtInstance, this.awtInstance.model.getEdgeLayerSide(this.edge,
+                            this.orientation), (actionEvent.getModifiers() & 0x9) != 0));
                 }
             }
         }
@@ -180,39 +157,30 @@ public abstract class AbstractCube3DAWT implements RubikListener
     /**
      * 点击中心方块的旋转，顺时针（为了逆时针旋转，改了SideEvent的最后一个字段）
      */
-    class SideAction implements ActionListener
-    {
+    class SideAction implements ActionListener {
         private int side;
 
         private final AbstractCube3DAWT awtInstance;
 
-        public SideAction(AbstractCube3DAWT awtInstance, int side)
-        {
+        public SideAction(AbstractCube3DAWT awtInstance, int side) {
             this.awtInstance = awtInstance;
             this.side = side;
         }
 
         @Override
-        public void actionPerformed(ActionEvent actionEvent)
-        {
-            if (actionEvent.getSource() instanceof MouseEvent
-                && ((MouseEvent)actionEvent.getSource()).getClickCount() <= 1)
-            {
-                if (isEditMode())
-                {
+        public void actionPerformed(ActionEvent actionEvent) {
+            if (actionEvent.getSource() instanceof MouseEvent && ((MouseEvent) actionEvent.getSource()).getClickCount() <= 1) {
+                if (isEditMode()) {
                     this.awtInstance.setStickerColor(this.side, 4, getSelectColor());
-                }
-                else
-                {
-                    this.awtInstance.getDispatcher().dispatch(new SideEvent(this.awtInstance,
-                        this.awtInstance.model.getSideLocation(this.side), (actionEvent.getModifiers() & 0x9) == 0));
+                } else {
+                    this.awtInstance.getDispatcher().dispatch(new SideEvent(this.awtInstance, this.awtInstance.model.getSideLocation(this.side),
+                            (actionEvent.getModifiers() & 0x9) == 0));
                 }
             }
         }
     }
 
-    class EdgeEvent implements Runnable
-    {
+    class EdgeEvent implements Runnable {
         private int side;
 
         private boolean isClockwise;
@@ -224,22 +192,19 @@ public abstract class AbstractCube3DAWT implements RubikListener
          * @param i 所在面
          * @param z 旋转方向
          */
-        public EdgeEvent(AbstractCube3DAWT awtInstance, int side, boolean isClockwise)
-        {
+        public EdgeEvent(AbstractCube3DAWT awtInstance, int side, boolean isClockwise) {
             this.awtInstance = awtInstance;
             this.side = side;
             this.isClockwise = isClockwise;
         }
 
         @Override
-        public void run()
-        {
+        public void run() {
             this.awtInstance.model.twistEdge(this.side, this.isClockwise);
         }
     }
 
-    class SideEvent implements Runnable
-    {
+    class SideEvent implements Runnable {
         private int side;
 
         private boolean isClockwise;
@@ -251,141 +216,117 @@ public abstract class AbstractCube3DAWT implements RubikListener
          * @param i 所在面
          * @param z 旋转方向
          */
-        public SideEvent(AbstractCube3DAWT awtInstance, int side, boolean isClockwise)
-        {
+        public SideEvent(AbstractCube3DAWT awtInstance, int side, boolean isClockwise) {
             this.awtInstance = awtInstance;
             this.side = side;
             this.isClockwise = isClockwise;
         }
 
         @Override
-        public void run()
-        {
+        public void run() {
             this.awtInstance.model.twistSide(this.side, this.isClockwise);
         }
     }
 
-    public AbstractCube3DAWT()
-    {
+    public AbstractCube3DAWT() {
         init();
     }
 
-    private void computeTransformation()
-    {
-        synchronized (this.model)
-        {
-            for (int i = 0; i < this.sideTransforms.length; i++)
-            {
+    private void computeTransformation() {
+        synchronized (this.model) {
+            for (int i = 0; i < this.sideTransforms.length; i++) {
                 int sideLocation = this.model.getSideLocation(i);
-                Transform3D transform3D = (Transform3D)this.sideIdentityTransforms[sideLocation].clone();
-                transform3D.translate(SIDE_EXPLODE_TRANSLATION[sideLocation][0] * this.explosion,
-                    SIDE_EXPLODE_TRANSLATION[sideLocation][1] * this.explosion,
-                    SIDE_EXPLODE_TRANSLATION[sideLocation][2] * this.explosion);
+                Transform3D transform3D = (Transform3D) this.sideIdentityTransforms[sideLocation].clone();
+                transform3D.translate(SIDE_EXPLODE_TRANSLATION[sideLocation][0] * this.explosion, SIDE_EXPLODE_TRANSLATION[sideLocation][1] * this.explosion,
+                        SIDE_EXPLODE_TRANSLATION[sideLocation][2] * this.explosion);
                 this.sideTransforms[i].setTransform(transform3D);
             }
-            for (int i = 0; i < this.edgeTransforms.length; i++)
-            {
+            for (int i = 0; i < this.edgeTransforms.length; i++) {
                 int edgeLocation = this.model.getEdgeLocation(i);
                 Transform3D transform = this.edgeTransforms[i].getTransform();
                 transform.setToIdentity();
-                if (this.model.getEdgeOrientation(i) == 1)
-                {
+                if (this.model.getEdgeOrientation(i) == 1) {
                     transform.rotateZ(Math.PI);
                     transform.rotateX(Math.PI / 2);
                 }
-                Transform3D transform3D2 = (Transform3D)this.edgeIdentityTransforms[edgeLocation].clone();
-                transform3D2.translate(EDGE_EXPLODE_TRANSLATION[edgeLocation][0] * this.explosion,
-                    EDGE_EXPLODE_TRANSLATION[edgeLocation][1] * this.explosion,
-                    EDGE_EXPLODE_TRANSLATION[edgeLocation][2] * this.explosion);
+                Transform3D transform3D2 = (Transform3D) this.edgeIdentityTransforms[edgeLocation].clone();
+                transform3D2.translate(EDGE_EXPLODE_TRANSLATION[edgeLocation][0] * this.explosion, EDGE_EXPLODE_TRANSLATION[edgeLocation][1] * this.explosion,
+                        EDGE_EXPLODE_TRANSLATION[edgeLocation][2] * this.explosion);
                 transform.concatenate(transform3D2);
             }
-            for (int i = 0; i < this.cornerTransforms.length; i++)
-            {
+            for (int i = 0; i < this.cornerTransforms.length; i++) {
                 int cornerLocation = this.model.getCornerLocation(i);
                 Transform3D transform2 = this.cornerTransforms[i].getTransform();
                 transform2.setToIdentity();
-                switch (this.model.getCornerOrientation(i))
-                {
-                    case 1:
-                        transform2.rotateZ(-Math.PI / 2);
-                        transform2.rotateX(Math.PI / 2);
-                        break;
-                    case 2:
-                        transform2.rotate(-Math.PI / 2, 0.0d, Math.PI / 2);
-                        break;
+                switch (this.model.getCornerOrientation(i)) {
+                case 1:
+                    transform2.rotateZ(-Math.PI / 2);
+                    transform2.rotateX(Math.PI / 2);
+                    break;
+                case 2:
+                    transform2.rotate(-Math.PI / 2, 0.0d, Math.PI / 2);
+                    break;
                 }
-                Transform3D transform3D3 = (Transform3D)this.cornerIdentityTransforms[cornerLocation].clone();
-                transform3D3.translate(CORNER_EXPLODE_TRANSLATION[cornerLocation][0] * this.explosion,
-                    CORNER_EXPLODE_TRANSLATION[cornerLocation][1] * this.explosion,
-                    CORNER_EXPLODE_TRANSLATION[cornerLocation][2] * this.explosion);
+                Transform3D transform3D3 = (Transform3D) this.cornerIdentityTransforms[cornerLocation].clone();
+                transform3D3.translate(CORNER_EXPLODE_TRANSLATION[cornerLocation][0] * this.explosion, CORNER_EXPLODE_TRANSLATION[cornerLocation][1]
+                                                                                                       * this.explosion,
+                        CORNER_EXPLODE_TRANSLATION[cornerLocation][2] * this.explosion);
                 transform2.concatenate(transform3D3);
             }
         }
     }
 
-    public SceneNode getScene()
-    {
+    public SceneNode getScene() {
         return this.sceneTransform;
     }
 
-    public void update()
-    {
+    public void update() {
         computeTransformation();
         fireStateChanged();
     }
 
-    public void setModel(RubiksCubeCore model)
-    {
-        if (this.model != null)
-        {
+    public void setModel(RubiksCubeCore model) {
+        if (this.model != null) {
             this.model.removeRubikListener(this);
         }
         this.model = model;
-        if (this.model != null)
-        {
+        if (this.model != null) {
             this.model.addRubikListener(this);
             update();
         }
     }
 
-    public RubiksCubeCore getModel()
-    {
+    public RubiksCubeCore getModel() {
         return this.model;
     }
 
-    public void setCornerVisible(int index, boolean isVisible)
-    {
+    public void setCornerVisible(int index, boolean isVisible) {
         this.cornerShapes[index].setVisible(isVisible);
         fireStateChanged();
     }
 
-    public void setEdgeVisible(int index, boolean isVisible)
-    {
+    public void setEdgeVisible(int index, boolean isVisible) {
         this.edgeShapes[index].setVisible(isVisible);
         fireStateChanged();
     }
 
-    public void setSideVisible(int index, boolean isVisible)
-    {
+    public void setSideVisible(int index, boolean isVisible) {
         this.sideShapes[index].setVisible(isVisible);
         fireStateChanged();
     }
 
-    public void setCenterVisible(boolean isVisible)
-    {
+    public void setCenterVisible(boolean isVisible) {
         this.centerShape.setVisible(isVisible);
         fireStateChanged();
     }
 
-    public void setExplosion(double explosion)
-    {
+    public void setExplosion(double explosion) {
         this.explosion = 27.0d * explosion;
         computeTransformation();
         fireStateChanged();
     }
 
-    public double getExplosion()
-    {
+    public double getExplosion() {
         return this.explosion / 27.0d;
     }
 
@@ -393,8 +334,7 @@ public abstract class AbstractCube3DAWT implements RubikListener
 
     public abstract Color getStickerColor(int i, int i2);
 
-    protected void init()
-    {
+    protected void init() {
         initCorners();
         initEdges();
         initSides();
@@ -412,8 +352,7 @@ public abstract class AbstractCube3DAWT implements RubikListener
 
     protected abstract void initCenter();
 
-    protected void initTransforms()
-    {
+    protected void initTransforms() {
         this.sceneTransform = new TransformNode();
         this.cornerIdentityTransforms[0] = new Transform3D();
         this.cornerIdentityTransforms[0].translate(-18.0d, 18.0d, 18.0d);
@@ -505,20 +444,17 @@ public abstract class AbstractCube3DAWT implements RubikListener
         this.sideIdentityTransforms[5] = new Transform3D();
         this.sideIdentityTransforms[5].translate(0.0d, 0.0d, 18.0d);
         this.sideIdentityTransforms[5].rotateX(Math.PI / 2);
-        for (int i = 0; i < 8; i++)
-        {
+        for (int i = 0; i < 8; i++) {
             this.cornerTransforms[i] = new TransformNode();
             this.cornerTransforms[i].addChild(this.cornerShapes[i]);
             this.sceneTransform.addChild(this.cornerTransforms[i]);
         }
-        for (int i = 0; i < 12; i++)
-        {
+        for (int i = 0; i < 12; i++) {
             this.edgeTransforms[i] = new TransformNode();
             this.edgeTransforms[i].addChild(this.edgeShapes[i]);
             this.sceneTransform.addChild(this.edgeTransforms[i]);
         }
-        for (int i = 0; i < 6; i++)
-        {
+        for (int i = 0; i < 6; i++) {
             this.sideTransforms[i] = new TransformNode();
             this.sideTransforms[i].addChild(this.sideShapes[i]);
             this.sceneTransform.addChild(this.sideTransforms[i]);
@@ -531,166 +467,147 @@ public abstract class AbstractCube3DAWT implements RubikListener
     protected abstract void initActions();
 
     @Override
-    public void rubikTwisted(RubikEvent rubikEvent)
-    {
+    public void rubikTwisted(RubikEvent rubikEvent) {
         update();
     }
 
     @Override
-    public void rubikTwisting(RubikEvent rubikEvent)
-    {
-        if (this.isAnimated)
-        {
+    public void rubikTwisting(RubikEvent rubikEvent) {
+        if (this.isAnimated) {
             animateTwist(rubikEvent);
         }
     }
 
     // 转动一次
-    protected void animateTwist(RubikEvent rubikEvent)
-    {
+    protected void animateTwist(RubikEvent rubikEvent) {
         Vector<TransformNode> vector = new Vector<>();
         Transform3D transform3D = new Transform3D();
         int layerMask = rubikEvent.getLayerMask();
         double angle = rubikEvent.getAngle();
         int i = (angle == 2.0d || angle == -2.0d) ? 20 : 10;
         double d = (Math.PI / 2 / i) * angle;
-        switch (rubikEvent.getAxis())
-        {
-            case 0:
-                transform3D.rotateX(d);
-                if ((layerMask & 0x1) == 1)
-                {
-                    vector.addElement(this.cornerTransforms[this.model.getCornerAt(0)]);
-                    vector.addElement(this.cornerTransforms[this.model.getCornerAt(1)]);
-                    vector.addElement(this.cornerTransforms[this.model.getCornerAt(6)]);
-                    vector.addElement(this.cornerTransforms[this.model.getCornerAt(7)]);
-                    vector.addElement(this.edgeTransforms[this.model.getEdgeAt(1)]);
-                    vector.addElement(this.edgeTransforms[this.model.getEdgeAt(9)]);
-                    vector.addElement(this.edgeTransforms[this.model.getEdgeAt(10)]);
-                    vector.addElement(this.edgeTransforms[this.model.getEdgeAt(11)]);
-                    vector.addElement(this.sideTransforms[this.model.getSideAt(4)]);
-                }
-                if ((layerMask & 0x2) == 2)
-                {
-                    vector.addElement(this.edgeTransforms[this.model.getEdgeAt(0)]);
-                    vector.addElement(this.edgeTransforms[this.model.getEdgeAt(2)]);
-                    vector.addElement(this.edgeTransforms[this.model.getEdgeAt(6)]);
-                    vector.addElement(this.edgeTransforms[this.model.getEdgeAt(8)]);
-                    vector.addElement(this.sideTransforms[this.model.getSideAt(0)]);
-                    vector.addElement(this.sideTransforms[this.model.getSideAt(2)]);
-                    vector.addElement(this.sideTransforms[this.model.getSideAt(3)]);
-                    vector.addElement(this.sideTransforms[this.model.getSideAt(5)]);
-                    vector.addElement(this.centerTransform);
-                }
-                if ((layerMask & 0x4) == 4)
-                {
-                    vector.addElement(this.cornerTransforms[this.model.getCornerAt(2)]);
-                    vector.addElement(this.cornerTransforms[this.model.getCornerAt(3)]);
-                    vector.addElement(this.cornerTransforms[this.model.getCornerAt(4)]);
-                    vector.addElement(this.cornerTransforms[this.model.getCornerAt(5)]);
-                    vector.addElement(this.edgeTransforms[this.model.getEdgeAt(3)]);
-                    vector.addElement(this.edgeTransforms[this.model.getEdgeAt(4)]);
-                    vector.addElement(this.edgeTransforms[this.model.getEdgeAt(5)]);
-                    vector.addElement(this.edgeTransforms[this.model.getEdgeAt(7)]);
-                    vector.addElement(this.sideTransforms[this.model.getSideAt(1)]);
-                    break;
-                }
+        switch (rubikEvent.getAxis()) {
+        case 0:
+            transform3D.rotateX(d);
+            if ((layerMask & 0x1) == 1) {
+                vector.addElement(this.cornerTransforms[this.model.getCornerAt(0)]);
+                vector.addElement(this.cornerTransforms[this.model.getCornerAt(1)]);
+                vector.addElement(this.cornerTransforms[this.model.getCornerAt(6)]);
+                vector.addElement(this.cornerTransforms[this.model.getCornerAt(7)]);
+                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(1)]);
+                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(9)]);
+                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(10)]);
+                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(11)]);
+                vector.addElement(this.sideTransforms[this.model.getSideAt(4)]);
+            }
+            if ((layerMask & 0x2) == 2) {
+                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(0)]);
+                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(2)]);
+                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(6)]);
+                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(8)]);
+                vector.addElement(this.sideTransforms[this.model.getSideAt(0)]);
+                vector.addElement(this.sideTransforms[this.model.getSideAt(2)]);
+                vector.addElement(this.sideTransforms[this.model.getSideAt(3)]);
+                vector.addElement(this.sideTransforms[this.model.getSideAt(5)]);
+                vector.addElement(this.centerTransform);
+            }
+            if ((layerMask & 0x4) == 4) {
+                vector.addElement(this.cornerTransforms[this.model.getCornerAt(2)]);
+                vector.addElement(this.cornerTransforms[this.model.getCornerAt(3)]);
+                vector.addElement(this.cornerTransforms[this.model.getCornerAt(4)]);
+                vector.addElement(this.cornerTransforms[this.model.getCornerAt(5)]);
+                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(3)]);
+                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(4)]);
+                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(5)]);
+                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(7)]);
+                vector.addElement(this.sideTransforms[this.model.getSideAt(1)]);
                 break;
-            case 1:
-                transform3D.rotateY(d);
-                if ((layerMask & 0x1) == 1)
-                {
-                    vector.addElement(this.cornerTransforms[this.model.getCornerAt(1)]);
-                    vector.addElement(this.cornerTransforms[this.model.getCornerAt(3)]);
-                    vector.addElement(this.cornerTransforms[this.model.getCornerAt(5)]);
-                    vector.addElement(this.cornerTransforms[this.model.getCornerAt(7)]);
-                    vector.addElement(this.edgeTransforms[this.model.getEdgeAt(2)]);
-                    vector.addElement(this.edgeTransforms[this.model.getEdgeAt(5)]);
-                    vector.addElement(this.edgeTransforms[this.model.getEdgeAt(8)]);
-                    vector.addElement(this.edgeTransforms[this.model.getEdgeAt(11)]);
-                    vector.addElement(this.sideTransforms[this.model.getSideAt(2)]);
-                }
-                if ((layerMask & 0x2) == 2)
-                {
-                    vector.addElement(this.edgeTransforms[this.model.getEdgeAt(1)]);
-                    vector.addElement(this.edgeTransforms[this.model.getEdgeAt(4)]);
-                    vector.addElement(this.edgeTransforms[this.model.getEdgeAt(7)]);
-                    vector.addElement(this.edgeTransforms[this.model.getEdgeAt(10)]);
-                    vector.addElement(this.sideTransforms[this.model.getSideAt(0)]);
-                    vector.addElement(this.sideTransforms[this.model.getSideAt(1)]);
-                    vector.addElement(this.sideTransforms[this.model.getSideAt(3)]);
-                    vector.addElement(this.sideTransforms[this.model.getSideAt(4)]);
-                    vector.addElement(this.centerTransform);
-                }
-                if ((layerMask & 0x4) == 4)
-                {
-                    vector.addElement(this.cornerTransforms[this.model.getCornerAt(0)]);
-                    vector.addElement(this.cornerTransforms[this.model.getCornerAt(2)]);
-                    vector.addElement(this.cornerTransforms[this.model.getCornerAt(4)]);
-                    vector.addElement(this.cornerTransforms[this.model.getCornerAt(6)]);
-                    vector.addElement(this.edgeTransforms[this.model.getEdgeAt(0)]);
-                    vector.addElement(this.edgeTransforms[this.model.getEdgeAt(3)]);
-                    vector.addElement(this.edgeTransforms[this.model.getEdgeAt(6)]);
-                    vector.addElement(this.edgeTransforms[this.model.getEdgeAt(9)]);
-                    vector.addElement(this.sideTransforms[this.model.getSideAt(5)]);
-                    break;
-                }
+            }
+            break;
+        case 1:
+            transform3D.rotateY(d);
+            if ((layerMask & 0x1) == 1) {
+                vector.addElement(this.cornerTransforms[this.model.getCornerAt(1)]);
+                vector.addElement(this.cornerTransforms[this.model.getCornerAt(3)]);
+                vector.addElement(this.cornerTransforms[this.model.getCornerAt(5)]);
+                vector.addElement(this.cornerTransforms[this.model.getCornerAt(7)]);
+                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(2)]);
+                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(5)]);
+                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(8)]);
+                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(11)]);
+                vector.addElement(this.sideTransforms[this.model.getSideAt(2)]);
+            }
+            if ((layerMask & 0x2) == 2) {
+                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(1)]);
+                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(4)]);
+                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(7)]);
+                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(10)]);
+                vector.addElement(this.sideTransforms[this.model.getSideAt(0)]);
+                vector.addElement(this.sideTransforms[this.model.getSideAt(1)]);
+                vector.addElement(this.sideTransforms[this.model.getSideAt(3)]);
+                vector.addElement(this.sideTransforms[this.model.getSideAt(4)]);
+                vector.addElement(this.centerTransform);
+            }
+            if ((layerMask & 0x4) == 4) {
+                vector.addElement(this.cornerTransforms[this.model.getCornerAt(0)]);
+                vector.addElement(this.cornerTransforms[this.model.getCornerAt(2)]);
+                vector.addElement(this.cornerTransforms[this.model.getCornerAt(4)]);
+                vector.addElement(this.cornerTransforms[this.model.getCornerAt(6)]);
+                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(0)]);
+                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(3)]);
+                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(6)]);
+                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(9)]);
+                vector.addElement(this.sideTransforms[this.model.getSideAt(5)]);
                 break;
-            case 2:
-                transform3D.rotateZ(d);
-                if ((layerMask & 0x1) == 1)
-                {
-                    vector.addElement(this.cornerTransforms[this.model.getCornerAt(4)]);
-                    vector.addElement(this.cornerTransforms[this.model.getCornerAt(5)]);
-                    vector.addElement(this.cornerTransforms[this.model.getCornerAt(6)]);
-                    vector.addElement(this.cornerTransforms[this.model.getCornerAt(7)]);
-                    vector.addElement(this.edgeTransforms[this.model.getEdgeAt(6)]);
-                    vector.addElement(this.edgeTransforms[this.model.getEdgeAt(7)]);
-                    vector.addElement(this.edgeTransforms[this.model.getEdgeAt(8)]);
-                    vector.addElement(this.edgeTransforms[this.model.getEdgeAt(10)]);
-                    vector.addElement(this.sideTransforms[this.model.getSideAt(3)]);
-                }
-                if ((layerMask & 0x2) == 2)
-                {
-                    vector.addElement(this.edgeTransforms[this.model.getEdgeAt(3)]);
-                    vector.addElement(this.edgeTransforms[this.model.getEdgeAt(5)]);
-                    vector.addElement(this.edgeTransforms[this.model.getEdgeAt(9)]);
-                    vector.addElement(this.edgeTransforms[this.model.getEdgeAt(11)]);
-                    vector.addElement(this.sideTransforms[this.model.getSideAt(1)]);
-                    vector.addElement(this.sideTransforms[this.model.getSideAt(2)]);
-                    vector.addElement(this.sideTransforms[this.model.getSideAt(4)]);
-                    vector.addElement(this.sideTransforms[this.model.getSideAt(5)]);
-                    vector.addElement(this.centerTransform);
-                }
-                if ((layerMask & 0x4) == 4)
-                {
-                    vector.addElement(this.cornerTransforms[this.model.getCornerAt(0)]);
-                    vector.addElement(this.cornerTransforms[this.model.getCornerAt(1)]);
-                    vector.addElement(this.cornerTransforms[this.model.getCornerAt(2)]);
-                    vector.addElement(this.cornerTransforms[this.model.getCornerAt(3)]);
-                    vector.addElement(this.edgeTransforms[this.model.getEdgeAt(0)]);
-                    vector.addElement(this.edgeTransforms[this.model.getEdgeAt(1)]);
-                    vector.addElement(this.edgeTransforms[this.model.getEdgeAt(2)]);
-                    vector.addElement(this.edgeTransforms[this.model.getEdgeAt(4)]);
-                    vector.addElement(this.sideTransforms[this.model.getSideAt(0)]);
-                }
-                break;
+            }
+            break;
+        case 2:
+            transform3D.rotateZ(d);
+            if ((layerMask & 0x1) == 1) {
+                vector.addElement(this.cornerTransforms[this.model.getCornerAt(4)]);
+                vector.addElement(this.cornerTransforms[this.model.getCornerAt(5)]);
+                vector.addElement(this.cornerTransforms[this.model.getCornerAt(6)]);
+                vector.addElement(this.cornerTransforms[this.model.getCornerAt(7)]);
+                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(6)]);
+                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(7)]);
+                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(8)]);
+                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(10)]);
+                vector.addElement(this.sideTransforms[this.model.getSideAt(3)]);
+            }
+            if ((layerMask & 0x2) == 2) {
+                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(3)]);
+                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(5)]);
+                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(9)]);
+                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(11)]);
+                vector.addElement(this.sideTransforms[this.model.getSideAt(1)]);
+                vector.addElement(this.sideTransforms[this.model.getSideAt(2)]);
+                vector.addElement(this.sideTransforms[this.model.getSideAt(4)]);
+                vector.addElement(this.sideTransforms[this.model.getSideAt(5)]);
+                vector.addElement(this.centerTransform);
+            }
+            if ((layerMask & 0x4) == 4) {
+                vector.addElement(this.cornerTransforms[this.model.getCornerAt(0)]);
+                vector.addElement(this.cornerTransforms[this.model.getCornerAt(1)]);
+                vector.addElement(this.cornerTransforms[this.model.getCornerAt(2)]);
+                vector.addElement(this.cornerTransforms[this.model.getCornerAt(3)]);
+                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(0)]);
+                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(1)]);
+                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(2)]);
+                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(4)]);
+                vector.addElement(this.sideTransforms[this.model.getSideAt(0)]);
+            }
+            break;
         }
-        try
-        {
+        try {
             // 调整两次之间的转动间隔
             Thread.sleep(50L);
+        } catch (InterruptedException e) {
         }
-        catch (InterruptedException e)
-        {}
         long jCurrentTimeMillis = System.currentTimeMillis();
-        for (int j = 1; j < i; j++)
-        {
-            synchronized (this.model)
-            {
+        for (int j = 1; j < i; j++) {
+            synchronized (this.model) {
                 Enumeration<TransformNode> enumerationElements = vector.elements();
-                while (enumerationElements.hasMoreElements())
-                {
+                while (enumerationElements.hasMoreElements()) {
                     enumerationElements.nextElement().getTransform().concatenate(transform3D);
                 }
             }
@@ -698,17 +615,12 @@ public abstract class AbstractCube3DAWT implements RubikListener
             // 影响转动速度
             jCurrentTimeMillis += 50L;
             long jCurrentTimeMillis2 = jCurrentTimeMillis - System.currentTimeMillis();
-            if (jCurrentTimeMillis2 > 0L)
-            {
-                try
-                {
+            if (jCurrentTimeMillis2 > 0L) {
+                try {
                     Thread.sleep(jCurrentTimeMillis2);
+                } catch (InterruptedException e2) {
                 }
-                catch (InterruptedException e2)
-                {}
-            }
-            else
-            {
+            } else {
                 jCurrentTimeMillis -= jCurrentTimeMillis2;
                 Thread.yield();
             }
@@ -718,175 +630,139 @@ public abstract class AbstractCube3DAWT implements RubikListener
     }
 
     @Override
-    public void rubikChanged(RubikEvent rubikEvent)
-    {
+    public void rubikChanged(RubikEvent rubikEvent) {
         update();
     }
 
     @Override
-    public void rubikPartRotated(RubikEvent rubikEvent)
-    {
+    public void rubikPartRotated(RubikEvent rubikEvent) {
         update();
     }
 
-    public void addChangeListener(ChangeListener changeListener)
-    {
+    public void addChangeListener(ChangeListener changeListener) {
         this.listenerList.add(ChangeListener.class, changeListener);
     }
 
-    public void removeChangeListener(ChangeListener changeListener)
-    {
+    public void removeChangeListener(ChangeListener changeListener) {
         this.listenerList.remove(ChangeListener.class, changeListener);
     }
 
-    public void setAnimated(boolean isAnimated)
-    {
+    public void setAnimated(boolean isAnimated) {
         this.isAnimated = isAnimated;
     }
 
-    public boolean isAnimated()
-    {
+    public boolean isAnimated() {
         return this.isAnimated;
     }
 
-    protected void fireStateChanged()
-    {
+    protected void fireStateChanged() {
         List<ListenerNode> listenerList = this.listenerList.getListenerList();
-        for (ListenerNode node : listenerList)
-        {
-            if (node.getClazz() == ChangeListener.class)
-            {
-                if (this.changeEvent == null)
-                {
+        for (ListenerNode node : listenerList) {
+            if (node.getClazz() == ChangeListener.class) {
+                if (this.changeEvent == null) {
                     this.changeEvent = new ChangeEvent(this);
                 }
-                ((ChangeListener)node.getListener()).stateChanged(this.changeEvent);
+                ((ChangeListener) node.getListener()).stateChanged(this.changeEvent);
             }
         }
     }
 
-    public void setDispatcher(PooledSequentialDispatcherAWT dispatcher)
-    {
+    public void setDispatcher(PooledSequentialDispatcherAWT dispatcher) {
         this.dispatcher = dispatcher;
     }
 
-    public PooledSequentialDispatcherAWT getDispatcher()
-    {
-        if (this.dispatcher == null)
-        {
+    public PooledSequentialDispatcherAWT getDispatcher() {
+        if (this.dispatcher == null) {
             this.dispatcher = new PooledSequentialDispatcherAWT();
         }
         return this.dispatcher;
     }
 
-    public void setMode(int mode)
-    {
-        switch (mode)
-        {
-            case 0:
-                for (int i = 0; i < 8; i++)
-                {
-                    Shape3D corner = this.cornerShapes[i];
-                    if (corner.isWireframe())
-                    {
-                        corner.setWireframe(false);
-                        corner.setVisible(false);
-                    }
+    public void setMode(int mode) {
+        switch (mode) {
+        case 0:
+            for (int i = 0; i < 8; i++) {
+                Shape3D corner = this.cornerShapes[i];
+                if (corner.isWireframe()) {
+                    corner.setWireframe(false);
+                    corner.setVisible(false);
                 }
-                for (int i = 0; i < 12; i++)
-                {
-                    Shape3D edge = this.edgeShapes[i];
-                    if (edge.isWireframe())
-                    {
-                        edge.setWireframe(false);
-                        edge.setVisible(false);
-                    }
+            }
+            for (int i = 0; i < 12; i++) {
+                Shape3D edge = this.edgeShapes[i];
+                if (edge.isWireframe()) {
+                    edge.setWireframe(false);
+                    edge.setVisible(false);
                 }
-                for (int i = 0; i < 6; i++)
-                {
-                    Shape3D side = this.sideShapes[i];
-                    if (side.isWireframe())
-                    {
-                        side.setWireframe(false);
-                        side.setVisible(false);
-                    }
+            }
+            for (int i = 0; i < 6; i++) {
+                Shape3D side = this.sideShapes[i];
+                if (side.isWireframe()) {
+                    side.setWireframe(false);
+                    side.setVisible(false);
                 }
-                Shape3D center = this.centerShape;
-                if (center.isWireframe())
-                {
-                    center.setWireframe(false);
-                    center.setVisible(false);
-                    break;
-                }
+            }
+            Shape3D center = this.centerShape;
+            if (center.isWireframe()) {
+                center.setWireframe(false);
+                center.setVisible(false);
                 break;
-            case 1:
-                for (int i = 0; i < 8; i++)
-                {
-                    Shape3D corner = this.cornerShapes[i];
-                    if (!corner.isVisible())
-                    {
-                        corner.setWireframe(true);
-                        corner.setVisible(true);
-                    }
+            }
+            break;
+        case 1:
+            for (int i = 0; i < 8; i++) {
+                Shape3D corner = this.cornerShapes[i];
+                if (!corner.isVisible()) {
+                    corner.setWireframe(true);
+                    corner.setVisible(true);
                 }
-                for (int i = 0; i < 12; i++)
-                {
-                    Shape3D edge = this.edgeShapes[i];
-                    if (!edge.isVisible())
-                    {
-                        edge.setWireframe(true);
-                        edge.setVisible(true);
-                    }
+            }
+            for (int i = 0; i < 12; i++) {
+                Shape3D edge = this.edgeShapes[i];
+                if (!edge.isVisible()) {
+                    edge.setWireframe(true);
+                    edge.setVisible(true);
                 }
-                for (int i = 0; i < 6; i++)
-                {
-                    Shape3D side = this.sideShapes[i];
-                    if (!side.isVisible())
-                    {
-                        side.setWireframe(true);
-                        side.setVisible(true);
-                    }
+            }
+            for (int i = 0; i < 6; i++) {
+                Shape3D side = this.sideShapes[i];
+                if (!side.isVisible()) {
+                    side.setWireframe(true);
+                    side.setVisible(true);
                 }
-                Shape3D center1 = this.centerShape;
-                if (!center1.isVisible())
-                {
-                    center1.setWireframe(true);
-                    center1.setVisible(true);
-                    break;
-                }
+            }
+            Shape3D center1 = this.centerShape;
+            if (!center1.isVisible()) {
+                center1.setWireframe(true);
+                center1.setVisible(true);
                 break;
+            }
+            break;
         }
         fireStateChanged();
     }
 
     public abstract String getName();
 
-    public String getCubeStringForAutoSearch()
-    {
+    public String getCubeStringForAutoSearch() {
         StringBuffer result = new StringBuffer();
-        for (int i = 0; i < 8; i++)
-        {
+        for (int i = 0; i < 8; i++) {
             Shape3D corner = this.cornerShapes[i];
-            if (!corner.isVisible())
-            {
+            if (!corner.isVisible()) {
                 corner.setWireframe(true);
                 corner.setVisible(true);
             }
         }
-        for (int i = 0; i < 12; i++)
-        {
+        for (int i = 0; i < 12; i++) {
             Shape3D edge = this.edgeShapes[i];
-            if (!edge.isVisible())
-            {
+            if (!edge.isVisible()) {
                 edge.setWireframe(true);
                 edge.setVisible(true);
             }
         }
-        for (int i = 0; i < 6; i++)
-        {
+        for (int i = 0; i < 6; i++) {
             Shape3D side = this.sideShapes[i];
-            if (!side.isVisible())
-            {
+            if (!side.isVisible()) {
                 side.setWireframe(true);
                 side.setVisible(true);
             }
@@ -895,23 +771,19 @@ public abstract class AbstractCube3DAWT implements RubikListener
         return result.toString();
     }
 
-    public boolean isEditMode()
-    {
+    public boolean isEditMode() {
         return editMode;
     }
 
-    public void setEditMode(boolean editMode)
-    {
+    public void setEditMode(boolean editMode) {
         this.editMode = editMode;
     }
 
-    public Color getSelectColor()
-    {
+    public Color getSelectColor() {
         return selectColor;
     }
 
-    public void setSelectColor(Color selectColor)
-    {
+    public void setSelectColor(Color selectColor) {
         this.selectColor = selectColor;
     }
 }

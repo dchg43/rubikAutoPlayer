@@ -1,7 +1,6 @@
 package ch.randelshofer.geom3d;
 
-public class Polygon3D
-{
+public class Polygon3D {
     public int npoints;
 
     public double[] xpoints;
@@ -10,28 +9,24 @@ public class Polygon3D
 
     public double[] zpoints;
 
-    public Polygon3D()
-    {
+    public Polygon3D() {
         this.npoints = 0;
         setCapacity(4);
     }
 
-    public Polygon3D(int npoints)
-    {
+    public Polygon3D(int npoints) {
         this.npoints = 0;
         setCapacity(npoints);
     }
 
-    public void setCapacity(int npoints)
-    {
+    public void setCapacity(int npoints) {
         this.xpoints = new double[npoints];
         this.ypoints = new double[npoints];
         this.zpoints = new double[npoints];
         this.npoints = 0;
     }
 
-    public Polygon3D(double[] xpoints, double[] ypoints, double[] zpoints, int npoints)
-    {
+    public Polygon3D(double[] xpoints, double[] ypoints, double[] zpoints, int npoints) {
         this.npoints = npoints;
         this.xpoints = new double[npoints];
         this.ypoints = new double[npoints];
@@ -41,24 +36,20 @@ public class Polygon3D
         System.arraycopy(zpoints, 0, this.zpoints, 0, npoints);
     }
 
-    public Polygon3D(short[][] points, int pos, int npoints)
-    {
+    public Polygon3D(short[][] points, int pos, int npoints) {
         this.npoints = npoints;
         this.xpoints = new double[npoints];
         this.ypoints = new double[npoints];
         this.zpoints = new double[npoints];
-        for (int i3 = (pos + npoints) - 1; i3 > pos; i3--)
-        {
+        for (int i3 = (pos + npoints) - 1; i3 > pos; i3--) {
             this.xpoints[i3] = points[i3][0];
             this.ypoints[i3] = points[i3][1];
             this.zpoints[i3] = points[i3][2];
         }
     }
 
-    public void addPoint(double x, double y, double z)
-    {
-        if (this.npoints == this.xpoints.length)
-        {
+    public void addPoint(double x, double y, double z) {
+        if (this.npoints == this.xpoints.length) {
             double[] xpoints = new double[this.npoints * 2];
             System.arraycopy(this.xpoints, 0, xpoints, 0, this.npoints);
             this.xpoints = xpoints;

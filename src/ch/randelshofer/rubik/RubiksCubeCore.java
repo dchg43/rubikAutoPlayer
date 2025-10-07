@@ -1,6 +1,5 @@
 package ch.randelshofer.rubik;
 
-
 import java.util.List;
 
 import ch.randelshofer.gui.event.EventListenerList;
@@ -8,9 +7,7 @@ import ch.randelshofer.gui.event.EventListenerList.ListenerNode;
 import ch.randelshofer.rubik.parserAWT.ScriptParser;
 import ch.randelshofer.util.Arrays;
 
-
-public class RubiksCubeCore implements Cloneable
-{
+public class RubiksCubeCore implements Cloneable {
     // 8个角块位置信息
     // 8个角块形成的正方体中4个竖直棱中，从左下开始，每个棱从上往下，顺序分别为0 1 2 3, 4 5 6 7
     private int[] cornerLoc = new int[8];
@@ -33,93 +30,72 @@ public class RubiksCubeCore implements Cloneable
 
     private boolean quiet;
 
-//    private static final int[] SIDE_TRANSLATION = {0, 1, 2, 3, 4, 5};
+    //    private static final int[] SIDE_TRANSLATION = {0, 1, 2, 3, 4, 5};
 
-    private static final int[][] EDGE_TRANSLATION = {{0, 1, 5, 7}, {4, 5, 0, 3}, {0, 7, 2, 1}, {5, 5, 1, 1},
-        {1, 3, 0, 5}, {2, 5, 1, 7}, {3, 1, 5, 1}, {1, 5, 3, 3}, {3, 7, 2, 7}, {5, 3, 4, 1}, {4, 3, 3, 5}, {2, 3, 4, 7}};
+    private static final int[][] EDGE_TRANSLATION = {{0, 1, 5, 7}, {4, 5, 0, 3}, {0, 7, 2, 1}, {5, 5, 1, 1}, {1, 3, 0, 5}, {2, 5, 1, 7}, {3, 1, 5, 1}, {1, 5, 3,
+            3}, {3, 7, 2, 7}, {5, 3, 4, 1}, {4, 3, 3, 5}, {2, 3, 4, 7}};
 
-    private static final int[][] CORNER_TRANSLATION = {{5, 6, 0, 0, 4, 2}, {2, 0, 4, 8, 0, 6}, {5, 8, 1, 0, 0, 2},
-        {2, 2, 0, 8, 1, 6}, {5, 2, 3, 0, 1, 2}, {2, 8, 1, 8, 3, 6}, {5, 0, 4, 0, 3, 2}, {2, 6, 3, 8, 4, 6}};
+    private static final int[][] CORNER_TRANSLATION = {{5, 6, 0, 0, 4, 2}, {2, 0, 4, 8, 0, 6}, {5, 8, 1, 0, 0, 2}, {2, 2, 0, 8, 1, 6}, {5, 2, 3, 0, 1, 2}, {2,
+            8, 1, 8, 3, 6}, {5, 0, 4, 0, 3, 2}, {2, 6, 3, 8, 4, 6}};
 
-    private static final int[][] EDGE_SIDE_MAP = {{4, 1}, {5, 2}, {1, 4}, {3, 0}, {2, 5}, {0, 3}, {1, 4}, {5, 2},
-        {4, 1}, {0, 3}, {2, 5}, {3, 0}};
+    private static final int[][] EDGE_SIDE_MAP = {{4, 1}, {5, 2}, {1, 4}, {3, 0}, {2, 5}, {0, 3}, {1, 4}, {5, 2}, {4, 1}, {0, 3}, {2, 5}, {3, 0}};
 
-    public RubiksCubeCore()
-    {
+    public RubiksCubeCore() {
         reset();
     }
 
     @Override
-    public boolean equals(Object obj)
-    {
-        if (obj == null || !(obj instanceof RubiksCubeCore))
-        {
+    public boolean equals(Object obj) {
+        if (obj == null || !(obj instanceof RubiksCubeCore)) {
             return false;
         }
-        RubiksCubeCore rubiksCubeCore = (RubiksCubeCore)obj;
-        return Arrays.equals(rubiksCubeCore.cornerLoc, this.cornerLoc)
-               && Arrays.equals(rubiksCubeCore.cornerOrient, this.cornerOrient)
-               && Arrays.equals(rubiksCubeCore.edgeLoc, this.edgeLoc)
-               && Arrays.equals(rubiksCubeCore.edgeOrient, this.edgeOrient)
-               && Arrays.equals(rubiksCubeCore.sideLoc, this.sideLoc)
-               && Arrays.equals(rubiksCubeCore.sideOrient, this.sideOrient);
+        RubiksCubeCore rubiksCubeCore = (RubiksCubeCore) obj;
+        return Arrays.equals(rubiksCubeCore.cornerLoc, this.cornerLoc) && Arrays.equals(rubiksCubeCore.cornerOrient, this.cornerOrient) && Arrays.equals(
+                rubiksCubeCore.edgeLoc, this.edgeLoc) && Arrays.equals(rubiksCubeCore.edgeOrient, this.edgeOrient) && Arrays.equals(rubiksCubeCore.sideLoc,
+                        this.sideLoc) && Arrays.equals(rubiksCubeCore.sideOrient, this.sideOrient);
     }
 
     @Override
-    public int hashCode()
-    {
+    public int hashCode() {
         int i = 0;
-        for (int element : this.cornerLoc)
-        {
+        for (int element : this.cornerLoc) {
             i <<= 1 + element;
         }
-        for (int element : this.edgeLoc)
-        {
+        for (int element : this.edgeLoc) {
             i <<= 1 + element;
         }
         return i;
     }
 
-    public void reset()
-    {
-        for (int i = 0; i < 8; i++)
-        {
+    public void reset() {
+        for (int i = 0; i < 8; i++) {
             this.cornerLoc[i] = i;
             this.cornerOrient[i] = 0;
         }
-        for (int i = 0; i < 12; i++)
-        {
+        for (int i = 0; i < 12; i++) {
             this.edgeLoc[i] = i;
             this.edgeOrient[i] = 0;
         }
-        for (int i = 0; i < 6; i++)
-        {
+        for (int i = 0; i < 6; i++) {
             this.sideLoc[i] = i;
             this.sideOrient[i] = 0;
         }
         fireRubikChanged(new RubikEvent(this, 0, 0, 0));
     }
 
-    public boolean isSolved()
-    {
-        for (int i = 0; i < 8; i++)
-        {
-            if (this.cornerLoc[i] != i || this.cornerOrient[i] != 0)
-            {
+    public boolean isSolved() {
+        for (int i = 0; i < 8; i++) {
+            if (this.cornerLoc[i] != i || this.cornerOrient[i] != 0) {
                 return false;
             }
         }
-        for (int i2 = 0; i2 < 12; i2++)
-        {
-            if (this.edgeLoc[i2] != i2 || this.edgeOrient[i2] != 0)
-            {
+        for (int i2 = 0; i2 < 12; i2++) {
+            if (this.edgeLoc[i2] != i2 || this.edgeOrient[i2] != 0) {
                 return false;
             }
         }
-        for (int i3 = 0; i3 < 6; i3++)
-        {
-            if (this.sideLoc[i3] != i3 || this.sideOrient[i3] != 0)
-            {
+        for (int i3 = 0; i3 < 6; i3++) {
+            if (this.sideLoc[i3] != i3 || this.sideOrient[i3] != 0) {
                 return false;
             }
         }
@@ -132,28 +108,26 @@ public class RubiksCubeCore implements Cloneable
      * @param face 面序号
      * @param clockwise true逆时针 false顺时针
      */
-    public void twistSide(int face, boolean clockwise)
-    {
-        switch (face)
-        {
-            case ScriptParser.R: /* 0 */
-                transform(2, 4, clockwise ? -1 : 1);
-                break;
-            case ScriptParser.U: /* 1 */
-                transform(0, 4, clockwise ? -1 : 1);
-                break;
-            case ScriptParser.F: /* 2 */
-                transform(1, 1, clockwise ? 1 : -1);
-                break;
-            case ScriptParser.L: /* 3 */
-                transform(2, 1, clockwise ? 1 : -1);
-                break;
-            case ScriptParser.D: /* 4 */
-                transform(0, 1, clockwise ? 1 : -1);
-                break;
-            case ScriptParser.B: /* 5 */
-                transform(1, 4, clockwise ? -1 : 1);
-                break;
+    public void twistSide(int face, boolean clockwise) {
+        switch (face) {
+        case ScriptParser.R: /* 0 */
+            transform(2, 4, clockwise ? -1 : 1);
+            break;
+        case ScriptParser.U: /* 1 */
+            transform(0, 4, clockwise ? -1 : 1);
+            break;
+        case ScriptParser.F: /* 2 */
+            transform(1, 1, clockwise ? 1 : -1);
+            break;
+        case ScriptParser.L: /* 3 */
+            transform(2, 1, clockwise ? 1 : -1);
+            break;
+        case ScriptParser.D: /* 4 */
+            transform(0, 1, clockwise ? 1 : -1);
+            break;
+        case ScriptParser.B: /* 5 */
+            transform(1, 4, clockwise ? -1 : 1);
+            break;
         }
     }
 
@@ -163,28 +137,26 @@ public class RubiksCubeCore implements Cloneable
      * @param face 面序号
      * @param clockwise true逆时针 false顺时针
      */
-    public void twistEdge(int face, boolean clockwise)
-    {
-        switch (face)
-        {
-            case ScriptParser.R: /* 0 */
-                transform(2, 2, clockwise ? -1 : 1);
-                break;
-            case ScriptParser.U: /* 1 */
-                transform(0, 2, clockwise ? -1 : 1);
-                break;
-            case ScriptParser.F: /* 2 */
-                transform(1, 2, clockwise ? 1 : -1);
-                break;
-            case ScriptParser.L: /* 3 */
-                transform(2, 2, clockwise ? 1 : -1);
-                break;
-            case ScriptParser.D: /* 4 */
-                transform(0, 2, clockwise ? 1 : -1);
-                break;
-            case ScriptParser.B: /* 5 */
-                transform(1, 2, clockwise ? -1 : 1);
-                break;
+    public void twistEdge(int face, boolean clockwise) {
+        switch (face) {
+        case ScriptParser.R: /* 0 */
+            transform(2, 2, clockwise ? -1 : 1);
+            break;
+        case ScriptParser.U: /* 1 */
+            transform(0, 2, clockwise ? -1 : 1);
+            break;
+        case ScriptParser.F: /* 2 */
+            transform(1, 2, clockwise ? 1 : -1);
+            break;
+        case ScriptParser.L: /* 3 */
+            transform(2, 2, clockwise ? 1 : -1);
+            break;
+        case ScriptParser.D: /* 4 */
+            transform(0, 2, clockwise ? 1 : -1);
+            break;
+        case ScriptParser.B: /* 5 */
+            transform(1, 2, clockwise ? -1 : 1);
+            break;
         }
     }
 
@@ -193,202 +165,177 @@ public class RubiksCubeCore implements Cloneable
      * @param layerMask
      * @param times 旋转次数，负数表示逆时针
      */
-    public void transform(int axis, int layerMask, int times)
-    {
-//        synchronized (this) {
-        if (axis < 0 || axis > 2)
-        {
+    public void transform(int axis, int layerMask, int times) {
+        //        synchronized (this) {
+        if (axis < 0 || axis > 2) {
             throw new IllegalArgumentException("axis: " + axis);
         }
-        if (layerMask < 0 || layerMask > 7)
-        {
+        if (layerMask < 0 || layerMask > 7) {
             throw new IllegalArgumentException("layerMask: " + layerMask);
         }
-        if (times < -2 || times > 2)
-        {
+        if (times < -2 || times > 2) {
             throw new IllegalArgumentException("angle: " + times);
         }
-        if (times == 0)
-        {
+        if (times == 0) {
             return;
         }
         int i4 = times == -2 ? 2 : times;
-        if ((layerMask & 0x1) != 0)
-        {
-            switch (axis)
-            {
-                case 0:
-                    switch (i4)
-                    {
-                        case -1:
-                            twistLeftClockwise();
-                            break;
-                        case 1:
-                            twistLeftCounterClockwise();
-                            break;
-                        case 2:
-                            twistLeftDouble();
-                            break;
-                    }
+        if ((layerMask & 0x1) != 0) {
+            switch (axis) {
+            case 0:
+                switch (i4) {
+                case -1:
+                    twistLeftClockwise();
                     break;
                 case 1:
-                    switch (i4)
-                    {
-                        case -1:
-                            twistBottomClockwise();
-                            break;
-                        case 1:
-                            twistBottomCounterClockwise();
-                            break;
-                        case 2:
-                            twistBottomDouble();
-                            break;
-                    }
+                    twistLeftCounterClockwise();
                     break;
                 case 2:
-                    switch (i4)
-                    {
-                        case -1:
-                            twistBackClockwise();
-                            break;
-                        case 1:
-                            twistBackCounterClockwise();
-                            break;
-                        case 2:
-                            twistBackDouble();
-                            break;
-                    }
+                    twistLeftDouble();
                     break;
+                }
+                break;
+            case 1:
+                switch (i4) {
+                case -1:
+                    twistBottomClockwise();
+                    break;
+                case 1:
+                    twistBottomCounterClockwise();
+                    break;
+                case 2:
+                    twistBottomDouble();
+                    break;
+                }
+                break;
+            case 2:
+                switch (i4) {
+                case -1:
+                    twistBackClockwise();
+                    break;
+                case 1:
+                    twistBackCounterClockwise();
+                    break;
+                case 2:
+                    twistBackDouble();
+                    break;
+                }
+                break;
             }
         }
-        if ((layerMask & 0x2) != 0)
-        {
-            switch (axis)
-            {
-                case 0:
-                    switch (i4)
-                    {
-                        case -1:
-                            twistMiddleLeftClockwise();
-                            break;
-                        case 1:
-                            twistMiddleLeftCounterClockwise();
-                            break;
-                        case 2:
-                            twistMiddleLeftDouble();
-                            break;
-                    }
+        if ((layerMask & 0x2) != 0) {
+            switch (axis) {
+            case 0:
+                switch (i4) {
+                case -1:
+                    twistMiddleLeftClockwise();
                     break;
                 case 1:
-                    switch (i4)
-                    {
-                        case -1:
-                            twistMiddleBottomClockwise();
-                            break;
-                        case 1:
-                            twistMiddleBottomCounterClockwise();
-                            break;
-                        case 2:
-                            twistMiddleBottomDouble();
-                            break;
-                    }
+                    twistMiddleLeftCounterClockwise();
                     break;
                 case 2:
-                    switch (i4)
-                    {
-                        case -1:
-                            twistMiddleBackClockwise();
-                            break;
-                        case 1:
-                            twistMiddleBackCounterClockwise();
-                            break;
-                        case 2:
-                            twistMiddleBackDouble();
-                            break;
-                    }
+                    twistMiddleLeftDouble();
                     break;
+                }
+                break;
+            case 1:
+                switch (i4) {
+                case -1:
+                    twistMiddleBottomClockwise();
+                    break;
+                case 1:
+                    twistMiddleBottomCounterClockwise();
+                    break;
+                case 2:
+                    twistMiddleBottomDouble();
+                    break;
+                }
+                break;
+            case 2:
+                switch (i4) {
+                case -1:
+                    twistMiddleBackClockwise();
+                    break;
+                case 1:
+                    twistMiddleBackCounterClockwise();
+                    break;
+                case 2:
+                    twistMiddleBackDouble();
+                    break;
+                }
+                break;
             }
         }
-        if ((layerMask & 0x4) != 0)
-        {
-            switch (axis)
-            {
-                case 0:
-                    switch (i4)
-                    {
-                        case -1:
-                            twistRightCounterClockwise();
-                            break;
-                        case 1:
-                            twistRightClockwise();
-                            break;
-                        case 2:
-                            twistRightDouble();
-                            break;
-                    }
+        if ((layerMask & 0x4) != 0) {
+            switch (axis) {
+            case 0:
+                switch (i4) {
+                case -1:
+                    twistRightCounterClockwise();
                     break;
                 case 1:
-                    switch (i4)
-                    {
-                        case -1:
-                            twistTopCounterClockwise();
-                            break;
-                        case 1:
-                            twistTopClockwise();
-                            break;
-                        case 2:
-                            twistTopDouble();
-                            break;
-                    }
+                    twistRightClockwise();
                     break;
                 case 2:
-                    switch (i4)
-                    {
-                        case -1:
-                            twistFrontCounterClockwise();
-                            break;
-                        case 1:
-                            twistFrontClockwise();
-                            break;
-                        case 2:
-                            twistFrontDouble();
-                            break;
-                    }
+                    twistRightDouble();
                     break;
+                }
+                break;
+            case 1:
+                switch (i4) {
+                case -1:
+                    twistTopCounterClockwise();
+                    break;
+                case 1:
+                    twistTopClockwise();
+                    break;
+                case 2:
+                    twistTopDouble();
+                    break;
+                }
+                break;
+            case 2:
+                switch (i4) {
+                case -1:
+                    twistFrontCounterClockwise();
+                    break;
+                case 1:
+                    twistFrontClockwise();
+                    break;
+                case 2:
+                    twistFrontDouble();
+                    break;
+                }
+                break;
             }
         }
         fireRubikTwisted(new RubikEvent(this, axis, layerMask, times));
     }
-//    }
+    //    }
 
-    public void transform(RubiksCubeCore rubiksCubeCore)
-    {
+    public void transform(RubiksCubeCore rubiksCubeCore) {
         int[] iArr = this.cornerLoc;
         int[] iArr2 = this.cornerOrient;
-        for (int i = 0; i < rubiksCubeCore.cornerLoc.length; i++)
-        {
+        for (int i = 0; i < rubiksCubeCore.cornerLoc.length; i++) {
             this.cornerLoc[i] = iArr[rubiksCubeCore.cornerLoc[i]];
             this.cornerOrient[i] = (iArr2[rubiksCubeCore.cornerLoc[i]] + rubiksCubeCore.cornerOrient[i]) % 3;
         }
         int[] iArr3 = this.edgeLoc;
         int[] iArr4 = this.edgeOrient;
-        for (int i2 = 0; i2 < rubiksCubeCore.edgeLoc.length; i2++)
-        {
+        for (int i2 = 0; i2 < rubiksCubeCore.edgeLoc.length; i2++) {
             this.edgeLoc[i2] = iArr3[rubiksCubeCore.edgeLoc[i2]];
             this.edgeOrient[i2] = (iArr4[rubiksCubeCore.edgeLoc[i2]] + rubiksCubeCore.edgeOrient[i2]) % 2;
         }
         int[] iArr5 = this.sideLoc;
         int[] iArr6 = this.sideOrient;
-        for (int i3 = 0; i3 < rubiksCubeCore.sideLoc.length; i3++)
-        {
+        for (int i3 = 0; i3 < rubiksCubeCore.sideLoc.length; i3++) {
             this.sideLoc[i3] = iArr5[rubiksCubeCore.sideLoc[i3]];
             this.sideOrient[i3] = (iArr6[rubiksCubeCore.sideLoc[i3]] + rubiksCubeCore.sideOrient[i3]) % 4;
         }
         fireRubikChanged(new RubikEvent(this, 0, 0, 0));
     }
 
-    public void setTo(RubiksCubeCore rubiksCubeCore)
-    {
+    public void setTo(RubiksCubeCore rubiksCubeCore) {
         System.arraycopy(rubiksCubeCore.sideLoc, 0, this.sideLoc, 0, this.sideLoc.length);
         System.arraycopy(rubiksCubeCore.sideOrient, 0, this.sideOrient, 0, this.sideOrient.length);
         System.arraycopy(rubiksCubeCore.edgeLoc, 0, this.edgeLoc, 0, this.edgeLoc.length);
@@ -398,21 +345,18 @@ public class RubiksCubeCore implements Cloneable
         fireRubikChanged(new RubikEvent(this, 0, 0, 0));
     }
 
-    private void twistFrontDouble()
-    {
+    private void twistFrontDouble() {
         twistFrontClockwise();
         twistFrontClockwise();
     }
 
-    private void twistFrontCounterClockwise()
-    {
+    private void twistFrontCounterClockwise() {
         twistFrontClockwise();
         twistFrontClockwise();
         twistFrontClockwise();
     }
 
-    private void twistFrontClockwise()
-    {
+    private void twistFrontClockwise() {
         int i = this.cornerLoc[0];
         this.cornerLoc[0] = this.cornerLoc[1];
         this.cornerLoc[1] = this.cornerLoc[3];
@@ -436,21 +380,18 @@ public class RubiksCubeCore implements Cloneable
         this.sideOrient[0] = (this.sideOrient[0] + 3) % 4;
     }
 
-    private void twistRightDouble()
-    {
+    private void twistRightDouble() {
         twistRightClockwise();
         twistRightClockwise();
     }
 
-    private void twistRightCounterClockwise()
-    {
+    private void twistRightCounterClockwise() {
         twistRightClockwise();
         twistRightClockwise();
         twistRightClockwise();
     }
 
-    private void twistRightClockwise()
-    {
+    private void twistRightClockwise() {
         int i = this.cornerLoc[2];
         this.cornerLoc[2] = this.cornerLoc[3];
         this.cornerLoc[3] = this.cornerLoc[5];
@@ -474,21 +415,18 @@ public class RubiksCubeCore implements Cloneable
         this.sideOrient[1] = (this.sideOrient[1] + 3) % 4;
     }
 
-    private void twistLeftDouble()
-    {
+    private void twistLeftDouble() {
         twistLeftClockwise();
         twistLeftClockwise();
     }
 
-    private void twistLeftCounterClockwise()
-    {
+    private void twistLeftCounterClockwise() {
         twistLeftClockwise();
         twistLeftClockwise();
         twistLeftClockwise();
     }
 
-    private void twistLeftClockwise()
-    {
+    private void twistLeftClockwise() {
         int i = this.cornerLoc[0];
         this.cornerLoc[0] = this.cornerLoc[6];
         this.cornerLoc[6] = this.cornerLoc[7];
@@ -512,21 +450,18 @@ public class RubiksCubeCore implements Cloneable
         this.sideOrient[4] = (this.sideOrient[4] + 3) % 4;
     }
 
-    private void twistTopDouble()
-    {
+    private void twistTopDouble() {
         twistTopClockwise();
         twistTopClockwise();
     }
 
-    private void twistTopCounterClockwise()
-    {
+    private void twistTopCounterClockwise() {
         twistTopClockwise();
         twistTopClockwise();
         twistTopClockwise();
     }
 
-    private void twistTopClockwise()
-    {
+    private void twistTopClockwise() {
         int i = this.cornerLoc[0];
         this.cornerLoc[0] = this.cornerLoc[2];
         this.cornerLoc[2] = this.cornerLoc[4];
@@ -550,21 +485,18 @@ public class RubiksCubeCore implements Cloneable
         this.sideOrient[5] = (this.sideOrient[5] + 3) % 4;
     }
 
-    private void twistBottomDouble()
-    {
+    private void twistBottomDouble() {
         twistBottomClockwise();
         twistBottomClockwise();
     }
 
-    private void twistBottomCounterClockwise()
-    {
+    private void twistBottomCounterClockwise() {
         twistBottomClockwise();
         twistBottomClockwise();
         twistBottomClockwise();
     }
 
-    private void twistBottomClockwise()
-    {
+    private void twistBottomClockwise() {
         int i = this.cornerLoc[1];
         this.cornerLoc[1] = this.cornerLoc[7];
         this.cornerLoc[7] = this.cornerLoc[5];
@@ -588,36 +520,30 @@ public class RubiksCubeCore implements Cloneable
         this.sideOrient[2] = (this.sideOrient[2] + 3) % 4;
     }
 
-    private void twistMiddleBackDouble()
-    {
+    private void twistMiddleBackDouble() {
         twistMiddleFrontDouble();
     }
 
-    private void twistMiddleBackCounterClockwise()
-    {
+    private void twistMiddleBackCounterClockwise() {
         twistMiddleFrontClockwise();
     }
 
-    private void twistMiddleBackClockwise()
-    {
+    private void twistMiddleBackClockwise() {
         twistMiddleFrontCounterClockwise();
     }
 
-    private void twistMiddleFrontDouble()
-    {
+    private void twistMiddleFrontDouble() {
         twistMiddleFrontClockwise();
         twistMiddleFrontClockwise();
     }
 
-    private void twistMiddleFrontCounterClockwise()
-    {
+    private void twistMiddleFrontCounterClockwise() {
         twistMiddleFrontClockwise();
         twistMiddleFrontClockwise();
         twistMiddleFrontClockwise();
     }
 
-    private void twistMiddleFrontClockwise()
-    {
+    private void twistMiddleFrontClockwise() {
         int i = this.edgeLoc[3];
         this.edgeLoc[3] = this.edgeLoc[9];
         this.edgeLoc[9] = this.edgeLoc[11];
@@ -640,36 +566,30 @@ public class RubiksCubeCore implements Cloneable
         this.sideOrient[2] = (i4 + 3) % 4;
     }
 
-    private void twistMiddleBottomDouble()
-    {
+    private void twistMiddleBottomDouble() {
         twistMiddleTopDouble();
     }
 
-    private void twistMiddleBottomCounterClockwise()
-    {
+    private void twistMiddleBottomCounterClockwise() {
         twistMiddleTopClockwise();
     }
 
-    private void twistMiddleBottomClockwise()
-    {
+    private void twistMiddleBottomClockwise() {
         twistMiddleTopCounterClockwise();
     }
 
-    private void twistMiddleTopDouble()
-    {
+    private void twistMiddleTopDouble() {
         twistMiddleTopClockwise();
         twistMiddleTopClockwise();
     }
 
-    private void twistMiddleTopCounterClockwise()
-    {
+    private void twistMiddleTopCounterClockwise() {
         twistMiddleTopClockwise();
         twistMiddleTopClockwise();
         twistMiddleTopClockwise();
     }
 
-    private void twistMiddleTopClockwise()
-    {
+    private void twistMiddleTopClockwise() {
         int i = this.edgeLoc[1];
         this.edgeLoc[1] = this.edgeLoc[4];
         this.edgeLoc[4] = this.edgeLoc[7];
@@ -692,36 +612,30 @@ public class RubiksCubeCore implements Cloneable
         this.sideOrient[4] = (i4 + 1) % 4;
     }
 
-    private void twistMiddleLeftDouble()
-    {
+    private void twistMiddleLeftDouble() {
         twistMiddleRightDouble();
     }
 
-    private void twistMiddleLeftCounterClockwise()
-    {
+    private void twistMiddleLeftCounterClockwise() {
         twistMiddleRightClockwise();
     }
 
-    private void twistMiddleLeftClockwise()
-    {
+    private void twistMiddleLeftClockwise() {
         twistMiddleRightCounterClockwise();
     }
 
-    private void twistMiddleRightDouble()
-    {
+    private void twistMiddleRightDouble() {
         twistMiddleRightClockwise();
         twistMiddleRightClockwise();
     }
 
-    private void twistMiddleRightCounterClockwise()
-    {
+    private void twistMiddleRightCounterClockwise() {
         twistMiddleRightClockwise();
         twistMiddleRightClockwise();
         twistMiddleRightClockwise();
     }
 
-    private void twistMiddleRightClockwise()
-    {
+    private void twistMiddleRightClockwise() {
         int i = this.edgeLoc[0];
         this.edgeLoc[0] = this.edgeLoc[2];
         this.edgeLoc[2] = this.edgeLoc[8];
@@ -744,14 +658,12 @@ public class RubiksCubeCore implements Cloneable
         this.sideOrient[5] = (i4 + 1) % 4;
     }
 
-    private void twistBackDouble()
-    {
+    private void twistBackDouble() {
         twistBackClockwise();
         twistBackClockwise();
     }
 
-    private void twistBackCounterClockwise()
-    {
+    private void twistBackCounterClockwise() {
         int i = this.cornerLoc[6];
         this.cornerLoc[6] = this.cornerLoc[7];
         this.cornerLoc[7] = this.cornerLoc[5];
@@ -775,8 +687,7 @@ public class RubiksCubeCore implements Cloneable
         this.sideOrient[3] = (this.sideOrient[3] + 1) % 4;
     }
 
-    private void twistBackClockwise()
-    {
+    private void twistBackClockwise() {
         int i = this.cornerLoc[4];
         this.cornerLoc[4] = this.cornerLoc[5];
         this.cornerLoc[5] = this.cornerLoc[7];
@@ -800,396 +711,332 @@ public class RubiksCubeCore implements Cloneable
         this.sideOrient[3] = (this.sideOrient[3] + 3) % 4;
     }
 
-    private void rotateFrontClockwise()
-    {
+    private void rotateFrontClockwise() {
         twistFrontClockwise();
         twistMiddleFrontClockwise();
         twistBackCounterClockwise();
     }
 
-    private void rotateFrontCounterClockwise()
-    {
+    private void rotateFrontCounterClockwise() {
         twistFrontCounterClockwise();
         twistMiddleFrontCounterClockwise();
         twistBackClockwise();
     }
 
-    private void rotateFrontDouble()
-    {
+    private void rotateFrontDouble() {
         twistFrontDouble();
         twistMiddleFrontDouble();
         twistBackDouble();
     }
 
     @SuppressWarnings("unused")
-    private void rotateBackClockwise()
-    {
+    private void rotateBackClockwise() {
         rotateFrontCounterClockwise();
     }
 
     @SuppressWarnings("unused")
-    private void rotateBackCounterClockwise()
-    {
+    private void rotateBackCounterClockwise() {
         rotateFrontClockwise();
     }
 
     @SuppressWarnings("unused")
-    private void rotateBackDouble()
-    {
+    private void rotateBackDouble() {
         rotateFrontDouble();
     }
 
-    private void rotateTopClockwise()
-    {
+    private void rotateTopClockwise() {
         twistTopClockwise();
         twistMiddleTopClockwise();
         twistBottomCounterClockwise();
     }
 
-    private void rotateTopCounterClockwise()
-    {
+    private void rotateTopCounterClockwise() {
         twistTopCounterClockwise();
         twistMiddleTopCounterClockwise();
         twistBottomClockwise();
     }
 
-    private void rotateTopDouble()
-    {
+    private void rotateTopDouble() {
         twistTopDouble();
         twistMiddleTopDouble();
         twistBottomDouble();
     }
 
     @SuppressWarnings("unused")
-    private void rotateBottomClockwise()
-    {
+    private void rotateBottomClockwise() {
         rotateTopCounterClockwise();
     }
 
     @SuppressWarnings("unused")
-    private void rotateBottomCounterClockwise()
-    {
+    private void rotateBottomCounterClockwise() {
         rotateTopClockwise();
     }
 
     @SuppressWarnings("unused")
-    private void rotateBottomDouble()
-    {
+    private void rotateBottomDouble() {
         rotateTopDouble();
     }
 
-    private void rotateRightClockwise()
-    {
+    private void rotateRightClockwise() {
         twistRightClockwise();
         twistMiddleRightClockwise();
         twistLeftCounterClockwise();
     }
 
-    private void rotateRightCounterClockwise()
-    {
+    private void rotateRightCounterClockwise() {
         twistRightCounterClockwise();
         twistMiddleRightCounterClockwise();
         twistLeftClockwise();
     }
 
-    private void rotateRightDouble()
-    {
+    private void rotateRightDouble() {
         twistRightDouble();
         twistMiddleRightDouble();
         twistLeftDouble();
     }
 
     @SuppressWarnings("unused")
-    private void rotateLeftClockwise()
-    {
+    private void rotateLeftClockwise() {
         rotateRightCounterClockwise();
     }
 
     @SuppressWarnings("unused")
-    private void rotateLeftCounterClockwise()
-    {
+    private void rotateLeftCounterClockwise() {
         rotateRightClockwise();
     }
 
     @SuppressWarnings("unused")
-    private void rotateLeftDouble()
-    {
+    private void rotateLeftDouble() {
         rotateRightDouble();
     }
 
-    public int[] getCornerLocations()
-    {
+    public int[] getCornerLocations() {
         return this.cornerLoc;
     }
 
-    public int[] getCornerOrientations()
-    {
+    public int[] getCornerOrientations() {
         return this.cornerOrient;
     }
 
-    public void setCorners(int[] cornerLoc, int[] cornerOrient)
-    {
+    public void setCorners(int[] cornerLoc, int[] cornerOrient) {
         this.cornerLoc = cornerLoc;
         this.cornerOrient = cornerOrient;
         fireRubikChanged(new RubikEvent(this, 0, 0, 0));
     }
 
-    public int getCornerAt(int index)
-    {
+    public int getCornerAt(int index) {
         return this.cornerLoc[index];
     }
 
-    public int getCornerLocation(int index)
-    {
-        if (this.cornerLoc[index] == index)
-        {
+    public int getCornerLocation(int index) {
+        if (this.cornerLoc[index] == index) {
             return index;
         }
         int length = this.cornerLoc.length - 1;
-        while (length >= 0 && this.cornerLoc[length] != index)
-        {
+        while (length >= 0 && this.cornerLoc[length] != index) {
             length--;
         }
         return length;
     }
 
-    public int getCornerOrientation(int index)
-    {
+    public int getCornerOrientation(int index) {
         return this.cornerOrient[getCornerLocation(index)];
     }
 
-    public int[] getEdgeLocations()
-    {
+    public int[] getEdgeLocations() {
         return this.edgeLoc;
     }
 
-    public int[] getEdgeOrientations()
-    {
+    public int[] getEdgeOrientations() {
         return this.edgeOrient;
     }
 
-    public void setEdges(int[] edgeLoc, int[] edgeOrient)
-    {
+    public void setEdges(int[] edgeLoc, int[] edgeOrient) {
         this.edgeLoc = edgeLoc;
         this.edgeOrient = edgeOrient;
         fireRubikChanged(new RubikEvent(this, 0, 0, 0));
     }
 
-    public int getEdgeAt(int index)
-    {
+    public int getEdgeAt(int index) {
         return this.edgeLoc[index];
     }
 
-    public int getEdgeLocation(int index)
-    {
-        if (this.edgeLoc[index] == index)
-        {
+    public int getEdgeLocation(int index) {
+        if (this.edgeLoc[index] == index) {
             return index;
         }
         int length = this.edgeLoc.length - 1;
-        while (length >= 0 && this.edgeLoc[length] != index)
-        {
+        while (length >= 0 && this.edgeLoc[length] != index) {
             length--;
         }
         return length;
     }
 
-    public int getEdgeOrientation(int index)
-    {
+    public int getEdgeOrientation(int index) {
         return this.edgeOrient[getEdgeLocation(index)];
     }
 
-    public int[] getSideLocations()
-    {
+    public int[] getSideLocations() {
         return this.sideLoc;
     }
 
-    public int[] getSideOrientations()
-    {
+    public int[] getSideOrientations() {
         return this.sideOrient;
     }
 
-    public void setSides(int[] sideLoc, int[] sideOrient)
-    {
+    public void setSides(int[] sideLoc, int[] sideOrient) {
         this.sideLoc = sideLoc;
         this.sideOrient = sideOrient;
         fireRubikChanged(new RubikEvent(this, 0, 0, 0));
     }
 
-    public int getSideAt(int index)
-    {
+    public int getSideAt(int index) {
         return this.sideLoc[index];
     }
 
-    public int getSideLocation(int index)
-    {
-        if (this.sideLoc[index] == index)
-        {
+    public int getSideLocation(int index) {
+        if (this.sideLoc[index] == index) {
             return index;
         }
         int length = this.sideLoc.length - 1;
-        while (length >= 0 && this.sideLoc[length] != index)
-        {
+        while (length >= 0 && this.sideLoc[length] != index) {
             length--;
         }
         return length;
     }
 
-    public int getSideOrientation(int index)
-    {
+    public int getSideOrientation(int index) {
         return this.sideOrient[getSideLocation(index)];
     }
 
-    public int getCubeOrientation()
-    {
-        switch ((this.sideLoc[0] * 6) + this.sideLoc[1])
-        {
-            case ScriptParser.U: /* 1 */
-                return ScriptParser.R; /* 0 */
-            case ScriptParser.F: /* 2 */
-                return ScriptParser.Li; /* 9 */
-            case ScriptParser.D: /* 4 */
-                return ScriptParser.Fi; /* 8 */
-            case ScriptParser.B: /* 5 */
-                return ScriptParser.Ui; /* 7 */
-            case ScriptParser.Ri: /* 6 */
-                return ScriptParser.U2; /* 13 */
-            case ScriptParser.Fi: /* 8 */
-                return ScriptParser.L2; /* 15 */
-            case ScriptParser.Li: /* 9 */
-                return ScriptParser.D; /* 4 */
-            case ScriptParser.Bi: /* 11 */
-                return ScriptParser.Di; /* 10 */
-            case ScriptParser.R2: /* 12 */
-                return ScriptParser.R2i; /* 18 */
-            case ScriptParser.U2: /* 13 */
-                return ScriptParser.U; /* 1 */
-            case ScriptParser.L2: /* 15 */
-                return ScriptParser.U2i; /* 19 */
-            case ScriptParser.D2: /* 16 */
-                return ScriptParser.D2; /* 16 */
-            case ScriptParser.U2i: /* 19 */
-                return ScriptParser.F; /* 2 */
-            case ScriptParser.F2i: /* 20 */
-                return ScriptParser.F2i; /* 20 */
-            case ScriptParser.D2i: /* 22 */
-                return ScriptParser.B; /* 5 */
-            case ScriptParser.B2i: /* 23 */
-                return ScriptParser.L2i; /* 21 */
-            case ScriptParser.TR: /* 24 */
-                return ScriptParser.Ri; /* 6 */
-            case ScriptParser.TF: /* 26 */
-                return ScriptParser.R2; /* 12 */
-            case ScriptParser.TL: /* 27 */
-                return ScriptParser.F2; /* 14 */
-            case ScriptParser.TB: /* 29 */
-                return ScriptParser.B2; /* 17 */
-            case ScriptParser.TRi: /* 30 */
-                return ScriptParser.B2i; /* 23 */
-            case ScriptParser.TUi: /* 31 */
-                return ScriptParser.L; /* 3 */
-            case ScriptParser.TLi: /* 33 */
-                return ScriptParser.D2i; /* 22 */
-            case ScriptParser.TDi: /* 34 */
-                return ScriptParser.Bi; /* 11 */
-            case ScriptParser.L: /* 3 */
-            case ScriptParser.Ui: /* 7 */
-            case ScriptParser.Di: /* 10 */
-            case ScriptParser.F2: /* 14 */
-            case ScriptParser.B2: /* 17 */
-            case ScriptParser.R2i: /* 18 */
-            case ScriptParser.L2i: /* 21 */
-            case ScriptParser.TU: /* 25 */
-            case ScriptParser.TD: /* 28 */
-            case ScriptParser.TFi: /* 32 */
-            default:
-                return ScriptParser.POSITION_UNSUPPORTED;
+    public int getCubeOrientation() {
+        switch ((this.sideLoc[0] * 6) + this.sideLoc[1]) {
+        case ScriptParser.U: /* 1 */
+            return ScriptParser.R; /* 0 */
+        case ScriptParser.F: /* 2 */
+            return ScriptParser.Li; /* 9 */
+        case ScriptParser.D: /* 4 */
+            return ScriptParser.Fi; /* 8 */
+        case ScriptParser.B: /* 5 */
+            return ScriptParser.Ui; /* 7 */
+        case ScriptParser.Ri: /* 6 */
+            return ScriptParser.U2; /* 13 */
+        case ScriptParser.Fi: /* 8 */
+            return ScriptParser.L2; /* 15 */
+        case ScriptParser.Li: /* 9 */
+            return ScriptParser.D; /* 4 */
+        case ScriptParser.Bi: /* 11 */
+            return ScriptParser.Di; /* 10 */
+        case ScriptParser.R2: /* 12 */
+            return ScriptParser.R2i; /* 18 */
+        case ScriptParser.U2: /* 13 */
+            return ScriptParser.U; /* 1 */
+        case ScriptParser.L2: /* 15 */
+            return ScriptParser.U2i; /* 19 */
+        case ScriptParser.D2: /* 16 */
+            return ScriptParser.D2; /* 16 */
+        case ScriptParser.U2i: /* 19 */
+            return ScriptParser.F; /* 2 */
+        case ScriptParser.F2i: /* 20 */
+            return ScriptParser.F2i; /* 20 */
+        case ScriptParser.D2i: /* 22 */
+            return ScriptParser.B; /* 5 */
+        case ScriptParser.B2i: /* 23 */
+            return ScriptParser.L2i; /* 21 */
+        case ScriptParser.TR: /* 24 */
+            return ScriptParser.Ri; /* 6 */
+        case ScriptParser.TF: /* 26 */
+            return ScriptParser.R2; /* 12 */
+        case ScriptParser.TL: /* 27 */
+            return ScriptParser.F2; /* 14 */
+        case ScriptParser.TB: /* 29 */
+            return ScriptParser.B2; /* 17 */
+        case ScriptParser.TRi: /* 30 */
+            return ScriptParser.B2i; /* 23 */
+        case ScriptParser.TUi: /* 31 */
+            return ScriptParser.L; /* 3 */
+        case ScriptParser.TLi: /* 33 */
+            return ScriptParser.D2i; /* 22 */
+        case ScriptParser.TDi: /* 34 */
+            return ScriptParser.Bi; /* 11 */
+        case ScriptParser.L: /* 3 */
+        case ScriptParser.Ui: /* 7 */
+        case ScriptParser.Di: /* 10 */
+        case ScriptParser.F2: /* 14 */
+        case ScriptParser.B2: /* 17 */
+        case ScriptParser.R2i: /* 18 */
+        case ScriptParser.L2i: /* 21 */
+        case ScriptParser.TU: /* 25 */
+        case ScriptParser.TD: /* 28 */
+        case ScriptParser.TFi: /* 32 */
+        default:
+            return ScriptParser.POSITION_UNSUPPORTED;
         }
     }
 
-    public int getPartSide(int index, int orient)
-    {
-        return index < 8 ? getCornerSide(index,
-            orient) : index < 20 ? getEdgeSide(index - 8, orient) : index < 26 ? getSideLocation(index - 20) : orient;
+    public int getPartSide(int index, int orient) {
+        return index < 8 ? getCornerSide(index, orient) : index < 20 ? getEdgeSide(index - 8, orient) : index < 26 ? getSideLocation(index - 20) : orient;
     }
 
-    public int getCornerSide(int index, int orient)
-    {
+    public int getCornerSide(int index, int orient) {
         int cornerLocation = getCornerLocation(index);
         return CORNER_TRANSLATION[cornerLocation][((6 + (orient * 2)) - (this.cornerOrient[cornerLocation] * 2)) % 6];
     }
 
-    public int getEdgeSide(int index, int orient)
-    {
+    public int getEdgeSide(int index, int orient) {
         int edgeLocation = getEdgeLocation(index);
-        switch (orient)
-        {
-            case 0:
-                return EDGE_TRANSLATION[edgeLocation][(4 - (this.edgeOrient[edgeLocation] * 2)) % 4];
-            case 1:
-                return EDGE_TRANSLATION[edgeLocation][(6 - (this.edgeOrient[edgeLocation] * 2)) % 4];
-            default:
-                throw new IllegalArgumentException(
-                    new StringBuffer().append("invalid orientation:").append(orient).toString());
+        switch (orient) {
+        case 0:
+            return EDGE_TRANSLATION[edgeLocation][(4 - (this.edgeOrient[edgeLocation] * 2)) % 4];
+        case 1:
+            return EDGE_TRANSLATION[edgeLocation][(6 - (this.edgeOrient[edgeLocation] * 2)) % 4];
+        default:
+            throw new IllegalArgumentException(new StringBuffer().append("invalid orientation:").append(orient).toString());
         }
     }
 
-    public int getEdgeLayerSide(int index, int orient)
-    {
+    public int getEdgeLayerSide(int index, int orient) {
         int edgeLocation = getEdgeLocation(index);
         return EDGE_SIDE_MAP[edgeLocation][(orient + this.edgeOrient[edgeLocation]) % 2];
     }
 
-    public void addRubikListener(RubikListener rubikListener)
-    {
+    public void addRubikListener(RubikListener rubikListener) {
         this.listenerList.add(RubikListener.class, rubikListener);
     }
 
-    public void removeRubikListener(RubikListener rubikListener)
-    {
+    public void removeRubikListener(RubikListener rubikListener) {
         this.listenerList.remove(RubikListener.class, rubikListener);
     }
 
-    protected void fireRubikTwisted(RubikEvent rubikEvent)
-    {
-        if (this.quiet)
-        {
+    protected void fireRubikTwisted(RubikEvent rubikEvent) {
+        if (this.quiet) {
             return;
         }
         List<ListenerNode> listenerList = this.listenerList.getListenerList();
-        for (ListenerNode node : listenerList)
-        {
-            if (node.getClazz() == RubikListener.class)
-            {
-                ((RubikListener)node.getListener()).rubikTwisting(rubikEvent);
-                ((RubikListener)node.getListener()).rubikTwisted(rubikEvent);
+        for (ListenerNode node : listenerList) {
+            if (node.getClazz() == RubikListener.class) {
+                ((RubikListener) node.getListener()).rubikTwisting(rubikEvent);
+                ((RubikListener) node.getListener()).rubikTwisted(rubikEvent);
             }
         }
     }
 
-    protected void fireRubikChanged(RubikEvent rubikEvent)
-    {
-        if (this.quiet)
-        {
+    protected void fireRubikChanged(RubikEvent rubikEvent) {
+        if (this.quiet) {
             return;
         }
         List<ListenerNode> listenerList = this.listenerList.getListenerList();
-        for (ListenerNode node : listenerList)
-        {
-            if (node.getClazz() == RubikListener.class)
-            {
-                ((RubikListener)node.getListener()).rubikChanged(rubikEvent);
+        for (ListenerNode node : listenerList) {
+            if (node.getClazz() == RubikListener.class) {
+                ((RubikListener) node.getListener()).rubikChanged(rubikEvent);
             }
         }
     }
 
-    public void setQuiet(boolean quiet)
-    {
-        if (quiet != this.quiet)
-        {
+    public void setQuiet(boolean quiet) {
+        if (quiet != this.quiet) {
             this.quiet = quiet;
-            if (this.quiet)
-            {
+            if (this.quiet) {
                 return;
             }
             fireRubikChanged(new RubikEvent(this, 0, 0, 0));
@@ -1197,11 +1044,9 @@ public class RubiksCubeCore implements Cloneable
     }
 
     @Override
-    public Object clone()
-    {
-        try
-        {
-            RubiksCubeCore rubiksCubeCore = (RubiksCubeCore)super.clone();
+    public Object clone() {
+        try {
+            RubiksCubeCore rubiksCubeCore = (RubiksCubeCore) super.clone();
             rubiksCubeCore.cornerLoc = this.cornerLoc.clone();
             rubiksCubeCore.cornerOrient = this.cornerOrient.clone();
             rubiksCubeCore.edgeLoc = this.edgeLoc.clone();
@@ -1210,9 +1055,7 @@ public class RubiksCubeCore implements Cloneable
             rubiksCubeCore.sideOrient = this.sideOrient.clone();
             rubiksCubeCore.listenerList = new EventListenerList();
             return rubiksCubeCore;
-        }
-        catch (CloneNotSupportedException e)
-        {
+        } catch (CloneNotSupportedException e) {
             throw new InternalError(e.getMessage());
         }
     }
