@@ -107,9 +107,9 @@ public class MovieControlAWT extends Panel implements ActionListener, ItemListen
 
     @Override
     public void actionPerformed(ActionEvent actionEvent) {
-        Object source = actionEvent.getSource();
         if (this.boundedRangeModel != null) {
             int value = this.boundedRangeModel.getValue();
+            Object source = actionEvent.getSource();
             if (source == this.forwardButton) {
                 this.boundedRangeModel.setValue(value == this.boundedRangeModel.getMaximum() ? this.boundedRangeModel.getMinimum() : value + 1);
             } else if (source == this.rewindButton) {

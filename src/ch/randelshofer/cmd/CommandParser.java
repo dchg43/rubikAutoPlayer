@@ -116,7 +116,7 @@ public class CommandParser {
     }
 
     public void parse(String[] args) {
-        Options options = new Options();
+        final Options options = new Options();
         for (String[] param : parameterInfo) {
             options.addOption(param[1] == null || param[1].length() == 0 ? null : param[1], param[0], param[2] == null ? false : true, param[3]);
         }
@@ -297,7 +297,7 @@ public class CommandParser {
         this.atts.put(key, value);
     }
 
-    public String getAppInfo() {
+    public static String getAppInfo() {
         return "Rubik Player " + version + ", " + copyright;
     }
 

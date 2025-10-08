@@ -70,16 +70,13 @@ import ch.randelshofer.util.PooledSequentialDispatcherAWT;
 public class AutoPlayer extends Panel implements Runnable {
     private static final long serialVersionUID = -698774308591767978L;
 
+    private static final char sevenChar = '0';
+
     private ScriptPlayer player;
 
     private MultilineLabel scriptTextArea;
 
     private Panel controlsPanel;
-
-    private static final Color inactiveSelectionBackground = new Color(0xD5, 0xD5, 0xD5);
-
-    // private static final Color activeSelectionBackground = new Color(0xFF, 0xFF, 0x40);
-    private static final Color activeSelectionBackground = new Color(0x00, 0xFF, 0x40);
 
     private ArrayList<Color> colors;
 
@@ -221,12 +218,12 @@ public class AutoPlayer extends Panel implements Runnable {
         } catch (Throwable e) {
             removeAll();
             setLayout(new BorderLayout());
-            TextArea textArea = new TextArea(10, 40);
-            add("Center", textArea);
+            TextArea textArea = new TextArea(30, 40);
+            add("South", textArea);
 
-            String errString = getString(e);
+            String errString = AutoPlayer.getString(e);
             System.err.println(errString);
-            textArea.setText(cmd.getAppInfo() + "\n\n" + errString);
+            textArea.setText(CommandParser.getAppInfo() + "\n\n" + errString);
 
             invalidate();
             validate();
@@ -246,8 +243,8 @@ public class AutoPlayer extends Panel implements Runnable {
     public void paint(Graphics graphics) {
         graphics.setFont(new Font("Dialog", 0, 10));
         FontMetrics fontMetrics = graphics.getFontMetrics();
-        graphics.drawString("Loading Rubik Player " + CommandParser.version, 12, fontMetrics.getHeight());
-        graphics.drawString(CommandParser.copyright, 12, fontMetrics.getHeight() * 2);
+        graphics.drawString("Loading " + CommandParser.getAppInfo(), 12, fontMetrics.getHeight());
+        // graphics.drawString(CommandParser.copyright, 12, fontMetrics.getHeight() * 2);
     }
 
     @Override
@@ -277,8 +274,9 @@ public class AutoPlayer extends Panel implements Runnable {
             startPosition = currentSymbol.getStartPosition();
             endPosition = currentSymbol.getEndPosition() + 1;
         }
+        Color backColor = this.player.isProcessingCurrentSymbol() ? MultilineLabel.activeSelectionBackground : MultilineLabel.inactiveSelectionBackground;
         this.scriptTextArea.select(startPosition, endPosition);
-        this.scriptTextArea.setSelectionBackground(this.player.isProcessingCurrentSymbol() ? activeSelectionBackground : inactiveSelectionBackground);
+        this.scriptTextArea.setSelectionBackground(backColor);
     }
 
     private void readParameters() throws IllegalArgumentException {
@@ -302,21 +300,21 @@ public class AutoPlayer extends Panel implements Runnable {
         for (; colorIndex < colors_str.length; colorIndex++) {
             try {
                 Color c = new Color(CommandParser.decode(colors_str[colorIndex]));
-                if (this.colors.contains(c)) {
-                    throw new IllegalArgumentException(new StringBuffer().append("Invalid parameter 'colorTable' value ").append(Arrays.toString(
-                            colors_str)).append(" is illegal.").toString());
+                if (!this.colors.contains(c)) {
+                    this.colors.add(colorIndex, c);
+                    continue;
                 }
-                this.colors.add(colorIndex, c);
             } catch (NumberFormatException e) {
-                Color c = new Color(CommandParser.decode(dflt[colorIndex]));
-                if (this.colors.contains(c)) {
-                    throw new IllegalArgumentException(new StringBuffer().append("Invalid parameter 'colorTable' value ").append(Arrays.toString(
-                            colors_str)).append(" is illegal.").toString());
-                }
-                this.colors.add(colorIndex, c);
                 System.out.println(new StringBuffer().append("Invalid parameter 'colorTable', value ").append(Arrays.toString(colors_str)).append(
-                        " is illegal.\n").append(getString(e)).toString());
+                        " is illegal.\n").append(AutoPlayer.getString(e)).toString());
             }
+            // 设置参数异常时使用默认值
+            Color c = new Color(CommandParser.decode(dflt[colorIndex]));
+            if (this.colors.contains(c)) {
+                throw new IllegalArgumentException(new StringBuffer().append("Invalid parameter 'colorTable' value ").append(Arrays.toString(
+                        colors_str)).append(" is illegal.").toString());
+            }
+            this.colors.add(colorIndex, c);
         }
         // 补充未设置的颜色
         for (; colorIndex < dflt.length; colorIndex++) {
@@ -376,7 +374,7 @@ public class AutoPlayer extends Panel implements Runnable {
         } catch (Exception e) {
             this.scriptTextArea.setText(null);
             this.player.setScript(null);
-            System.out.println("Invalid parameter 'script'\n" + getString(e));
+            System.out.println("Invalid parameter 'script'\n" + AutoPlayer.getString(e));
         }
 
         this.initCube.reset();
@@ -386,7 +384,7 @@ public class AutoPlayer extends Panel implements Runnable {
             try {
                 scriptParser.parse(new StringReader(initScript)).applySubtreeTo(this.initCube, false);
             } catch (Exception e) {
-                System.out.println("Invalid parameter 'initScript'\n" + getString(e));
+                System.out.println("Invalid parameter 'initScript'\n" + AutoPlayer.getString(e));
             }
         }
 
@@ -401,7 +399,7 @@ public class AutoPlayer extends Panel implements Runnable {
             }
             this.player.getBoundedRangeModel().setValue(scriptProgress);
         } catch (IndexOutOfBoundsException e) {
-            System.out.println("Invalid parameter 'scriptProgress'\n" + getString(e));
+            System.out.println("Invalid parameter 'scriptProgress'\n" + AutoPlayer.getString(e));
         }
 
         String displayLines = this.cmd.getParameter("displayLines", "1");
@@ -409,7 +407,7 @@ public class AutoPlayer extends Panel implements Runnable {
         try {
             iCountTokens = Math.max(Integer.parseInt(displayLines), iCountTokens);
         } catch (NumberFormatException e) {
-            System.out.println("Invalid parameter 'displayLines'\n" + getString(e));
+            System.out.println("Invalid parameter 'displayLines'\n" + AutoPlayer.getString(e));
         }
         if (iCountTokens <= 0) {
             this.scriptTextArea.setVisible(false);
@@ -443,7 +441,7 @@ public class AutoPlayer extends Panel implements Runnable {
                     visualComponent.setBackgroundImage(getImage(url));
                 }
             } catch (MalformedURLException e) {
-                System.out.println("Invalid parameter 'backgroundImage' malformed URL: " + backgroundImage + "\n" + getString(e));
+                System.out.println("Invalid parameter 'backgroundImage' malformed URL: " + backgroundImage + "\n" + AutoPlayer.getString(e));
             }
         }
 
@@ -575,7 +573,7 @@ public class AutoPlayer extends Panel implements Runnable {
                     rearCanvas3D.setBackgroundImage(getImage(url));
                 }
             } catch (MalformedURLException e) {
-                System.out.println("Invalid parameter 'backgroundImage' malformed URL: " + rearImage + "\n" + getString(e));
+                System.out.println("Invalid parameter 'backgroundImage' malformed URL: " + rearImage + "\n" + AutoPlayer.getString(e));
             }
         }
         rearCanvas3D.setLightSourceIntensity(this.cmd.getParameter("lightSourceIntensity", 1.0d));
@@ -662,7 +660,7 @@ public class AutoPlayer extends Panel implements Runnable {
     }
 
     private void initGUI() {
-        JFrame frame = new JFrame("AutoPlayer"); // 初始化画布
+        final JFrame frame = new JFrame("AutoPlayer"); // 初始化画布
         frame.setTitle("三阶魔方求解器 by Deng");
         frame.setSize(600, 600); // 设置画布大小
         frame.setPreferredSize(new java.awt.Dimension(600, 600));
@@ -676,11 +674,11 @@ public class AutoPlayer extends Panel implements Runnable {
             }
         });
 
-        JButton[] colorSel = new JButton[6];
+        final JButton[] colorSel = new JButton[6];
         // 顺序：正面红色, 右面黄色, 底面绿色, 背面橙色, 左面白色, 顶面蓝色
         final Color[] initColors = {new Color(230, 0, 0), Color.yellow, new Color(0, 170, 0), new Color(255, 108, 0), Color.white, Color.blue};
-        Border defaultBorder = BorderFactory.createEtchedBorder();
-        Border selectBorder = new LineBorder(Color.black, 4);
+        final Border defaultBorder = BorderFactory.createEtchedBorder();
+        final Border selectBorder = new LineBorder(Color.black, 4);
         for (int i = 0; i < 6; i++) {
             colorSel[i] = new JButton();
             frame.add(colorSel[i]);
@@ -707,7 +705,7 @@ public class AutoPlayer extends Panel implements Runnable {
         }
 
         // 编辑按钮
-        JButton buttonEdit = new JButton("edit");
+        final JButton buttonEdit = new JButton("edit");
         frame.add(buttonEdit);
         buttonEdit.setBounds(270, 20, 65, 40);
         buttonEdit.setText("编辑");
@@ -720,31 +718,15 @@ public class AutoPlayer extends Panel implements Runnable {
 
                 // 判断魔方是否有旋转，因为编辑功能是基于魔方未旋转状态，如果有旋转，设置方块颜色时会错位
                 if (!AutoPlayer.this.player.getCube3D().getModel().isSolved()) {
-                    ArrayList<Color> colorCurrent = new ArrayList<>(7);
-                    for (int i = 0; i < 6; i++) {
-                        // 以中心块的颜色为基准
-                        Color c = AutoPlayer.this.player.getCube3D().getStickerColor(i, 4);
-                        if (colorCurrent.contains(c)) {
-                            break;
-                        }
-                        colorCurrent.add(i, c);
-                    }
-
-                    // 只有6个面都有颜色时才执行重置
-                    if (colorCurrent.size() == 6) {
-                        colorCurrent.add(6, AutoPlayer.this.colors.get(6));
-                        // 重置魔方状态，保留块的颜色和顺序
-                        String cube = getCubeString();
-                        AutoPlayer.this.player.getCube3D().getModel().reset();
-                        setCubeByString(cube, colorCurrent);
-                    }
+                    // 重置魔方状态，保留块的颜色和顺序
+                    String cubeString = getCubeString();
+                    AutoPlayer.this.cleanAndResetCube(cubeString);
                 }
 
                 if (AutoPlayer.this.scriptTextArea.getText().length() > 0) {
                     // 重置步骤为空
                     AutoPlayer.this.scriptTextArea.setText(null);
                     AutoPlayer.this.player.setScript(null);
-                    AutoPlayer.this.player.stop();
                 }
 
                 if (AutoPlayer.this.player.getCube3D().isEditMode()) {
@@ -755,7 +737,7 @@ public class AutoPlayer extends Panel implements Runnable {
                     AutoPlayer.this.player.getCube3D().setEditMode(true);
                     if (AutoPlayer.this.selectColor == -1) {
                         AutoPlayer.this.selectColor = 0;
-                        player.getCube3D().setSelectColor(AutoPlayer.this.colors.get(AutoPlayer.this.selectColor));
+                        AutoPlayer.this.player.getCube3D().setSelectColor(AutoPlayer.this.colors.get(AutoPlayer.this.selectColor));
                         colorSel[AutoPlayer.this.selectColor].setBorder(selectBorder);
                     }
                 }
@@ -763,7 +745,7 @@ public class AutoPlayer extends Panel implements Runnable {
         });
 
         // 清空按钮
-        JButton buttonClean = new JButton("clean");
+        final JButton buttonClean = new JButton("clean");
         frame.add(buttonClean);
         buttonClean.setBounds(420, 20, 65, 40);
         buttonClean.setText("清空");
@@ -784,7 +766,7 @@ public class AutoPlayer extends Panel implements Runnable {
         });
 
         // 打乱按钮
-        JButton buttonRandom = new JButton("random");
+        final JButton buttonRandom = new JButton("random");
         frame.add(buttonRandom);
         buttonRandom.setBounds(495, 20, 65, 40);
         buttonRandom.setText("打乱");
@@ -797,12 +779,13 @@ public class AutoPlayer extends Panel implements Runnable {
                 AutoPlayer.this.player.getCube3D().getModel().reset();
 
                 // Random stick by Call Random function
-                setCubeByString(Tools.randomCube(), AutoPlayer.this.colors);
+                String randomCube = Tools.randomCube();
+                setCubeByString(randomCube, AutoPlayer.this.colors);
             }
         });
 
         // 校验按钮
-        JButton buttonCheck = new JButton("check");
+        final JButton buttonCheck = new JButton("check");
         frame.add(buttonCheck);
         buttonCheck.setBounds(420, 70, 65, 40);
         buttonCheck.setText("校验");
@@ -816,7 +799,7 @@ public class AutoPlayer extends Panel implements Runnable {
                 String cubeString = getCubeString();
                 String result = searchSolution(cubeString);
                 if (result.contains("Error")) {
-                    String message = "校验不通过：" + getErrMessage(result);
+                    String message = "校验不通过：" + AutoPlayer.getErrMessage(result);
                     AutoPlayer.this.scriptTextArea.setText(message);
                     JOptionPane.showMessageDialog(AutoPlayer.this, message, "失败", JOptionPane.ERROR_MESSAGE);
                     if (AutoPlayer.this.player.getScript() != null) {
@@ -834,7 +817,7 @@ public class AutoPlayer extends Panel implements Runnable {
         });
 
         // 求解按钮
-        JButton buttonSolution = new JButton("solution");
+        final JButton buttonSolution = new JButton("solution");
         frame.add(buttonSolution);
         buttonSolution.setBounds(495, 70, 65, 40);
         buttonSolution.setText("求解");
@@ -849,28 +832,12 @@ public class AutoPlayer extends Panel implements Runnable {
                 String cubeString = getCubeString();
                 // 有旋转，重置为旋转前状态
                 if (!AutoPlayer.this.player.getCube3D().getModel().isSolved()) {
-                    ArrayList<Color> colorCurrent = new ArrayList<>();
-                    for (int i = 0; i < 6; i++) {
-                        // 以中心块的颜色为基准
-                        Color c = AutoPlayer.this.player.getCube3D().getStickerColor(i, 4);
-                        if (colorCurrent.contains(c)) {
-                            break;
-                        }
-                        colorCurrent.add(i, c);
-                    }
-
-                    // 只有6个面都有颜色时才执行重置
-                    if (colorCurrent.size() == 6) {
-                        colorCurrent.add(6, AutoPlayer.this.colors.get(6));
-                        // 重置魔方状态，保留块的颜色和顺序
-                        AutoPlayer.this.player.getCube3D().getModel().reset();
-                        setCubeByString(cubeString, colorCurrent);
-                    }
+                    AutoPlayer.this.cleanAndResetCube(cubeString);
                 }
 
                 String result = searchSolution(cubeString);
                 if (result.contains("Error")) {
-                    String message = "校验不通过：" + getErrMessage(result);
+                    String message = "校验不通过：" + AutoPlayer.getErrMessage(result);
                     AutoPlayer.this.scriptTextArea.setText(message);
                     JOptionPane.showMessageDialog(AutoPlayer.this, message, "失败", JOptionPane.ERROR_MESSAGE);
                     if (AutoPlayer.this.player.getScript() != null) {
@@ -915,6 +882,28 @@ public class AutoPlayer extends Panel implements Runnable {
 
         // 显示
         frame.setVisible(true);
+    }
+
+    // 清除魔方旋转记录并重置魔方状态
+    // 用于编辑和自动复原功能，这两个是基于魔方未旋转状态，如果有旋转，设置和获取方块颜色时会错位
+    private void cleanAndResetCube(String cubeString) {
+        ArrayList<Color> colorCurrent = new ArrayList<>();
+        for (int i = 0; i < 6; i++) {
+            // 以中心块的颜色为基准
+            Color c = this.player.getCube3D().getStickerColor(i, 4);
+            if (colorCurrent.contains(c)) {
+                break;
+            }
+            colorCurrent.add(i, c);
+        }
+
+        // 只有6个面都有颜色时才执行重置
+        if (colorCurrent.size() == 6) {
+            colorCurrent.add(6, this.colors.get(6));
+            // 重置魔方状态，保留块的颜色和顺序
+            this.player.getCube3D().getModel().reset();
+            setCubeByString(cubeString, colorCurrent);
+        }
     }
 
     public String searchSolution(String cubeString) {
@@ -963,7 +952,7 @@ public class AutoPlayer extends Panel implements Runnable {
             return "Error 9";
         }
         if (!colorMap.containsKey(this.colors.get(6))) {
-            colorMap.put(this.colors.get(6), '0');
+            colorMap.put(this.colors.get(6), sevenChar);
         }
 
         // CORNER_MAP[CornerSide][cornerLoc % 4] （详见图片<块的命名>）
@@ -1016,18 +1005,17 @@ public class AutoPlayer extends Panel implements Runnable {
     }
 
     // cubeString形如：UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB
-    public void setCubeByString(String cubeString, ArrayList<Color> colors) {
-        AbstractCube3DAWT cube = this.player.getCube3D();
-
+    public void setCubeByString(String cubeString, ArrayList<Color> curColors) {
         // 初始化颜色对应表，顺序：front, right, down, back, left, up
-        final char[] chars = {'F', 'R', 'D', 'B', 'L', 'U', '0'};
+        final char[] chars = {'F', 'R', 'D', 'B', 'L', 'U', sevenChar};
         Map<Character, Color> colorMap = new HashMap<>();
         for (int i = 0; i < chars.length; i++) {
-            colorMap.put(chars[i], colors.get(i));
+            colorMap.put(chars[i], curColors.get(i));
         }
 
         char[] randomChars = cubeString.toCharArray();
-        final int[] sideMap = {5, 1, 0, 2, 4, 3}; // 对应Tools.randomCube()的 U R F D L B
+        AbstractCube3DAWT cube = this.player.getCube3D();
+        final int[] sideMap = {5, 1, 0, 2, 4, 3}; // 对应Tools.randomCube()得到的 U R F D L B
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 9; j++) {
                 char index = randomChars[i * 9 + j];

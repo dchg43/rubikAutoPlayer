@@ -33,12 +33,6 @@ import ch.randelshofer.rubik.RubiksCubeCore;
 import ch.randelshofer.util.ConcurrentDispatcherAWT;
 
 public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionListener {
-    private Panel controlPanel;
-
-    private MovieControlAWT controls;
-
-    private ScriptNode script;
-
     private volatile int scriptIndex;
 
     private ChangeEvent changeEvent;
@@ -53,8 +47,6 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
 
     private static final int scaling = 1;
 
-    private AbstractButton resetButton;
-
     private volatile boolean isProcessingCurrentSymbol;
 
     private static ConcurrentDispatcherAWT threadPool = new ConcurrentDispatcherAWT();
@@ -63,15 +55,26 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
 
     private EventListenerList listenerList = new EventListenerList();
 
-    private Vector<ScriptNode> scriptVector = new Vector<>();
+    private ScriptNode script;
 
-    private int state = STOPPED;
+    private Vector<ScriptNode> scriptVector = new Vector<>();
 
     private Transform3D transform = new Transform3D();
 
     private RubiksCubeCore model = new RubiksCubeCore();
 
     private AbstractCube3DAWT cube3D = new MiniCube3DAWT();
+
+    private int state = STOPPED;
+
+    // 底部整个控制区域，不包括文本框
+    private Panel controlPanel;
+
+    // 滚动条 开始暂停按钮 前进后退按钮
+    private MovieControlAWT controls;
+
+    // 重置按钮
+    private AbstractButton resetButton;
 
     // 魔方图像
     private Canvas3DAWT canvas = Canvas3DJ2D.createCanvas3D();
@@ -228,8 +231,8 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
                 }
                 this.model.setQuiet(false);
             }
+            this.isProcessingCurrentSymbol = true;
             while ((this.state == RUNNING && this.progress.getValue() != this.progress.getMaximum()) || this.scriptIndex != this.progress.getValue()) {
-                this.isProcessingCurrentSymbol = true;
                 fireStateChanged();
                 int iMin = Math.min(this.progress.getValue() + 1, this.progress.getMaximum());
                 if (this.scriptIndex == iMin - 1) {
@@ -250,10 +253,10 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
                     }
                     this.model.setQuiet(false);
                 }
-                this.isProcessingCurrentSymbol = false;
                 this.progress.setValue(this.progress.getValue() + 1);
                 fireStateChanged();
             }
+            this.isProcessingCurrentSymbol = false;
         }
         synchronized (this) {
             this.state = STOPPED;
@@ -364,14 +367,16 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
     }
 
     private void update() {
+        if (!this.isProcessingCurrentSymbol) {
+            this.isProcessingCurrentSymbol = true;
+        }
         int value = this.progress.getValue();
-        this.isProcessingCurrentSymbol = true;
         if (this.scriptIndex == value - 1) {
             fireStateChanged();
             this.scriptVector.elementAt(this.scriptIndex++).applyTo(this.model);
         } else if (this.scriptIndex == value + 1) {
-            ScriptNode scriptNode = this.scriptVector.elementAt(--this.scriptIndex);
             fireStateChanged();
+            ScriptNode scriptNode = this.scriptVector.elementAt(--this.scriptIndex);
             scriptNode.applyInverseTo(this.model);
         } else {
             this.model.setQuiet(true);
@@ -383,7 +388,9 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
             }
             this.model.setQuiet(false);
         }
-        this.isProcessingCurrentSymbol = false;
+        if (this.state != RUNNING) {
+            this.isProcessingCurrentSymbol = false;
+        }
         fireStateChanged();
     }
 

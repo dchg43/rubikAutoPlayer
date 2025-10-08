@@ -976,7 +976,7 @@ public class ScriptParser {
             case 101:
                 break;
             default:
-                // i2--; // TODO:
+                i2--; // TODO:
                 break;
             }
         }

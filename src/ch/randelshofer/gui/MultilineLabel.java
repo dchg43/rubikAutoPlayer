@@ -2,8 +2,6 @@ package ch.randelshofer.gui;
 
 import java.awt.Canvas;
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -14,19 +12,26 @@ import java.util.Vector;
 public class MultilineLabel extends Canvas {
     private static final long serialVersionUID = -1943567795692517989L;
 
+    public static final Color inactiveSelectionBackground = new Color(0xD5, 0xD5, 0xD5);
+
+    // private static final Color activeSelectionBackground = new Color(0xFF, 0xFF, 0x40);
+    public static final Color activeSelectionBackground = new Color(0x00, 0xFF, 0x40);
+
     private String[] lines;
 
-    private int selectionStart;
+    private int selectionStart = 0;
 
-    private int selectionEnd;
+    private int selectionEnd = 0;
 
     private int minRows;
 
     private String text = "";
 
-    private Insets insets = new Insets(2, 3, 3, 3);
+    // 文本框边距：上 左 下 右
+    private Insets insets = new Insets(2, 6, 6, 3);
 
-    private Color selectionBackground = new Color(181, 213, 255);
+    // 选中的文本背景色。分为正在执行和未执行两种，分别由active和inactive设置
+    private Color selectionBackground = MultilineLabel.inactiveSelectionBackground;
 
     public MultilineLabel() {
         initComponents();
@@ -35,8 +40,10 @@ public class MultilineLabel extends Canvas {
     }
 
     public void setSelectionBackground(Color selectionBackground) {
-        this.selectionBackground = selectionBackground;
-        repaint();
+        if (!this.selectionBackground.equals(selectionBackground)) {
+            this.selectionBackground = selectionBackground;
+            repaint();
+        }
     }
 
     public int viewToModel(int x, int y) {
@@ -66,8 +73,9 @@ public class MultilineLabel extends Canvas {
         } else {
             this.text = text;
         }
-        repaint();
+        wrapText();
         revalidate();
+        repaint();
     }
 
     private void wrapText() {
@@ -76,8 +84,7 @@ public class MultilineLabel extends Canvas {
         }
         int width = (getSize().width - this.insets.left) - this.insets.right;
         if (width <= 0) {
-            this.lines = new String[1];
-            this.lines[0] = this.text;
+            this.lines = new String[]{this.text};
             return;
         }
 
@@ -116,9 +123,11 @@ public class MultilineLabel extends Canvas {
     }
 
     public synchronized void select(int startPosition, int endPosition) {
-        this.selectionStart = Math.min(this.text.length(), Math.max(0, startPosition));
-        this.selectionEnd = Math.min(this.text.length(), Math.max(startPosition, endPosition));
-        repaint();
+        if (this.selectionStart != startPosition) {
+            this.selectionStart = Math.min(this.text.length(), Math.max(0, startPosition));
+            this.selectionEnd = Math.min(this.text.length(), Math.max(startPosition, endPosition));
+            repaint();
+        }
     }
 
     @Override
@@ -162,20 +171,9 @@ public class MultilineLabel extends Canvas {
     public void paint(Graphics graphics) {
         Dimension size = getSize();
         graphics.setColor(Color.black);
-        graphics.drawRect(0, -1, size.width - 1, size.height);
+        // 绘制边框 (-1,-1,1,1)刚好不显示；(2,2,-4,-4)显示黑色边框
+        graphics.drawRect(-1, -1, size.width + 1, size.height + 1);
         if (this.text == null) {
-            return;
-        }
-        if (this.lines == null) {
-            invalidate();
-            wrapText();
-            Component container = this;
-            Container parent = this.getParent();
-            while (parent != null && parent.isValid()) {
-                container = parent;
-                parent = parent.getParent();
-            }
-            container.validate();
             return;
         }
         String[] strArr = this.lines;
@@ -186,18 +184,18 @@ public class MultilineLabel extends Canvas {
         FontMetrics fontMetrics = getFontMetrics(getFont());
         if (this.selectionEnd > this.selectionStart) {
             graphics.setColor(this.selectionBackground);
-            int l = 0;
+            int cur = 0;
             int y = insets.top;
             int height = fontMetrics.getHeight();
             for (String element : strArr) {
-                int length = l + element.length();
-                if (length >= this.selectionStart && l <= this.selectionEnd) {
-                    int iMax = Math.max(0, this.selectionStart - l);
+                int length = cur + element.length();
+                if (length >= this.selectionStart && cur <= this.selectionEnd) {
+                    int iMax = Math.max(0, this.selectionStart - cur);
                     int x = insets.left + fontMetrics.stringWidth(element.substring(0, iMax));
-                    int weight = fontMetrics.stringWidth(element.substring(iMax, Math.max(0, Math.min(element.length(), this.selectionEnd - l))));
-                    graphics.fillRect(x, y, weight, height);
+                    int weight = fontMetrics.stringWidth(element.substring(iMax, Math.max(0, Math.min(element.length(), this.selectionEnd - cur))));
+                    graphics.fillRect(x, y, weight, height); // 绘制选择覆盖图层
                 }
-                l = length;
+                cur = length;
                 y += height;
             }
         }
