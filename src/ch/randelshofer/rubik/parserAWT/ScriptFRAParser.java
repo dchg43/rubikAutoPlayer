@@ -13,9 +13,9 @@ public class ScriptFRAParser extends ScriptParser {
     }
 
     private static String[] getTokens() {
-        String[] tokens = new String[113];
         int i = 0;
         StringTokenizer stringTokenizer = new StringTokenizer(COMPRESSED_TOKENS, ":", true);
+        String[] tokens = new String[stringTokenizer.countTokens()];
         while (stringTokenizer.hasMoreTokens()) {
             String strNextToken = stringTokenizer.nextToken();
             if (strNextToken.equals(":")) {
@@ -28,15 +28,15 @@ public class ScriptFRAParser extends ScriptParser {
     }
 
     private static Hashtable<String, Object> getMacros() {
-        Hashtable<String, Object> hashtable = new Hashtable<>();
+        Hashtable<String, Object> macros = new Hashtable<>();
         StringTokenizer stringTokenizer = new StringTokenizer(COMPRESSED_MACROS, ":", false);
         while (stringTokenizer.hasMoreTokens()) {
             StringTokenizer stringTokenizer2 = new StringTokenizer(stringTokenizer.nextToken());
             String strNextToken = stringTokenizer.nextToken();
             while (stringTokenizer2.hasMoreTokens()) {
-                hashtable.put(stringTokenizer2.nextToken(), strNextToken);
+                macros.put(stringTokenizer2.nextToken(), strNextToken);
             }
         }
-        return hashtable;
+        return macros;
     }
 }

@@ -153,7 +153,7 @@ public class CommandParser {
                         formatter.printHelp(getAppInfo(), header, options, footer, false);
                         printWriter.close();
                         String message = stringWriter.toString();
-                        System.out.println(message);
+                        System.out.println(message);  // 命令行输出帮助
                         // 修改字体，改成等宽字体
                         UIManager.put("OptionPane.messageFont", new FontUIResource(new Font("宋体", Font.BOLD, 13)));
                         JOptionPane.showMessageDialog(null, message, "帮助", JOptionPane.INFORMATION_MESSAGE);
@@ -186,11 +186,11 @@ public class CommandParser {
             return default_value;
         }
         StringTokenizer stringTokenizer = new StringTokenizer(value, ", ");
-        String[] strArr = new String[stringTokenizer.countTokens()];
-        for (int i = 0; i < strArr.length; i++) {
-            strArr[i] = stringTokenizer.nextToken();
+        String[] tokens = new String[stringTokenizer.countTokens()];
+        for (int i = 0; i < tokens.length; i++) {
+            tokens[i] = stringTokenizer.nextToken();
         }
-        return strArr;
+        return tokens;
     }
 
     public int getParameter(String key, int default_value) {

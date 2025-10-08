@@ -2,6 +2,8 @@ package ch.randelshofer.gui;
 
 import java.awt.Canvas;
 import java.awt.Color;
+import java.awt.Component;
+import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -19,9 +21,9 @@ public class MultilineLabel extends Canvas {
 
     private String[] lines;
 
-    private int selectionStart = 0;
+    private int selectionStart = -1;
 
-    private int selectionEnd = 0;
+    private int selectionEnd = -1;
 
     private int minRows;
 
@@ -31,7 +33,7 @@ public class MultilineLabel extends Canvas {
     private Insets insets = new Insets(2, 6, 6, 3);
 
     // 选中的文本背景色。分为正在执行和未执行两种，分别由active和inactive设置
-    private Color selectionBackground = MultilineLabel.inactiveSelectionBackground;
+    private Color selectionBackground;
 
     public MultilineLabel() {
         initComponents();
@@ -40,7 +42,7 @@ public class MultilineLabel extends Canvas {
     }
 
     public void setSelectionBackground(Color selectionBackground) {
-        if (!this.selectionBackground.equals(selectionBackground)) {
+        if (!selectionBackground.equals(this.selectionBackground)) {
             this.selectionBackground = selectionBackground;
             repaint();
         }
@@ -174,6 +176,18 @@ public class MultilineLabel extends Canvas {
         // 绘制边框 (-1,-1,1,1)刚好不显示；(2,2,-4,-4)显示黑色边框
         graphics.drawRect(-1, -1, size.width + 1, size.height + 1);
         if (this.text == null) {
+            return;
+        }
+        if (this.lines == null) {
+            invalidate();
+            wrapText();
+            Component container = this;
+            Container parent = this.getParent();
+            while (parent != null && parent.isValid()) {
+                container = parent;
+                parent = parent.getParent();
+            }
+            container.validate();
             return;
         }
         String[] strArr = this.lines;

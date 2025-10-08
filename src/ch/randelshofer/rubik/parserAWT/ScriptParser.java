@@ -1308,8 +1308,8 @@ public class ScriptParser {
 
     private static synchronized String[] getDefaultTokens() {
         if (defaultTokens == null) {
-            defaultTokens = new String[113];
             StringTokenizer stringTokenizer = new StringTokenizer(COMPRESSED_TOKENS, ";", false);
+            defaultTokens = new String[stringTokenizer.countTokens()];
             int i = 0;
             while (stringTokenizer.hasMoreTokens()) {
                 String str = stringTokenizer.nextToken();

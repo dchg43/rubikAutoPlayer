@@ -11,9 +11,9 @@ public class HarrisENGParser extends ScriptParser {
     }
 
     private static String[] getTokens() {
-        String[] tokens = new String[113];
         int i = 0;
         StringTokenizer stringTokenizer = new StringTokenizer(COMPRESSED_TOKENS, ";", true);
+        String[] tokens = new String[stringTokenizer.countTokens()];
         while (stringTokenizer.hasMoreTokens()) {
             String strNextToken = stringTokenizer.nextToken();
             if (strNextToken.equals(";")) {
