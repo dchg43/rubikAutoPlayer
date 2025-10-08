@@ -789,18 +789,11 @@ public class AutoPlayer extends Panel implements Runnable {
                 String result = searchSolution(cubeString);
                 if (result.contains("Error")) {
                     String message = "校验不通过：" + AutoPlayer.getErrMessage(result);
-                    AutoPlayer.this.scriptTextArea.setText(message);
                     JOptionPane.showMessageDialog(AutoPlayer.this, message, "失败", JOptionPane.ERROR_MESSAGE);
-                    if (AutoPlayer.this.player.getScript() != null) {
-                        AutoPlayer.this.player.setScript(null);
-                    }
+
                 } else {
                     String message = "校验通过。";
-                    AutoPlayer.this.scriptTextArea.setText(message);
                     JOptionPane.showMessageDialog(AutoPlayer.this, message, "成功", JOptionPane.INFORMATION_MESSAGE);
-                    if (AutoPlayer.this.player.getScript() != null) {
-                        AutoPlayer.this.player.setScript(null);
-                    }
                 }
             }
         });
@@ -903,11 +896,7 @@ public class AutoPlayer extends Panel implements Runnable {
                 String result = searchSolution(facelets);
                 if (result.contains("Error")) {
                     String message = "校验不通过：" + AutoPlayer.getErrMessage(result);
-                    AutoPlayer.this.scriptTextArea.setText(message);
                     JOptionPane.showMessageDialog(AutoPlayer.this, message, "失败", JOptionPane.ERROR_MESSAGE);
-                    if (AutoPlayer.this.player.getScript() != null) {
-                        AutoPlayer.this.player.setScript(null);
-                    }
                 } else {
                     // 取消编辑
                     if (AutoPlayer.this.player.getCube3D().isEditMode()) {
