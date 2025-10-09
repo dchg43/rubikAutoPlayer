@@ -65,7 +65,8 @@ public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener
 
     private boolean isArmed = true;
 
-    private int unpaintedStates = 1;
+    // 用户控制魔方旋转时刷新频率
+    private int unpaintedStates = 0;
 
     protected double scaleFactor = 1.0d;
 
@@ -362,6 +363,7 @@ public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener
     @Override
     public void stateChanged(ChangeEvent changeEvent) {
         this.unpaintedStates++;
+        // 用户控制魔方旋转时刷新频率
         if (this.unpaintedStates == 1) {
             repaint();
         } else if (this.unpaintedStates > 10) {

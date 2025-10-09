@@ -31,6 +31,8 @@ public class CommandParser {
     private static final String[][] parameterInfo = {
             // 帮助
             {"help", "h", null, "显示帮助信息", "show help"},
+            // 演示模式
+            {"display", "", "boolean", "进入演示模式，点击求解结束true/false", "show display mode"},
 
             // 垂直方向倾斜角度
             {"alpha", "", "int", "垂直方向倾斜角度 -90 ~ 90，默认值-25", "Vertical orientation of the cube, -90..+90. Default: -25"},
@@ -153,7 +155,7 @@ public class CommandParser {
                         formatter.printHelp(getAppInfo(), header, options, footer, false);
                         printWriter.close();
                         String message = stringWriter.toString();
-                        System.out.println(message);  // 命令行输出帮助
+                        System.out.println(message); // 命令行输出帮助
                         // 修改字体，改成等宽字体
                         UIManager.put("OptionPane.messageFont", new FontUIResource(new Font("宋体", Font.BOLD, 13)));
                         JOptionPane.showMessageDialog(null, message, "帮助", JOptionPane.INFORMATION_MESSAGE);

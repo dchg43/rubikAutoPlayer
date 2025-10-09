@@ -143,20 +143,20 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
         return this.script;
     }
 
-    public synchronized void setScript(ScriptNode scriptNode) {
+    public synchronized void setScript(ScriptNode script) {
         stop();
-        this.script = scriptNode;
+        this.script = script;
         this.progress.setRangeProperties(0, 0, 0, 0, false);
         this.scriptVector.removeAllElements();
         this.scriptIndex = 0;
         //        this.controls.setVisible(scriptNode != null);
         this.controls.setVisible(true);
-        if (scriptNode != null) {
-            Enumeration<DefaultMutableTreeNode> enumerationResolvedEnumeration = scriptNode.resolvedEnumeration(false);
-            while (enumerationResolvedEnumeration.hasMoreElements()) {
-                ScriptNode scriptNode2 = (ScriptNode) enumerationResolvedEnumeration.nextElement();
-                if (((scriptNode2 instanceof TwistNode) && ((TwistNode) scriptNode2).getSymbol() != 84) || (scriptNode2 instanceof PermutationNode)) {
-                    this.scriptVector.addElement(scriptNode2);
+        if (script != null) {
+            Enumeration<DefaultMutableTreeNode> resolves = script.resolvedEnumeration(false);
+            while (resolves.hasMoreElements()) {
+                ScriptNode scriptNode = (ScriptNode) resolves.nextElement();
+                if (((scriptNode instanceof TwistNode) && ((TwistNode) scriptNode).getSymbol() != 84) || (scriptNode instanceof PermutationNode)) {
+                    this.scriptVector.addElement(scriptNode);
                 }
             }
             this.progress.setRangeProperties(0, 0, 0, this.scriptVector.size(), false);

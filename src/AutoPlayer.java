@@ -27,9 +27,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
+import java.util.Random;
 import java.util.StringTokenizer;
 
 import javax.swing.JButton;
@@ -53,11 +55,13 @@ import ch.randelshofer.gui.MultilineLabel;
 import ch.randelshofer.gui.RatioLayout;
 import ch.randelshofer.gui.event.ChangeEvent;
 import ch.randelshofer.gui.event.ChangeListener;
+import ch.randelshofer.gui.tree.DefaultMutableTreeNode;
 import ch.randelshofer.rubik.AbstractCube3DAWT;
 import ch.randelshofer.rubik.RubiksCubeCore;
 import ch.randelshofer.rubik.parserAWT.BandelowENGParser;
 import ch.randelshofer.rubik.parserAWT.CastellaParser;
 import ch.randelshofer.rubik.parserAWT.HarrisENGParser;
+import ch.randelshofer.rubik.parserAWT.PermutationNode;
 import ch.randelshofer.rubik.parserAWT.RandelshoferGERParser;
 import ch.randelshofer.rubik.parserAWT.ScriptFRAParser;
 import ch.randelshofer.rubik.parserAWT.ScriptNode;
@@ -65,6 +69,7 @@ import ch.randelshofer.rubik.parserAWT.ScriptParser;
 import ch.randelshofer.rubik.parserAWT.ScriptPlayer;
 import ch.randelshofer.rubik.parserAWT.SupersetENGParser;
 import ch.randelshofer.rubik.parserAWT.TouchardDeledicqFRAParser;
+import ch.randelshofer.rubik.parserAWT.TwistNode;
 import ch.randelshofer.util.PooledSequentialDispatcherAWT;
 
 public class AutoPlayer extends Panel implements Runnable {
@@ -119,6 +124,45 @@ public class AutoPlayer extends Panel implements Runnable {
             try {
                 Thread.sleep(500L);
             } catch (InterruptedException e) {
+            }
+        }
+
+        if ("true".equalsIgnoreCase(scriptPlayer.getCmd().getParameter("display"))) {
+            scriptPlayer.displayDemo();
+        }
+    }
+
+    private void displayDemo() {
+        // 进入演示
+        if (BandelowENGParser.class.isInstance(this.scriptParser)) {
+            String facelets = Tools.randomCube();
+            setCubeByString(facelets, this.colors);
+
+            final String supportTokens = "R;U;F;L;D;B;R';U';F';L';D';B';R2;U2;F2;L2;D2;B2;R2';U2';F2';L2';D2';B2';MR ML';MU MD';MF MB';ML MR';MD MU';MB MF';MR2 ML2';MU2 MD2';MF2 MB2';ML2 MR2';MD2 MU2';MB2 MF2';CR CL';CU CD';CF CB';CL CR';CD CU';CB CF';CR2 CL2';CU2 CD2';CF2 CB2';CL2 CR2';CD2 CU2';CB2 CF2'";
+            String[] tokens = supportTokens.split(";");
+            final Random gen = new Random();
+            StringBuffer buffer = new StringBuffer();
+            while (!this.player.isActive()) {
+                buffer.setLength(0);
+                for (int i = 0; i < 10; i++) {
+                    buffer.append(tokens[gen.nextInt(tokens.length)]).append(' ');
+                }
+
+                ScriptNode script = null;
+                try {
+                    script = this.scriptParser.parse(new StringReader(buffer.toString()));
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    continue;
+                }
+
+                Enumeration<DefaultMutableTreeNode> rerolves = script.resolvedEnumeration(false);
+                while (rerolves.hasMoreElements() && !this.player.isActive()) {
+                    ScriptNode scriptNode = (ScriptNode) rerolves.nextElement();
+                    if (((scriptNode instanceof TwistNode) && ((TwistNode) scriptNode).getSymbol() != 84) || (scriptNode instanceof PermutationNode)) {
+                        scriptNode.applyInverseTo(this.player.getCubeModel());
+                    }
+                }
             }
         }
     }
@@ -268,8 +312,8 @@ public class AutoPlayer extends Panel implements Runnable {
                         if (AutoPlayer.this.selectColor != -1) {
                             colorSel[AutoPlayer.this.selectColor].setBorder(defaultBorder);
                         }
-                        colorSel[value].setBorder(selectBorder);
                         AutoPlayer.this.selectColor = value;
+                        colorSel[value].setBorder(selectBorder);
                         AutoPlayer.this.player.getCube3D().setSelectColor(AutoPlayer.this.colors.get(value));
                     }
                 }
@@ -296,12 +340,6 @@ public class AutoPlayer extends Panel implements Runnable {
                     AutoPlayer.this.cleanAndResetCube(facelets);
                 }
 
-                if (AutoPlayer.this.scriptTextArea.getText().length() > 0) {
-                    // 重置步骤为空
-                    AutoPlayer.this.scriptTextArea.setText(null);
-                    AutoPlayer.this.player.setScript(null);
-                }
-
                 if (AutoPlayer.this.player.getCube3D().isEditMode()) {
                     ((JButton) evt.getSource()).setBackground(new ColorUIResource(238, 238, 238));
                     AutoPlayer.this.player.getCube3D().setEditMode(false);
@@ -309,9 +347,7 @@ public class AutoPlayer extends Panel implements Runnable {
                     ((JButton) evt.getSource()).setBackground(new Color(184, 207, 229));
                     AutoPlayer.this.player.getCube3D().setEditMode(true);
                     if (AutoPlayer.this.selectColor == -1) {
-                        AutoPlayer.this.selectColor = 0;
-                        AutoPlayer.this.player.getCube3D().setSelectColor(AutoPlayer.this.colors.get(AutoPlayer.this.selectColor));
-                        colorSel[AutoPlayer.this.selectColor].setBorder(selectBorder);
+                        colorSel[0].doClick();
                     }
                 }
             }
