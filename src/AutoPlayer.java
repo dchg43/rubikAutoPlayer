@@ -104,6 +104,9 @@ public class AutoPlayer extends Panel implements Runnable {
     public static void main(String[] args) throws IOException {
         AutoPlayer scriptPlayer = new AutoPlayer();
 
+        //        args = new String[]{"--rearView", "true", "--colorTable", "0xff4600,0xff4600,0xff4600", "--script", "B' R  F' D  L  B  R' B' U  L2 B  L2 D  R2"};
+        args = new String[]{"--rearView", "false", "--script",
+                "B' R  F' D  L  B  R' B' U  L2 B  L2 D  R2 U' B2 R2 F2 R' R F2 R2 B2 U R2 D' L2 B' L2 U' B R B' L' D' F R' B  B' R  F' D  L  B  R' B' U  L2 B  L2 D  R2 U' B2 R2 F2 R' R F2 R2 B2 U R2 D' L2 B' L2 U' B R B' L' D' F R' B  B' R  F' D  L  B  R' B' U  L2 B  L2 D  R2 U' B2 R2 F2 R' R F2 R2 B2 U R2 D' L2 B' L2 U' B R B' L' D' F R' B  B' R  F' D  L  B  R' B' U  L2 B  L2 D  R2 U' B2 R2 F2 R' R F2 R2 B2 U R2 D' L2 B' L2 U' B R B' L' D' F R' B  B' R  F' D  L  B  R' B' U  L2 B  L2 D  R2 U' B2 R2 F2 R' R F2 R2 B2 U R2 D' L2 B' L2 U' B R B' L' D' F R' B  B' R  F' D  L  B  R' B' U  L2 B  L2 D  R2 U' B2 R2 F2 R' R F2 R2 B2 U R2 D' L2 B' L2 U' B R B' L' D' F R' B  "};
         // 解析命令行参数
         scriptPlayer.getCmd().parse(args);
         // 启动
@@ -210,9 +213,6 @@ public class AutoPlayer extends Panel implements Runnable {
             this.player.addChangeListener(changeListener);
             synchronized (getTreeLock()) {
                 add("South", this.controlsPanel);
-                validate();
-                this.controlsPanel.invalidate();
-                validate();
             }
         } catch (Throwable e) {
             removeAll();
@@ -223,18 +223,290 @@ public class AutoPlayer extends Panel implements Runnable {
             String errString = AutoPlayer.getString(e);
             System.err.println(errString);
             textArea.setText(CommandParser.getAppInfo() + "\n\n" + errString);
-
-            invalidate();
-            validate();
         }
     }
 
-    private static String getString(Throwable e) {
-        StringWriter stringWriter = new StringWriter();
-        PrintWriter printWriter = new PrintWriter(stringWriter);
-        e.printStackTrace(printWriter);
-        printWriter.close();
-        return stringWriter.toString();
+    private void initGUI() {
+        final JFrame frame = new JFrame("AutoPlayer"); // 初始化画布
+        frame.setTitle("三阶魔方求解器 by Deng");
+        frame.setSize(600, 600); // 设置画布大小
+        frame.setPreferredSize(new java.awt.Dimension(600, 600));
+        frame.setLocationRelativeTo(null);
+        frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+        frame.addWindowListener(new WindowAdapter() // 添加退出事件
+        {
+            @Override
+            public void windowClosing(WindowEvent windowEvent) {
+                System.exit(0);
+            }
+        });
+
+        final JButton[] colorSel = new JButton[6];
+        // 顺序：正面红色, 右面黄色, 底面绿色, 背面橙色, 左面白色, 顶面蓝色
+        final Color[] initColors = {new Color(230, 0, 0), new Color(240, 220, 0), // 红 黄
+                new Color(0, 170, 0), new Color(255, 118, 0), Color.white, Color.blue}; // 绿 橙
+        final Border defaultBorder = new LineBorder(new Color(240, 240, 240), 4);
+        final Border selectBorder = new LineBorder(Color.black, 4);
+        Font defaultFont = new Font("Dialog", Font.BOLD, 14);
+        for (int i = 0; i < 6; i++) {
+            colorSel[i] = new JButton();
+            frame.add(colorSel[i]);
+            colorSel[i].setBackground(initColors[i]);
+            colorSel[i].setOpaque(true);
+            colorSel[i].setBounds(24 + 36 * i, 24, 32, 32);
+            colorSel[i].setBorderPainted(true);
+            colorSel[i].setBorder(defaultBorder);
+            colorSel[i].setName(String.valueOf(i));
+            final int value = i;
+            colorSel[i].addActionListener(new ActionListener() {
+                @Override
+                public void actionPerformed(ActionEvent evt) {
+                    if (AutoPlayer.this.selectColor != value) {
+                        if (AutoPlayer.this.selectColor != -1) {
+                            colorSel[AutoPlayer.this.selectColor].setBorder(defaultBorder);
+                        }
+                        colorSel[value].setBorder(selectBorder);
+                        AutoPlayer.this.selectColor = value;
+                        AutoPlayer.this.player.getCube3D().setSelectColor(AutoPlayer.this.colors.get(value));
+                    }
+                }
+            });
+        }
+
+        // 编辑按钮
+        final JButton buttonEdit = new JButton("edit");
+        frame.add(buttonEdit);
+        buttonEdit.setBounds(250, 20, 65, 40);
+        buttonEdit.setFont(defaultFont);
+        buttonEdit.setText("编辑");
+        buttonEdit.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                if (AutoPlayer.this.player.isActive()) {
+                    return;
+                }
+
+                // 判断魔方是否有旋转，因为编辑功能是基于魔方未旋转状态，如果有旋转，设置方块颜色时会错位
+                if (!AutoPlayer.this.player.getCube3D().getModel().isSolved()) {
+                    // 重置魔方状态，保留块的颜色和顺序
+                    String facelets = getCubeString();
+                    AutoPlayer.this.cleanAndResetCube(facelets);
+                }
+
+                if (AutoPlayer.this.scriptTextArea.getText().length() > 0) {
+                    // 重置步骤为空
+                    AutoPlayer.this.scriptTextArea.setText(null);
+                    AutoPlayer.this.player.setScript(null);
+                }
+
+                if (AutoPlayer.this.player.getCube3D().isEditMode()) {
+                    ((JButton) evt.getSource()).setBackground(new ColorUIResource(238, 238, 238));
+                    AutoPlayer.this.player.getCube3D().setEditMode(false);
+                } else {
+                    ((JButton) evt.getSource()).setBackground(new Color(184, 207, 229));
+                    AutoPlayer.this.player.getCube3D().setEditMode(true);
+                    if (AutoPlayer.this.selectColor == -1) {
+                        AutoPlayer.this.selectColor = 0;
+                        AutoPlayer.this.player.getCube3D().setSelectColor(AutoPlayer.this.colors.get(AutoPlayer.this.selectColor));
+                        colorSel[AutoPlayer.this.selectColor].setBorder(selectBorder);
+                    }
+                }
+            }
+        });
+
+        // 清空按钮
+        final JButton buttonClean = new JButton("clean");
+        frame.add(buttonClean);
+        buttonClean.setBounds(325, 20, 65, 40);
+        buttonClean.setFont(defaultFont);
+        buttonClean.setText("清空");
+        buttonClean.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                if (AutoPlayer.this.player.isActive()) {
+                    return;
+                }
+                AutoPlayer.this.player.getCube3D().getModel().reset();
+
+                for (int i = 0; i < 6; i++) {
+                    for (int j = 0; j < 9; j++) {
+                        AutoPlayer.this.player.getCube3D().setStickerColor(i, j, AutoPlayer.this.colors.get(6));
+                    }
+                }
+            }
+        });
+
+        // 校验按钮
+        final JButton buttonCheck = new JButton("check");
+        frame.add(buttonCheck);
+        buttonCheck.setBounds(420, 20, 65, 40);
+        buttonCheck.setFont(defaultFont);
+        buttonCheck.setText("校验");
+        buttonCheck.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                if (AutoPlayer.this.player.isActive()) {
+                    return;
+                }
+
+                String cubeString = getCubeString();
+                String result = searchSolution(cubeString);
+                if (result.contains("Error")) {
+                    String message = "校验不通过：" + AutoPlayer.getErrMessage(result);
+                    JOptionPane.showMessageDialog(AutoPlayer.this, message, "失败", JOptionPane.ERROR_MESSAGE);
+
+                } else {
+                    String message = "校验通过。";
+                    JOptionPane.showMessageDialog(AutoPlayer.this, message, "成功", JOptionPane.INFORMATION_MESSAGE);
+                }
+            }
+        });
+
+        // 打乱按钮
+        final JButton buttonRandom = new JButton("random");
+        frame.add(buttonRandom);
+        buttonRandom.setBounds(495, 20, 65, 40);
+        buttonRandom.setFont(defaultFont);
+        buttonRandom.setText("打乱");
+        buttonRandom.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                if (AutoPlayer.this.player.isActive()) {
+                    return;
+                }
+                AutoPlayer.this.player.getCube3D().getModel().reset();
+
+                // Random stick by Call Random function
+                String facelets = Tools.randomCube();
+                setCubeByString(facelets, AutoPlayer.this.colors);
+            }
+        });
+
+        // 反序按钮
+        final JButton buttonSolver = new JButton("Solver");
+        frame.add(buttonSolver);
+        buttonSolver.setBounds(420, 70, 65, 40);
+        buttonSolver.setFont(defaultFont);
+        buttonSolver.setText("反序");
+        buttonSolver.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                if (AutoPlayer.this.player.isActive()) {
+                    return;
+                }
+                String script = AutoPlayer.this.scriptTextArea.getText();
+                if (script == null || script.length() == 0) {
+                    return;
+                }
+
+                int index = script.indexOf('(');
+                if (index > 0) {
+                    script = script.substring(0, script.indexOf('(') - 1);
+                }
+
+                String[] splits = script.split(" +|\n");
+                StringBuffer result = new StringBuffer();
+                for (int i = splits.length - 1; i >= 0; i--) {
+                    String tmp = splits[i];
+                    if (tmp.length() <= 1) {
+                        result.append(tmp).append("\' ");
+                    } else if (tmp.charAt(1) == '\'') {
+                        result.append(tmp.charAt(0)).append("  ");
+                    } else {
+                        result.append(tmp).append(' ');
+                    }
+                }
+                String newScript = result.toString();
+
+                try {
+                    ScriptNode scriptNode = AutoPlayer.this.scriptParser.parse(new StringReader(newScript));
+
+                    AutoPlayer.this.player.getCube3D().getModel().reset();
+                    String facelets = "UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB";
+                    setCubeByString(facelets, AutoPlayer.this.colors);
+
+                    System.out.println("Solver script: " + newScript);
+                    AutoPlayer.this.scriptTextArea.setText(newScript);
+                    AutoPlayer.this.player.setScript(scriptNode);
+
+                    if (AutoPlayer.this.autoPlay) {
+                        AutoPlayer.this.player.start();
+                    }
+                } catch (IOException e) {
+                    return;
+                }
+            }
+        });
+
+        // 求解按钮
+        final JButton buttonSolution = new JButton("solution");
+        frame.add(buttonSolution);
+        buttonSolution.setBounds(495, 70, 65, 40);
+        buttonSolution.setFont(defaultFont);
+        buttonSolution.setText("求解");
+        buttonSolution.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                if (AutoPlayer.this.player.isActive()) {
+                    // 正在执行中
+                    return;
+                }
+
+                String facelets = getCubeString();
+                // 有旋转，重置为旋转前状态
+                if (!AutoPlayer.this.player.getCube3D().getModel().isSolved()) {
+                    AutoPlayer.this.cleanAndResetCube(facelets);
+                }
+
+                String result = searchSolution(facelets);
+                if (result.contains("Error")) {
+                    String message = "校验不通过：" + AutoPlayer.getErrMessage(result);
+                    JOptionPane.showMessageDialog(AutoPlayer.this, message, "失败", JOptionPane.ERROR_MESSAGE);
+                } else {
+                    // 取消编辑
+                    if (AutoPlayer.this.player.getCube3D().isEditMode()) {
+                        buttonEdit.setBackground(new ColorUIResource(238, 238, 238));
+                        AutoPlayer.this.player.getCube3D().setEditMode(false);
+                    }
+
+                    // 自动计算复位方法
+                    try {
+                        AutoPlayer.this.cmd.setParameter("script", result);
+                        doParameter("script", result);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+
+        // 调整窗口大小
+        frame.addComponentListener(new ComponentAdapter() {
+            @Override
+            public void componentResized(ComponentEvent e) {
+                int width = frame.getWidth();
+                if (width < 580) {
+                    width = 580;
+                }
+                buttonCheck.setLocation(width - 180, 20); // 校验
+                buttonRandom.setLocation(width - 105, 20); // 打乱
+                buttonSolver.setLocation(width - 180, 70); // 反序
+                buttonSolution.setLocation(width - 105, 70); // 求解
+                frame.setVisible(true); // 刷新
+            }
+        });
+
+        Panel panelback = new Panel();
+        frame.add(panelback);
+        panelback.setBackground(Color.lightGray);
+        panelback.setBounds(20, 20, 220, 40);
+
+        // 添加魔方
+        frame.add(this, "Center");
+
+        // 显示
+        frame.setVisible(true);
+        revalidate();
     }
 
     // 默认绘图函数，魔方未加载、加载中或失败时会显示的内容
@@ -621,6 +893,14 @@ public class AutoPlayer extends Panel implements Runnable {
         System.out.println(message);
     }
 
+    private static String getString(Throwable e) {
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+        e.printStackTrace(printWriter);
+        printWriter.close();
+        return stringWriter.toString();
+    }
+
     public static String getErrMessage(String result) {
         switch (result.charAt(result.length() - 1)) {
         case '1':
@@ -660,287 +940,6 @@ public class AutoPlayer extends Panel implements Runnable {
             break;
         }
         return result;
-    }
-
-    private void initGUI() {
-        final JFrame frame = new JFrame("AutoPlayer"); // 初始化画布
-        frame.setTitle("三阶魔方求解器 by Deng");
-        frame.setSize(600, 600); // 设置画布大小
-        frame.setPreferredSize(new java.awt.Dimension(600, 600));
-        frame.setLocationRelativeTo(null);
-        frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-        frame.addWindowListener(new WindowAdapter() // 添加退出事件
-        {
-            @Override
-            public void windowClosing(WindowEvent windowEvent) {
-                System.exit(0);
-            }
-        });
-
-        final JButton[] colorSel = new JButton[6];
-        // 顺序：正面红色, 右面黄色, 底面绿色, 背面橙色, 左面白色, 顶面蓝色
-        final Color[] initColors = {new Color(230, 0, 0), new Color(240, 220, 0), // 红 黄
-                new Color(0, 170, 0), new Color(255, 118, 0), Color.white, Color.blue}; // 绿 橙
-        final Border defaultBorder = new LineBorder(new Color(240, 240, 240), 4);
-        final Border selectBorder = new LineBorder(Color.black, 4);
-        Font defaultFont = new Font("Dialog", Font.BOLD, 14);
-        for (int i = 0; i < 6; i++) {
-            colorSel[i] = new JButton();
-            frame.add(colorSel[i]);
-            colorSel[i].setBackground(initColors[i]);
-            colorSel[i].setOpaque(true);
-            colorSel[i].setBounds(24 + 36 * i, 24, 32, 32);
-            colorSel[i].setBorderPainted(true);
-            colorSel[i].setBorder(defaultBorder);
-            colorSel[i].setName(String.valueOf(i));
-            final int value = i;
-            colorSel[i].addActionListener(new ActionListener() {
-                @Override
-                public void actionPerformed(ActionEvent evt) {
-                    if (AutoPlayer.this.selectColor != value) {
-                        if (AutoPlayer.this.selectColor != -1) {
-                            colorSel[AutoPlayer.this.selectColor].setBorder(defaultBorder);
-                        }
-                        colorSel[value].setBorder(selectBorder);
-                        AutoPlayer.this.selectColor = value;
-                        AutoPlayer.this.player.getCube3D().setSelectColor(AutoPlayer.this.colors.get(value));
-                    }
-                }
-            });
-        }
-
-        // 编辑按钮
-        final JButton buttonEdit = new JButton("edit");
-        frame.add(buttonEdit);
-        buttonEdit.setBounds(250, 20, 65, 40);
-        buttonEdit.setFont(defaultFont);
-        buttonEdit.setText("编辑");
-        buttonEdit.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                if (AutoPlayer.this.player.isActive()) {
-                    return;
-                }
-
-                // 判断魔方是否有旋转，因为编辑功能是基于魔方未旋转状态，如果有旋转，设置方块颜色时会错位
-                if (!AutoPlayer.this.player.getCube3D().getModel().isSolved()) {
-                    // 重置魔方状态，保留块的颜色和顺序
-                    String facelets = getCubeString();
-                    AutoPlayer.this.cleanAndResetCube(facelets);
-                }
-
-                if (AutoPlayer.this.scriptTextArea.getText().length() > 0) {
-                    // 重置步骤为空
-                    AutoPlayer.this.scriptTextArea.setText(null);
-                    AutoPlayer.this.player.setScript(null);
-                }
-
-                if (AutoPlayer.this.player.getCube3D().isEditMode()) {
-                    ((JButton) evt.getSource()).setBackground(new ColorUIResource(238, 238, 238));
-                    AutoPlayer.this.player.getCube3D().setEditMode(false);
-                } else {
-                    ((JButton) evt.getSource()).setBackground(new Color(184, 207, 229));
-                    AutoPlayer.this.player.getCube3D().setEditMode(true);
-                    if (AutoPlayer.this.selectColor == -1) {
-                        AutoPlayer.this.selectColor = 0;
-                        AutoPlayer.this.player.getCube3D().setSelectColor(AutoPlayer.this.colors.get(AutoPlayer.this.selectColor));
-                        colorSel[AutoPlayer.this.selectColor].setBorder(selectBorder);
-                    }
-                }
-            }
-        });
-
-        // 清空按钮
-        final JButton buttonClean = new JButton("clean");
-        frame.add(buttonClean);
-        buttonClean.setBounds(325, 20, 65, 40);
-        buttonClean.setFont(defaultFont);
-        buttonClean.setText("清空");
-        buttonClean.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                if (AutoPlayer.this.player.isActive()) {
-                    return;
-                }
-                AutoPlayer.this.player.getCube3D().getModel().reset();
-
-                for (int i = 0; i < 6; i++) {
-                    for (int j = 0; j < 9; j++) {
-                        AutoPlayer.this.player.getCube3D().setStickerColor(i, j, AutoPlayer.this.colors.get(6));
-                    }
-                }
-            }
-        });
-
-        // 校验按钮
-        final JButton buttonCheck = new JButton("check");
-        frame.add(buttonCheck);
-        buttonCheck.setBounds(420, 20, 65, 40);
-        buttonCheck.setFont(defaultFont);
-        buttonCheck.setText("校验");
-        buttonCheck.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                if (AutoPlayer.this.player.isActive()) {
-                    return;
-                }
-
-                String cubeString = getCubeString();
-                String result = searchSolution(cubeString);
-                if (result.contains("Error")) {
-                    String message = "校验不通过：" + AutoPlayer.getErrMessage(result);
-                    JOptionPane.showMessageDialog(AutoPlayer.this, message, "失败", JOptionPane.ERROR_MESSAGE);
-
-                } else {
-                    String message = "校验通过。";
-                    JOptionPane.showMessageDialog(AutoPlayer.this, message, "成功", JOptionPane.INFORMATION_MESSAGE);
-                }
-            }
-        });
-
-        // 打乱按钮
-        final JButton buttonRandom = new JButton("random");
-        frame.add(buttonRandom);
-        buttonRandom.setBounds(495, 20, 65, 40);
-        buttonRandom.setFont(defaultFont);
-        buttonRandom.setText("打乱");
-        buttonRandom.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                if (AutoPlayer.this.player.isActive()) {
-                    return;
-                }
-                AutoPlayer.this.player.getCube3D().getModel().reset();
-
-                // Random stick by Call Random function
-                String facelets = Tools.randomCube();
-                setCubeByString(facelets, AutoPlayer.this.colors);
-            }
-        });
-
-        // 反序按钮
-        final JButton buttonSolver = new JButton("Solver");
-        frame.add(buttonSolver);
-        buttonSolver.setBounds(420, 70, 65, 40);
-        buttonSolver.setFont(defaultFont);
-        buttonSolver.setText("反序");
-        buttonSolver.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                if (AutoPlayer.this.player.isActive()) {
-                    return;
-                }
-                String script = AutoPlayer.this.scriptTextArea.getText();
-                if (script == null || script.length() == 0) {
-                    return;
-                }
-
-                int index = script.indexOf('(');
-                if (index > 0) {
-                    script = script.substring(0, script.indexOf('(') - 1);
-                }
-
-                StringTokenizer stringTokenizer = new StringTokenizer(script, " \n");
-                String[] tokens = new String[stringTokenizer.countTokens()];
-                for (int i = tokens.length - 1; i >= 0; i--) {
-                    String tmp = stringTokenizer.nextToken();
-                    if (tmp.length() <= 1) {
-                        tokens[i] = tmp + '\'';
-                    } else if (tmp.charAt(1) == '\'') {
-                        tokens[i] = Character.toString(tmp.charAt(0));
-                    } else {
-                        tokens[i] = tmp;
-                    }
-                }
-
-                String newScript = String.join(" ", tokens);
-                try {
-                    ScriptNode scriptNode = AutoPlayer.this.scriptParser.parse(new StringReader(newScript));
-
-                    AutoPlayer.this.player.getCube3D().getModel().reset();
-                    String facelets = "UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB";
-                    setCubeByString(facelets, AutoPlayer.this.colors);
-
-                    AutoPlayer.this.scriptTextArea.setText(newScript);
-                    AutoPlayer.this.player.setScript(scriptNode);
-
-                    if (AutoPlayer.this.autoPlay) {
-                        AutoPlayer.this.player.start();
-                    }
-                } catch (IOException e) {
-                    return;
-                }
-            }
-        });
-
-        // 求解按钮
-        final JButton buttonSolution = new JButton("solution");
-        frame.add(buttonSolution);
-        buttonSolution.setBounds(495, 70, 65, 40);
-        buttonSolution.setFont(defaultFont);
-        buttonSolution.setText("求解");
-        buttonSolution.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                if (AutoPlayer.this.player.isActive()) {
-                    // 正在执行中
-                    return;
-                }
-
-                String facelets = getCubeString();
-                // 有旋转，重置为旋转前状态
-                if (!AutoPlayer.this.player.getCube3D().getModel().isSolved()) {
-                    AutoPlayer.this.cleanAndResetCube(facelets);
-                }
-
-                String result = searchSolution(facelets);
-                if (result.contains("Error")) {
-                    String message = "校验不通过：" + AutoPlayer.getErrMessage(result);
-                    JOptionPane.showMessageDialog(AutoPlayer.this, message, "失败", JOptionPane.ERROR_MESSAGE);
-                } else {
-                    // 取消编辑
-                    if (AutoPlayer.this.player.getCube3D().isEditMode()) {
-                        buttonEdit.setBackground(new ColorUIResource(238, 238, 238));
-                        AutoPlayer.this.player.getCube3D().setEditMode(false);
-                    }
-
-                    // 自动计算复位方法
-                    try {
-                        AutoPlayer.this.cmd.setParameter("script", result);
-                        doParameter("script", result);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
-
-        // 调整窗口大小
-        frame.addComponentListener(new ComponentAdapter() {
-            @Override
-            public void componentResized(ComponentEvent e) {
-                int width = frame.getWidth();
-                if (width < 580) {
-                    width = 580;
-                }
-                buttonCheck.setLocation(width - 180, 20); // 校验
-                buttonRandom.setLocation(width - 105, 20); // 打乱
-                buttonSolver.setLocation(width - 180, 70); // 反序
-                buttonSolution.setLocation(width - 105, 70); // 求解
-                frame.setVisible(true); // 刷新
-            }
-        });
-
-        Panel panelback = new Panel();
-        frame.add(panelback);
-        panelback.setBackground(Color.lightGray);
-        panelback.setBounds(20, 20, 220, 40);
-
-        // 添加魔方
-        frame.add(this, "Center");
-
-        // 显示
-        frame.setVisible(true);
     }
 
     // 清除魔方旋转记录并重置魔方状态
@@ -1159,12 +1158,10 @@ public class AutoPlayer extends Panel implements Runnable {
                 if (this.rearComponent != null) {
                     remove(this.rearComponent);
                 }
-                validate();
             } else {
                 initRearComponent();
                 add("Center", this.rearComponent);
                 remove(this.player.getVisualComponent());
-                validate();
             }
             break;
 

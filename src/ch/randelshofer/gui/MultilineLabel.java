@@ -77,7 +77,6 @@ public class MultilineLabel extends Canvas {
         }
         wrapText();
         revalidate();
-        repaint();
     }
 
     private void wrapText() {
