@@ -168,7 +168,13 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
         for (int i = 0; i < this.scriptVector.size(); i++) {
             ScriptNode scriptNode = this.scriptVector.elementAt(i);
             if (scriptNode.getStartPosition() <= cursor && scriptNode.getEndPosition() >= cursor) {
-                this.progress.setValue(i);
+                if (isActive()) {
+                    stop();
+                    this.progress.setValue(i);
+                    start();
+                } else {
+                    this.progress.setValue(i);
+                }
                 return;
             }
         }

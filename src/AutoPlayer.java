@@ -46,6 +46,7 @@ import ch.randelshofer.cmd.CommandParser;
 import ch.randelshofer.geom3d.Point3D;
 import ch.randelshofer.geom3d.RotatedTransform3DModel;
 import ch.randelshofer.geom3d.Transform3D;
+import ch.randelshofer.gui.BoundedRangeModel;
 import ch.randelshofer.gui.Canvas3DAWT;
 import ch.randelshofer.gui.Canvas3DJ2D;
 import ch.randelshofer.gui.MultilineLabel;
@@ -101,12 +102,13 @@ public class AutoPlayer extends Panel implements Runnable {
 
     private Search search = new Search();
 
+    // 用于记录最后一次结果，可用于快速重试
+    private String[] lastResult = new String[2];
+
     public static void main(String[] args) throws IOException {
         AutoPlayer scriptPlayer = new AutoPlayer();
 
-        //        args = new String[]{"--rearView", "true", "--colorTable", "0xff4600,0xff4600,0xff4600", "--script", "B' R  F' D  L  B  R' B' U  L2 B  L2 D  R2"};
-        args = new String[]{"--rearView", "false", "--script",
-                "B' R  F' D  L  B  R' B' U  L2 B  L2 D  R2 U' B2 R2 F2 R' R F2 R2 B2 U R2 D' L2 B' L2 U' B R B' L' D' F R' B  B' R  F' D  L  B  R' B' U  L2 B  L2 D  R2 U' B2 R2 F2 R' R F2 R2 B2 U R2 D' L2 B' L2 U' B R B' L' D' F R' B  B' R  F' D  L  B  R' B' U  L2 B  L2 D  R2 U' B2 R2 F2 R' R F2 R2 B2 U R2 D' L2 B' L2 U' B R B' L' D' F R' B  B' R  F' D  L  B  R' B' U  L2 B  L2 D  R2 U' B2 R2 F2 R' R F2 R2 B2 U R2 D' L2 B' L2 U' B R B' L' D' F R' B  B' R  F' D  L  B  R' B' U  L2 B  L2 D  R2 U' B2 R2 F2 R' R F2 R2 B2 U R2 D' L2 B' L2 U' B R B' L' D' F R' B  B' R  F' D  L  B  R' B' U  L2 B  L2 D  R2 U' B2 R2 F2 R' R F2 R2 B2 U R2 D' L2 B' L2 U' B R B' L' D' F R' B  "};
+        //        args = new String[]{"--rearView", "false", "--script", "B' R  F' D  L  B  R' B' U D' F R' B  "};
         // 解析命令行参数
         scriptPlayer.getCmd().parse(args);
         // 启动
@@ -196,14 +198,7 @@ public class AutoPlayer extends Panel implements Runnable {
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
                 int cursor = AutoPlayer.this.scriptTextArea.viewToModel(mouseEvent.getX(), mouseEvent.getY());
-                ScriptPlayer tmpplayer = AutoPlayer.this.player;
-                if (tmpplayer.isActive()) {
-                    tmpplayer.stop();
-                    tmpplayer.moveToCaret(cursor);
-                    tmpplayer.start();
-                } else {
-                    tmpplayer.moveToCaret(cursor);
-                }
+                AutoPlayer.this.player.moveToCaret(cursor);
             }
         });
         this.scriptTextArea.setSize(getSize());
@@ -429,13 +424,12 @@ public class AutoPlayer extends Panel implements Runnable {
                 try {
                     ScriptNode scriptNode = AutoPlayer.this.scriptParser.parse(new StringReader(newScript));
 
-                    AutoPlayer.this.player.getCube3D().getModel().reset();
-                    String facelets = "UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB";
-                    setCubeByString(facelets, AutoPlayer.this.colors);
+                    BoundedRangeModel progress = AutoPlayer.this.player.getBoundedRangeModel();
+                    progress.setValue(progress.getMaximum());
 
-                    System.out.println("Solver script: " + newScript);
                     AutoPlayer.this.scriptTextArea.setText(newScript);
                     AutoPlayer.this.player.setScript(scriptNode);
+                    System.out.println("Solver script: " + newScript);
 
                     if (AutoPlayer.this.autoPlay) {
                         AutoPlayer.this.player.start();
@@ -973,6 +967,10 @@ public class AutoPlayer extends Panel implements Runnable {
     }
 
     public String searchSolution(String cubeString) {
+        if (lastResult[0] != null && lastResult[0].equals(cubeString)) {
+            return lastResult[1];
+        }
+
         if (cubeString.contains("Error")) {
             return cubeString;
         }
@@ -1000,6 +998,7 @@ public class AutoPlayer extends Panel implements Runnable {
             System.out.println("depth:" + depth + ", result: " + result);
             depth++;
         }
+        lastResult = new String[]{cubeString, result};
         return result;
     }
 
