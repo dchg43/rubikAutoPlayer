@@ -195,7 +195,15 @@ public class AutoPlayer extends Panel implements Runnable {
         this.scriptTextArea.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
-                AutoPlayer.this.player.moveToCaret(AutoPlayer.this.scriptTextArea.viewToModel(mouseEvent.getX(), mouseEvent.getY()));
+                int cursor = AutoPlayer.this.scriptTextArea.viewToModel(mouseEvent.getX(), mouseEvent.getY());
+                ScriptPlayer tmpplayer = AutoPlayer.this.player;
+                if (tmpplayer.isActive()) {
+                    tmpplayer.stop();
+                    tmpplayer.moveToCaret(cursor);
+                    tmpplayer.start();
+                } else {
+                    tmpplayer.moveToCaret(cursor);
+                }
             }
         });
         this.scriptTextArea.setSize(getSize());

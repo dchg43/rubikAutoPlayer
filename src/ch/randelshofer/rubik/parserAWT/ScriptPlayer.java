@@ -164,11 +164,11 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
         updateEnabled();
     }
 
-    public void moveToCaret(int i) {
-        for (int i2 = 0; i2 < this.scriptVector.size(); i2++) {
-            ScriptNode scriptNode = this.scriptVector.elementAt(i2);
-            if (scriptNode.getStartPosition() <= i && scriptNode.getEndPosition() >= i) {
-                this.progress.setValue(i2);
+    public void moveToCaret(int cursor) {
+        for (int i = 0; i < this.scriptVector.size(); i++) {
+            ScriptNode scriptNode = this.scriptVector.elementAt(i);
+            if (scriptNode.getStartPosition() <= cursor && scriptNode.getEndPosition() >= cursor) {
+                this.progress.setValue(i);
                 return;
             }
         }
