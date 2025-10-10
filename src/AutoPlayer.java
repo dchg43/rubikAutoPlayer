@@ -27,7 +27,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
@@ -55,13 +54,11 @@ import ch.randelshofer.gui.MultilineLabel;
 import ch.randelshofer.gui.RatioLayout;
 import ch.randelshofer.gui.event.ChangeEvent;
 import ch.randelshofer.gui.event.ChangeListener;
-import ch.randelshofer.gui.tree.DefaultMutableTreeNode;
 import ch.randelshofer.rubik.AbstractCube3DAWT;
 import ch.randelshofer.rubik.RubiksCubeCore;
 import ch.randelshofer.rubik.parserAWT.BandelowENGParser;
 import ch.randelshofer.rubik.parserAWT.CastellaParser;
 import ch.randelshofer.rubik.parserAWT.HarrisENGParser;
-import ch.randelshofer.rubik.parserAWT.PermutationNode;
 import ch.randelshofer.rubik.parserAWT.RandelshoferGERParser;
 import ch.randelshofer.rubik.parserAWT.ScriptFRAParser;
 import ch.randelshofer.rubik.parserAWT.ScriptNode;
@@ -69,7 +66,6 @@ import ch.randelshofer.rubik.parserAWT.ScriptParser;
 import ch.randelshofer.rubik.parserAWT.ScriptPlayer;
 import ch.randelshofer.rubik.parserAWT.SupersetENGParser;
 import ch.randelshofer.rubik.parserAWT.TouchardDeledicqFRAParser;
-import ch.randelshofer.rubik.parserAWT.TwistNode;
 import ch.randelshofer.util.PooledSequentialDispatcherAWT;
 
 public class AutoPlayer extends Panel implements Runnable {
@@ -103,6 +99,8 @@ public class AutoPlayer extends Panel implements Runnable {
 
     private boolean autoPlay = true;
 
+    private boolean displayMode = false;
+
     private int selectColor = -1;
 
     private Search search = new Search();
@@ -113,7 +111,6 @@ public class AutoPlayer extends Panel implements Runnable {
     public static void main(String[] args) throws IOException {
         AutoPlayer scriptPlayer = new AutoPlayer();
 
-        //        args = new String[]{"--rearView", "false", "--script", "B' R  F' D  L  B  R' B' U D' F R' B  "};
         // 解析命令行参数
         scriptPlayer.getCmd().parse(args);
         // 启动
@@ -132,18 +129,18 @@ public class AutoPlayer extends Panel implements Runnable {
         }
     }
 
+    // 演示：生成随机序列并执行
     private void displayDemo() {
-        // 进入演示
         if (BandelowENGParser.class.isInstance(this.scriptParser)) {
+            displayMode = true;
             String facelets = Tools.randomCube();
             setCubeByString(facelets, this.colors);
 
-            final String supportTokens = "R;U;F;L;D;B;R';U';F';L';D';B';R2;U2;F2;L2;D2;B2;R2';U2';F2';L2';D2';B2';MR ML';MU MD';MF MB';ML MR';MD MU';MB MF';MR2 ML2';MU2 MD2';MF2 MB2';ML2 MR2';MD2 MU2';MB2 MF2';CR CL';CU CD';CF CB';CL CR';CD CU';CB CF';CR2 CL2';CU2 CD2';CF2 CB2';CL2 CR2';CD2 CU2';CB2 CF2'";
+            final String supportTokens = "R;U;F;L;D;B;R';U';F';L';D';B';R2;U2;F2;L2;D2;B2;R2';U2';F2';L2';D2';B2';MR;MU;MF;ML;MD;MB;MR';MU';MF';ML';MD';MB';MR2;MU2;MF2;ML2;MD2;MB2;MR2';MU2';MF2';ML2';MD2';MB2';CR;CU;CF;CL;CD;CB;CR';CU';CF';CL';CD';CB';CR2;CU2;CF2;CL2;CD2;CB2;CR2';CU2';CF2';CL2';CD2';CB2'";
             String[] tokens = supportTokens.split(";");
             final Random gen = new Random();
             StringBuffer buffer = new StringBuffer();
-            while (!this.player.isActive()) {
-                buffer.setLength(0);
+            while (displayMode) {
                 for (int i = 0; i < 10; i++) {
                     buffer.append(tokens[gen.nextInt(tokens.length)]).append(' ');
                 }
@@ -155,12 +152,14 @@ public class AutoPlayer extends Panel implements Runnable {
                     e.printStackTrace();
                     continue;
                 }
+                buffer.setLength(0);
 
-                Enumeration<DefaultMutableTreeNode> rerolves = script.resolvedEnumeration(false);
-                while (rerolves.hasMoreElements() && !this.player.isActive()) {
-                    ScriptNode scriptNode = (ScriptNode) rerolves.nextElement();
-                    if (((scriptNode instanceof TwistNode) && ((TwistNode) scriptNode).getSymbol() != 84) || (scriptNode instanceof PermutationNode)) {
-                        scriptNode.applyInverseTo(this.player.getCubeModel());
+                this.player.setScript(script);
+                this.player.start();
+                while (displayMode && this.player.isActive()) {
+                    try {
+                        Thread.sleep(50L);
+                    } catch (InterruptedException e) {
                     }
                 }
             }
@@ -329,7 +328,7 @@ public class AutoPlayer extends Panel implements Runnable {
         buttonEdit.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                if (AutoPlayer.this.player.isActive()) {
+                if (AutoPlayer.this.displayMode || AutoPlayer.this.player.isActive()) {
                     return;
                 }
 
@@ -362,7 +361,7 @@ public class AutoPlayer extends Panel implements Runnable {
         buttonClean.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                if (AutoPlayer.this.player.isActive()) {
+                if (AutoPlayer.this.player.isActive() && !AutoPlayer.this.displayMode) {
                     return;
                 }
                 AutoPlayer.this.player.getCube3D().getModel().reset();
@@ -384,7 +383,7 @@ public class AutoPlayer extends Panel implements Runnable {
         buttonCheck.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                if (AutoPlayer.this.player.isActive()) {
+                if (AutoPlayer.this.player.isActive() || AutoPlayer.this.displayMode) {
                     return;
                 }
 
@@ -410,7 +409,7 @@ public class AutoPlayer extends Panel implements Runnable {
         buttonRandom.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                if (AutoPlayer.this.player.isActive()) {
+                if (AutoPlayer.this.player.isActive() && !AutoPlayer.this.displayMode) {
                     return;
                 }
                 AutoPlayer.this.player.getCube3D().getModel().reset();
@@ -430,7 +429,7 @@ public class AutoPlayer extends Panel implements Runnable {
         buttonSolver.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                if (AutoPlayer.this.player.isActive()) {
+                if (AutoPlayer.this.player.isActive() || AutoPlayer.this.displayMode) {
                     return;
                 }
                 String script = AutoPlayer.this.scriptTextArea.getText();
@@ -485,6 +484,11 @@ public class AutoPlayer extends Panel implements Runnable {
         buttonSolution.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
+                if (AutoPlayer.this.displayMode) {
+                    AutoPlayer.this.displayMode = false;
+                    AutoPlayer.this.player.stop();
+                    return;
+                }
                 if (AutoPlayer.this.player.isActive()) {
                     // 正在执行中
                     return;
