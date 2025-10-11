@@ -742,8 +742,8 @@ public class DefaultParser implements CommandLineParser {
      * @throws ParseException if there are any problems encountered while parsing the command line tokens.
      * @since 1.10.0
      */
-    public CommandLine parse(final Options options, final Properties properties, final NonOptionAction nonOptionAction,
-            final String... arguments) throws ParseException {
+    public CommandLine parse(final Options options, final Properties properties, final NonOptionAction nonOptionAction, final String... arguments)
+            throws ParseException {
         this.options = Objects.requireNonNull(options, "options");
         this.nonOptionAction = nonOptionAction;
         skipParsing = false;
@@ -806,8 +806,8 @@ public class DefaultParser implements CommandLineParser {
      * @throws ParseException if there are any problems encountered while parsing the command line tokens.
      * @see #parse(Options, Properties, NonOptionAction, String[])
      */
-    public CommandLine parse(final Options options, final String[] arguments, final Properties properties,
-            final boolean stopAtNonOption) throws ParseException {
+    public CommandLine parse(final Options options, final String[] arguments, final Properties properties, final boolean stopAtNonOption)
+            throws ParseException {
         return parse(options, properties, stopAtNonOption ? NonOptionAction.STOP : NonOptionAction.THROW, arguments);
     }
 

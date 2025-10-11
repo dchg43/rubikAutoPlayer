@@ -294,8 +294,8 @@ public abstract class AbstractHelpFormatter {
      * @param autoUsage     whether to print an automatically generated usage statement
      * @throws IOException If the output could not be written to the {@link HelpAppendable}
      */
-    public void printHelp(final String cmdLineSyntax, final String header, final Iterable<Option> options, final String footer,
-            final boolean autoUsage) throws IOException {
+    public void printHelp(final String cmdLineSyntax, final String header, final Iterable<Option> options, final String footer, final boolean autoUsage)
+            throws IOException {
         if (Util.isEmpty(cmdLineSyntax)) {
             throw new IllegalArgumentException("cmdLineSyntax not provided");
         }
@@ -323,8 +323,8 @@ public abstract class AbstractHelpFormatter {
      * @param autoUsage     whether to print an automatically generated usage statement
      * @throws IOException If the output could not be written to the {@link HelpAppendable}
      */
-    public final void printHelp(final String cmdLineSyntax, final String header, final Options options, final String footer,
-            final boolean autoUsage) throws IOException {
+    public final void printHelp(final String cmdLineSyntax, final String header, final Options options, final String footer, final boolean autoUsage)
+            throws IOException {
         printHelp(cmdLineSyntax, header, options.getOptions(), footer, autoUsage);
     }
 

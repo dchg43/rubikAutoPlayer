@@ -10,7 +10,7 @@ public class DefaultTransform3DModel extends AbstractStateModel implements Trans
     }
 
     public DefaultTransform3DModel(double d1, double d2, double d3, double d4, double d5, double d6, double d7, double d8, double d9, double d10, double d11,
-                                   double d12) {
+            double d12) {
         this.transform = new Transform3D(d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12);
     }
 

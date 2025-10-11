@@ -1241,7 +1241,6 @@ public class AutoPlayer extends Panel implements Runnable {
         default:
             throw new IllegalArgumentException(new StringBuffer().append("Invalid parameter ").append(key).append(", value ").append(value).append(
                     " is illegal.").toString());
-        //                break;
         }
     }
 

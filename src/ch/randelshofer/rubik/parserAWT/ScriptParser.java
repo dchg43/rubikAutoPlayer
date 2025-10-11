@@ -356,7 +356,7 @@ public class ScriptParser {
     }
 
     public ScriptParser(String[] tokens, Hashtable<String, Object> hashtable, int repetitorPos, int invertorPos, int reflectorPos, int conjugatorPos,
-                        int commutatorPos, boolean isSequenceSupported) {
+            int commutatorPos, boolean isSequenceSupported) {
         this.DEBUG = false;
         this.transformationMap = new Hashtable<>();
         this.permutationMap = new Hashtable<>();
