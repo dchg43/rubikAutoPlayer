@@ -131,36 +131,37 @@ public class AutoPlayer extends Panel implements Runnable {
 
     // 演示：生成随机序列并执行
     private void displayDemo() {
-        if (BandelowENGParser.class.isInstance(this.scriptParser)) {
-            displayMode = true;
-            String facelets = Tools.randomCube();
-            setCubeByString(facelets, this.colors);
+        if (!BandelowENGParser.class.isInstance(this.scriptParser)) {
+            return;
+        }
+        displayMode = true;
+        String facelets = Tools.randomCube();
+        setCubeByString(facelets, this.colors);
 
-            final String supportTokens = "R;U;F;L;D;B;R';U';F';L';D';B';R2;U2;F2;L2;D2;B2;R2';U2';F2';L2';D2';B2';MR;MU;MF;ML;MD;MB;MR';MU';MF';ML';MD';MB';MR2;MU2;MF2;ML2;MD2;MB2;MR2';MU2';MF2';ML2';MD2';MB2';CR;CU;CF;CL;CD;CB;CR';CU';CF';CL';CD';CB';CR2;CU2;CF2;CL2;CD2;CB2;CR2';CU2';CF2';CL2';CD2';CB2'";
-            String[] tokens = supportTokens.split(";");
-            final Random gen = new Random();
-            StringBuffer buffer = new StringBuffer();
-            while (displayMode) {
-                for (int i = 0; i < 10; i++) {
-                    buffer.append(tokens[gen.nextInt(tokens.length)]).append(' ');
-                }
+        final String supportTokens = "R;U;F;L;D;B;R';U';F';L';D';B';R2;U2;F2;L2;D2;B2;R2';U2';F2';L2';D2';B2';MR;MU;MF;ML;MD;MB;MR';MU';MF';ML';MD';MB';MR2;MU2;MF2;ML2;MD2;MB2;MR2';MU2';MF2';ML2';MD2';MB2';CR;CU;CF;CL;CD;CB;CR';CU';CF';CL';CD';CB';CR2;CU2;CF2;CL2;CD2;CB2;CR2';CU2';CF2';CL2';CD2';CB2'";
+        String[] tokens = supportTokens.split(";");
+        final Random gen = new Random();
+        StringBuffer buffer = new StringBuffer();
+        while (displayMode) {
+            for (int i = 0; i < 10; i++) {
+                buffer.append(tokens[gen.nextInt(tokens.length)]).append(' ');
+            }
 
-                ScriptNode script = null;
+            ScriptNode script = null;
+            try {
+                script = this.scriptParser.parse(new StringReader(buffer.toString()));
+            } catch (IOException e) {
+                e.printStackTrace();
+                continue;
+            }
+            buffer.setLength(0);
+
+            this.player.setScript(script);
+            this.player.start();
+            while (displayMode && this.player.isActive()) {
                 try {
-                    script = this.scriptParser.parse(new StringReader(buffer.toString()));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    continue;
-                }
-                buffer.setLength(0);
-
-                this.player.setScript(script);
-                this.player.start();
-                while (displayMode && this.player.isActive()) {
-                    try {
-                        Thread.sleep(50L);
-                    } catch (InterruptedException e) {
-                    }
+                    Thread.sleep(50L);
+                } catch (InterruptedException e) {
                 }
             }
         }
@@ -1177,24 +1178,25 @@ public class AutoPlayer extends Panel implements Runnable {
         case 8: // "stickers"
             AbstractCube3DAWT cube = this.player.getCube3D();
             String[] parameters2 = this.cmd.getParameters(key, (String[]) null);
-            if (parameters2 != null) {
-                if (parameters2.length != 54) {
-                    throw new IllegalArgumentException(new StringBuffer().append("Invalid parameter 'stickers' provides ").append(parameters2.length).append(
-                            " instead of 54 entries.").toString());
-                }
-                int i = 0;
-                for (int i5 = 0; i5 < 6; i5++) {
-                    for (int i6 = 0; i6 < 9; i6++) {
-                        int param = Integer.parseInt(parameters2[i++]);
-                        if (this.colors.size() <= param) {
-                            throw new IllegalArgumentException(new StringBuffer().append("Invalid parameter 'stickers', unknown entry '").append(param).append(
-                                    "'.").toString());
-                        }
-                        cube.setStickerColor(i5, i6, this.colors.get(param));
-                    }
-                }
-                this.player.reset();
+            if (parameters2 == null) {
+                break;
             }
+            if (parameters2.length != 54) {
+                throw new IllegalArgumentException(new StringBuffer().append("Invalid parameter 'stickers' provides ").append(parameters2.length).append(
+                        " instead of 54 entries.").toString());
+            }
+            int i = 0;
+            for (int i5 = 0; i5 < 6; i5++) {
+                for (int i6 = 0; i6 < 9; i6++) {
+                    int param = Integer.parseInt(parameters2[i++]);
+                    if (this.colors.size() <= param) {
+                        throw new IllegalArgumentException(new StringBuffer().append("Invalid parameter 'stickers', unknown entry '").append(param).append(
+                                "'.").toString());
+                    }
+                    cube.setStickerColor(i5, i6, this.colors.get(param));
+                }
+            }
+            this.player.reset();
             break;
         case 15: // "rearView"
             // 默认true
