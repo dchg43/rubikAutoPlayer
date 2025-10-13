@@ -190,7 +190,8 @@
     {"name":"primaryLevelUnicode"},
     {"name":"rawCode"},
     {"name":"scancode"}
-  ]
+  ],
+  "methods":[{"name":"<init>","parameterTypes":["java.awt.Component","int","long","int","int","char","int"] }]
 },
 {
   "name":"java.awt.event.MouseEvent",
@@ -599,6 +600,14 @@
 {
   "name":"sun.font.StrikeMetrics",
   "methods":[{"name":"<init>","parameterTypes":["float","float","float","float","float","float","float","float","float","float"] }]
+},
+{
+  "name":"sun.font.StrikeCache$2",
+  "methods":[{"name":"run"}]
+},
+{
+  "name":"sun.font.StrikeCache$2",
+  "methods":[{"name":"run","parameterTypes":[] }]
 },
 {
   "name":"sun.font.TrueTypeFont",

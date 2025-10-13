@@ -57,23 +57,28 @@ if not "%errorlevel%" == "0" (
 )
 
 
-rem 生成native-image-conf，需要运行程序生成
+echo 生成native-image-conf，需要运行程序生成
 del /f /q "%BASEDIR%\META-INF\native-image\.lock" 2>nul
 for /f "delims=" %%I in ('dir /B "%BASEDIR%\META-INF\native-image\"^|findstr "agent-pid"') do (
     rmdir /s /q "%BASEDIR%\META-INF\native-image\%%I"
 )
-start %JAVA% -Dfile.encoding=utf-8 -agentlib:native-image-agent=config-merge-dir="%BASEDIR%\META-INF\native-image" -Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 -Dconsole.encoding=UTF-8 -Duser.language=en -Duser.region=US -jar "%BASEDIR%\rubikAutoPlayer.jar" --display true -backgroundImage E:\照片\pictures(1)\漂亮的小姑娘\00103.jpeg
+start %JAVA% -Dfile.encoding=utf-8 -agentlib:native-image-agent=config-merge-dir="%BASEDIR%\META-INF\native-image" -Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 -Dconsole.encoding=UTF-8 -Duser.language=en -Duser.region=US -jar "%BASEDIR%\rubikAutoPlayer.jar" --display true -backgroundImage "%systemroot%\Web\Wallpaper\Windows\img0.jpg"
 
 rem 等待一段时间并结束进程
 timeout /nobreak /T 5 >nul
 ::for /f "tokens=2" %%a in ('tasklist /fi "IMAGENAME eq java.exe"^|findstr /i "java.exe"') do taskkill /pid:%%a >nul
 taskkill /fi "IMAGENAME eq java.exe" >nul
-del /f /q "%BASEDIR%\META-INF\native-image\.lock" 2>nul
+
 
 ::jpackage --type app-image --name spring --input target --main-jar spring-1.0.jar --win-console --dest dist
-
 ::jpackage --input . --name rubikAutoPlayer --main-jar rubikAutoPlayer.jar --win-console --win-shortcut
 
+timeout /nobreak /T 1 >nul
+del /f /q "%BASEDIR%\META-INF\native-image\.lock" 2>nul
+for /f "delims=" %%I in ('dir /B "%BASEDIR%\META-INF\native-image\"^|findstr "agent-pid"') do (
+    echo "%BASEDIR%\META-INF\native-image\%%I"
+    rmdir /s /q "%BASEDIR%\META-INF\native-image\%%I"
+)
 rmdir /s /q "%destDir%"
 mkdir "%destDir%"
 cd "%destDir%"
@@ -105,5 +110,5 @@ mkdir "%destDir%\lib\"
 copy "%BASEDIR%\lib\fontconfig.bfc" "%destDir%\lib\"
 
 ::去除命令行窗口
-editbin /subsystem:windows "%BASEDIR%\rubikAutoPlayer.jar" 2>nul
+editbin /subsystem:windows "%destDir%\rubikAutoPlayer.jar" 2>nul
 

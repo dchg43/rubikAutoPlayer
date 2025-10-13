@@ -67,6 +67,10 @@
   ]
 },
 {
+  "name":"javax.swing.plaf.basic.BasicButtonListener",
+  "methods":[{"name":"loadActionMap","parameterTypes":["javax.swing.plaf.basic.LazyActionMap"] }]
+},
+{
   "name":"javax.swing.plaf.basic.BasicOptionPaneUI",
   "methods":[
     {"name":"createUI","parameterTypes":["javax.swing.JComponent"] },
