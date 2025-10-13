@@ -113,6 +113,8 @@ public class CommandParser {
 
     private Hashtable<String, String> atts;
 
+    private String defaultFont = null;
+
     public CommandParser() {
         this.atts = new Hashtable<>();
     }
@@ -157,7 +159,7 @@ public class CommandParser {
                         String message = stringWriter.toString();
                         System.out.println(message); // 命令行输出帮助
                         // 修改字体，改成等宽字体
-                        UIManager.put("OptionPane.messageFont", new FontUIResource(new Font("宋体", Font.BOLD, 13)));
+                        UIManager.put("OptionPane.messageFont", new FontUIResource(new Font(CommandParser.this.defaultFont, Font.BOLD, 13)));
                         JOptionPane.showMessageDialog(null, message, "帮助", JOptionPane.INFORMATION_MESSAGE);
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -297,6 +299,10 @@ public class CommandParser {
 
     public void setParameter(String key, String value) throws IOException {
         this.atts.put(key, value);
+    }
+
+    public void setDefaultFont(String defaultFont) {
+        this.defaultFont = defaultFont;
     }
 
     public static String getAppInfo() {

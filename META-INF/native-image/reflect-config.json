@@ -1,0 +1,108 @@
+[
+{
+  "name":"[Ljava.awt.event.MouseMotionListener;"
+},
+{
+  "name":"java.awt.BasicStroke",
+  "fields":[
+    {"name":"CAP_BUTT"}, 
+    {"name":"JOIN_BEVEL"}
+  ],
+  "methods":[{"name":"<init>","parameterTypes":["float","int","int"] }]
+},
+{
+  "name":"java.awt.Graphics2D",
+  "methods":[
+    {"name":"draw","parameterTypes":["java.awt.Shape"] }, 
+    {"name":"fill","parameterTypes":["java.awt.Shape"] }, 
+    {"name":"setRenderingHint","parameterTypes":["java.awt.RenderingHints$Key","java.lang.Object"] }, 
+    {"name":"setStroke","parameterTypes":["java.awt.Stroke"] }
+  ]
+},
+{
+  "name":"java.awt.RenderingHints",
+  "fields":[
+    {"name":"KEY_ANTIALIASING"}, 
+    {"name":"KEY_FRACTIONALMETRICS"}, 
+    {"name":"VALUE_ANTIALIAS_ON"}, 
+    {"name":"VALUE_FRACTIONALMETRICS_ON"}
+  ]
+},
+{
+  "name":"java.awt.RenderingHints$Key"
+},
+{
+  "name":"java.awt.SequencedEvent"
+},
+{
+  "name":"java.awt.Shape",
+  "methods":[{"name":"contains","parameterTypes":["double","double"] }]
+},
+{
+  "name":"java.awt.Stroke"
+},
+{
+  "name":"java.awt.event.KeyEvent",
+  "fields":[
+    {"name":"VK_CONTEXT_MENU"}, 
+    {"name":"VK_ENTER"}, 
+    {"name":"VK_ESCAPE"}, 
+    {"name":"VK_F10"}, 
+    {"name":"VK_SPACE"}
+  ]
+},
+{
+  "name":"java.awt.geom.GeneralPath",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"java.awt.geom.Path2D",
+  "methods":[{"name":"closePath","parameterTypes":[] }]
+},
+{
+  "name":"java.awt.geom.Path2D$Float",
+  "methods":[
+    {"name":"lineTo","parameterTypes":["double","double"] }, 
+    {"name":"moveTo","parameterTypes":["double","double"] }
+  ]
+},
+{
+  "name":"javax.swing.plaf.basic.BasicOptionPaneUI",
+  "methods":[
+    {"name":"createUI","parameterTypes":["javax.swing.JComponent"] }, 
+    {"name":"loadActionMap","parameterTypes":["javax.swing.plaf.basic.LazyActionMap"] }
+  ]
+},
+{
+  "name":"javax.swing.plaf.basic.BasicPanelUI",
+  "methods":[{"name":"createUI","parameterTypes":["javax.swing.JComponent"] }]
+},
+{
+  "name":"javax.swing.plaf.metal.MetalButtonUI",
+  "methods":[{"name":"createUI","parameterTypes":["javax.swing.JComponent"] }]
+},
+{
+  "name":"javax.swing.plaf.metal.MetalLabelUI",
+  "methods":[{"name":"createUI","parameterTypes":["javax.swing.JComponent"] }]
+},
+{
+  "name":"javax.swing.plaf.metal.MetalRootPaneUI",
+  "methods":[{"name":"createUI","parameterTypes":["javax.swing.JComponent"] }]
+},
+{
+  "name":"sun.awt.Symbol",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"sun.awt.Win32FontManager",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"sun.awt.windows.WingDings",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+},
+{
+  "name":"sun.java2d.marlin.DMarlinRenderingEngine",
+  "methods":[{"name":"<init>","parameterTypes":[] }]
+}
+]

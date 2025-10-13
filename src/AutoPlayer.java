@@ -6,8 +6,10 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Panel;
+import java.awt.RenderingHints;
 import java.awt.TextArea;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -17,6 +19,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.awt.font.FontRenderContext;
 import java.awt.image.ImageProducer;
 import java.io.File;
 import java.io.IOException;
@@ -93,6 +96,8 @@ public class AutoPlayer extends Panel implements Runnable {
 
     private ScriptParser scriptParser;
 
+    private String defaultFont = null;
+
     private boolean initialized = false;
 
     private boolean isSolver;
@@ -109,6 +114,11 @@ public class AutoPlayer extends Panel implements Runnable {
     private String[] lastResult = new String[2];
 
     public static void main(String[] args) throws IOException {
+        // GraalVM-Native-Image 编译成的exe文件执行时需要这个配置
+        if (System.getProperty("java.home") == null) {
+            System.setProperty("java.home", ".");
+        }
+
         AutoPlayer scriptPlayer = new AutoPlayer();
 
         // 解析命令行参数
@@ -143,7 +153,7 @@ public class AutoPlayer extends Panel implements Runnable {
         final Random gen = new Random();
         StringBuffer buffer = new StringBuffer();
         while (displayMode) {
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < 20; i++) {
                 buffer.append(tokens[gen.nextInt(tokens.length)]).append(' ');
             }
 
@@ -168,7 +178,9 @@ public class AutoPlayer extends Panel implements Runnable {
     }
 
     public AutoPlayer() {
+        initDefaultFont();
         this.cmd = new CommandParser();
+        cmd.setDefaultFont(this.defaultFont);
 
         // init keyMap
         keyMap.put("autoPlay", 0);
@@ -219,6 +231,31 @@ public class AutoPlayer extends Panel implements Runnable {
         }
     }
 
+    private void initDefaultFont() {
+        FontRenderContext frc = new FontRenderContext(null, RenderingHints.VALUE_TEXT_ANTIALIAS_DEFAULT, RenderingHints.VALUE_FRACTIONALMETRICS_DEFAULT);
+        GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+        String[] fontNames = ge.getAvailableFontFamilyNames();
+        for (int i = fontNames.length - 1; i >= 0; i--) {
+            Font font = new Font(fontNames[i], Font.PLAIN, 15);
+            // 判断是否支持中文
+            if (font.canDisplayUpTo("中文") == -1) {
+                // 判断是否等宽字体
+                if (font.getStringBounds("il", frc).getWidth() == font.getStringBounds("WM", frc).getWidth()) {
+                    this.defaultFont = fontNames[i];
+                    if ("黑体".equals(fontNames[i])) {
+                        return;
+                    }
+                }
+                if (this.defaultFont == null) {
+                    this.defaultFont = fontNames[i];
+                }
+            }
+        }
+        if (this.defaultFont == null && fontNames.length > 0) {
+            this.defaultFont = fontNames[0];
+        }
+    }
+
     private void initComponents() {
         setLayout(new BorderLayout());
     }
@@ -237,7 +274,7 @@ public class AutoPlayer extends Panel implements Runnable {
         this.controlsPanel.setLayout(new BorderLayout());
         this.controlsPanel.add("North", this.player.getControlPanelComponent()); // 进度条和控制按钮
         this.controlsPanel.add("South", this.scriptTextArea); // 执行文本显示
-        this.scriptTextArea.setFont(new Font("Dialog", Font.BOLD, 16));
+        this.scriptTextArea.setFont(new Font(this.defaultFont, Font.BOLD, 16));
         this.scriptTextArea.addMouseListener(new MouseAdapter() {
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
@@ -293,8 +330,8 @@ public class AutoPlayer extends Panel implements Runnable {
         final Color[] initColors = {new Color(230, 0, 0), new Color(240, 220, 0), // 红 黄
                 new Color(0, 170, 0), new Color(255, 118, 0), Color.white, Color.blue}; // 绿 橙
         final Border defaultBorder = new LineBorder(new Color(240, 240, 240), 4);
-        final Border selectBorder = new LineBorder(Color.black, 4);
-        Font defaultFont = new Font("Dialog", Font.BOLD, 14);
+        final Border selectBorder = new LineBorder(new Color(118, 188, 245), 4);
+        Font defaultFont = new Font(this.defaultFont, Font.BOLD, 14);
         for (int i = 0; i < 6; i++) {
             colorSel[i] = new JButton();
             frame.add(colorSel[i]);
@@ -322,6 +359,8 @@ public class AutoPlayer extends Panel implements Runnable {
 
         // 编辑按钮
         final JButton buttonEdit = new JButton("edit");
+        final Color selectColor = new Color(184, 207, 229);
+        final Color deselectColor = new ColorUIResource(238, 238, 238);
         frame.add(buttonEdit);
         buttonEdit.setBounds(250, 20, 65, 40);
         buttonEdit.setFont(defaultFont);
@@ -341,11 +380,11 @@ public class AutoPlayer extends Panel implements Runnable {
                 }
 
                 if (AutoPlayer.this.player.getCube3D().isEditMode()) {
-                    ((JButton) evt.getSource()).setBackground(new ColorUIResource(238, 238, 238));
                     AutoPlayer.this.player.getCube3D().setEditMode(false);
+                    ((JButton) evt.getSource()).setBackground(deselectColor);
                 } else {
-                    ((JButton) evt.getSource()).setBackground(new Color(184, 207, 229));
                     AutoPlayer.this.player.getCube3D().setEditMode(true);
+                    ((JButton) evt.getSource()).setBackground(selectColor);
                     if (AutoPlayer.this.selectColor == -1) {
                         colorSel[0].doClick();
                     }
@@ -365,13 +404,13 @@ public class AutoPlayer extends Panel implements Runnable {
                 if (AutoPlayer.this.player.isActive() && !AutoPlayer.this.displayMode) {
                     return;
                 }
-                AutoPlayer.this.player.getCube3D().getModel().reset();
 
                 for (int i = 0; i < 6; i++) {
                     for (int j = 0; j < 9; j++) {
                         AutoPlayer.this.player.getCube3D().setStickerColor(i, j, AutoPlayer.this.colors.get(6));
                     }
                 }
+                AutoPlayer.this.player.getCube3D().fireStateChanged();
             }
         });
 
@@ -413,7 +452,6 @@ public class AutoPlayer extends Panel implements Runnable {
                 if (AutoPlayer.this.player.isActive() && !AutoPlayer.this.displayMode) {
                     return;
                 }
-                AutoPlayer.this.player.getCube3D().getModel().reset();
 
                 // Random stick by Call Random function
                 String facelets = Tools.randomCube();
@@ -436,6 +474,17 @@ public class AutoPlayer extends Panel implements Runnable {
                 String script = AutoPlayer.this.scriptTextArea.getText();
                 if (script == null || script.length() == 0) {
                     return;
+                }
+
+                // 取消编辑
+                if (AutoPlayer.this.player.getCube3D().isEditMode()) {
+                    buttonEdit.setBackground(deselectColor);
+                    AutoPlayer.this.player.getCube3D().setEditMode(false);
+                }
+                String facelets = getCubeString();
+                // 有旋转，重置为旋转前状态
+                if (!AutoPlayer.this.player.getCube3D().getModel().isSolved()) {
+                    AutoPlayer.this.cleanAndResetCube(facelets);
                 }
 
                 int index = script.indexOf('(');
@@ -496,11 +545,6 @@ public class AutoPlayer extends Panel implements Runnable {
                 }
 
                 String facelets = getCubeString();
-                // 有旋转，重置为旋转前状态
-                if (!AutoPlayer.this.player.getCube3D().getModel().isSolved()) {
-                    AutoPlayer.this.cleanAndResetCube(facelets);
-                }
-
                 String result = searchSolution(facelets);
                 if (result.contains("Error")) {
                     String message = "校验不通过：" + AutoPlayer.getErrMessage(result);
@@ -508,8 +552,12 @@ public class AutoPlayer extends Panel implements Runnable {
                 } else {
                     // 取消编辑
                     if (AutoPlayer.this.player.getCube3D().isEditMode()) {
-                        buttonEdit.setBackground(new ColorUIResource(238, 238, 238));
+                        buttonEdit.setBackground(deselectColor);
                         AutoPlayer.this.player.getCube3D().setEditMode(false);
+                    }
+                    // 有旋转，重置为旋转前状态
+                    if (!AutoPlayer.this.player.getCube3D().getModel().isSolved()) {
+                        AutoPlayer.this.cleanAndResetCube(facelets);
                     }
 
                     // 自动计算复位方法
@@ -555,7 +603,7 @@ public class AutoPlayer extends Panel implements Runnable {
     // 默认绘图函数，魔方未加载、加载中或失败时会显示的内容
     @Override
     public void paint(Graphics graphics) {
-        graphics.setFont(new Font("Dialog", 0, 10));
+        graphics.setFont(new Font(this.defaultFont, Font.PLAIN, 10));
         FontMetrics fontMetrics = graphics.getFontMetrics();
         graphics.drawString("Loading " + CommandParser.getAppInfo(), 12, fontMetrics.getHeight());
         // graphics.drawString(CommandParser.copyright, 12, fontMetrics.getHeight() * 2);
@@ -1132,6 +1180,7 @@ public class AutoPlayer extends Panel implements Runnable {
                 }
             }
         }
+        this.player.getCube3D().fireStateChanged();
     }
 
     public void doParameter(String key) throws IOException {
@@ -1157,11 +1206,7 @@ public class AutoPlayer extends Panel implements Runnable {
                 this.player.reset();
             }
             value = value.replace("\\n", "\n");
-            if (value.length() == 0) {
-                this.scriptTextArea.setText(value);
-            } else {
-                this.scriptTextArea.setText(value + " (Step: " + (value.length() + 2) / 3 + ")");
-            }
+            this.scriptTextArea.setText(value);
             ScriptNode scriptNode = this.scriptParser.parse(new StringReader(value));
             this.player.setScript(scriptNode);
             if (this.autoPlay) {
@@ -1196,7 +1241,7 @@ public class AutoPlayer extends Panel implements Runnable {
                     cube.setStickerColor(i5, i6, this.colors.get(param));
                 }
             }
-            this.player.reset();
+            this.player.getCube3D().fireStateChanged();
             break;
         case 15: // "rearView"
             // 默认true

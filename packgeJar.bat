@@ -58,9 +58,3 @@ if not "%errorlevel%" == "0" (
 rmdir /s /q "%destDir%"
 
 
-
-::jpackage --type app-image --name spring --input target --main-jar spring-1.0.jar --win-console --dest dist
-
-jpackage --input . --name rubikAutoPlayer --main-jar rubikAutoPlayer.jar --win-console --win-shortcut
-
-pause

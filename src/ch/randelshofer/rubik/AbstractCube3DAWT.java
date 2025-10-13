@@ -655,7 +655,7 @@ public abstract class AbstractCube3DAWT implements RubikListener {
         return this.isAnimated;
     }
 
-    protected void fireStateChanged() {
+    public void fireStateChanged() {
         List<ListenerNode> listenerList = this.listenerList.getListenerList();
         for (ListenerNode node : listenerList) {
             if (node.getClazz() == ChangeListener.class) {
