@@ -3,10 +3,11 @@
 cd /D "%~dp0"
 set "BASEDIR=%cd%"
 
-set "srcDir=src"
-set "destDir=%BASEDIR%\dest"
-set "libDir=lib"
-echo "%destDir%"
+set APP_NAME=rubikAutoPlayer
+set "srcDir=%BASEDIR%\src"
+set "libDir=%BASEDIR%\lib"
+set "destDir=%BASEDIR%\jardest"
+
 if "x%JAVA_HOME%" == "x" (
     set JAVAC="javac"
     set JAR="jar"
@@ -15,7 +16,7 @@ if "x%JAVA_HOME%" == "x" (
     set "JAR=%JAVA_HOME%\bin\jar"
 )
 
-set "CLASSPATH=%BASEDIR%\conf;%BASEDIR%\rubikAutoPlayer.jar"
+set "CLASSPATH=%BASEDIR%\conf;%BASEDIR%\%APP_NAME%.jar"
 SETLOCAL ENABLEDELAYEDEXPANSION
 for %%I in ("lib\*.jar") do (
     set "CLASSPATH=!CLASSPATH!;%%I"
@@ -44,13 +45,13 @@ if not "%errorlevel%" == "0" (
 del /f /q "%destDir%"\srclist.txt
 
 :: clean jar
-if exist "%BASEDIR%\rubikAutoPlayer.jar" (
-    del /f /q "%BASEDIR%\rubikAutoPlayer.jar"
+if exist "%BASEDIR%\%APP_NAME%.jar" (
+    del /f /q "%BASEDIR%\%APP_NAME%.jar"
 )
 
 :: jar
 echo "jar cfm FileSync.jar META-INF/MANIFEST.MF -C %destDir% com"
-"%JAR%" cfm "%BASEDIR%\rubikAutoPlayer.jar" "%BASEDIR%\META-INF\MANIFEST.MF" -C "%destDir%" .
+"%JAR%" cfm "%BASEDIR%\%APP_NAME%.jar" "%BASEDIR%\META-INF\MANIFEST.MF" -C "%destDir%" .
 if not "%errorlevel%" == "0" (
     pause
     exit /b %errorlevel%

@@ -4,15 +4,21 @@ cd /D "%~dp0"
 set "BASEDIR=%cd%"
 
 set APP_NAME=rubikAutoPlayer
-set "srcDir=src"
-set "destDir=%BASEDIR%\dest"
-set "libDir=lib"
+set "srcDir=%BASEDIR%\src"
+set "libDir=%BASEDIR%\lib"
+set "destDir=%BASEDIR%\%APP_NAME%"
+
+set "VisualStudioDir=C:\Program Files\Microsoft Visual Studio\2022\Professional"
+set "VisualStudioKits=C:\Program Files (x86)\Windows Kits\10"
+set "MSVC_NATIVE_TOOLS=%VisualStudioDir%\VC\Auxiliary\Build\vcvars64.bat"
+set "MSVC_EDITBIN=%VisualStudioDir%\VC\Tools\MSVC\14.44.35207\bin\Hostx64\x64\editbin.exe"
+set "SDK_KITS_MT=%VisualStudioKits%\bin\10.0.19041.0\x64\mt.exe"
 
 set "graalvmPath=E:\tools\GraalVM-Native-Image\graalvm-ce-java17-22.3.3"
 set "JAVA=%graalvmPath%\bin\java"
 set "JAVAC=%graalvmPath%\bin\javac"
 set "JAR=%graalvmPath%\bin\jar"
-set "NATIVE=%graalvmPath%\bin\native-image.cmd"
+set "NATIVE_IMAGE=%graalvmPath%\bin\native-image.cmd"
 
 
 set "CLASSPATH=%BASEDIR%\conf;%BASEDIR%\%APP_NAME%.jar"
@@ -35,7 +41,7 @@ if exist "%destDir%" (
 mkdir "%destDir%"
 
 dir "%srcDir%"\*.java /s/b > "%destDir%"\srclist.txt
-echo "javac -encoding utf-8 -d %destDir% -classpath %CLASSPATH% %srcDir%\*.java"
+echo 编译：javac -encoding utf-8 -d %destDir% -classpath %CLASSPATH% %srcDir%\*.java
 "%JAVAC%" -encoding utf-8  -d "%destDir%" -classpath "%CLASSPATH%" @"%destDir%"\srclist.txt
 if not "%errorlevel%" == "0" (
     pause
@@ -50,12 +56,13 @@ if exist "%BASEDIR%\%APP_NAME%.jar" (
 
 :: jar
 xcopy /e /q /y "%BASEDIR%\META-INF\native-image\" "%destDir%\META-INF\native-image\"
-echo "jar cfm FileSync.jar META-INF/MANIFEST.MF -C %destDir% com"
+echo 打包jar：jar cfm FileSync.jar META-INF/MANIFEST.MF -C %destDir% com
 "%JAR%" cfm "%BASEDIR%\%APP_NAME%.jar" "%BASEDIR%\META-INF\MANIFEST.MF" -C "%destDir%" .
 if not "%errorlevel%" == "0" (
     pause
     exit /b %errorlevel%
 )
+rmdir /s /q "%destDir%"
 
 
 echo 生成native-image-conf，需要运行程序生成
@@ -64,8 +71,12 @@ for /f "delims=" %%I in ('dir /B "%BASEDIR%\META-INF\native-image\"^|findstr "ag
     rmdir /s /q "%BASEDIR%\META-INF\native-image\%%I"
 )
 start %JAVA% -Dfile.encoding=utf-8 -agentlib:native-image-agent=config-merge-dir="%BASEDIR%\META-INF\native-image" -Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 -Dconsole.encoding=UTF-8 -Duser.language=en -Duser.region=US -jar "%BASEDIR%\%APP_NAME%.jar" --display true -backgroundImage "%systemroot%\Web\Wallpaper\Windows\img0.jpg"
+if not "%errorlevel%" == "0" (
+    pause
+    exit /b %errorlevel%
+)
 
-rem 等待一段时间并结束进程
+echo 等待一段时间并结束进程
 timeout /nobreak /T 5 >nul
 ::for /f "tokens=2" %%a in ('tasklist /fi "IMAGENAME eq java.exe"^|findstr /i "java.exe"') do taskkill /pid:%%a >nul
 taskkill /fi "IMAGENAME eq java.exe" >nul
@@ -77,22 +88,21 @@ taskkill /fi "IMAGENAME eq java.exe" >nul
 timeout /nobreak /T 1 >nul
 del /f /q "%BASEDIR%\META-INF\native-image\.lock" 2>nul
 for /f "delims=" %%I in ('dir /B "%BASEDIR%\META-INF\native-image\"^|findstr "agent-pid"') do (
-    echo "%BASEDIR%\META-INF\native-image\%%I"
     rmdir /s /q "%BASEDIR%\META-INF\native-image\%%I"
 )
-rmdir /s /q "%destDir%"
+
 mkdir "%destDir%"
 cd "%destDir%"
 
-
+echo 使用VS打包成exe文件
 ::--no-fallback 构建不依赖jvm的native image或显示构建失败
 ::-H:EnableURLProtocols参数用于启用必要的网络协议支持
 ::-H:+ReportExceptionStackTraces 显示构建异常的堆栈
 ::--link-at-build-time 在构建时报告类和包的链接错误
 ::-H:ConfigurationFileDirectories 配置采集到的meta信息的路径
 ::-H:+AddAllCharsets 支持所有字符集，防止中文乱码
-call "C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Auxiliary\Build\vcvars64.bat"
-call "%NATIVE%" "--no-fallback" ^
+call "%MSVC_NATIVE_TOOLS%"
+call "%NATIVE_IMAGE%" "--no-fallback" ^
     "-H:ConfigurationFileDirectories=%BASEDIR%\META-INF\native-image" ^
     "-H:+ReportExceptionStackTraces" ^
     "-H:+AddAllCharsets" ^
@@ -109,15 +119,22 @@ if not "%errorlevel%" == "0" (
     exit /b %errorlevel%
 )
 
-::复制依赖文件
+echo 复制依赖文件
 del /f /q "%destDir%\%APP_NAME%.build_artifacts.txt" >nul 2>nul
 mkdir "%destDir%\lib\"
 copy "%BASEDIR%\lib\fontconfig.bfc" "%destDir%\lib\"
 
-::去除命令行窗口
-::editbin /subsystem:windows "%destDir%\%APP_NAME%.jar" 2>nul
+echo 去除命令行窗口
+"%MSVC_EDITBIN%" /subsystem:windows "%destDir%\%APP_NAME%.exe"
+if not "%errorlevel%" == "0" (
+    pause
+    exit /b %errorlevel%
+)
 
-::增加系统dpi缩放感知
-"C:\Program Files (x86)\Windows Kits\10\bin\10.0.19041.0\x64\mt.exe" -manifest "%BASEDIR%\META-INF\rubikAutoPlayer.exe.manifest" -outputresource:"%destDir%\%APP_NAME%.exe;#1"
-
+echo 增加系统dpi缩放感知
+"%SDK_KITS_MT%" -manifest "%BASEDIR%\META-INF\rubikAutoPlayer.exe.manifest" -outputresource:"%destDir%\%APP_NAME%.exe;#1"
+if not "%errorlevel%" == "0" (
+    pause
+    exit /b %errorlevel%
+)
 
