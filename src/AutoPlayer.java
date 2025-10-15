@@ -538,7 +538,6 @@ public class AutoPlayer extends Panel implements Runnable {
                 AbstractCube3DAWT cube = AutoPlayer.this.player.getCube3D();
                 if (AutoPlayer.this.displayMode) {
                     AutoPlayer.this.displayMode = false;
-                    AutoPlayer.this.player.stop();
                     AutoPlayer.this.player.reset();
                     AutoPlayer.this.player.setScript(null);
                     // 初始化颜色

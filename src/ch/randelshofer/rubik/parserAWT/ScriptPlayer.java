@@ -92,7 +92,7 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
         this.controlPanel = new Panel();
         this.controlPanel.setLayout(new BorderLayout());
         this.controls = new MovieControlAWT(); // 滚动条
-        this.controls.setVisible(false);
+        this.controls.setVisible(true);
         this.controls.setPlayer(this);
         this.controlPanel.add("Center", this.controls);
         this.resetButton = new AbstractButton();
@@ -149,8 +149,6 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
         this.progress.setRangeProperties(0, 0, 0, 0, false);
         this.scriptVector.removeAllElements();
         this.scriptIndex = 0;
-        //        this.controls.setVisible(scriptNode != null);
-        this.controls.setVisible(true);
         if (script != null) {
             Enumeration<DefaultMutableTreeNode> resolves = script.resolvedEnumeration(false);
             while (resolves.hasMoreElements()) {
@@ -216,16 +214,17 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
     // 循环执行自动脚本
     @Override
     public void run() {
+        if (this.state == STOPPED) {
+            return;
+        }
         synchronized (this) {
             if (this.state != STARTING) {
-                if (this.state != STOPPED) {
-                    this.state = STOPPED;
-                }
+                this.state = STOPPED;
                 return;
             }
-
             this.state = RUNNING;
         }
+
         fireStateChanged();
         if (this.progress.getMaximum() > 0) {
             if (this.progress.getValue() == this.progress.getMaximum()) {
@@ -273,6 +272,9 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
 
     @Override
     public void stop() {
+        if (this.state == STOPPED) {
+            return;
+        }
         synchronized (this) {
             if (this.state == RUNNING || this.state == STARTING) {
                 this.state = STOPPING;
