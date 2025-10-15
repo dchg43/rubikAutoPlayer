@@ -546,6 +546,8 @@ public class AutoPlayer extends Panel implements Runnable {
                             cube.setStickerColor(i, j, AutoPlayer.this.colors.get(i));
                         }
                     }
+                    // 刷新魔方
+                    cube.fireStateChanged();
                     return;
                 }
                 if (AutoPlayer.this.player.isActive()) {
