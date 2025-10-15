@@ -166,7 +166,6 @@ public class RubiksCubeCore implements Cloneable {
      * @param times 旋转次数，负数表示逆时针
      */
     public void transform(int axis, int layerMask, int times) {
-        //        synchronized (this) {
         if (axis < 0 || axis > 2) {
             throw new IllegalArgumentException("axis: " + axis);
         }
@@ -179,139 +178,141 @@ public class RubiksCubeCore implements Cloneable {
         if (times == 0) {
             return;
         }
-        int i4 = times == -2 ? 2 : times;
-        if ((layerMask & 0x1) != 0) {
-            switch (axis) {
-            case 0:
-                switch (i4) {
-                case -1:
-                    twistLeftClockwise();
+
+        synchronized (this) {
+            int i4 = times == -2 ? 2 : times;
+            if ((layerMask & 0x1) != 0) {
+                switch (axis) {
+                case 0:
+                    switch (i4) {
+                    case -1:
+                        twistLeftClockwise();
+                        break;
+                    case 1:
+                        twistLeftCounterClockwise();
+                        break;
+                    case 2:
+                        twistLeftDouble();
+                        break;
+                    }
                     break;
                 case 1:
-                    twistLeftCounterClockwise();
+                    switch (i4) {
+                    case -1:
+                        twistBottomClockwise();
+                        break;
+                    case 1:
+                        twistBottomCounterClockwise();
+                        break;
+                    case 2:
+                        twistBottomDouble();
+                        break;
+                    }
                     break;
                 case 2:
-                    twistLeftDouble();
+                    switch (i4) {
+                    case -1:
+                        twistBackClockwise();
+                        break;
+                    case 1:
+                        twistBackCounterClockwise();
+                        break;
+                    case 2:
+                        twistBackDouble();
+                        break;
+                    }
                     break;
                 }
-                break;
-            case 1:
-                switch (i4) {
-                case -1:
-                    twistBottomClockwise();
-                    break;
-                case 1:
-                    twistBottomCounterClockwise();
-                    break;
-                case 2:
-                    twistBottomDouble();
-                    break;
-                }
-                break;
-            case 2:
-                switch (i4) {
-                case -1:
-                    twistBackClockwise();
-                    break;
-                case 1:
-                    twistBackCounterClockwise();
-                    break;
-                case 2:
-                    twistBackDouble();
-                    break;
-                }
-                break;
             }
-        }
-        if ((layerMask & 0x2) != 0) {
-            switch (axis) {
-            case 0:
-                switch (i4) {
-                case -1:
-                    twistMiddleLeftClockwise();
+            if ((layerMask & 0x2) != 0) {
+                switch (axis) {
+                case 0:
+                    switch (i4) {
+                    case -1:
+                        twistMiddleLeftClockwise();
+                        break;
+                    case 1:
+                        twistMiddleLeftCounterClockwise();
+                        break;
+                    case 2:
+                        twistMiddleLeftDouble();
+                        break;
+                    }
                     break;
                 case 1:
-                    twistMiddleLeftCounterClockwise();
+                    switch (i4) {
+                    case -1:
+                        twistMiddleBottomClockwise();
+                        break;
+                    case 1:
+                        twistMiddleBottomCounterClockwise();
+                        break;
+                    case 2:
+                        twistMiddleBottomDouble();
+                        break;
+                    }
                     break;
                 case 2:
-                    twistMiddleLeftDouble();
+                    switch (i4) {
+                    case -1:
+                        twistMiddleBackClockwise();
+                        break;
+                    case 1:
+                        twistMiddleBackCounterClockwise();
+                        break;
+                    case 2:
+                        twistMiddleBackDouble();
+                        break;
+                    }
                     break;
                 }
-                break;
-            case 1:
-                switch (i4) {
-                case -1:
-                    twistMiddleBottomClockwise();
-                    break;
-                case 1:
-                    twistMiddleBottomCounterClockwise();
-                    break;
-                case 2:
-                    twistMiddleBottomDouble();
-                    break;
-                }
-                break;
-            case 2:
-                switch (i4) {
-                case -1:
-                    twistMiddleBackClockwise();
-                    break;
-                case 1:
-                    twistMiddleBackCounterClockwise();
-                    break;
-                case 2:
-                    twistMiddleBackDouble();
-                    break;
-                }
-                break;
             }
-        }
-        if ((layerMask & 0x4) != 0) {
-            switch (axis) {
-            case 0:
-                switch (i4) {
-                case -1:
-                    twistRightCounterClockwise();
+            if ((layerMask & 0x4) != 0) {
+                switch (axis) {
+                case 0:
+                    switch (i4) {
+                    case -1:
+                        twistRightCounterClockwise();
+                        break;
+                    case 1:
+                        twistRightClockwise();
+                        break;
+                    case 2:
+                        twistRightDouble();
+                        break;
+                    }
                     break;
                 case 1:
-                    twistRightClockwise();
+                    switch (i4) {
+                    case -1:
+                        twistTopCounterClockwise();
+                        break;
+                    case 1:
+                        twistTopClockwise();
+                        break;
+                    case 2:
+                        twistTopDouble();
+                        break;
+                    }
                     break;
                 case 2:
-                    twistRightDouble();
+                    switch (i4) {
+                    case -1:
+                        twistFrontCounterClockwise();
+                        break;
+                    case 1:
+                        twistFrontClockwise();
+                        break;
+                    case 2:
+                        twistFrontDouble();
+                        break;
+                    }
                     break;
                 }
-                break;
-            case 1:
-                switch (i4) {
-                case -1:
-                    twistTopCounterClockwise();
-                    break;
-                case 1:
-                    twistTopClockwise();
-                    break;
-                case 2:
-                    twistTopDouble();
-                    break;
-                }
-                break;
-            case 2:
-                switch (i4) {
-                case -1:
-                    twistFrontCounterClockwise();
-                    break;
-                case 1:
-                    twistFrontClockwise();
-                    break;
-                case 2:
-                    twistFrontDouble();
-                    break;
-                }
-                break;
             }
         }
         fireRubikTwisted(new RubikEvent(this, axis, layerMask, times));
     }
-    //    }
 
     public void transform(RubiksCubeCore rubiksCubeCore) {
         int[] iArr = this.cornerLoc;

@@ -78,8 +78,8 @@ public class DefaultTransform3DModel extends AbstractStateModel implements Trans
     }
 
     @Override
-    public void rotate(double d1, double d2, double d3) {
-        this.transform.rotate(d1, d2, d3);
+    public void rotate(double x, double y, double z) {
+        this.transform.rotate(x, y, z);
         fireStateChanged();
     }
 }
