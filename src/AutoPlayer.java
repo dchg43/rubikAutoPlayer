@@ -372,18 +372,19 @@ public class AutoPlayer extends Panel implements Runnable {
                     return;
                 }
 
+                AbstractCube3DAWT cube = AutoPlayer.this.player.getCube3D();
                 // 判断魔方是否有旋转，因为编辑功能是基于魔方未旋转状态，如果有旋转，设置方块颜色时会错位
-                if (!AutoPlayer.this.player.getCube3D().getModel().isSolved()) {
+                if (!cube.getModel().isSolved()) {
                     // 重置魔方状态，保留块的颜色和顺序
                     String facelets = getCubeString(false);
                     AutoPlayer.this.cleanAndResetCube(facelets);
                 }
 
-                if (AutoPlayer.this.player.getCube3D().isEditMode()) {
-                    AutoPlayer.this.player.getCube3D().setEditMode(false);
+                if (cube.isEditMode()) {
+                    cube.setEditMode(false);
                     ((JButton) evt.getSource()).setBackground(deselectColor);
                 } else {
-                    AutoPlayer.this.player.getCube3D().setEditMode(true);
+                    cube.setEditMode(true);
                     ((JButton) evt.getSource()).setBackground(selectColor);
                     if (AutoPlayer.this.selectColor == -1) {
                         colorSel[0].doClick();
@@ -405,13 +406,14 @@ public class AutoPlayer extends Panel implements Runnable {
                     return;
                 }
 
+                AbstractCube3DAWT cube = AutoPlayer.this.player.getCube3D();
                 for (int i = 0; i < 6; i++) {
                     for (int j = 0; j < 9; j++) {
-                        AutoPlayer.this.player.getCube3D().setStickerColor(i, j, AutoPlayer.this.colors.get(6));
+                        cube.setStickerColor(i, j, AutoPlayer.this.colors.get(6));
                     }
                 }
                 // 刷新魔方
-                AutoPlayer.this.player.getCube3D().fireStateChanged();
+                cube.fireStateChanged();
             }
         });
 
@@ -480,15 +482,16 @@ public class AutoPlayer extends Panel implements Runnable {
                 BoundedRangeModel progress = AutoPlayer.this.player.getBoundedRangeModel();
                 progress.setValue(progress.getMaximum());
                 // 刷新魔方
-                AutoPlayer.this.player.getCube3D().fireStateChanged();
+                AbstractCube3DAWT cube = AutoPlayer.this.player.getCube3D();
+                cube.fireStateChanged();
 
                 // 取消编辑
-                if (AutoPlayer.this.player.getCube3D().isEditMode()) {
+                if (cube.isEditMode()) {
                     buttonEdit.setBackground(deselectColor);
-                    AutoPlayer.this.player.getCube3D().setEditMode(false);
+                    cube.setEditMode(false);
                 }
                 // 判断魔方是否有旋转，因为编辑时仍然能执行反序，如果有旋转，设置方块颜色时会错位
-                if (!AutoPlayer.this.player.getCube3D().getModel().isSolved()) {
+                if (!cube.getModel().isSolved()) {
                     // 有旋转，重置为旋转前状态
                     String facelets = getCubeString(false);
                     AutoPlayer.this.cleanAndResetCube(facelets);
@@ -532,10 +535,18 @@ public class AutoPlayer extends Panel implements Runnable {
         buttonSolution.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
+                AbstractCube3DAWT cube = AutoPlayer.this.player.getCube3D();
                 if (AutoPlayer.this.displayMode) {
                     AutoPlayer.this.displayMode = false;
                     AutoPlayer.this.player.stop();
+                    AutoPlayer.this.player.reset();
                     AutoPlayer.this.player.setScript(null);
+                    // 初始化颜色
+                    for (int i = 0; i < 6; i++) {
+                        for (int j = 0; j < 9; j++) {
+                            cube.setStickerColor(i, j, AutoPlayer.this.colors.get(i));
+                        }
+                    }
                     return;
                 }
                 if (AutoPlayer.this.player.isActive()) {
@@ -550,12 +561,12 @@ public class AutoPlayer extends Panel implements Runnable {
                     JOptionPane.showMessageDialog(AutoPlayer.this, message, "失败", JOptionPane.ERROR_MESSAGE);
                 } else {
                     // 取消编辑
-                    if (AutoPlayer.this.player.getCube3D().isEditMode()) {
+                    if (cube.isEditMode()) {
                         buttonEdit.setBackground(deselectColor);
-                        AutoPlayer.this.player.getCube3D().setEditMode(false);
+                        cube.setEditMode(false);
                     }
                     // 有旋转，重置为旋转前状态
-                    if (!AutoPlayer.this.player.getCube3D().getModel().isSolved()) {
+                    if (!cube.getModel().isSolved()) {
                         AutoPlayer.this.cleanAndResetCube(facelets);
                     }
 
@@ -1044,11 +1055,12 @@ public class AutoPlayer extends Panel implements Runnable {
             colorList.add(c);
         }
 
+        AbstractCube3DAWT cube = this.player.getCube3D();
         ArrayList<Color> colorCurrent = new ArrayList<>();
         int currentIndex = 0;
         for (int i = 0; i < 6; i++) {
             // 以中心块的颜色为基准
-            Color c = this.player.getCube3D().getStickerColor(i, 4);
+            Color c = cube.getStickerColor(i, 4);
             if (!colorCurrent.contains(c) && !this.colors.get(6).equals(c)) {
                 colorCurrent.add(currentIndex++, c);
                 colorList.remove(c);
@@ -1060,7 +1072,7 @@ public class AutoPlayer extends Panel implements Runnable {
             colorCurrent.add(currentIndex++, colorList.remove(0));
         }
         // 重置魔方状态，保留块的颜色和顺序
-        this.player.getCube3D().getModel().reset();
+        cube.getModel().reset();
         setCubeByString(facelets, colorCurrent);
     }
 
@@ -1215,7 +1227,7 @@ public class AutoPlayer extends Panel implements Runnable {
                 }
             }
         }
-        this.player.getCube3D().fireStateChanged();
+        cube.fireStateChanged();
     }
 
     public void doParameter(String key) throws IOException {
@@ -1276,7 +1288,7 @@ public class AutoPlayer extends Panel implements Runnable {
                     cube.setStickerColor(i5, i6, this.colors.get(param));
                 }
             }
-            this.player.getCube3D().fireStateChanged();
+            cube.fireStateChanged();
             break;
         case 15: // "rearView"
             // 默认true
