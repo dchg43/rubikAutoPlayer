@@ -235,19 +235,19 @@ public class AutoPlayer extends Panel implements Runnable {
         FontRenderContext frc = new FontRenderContext(null, RenderingHints.VALUE_TEXT_ANTIALIAS_DEFAULT, RenderingHints.VALUE_FRACTIONALMETRICS_DEFAULT);
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         String[] fontNames = ge.getAvailableFontFamilyNames();
-        for (int i = fontNames.length - 1; i >= 0; i--) {
-            Font font = new Font(fontNames[i], Font.PLAIN, 15);
+        for (String fontName : fontNames) {
+            Font font = new Font(fontName, Font.PLAIN, 15);
             // 判断是否支持中文
-            if (font.canDisplayUpTo("中文") == -1) {
+            if (font.canDisplayUpTo("编辑") == -1) {
                 // 判断是否等宽字体
                 if (font.getStringBounds("il", frc).getWidth() == font.getStringBounds("WM", frc).getWidth()) {
-                    this.defaultFont = fontNames[i];
-                    if ("黑体".equals(fontNames[i])) {
+                    this.defaultFont = fontName;
+                    if ("DialogInput".equals(fontName)) { // 优先
                         return;
                     }
                 }
                 if (this.defaultFont == null) {
-                    this.defaultFont = fontNames[i];
+                    this.defaultFont = fontName;
                 }
             }
         }
@@ -375,7 +375,7 @@ public class AutoPlayer extends Panel implements Runnable {
                 // 判断魔方是否有旋转，因为编辑功能是基于魔方未旋转状态，如果有旋转，设置方块颜色时会错位
                 if (!AutoPlayer.this.player.getCube3D().getModel().isSolved()) {
                     // 重置魔方状态，保留块的颜色和顺序
-                    String facelets = getCubeString();
+                    String facelets = getCubeString(false);
                     AutoPlayer.this.cleanAndResetCube(facelets);
                 }
 
@@ -410,6 +410,7 @@ public class AutoPlayer extends Panel implements Runnable {
                         AutoPlayer.this.player.getCube3D().setStickerColor(i, j, AutoPlayer.this.colors.get(6));
                     }
                 }
+                // 刷新魔方
                 AutoPlayer.this.player.getCube3D().fireStateChanged();
             }
         });
@@ -427,14 +428,13 @@ public class AutoPlayer extends Panel implements Runnable {
                     return;
                 }
 
-                String cubeString = getCubeString();
+                String cubeString = getCubeString(true);
                 String result = searchSolution(cubeString);
                 if (result.contains("Error")) {
                     String message = "校验不通过：" + AutoPlayer.getErrMessage(result);
                     JOptionPane.showMessageDialog(AutoPlayer.this, message, "失败", JOptionPane.ERROR_MESSAGE);
-
                 } else {
-                    String message = "校验通过。";
+                    String message = "校验通过，可求解。";
                     JOptionPane.showMessageDialog(AutoPlayer.this, message, "成功", JOptionPane.INFORMATION_MESSAGE);
                 }
             }
@@ -476,14 +476,21 @@ public class AutoPlayer extends Panel implements Runnable {
                     return;
                 }
 
+                // 进度条移到最后
+                BoundedRangeModel progress = AutoPlayer.this.player.getBoundedRangeModel();
+                progress.setValue(progress.getMaximum());
+                // 刷新魔方
+                AutoPlayer.this.player.getCube3D().fireStateChanged();
+
                 // 取消编辑
                 if (AutoPlayer.this.player.getCube3D().isEditMode()) {
                     buttonEdit.setBackground(deselectColor);
                     AutoPlayer.this.player.getCube3D().setEditMode(false);
                 }
-                String facelets = getCubeString();
-                // 有旋转，重置为旋转前状态
+                // 判断魔方是否有旋转，因为编辑时仍然能执行反序，如果有旋转，设置方块颜色时会错位
                 if (!AutoPlayer.this.player.getCube3D().getModel().isSolved()) {
+                    // 有旋转，重置为旋转前状态
+                    String facelets = getCubeString(false);
                     AutoPlayer.this.cleanAndResetCube(facelets);
                 }
 
@@ -506,21 +513,12 @@ public class AutoPlayer extends Panel implements Runnable {
                 }
                 String newScript = result.toString();
 
+                // 自动计算复位方法
                 try {
-                    ScriptNode scriptNode = AutoPlayer.this.scriptParser.parse(new StringReader(newScript));
-
-                    BoundedRangeModel progress = AutoPlayer.this.player.getBoundedRangeModel();
-                    progress.setValue(progress.getMaximum());
-
-                    AutoPlayer.this.scriptTextArea.setText(newScript);
-                    AutoPlayer.this.player.setScript(scriptNode);
-                    System.out.println("Solver script: " + newScript);
-
-                    if (AutoPlayer.this.autoPlay) {
-                        AutoPlayer.this.player.start();
-                    }
+                    AutoPlayer.this.cmd.setParameter("script", newScript);
+                    doParameter("script", newScript);
                 } catch (IOException e) {
-                    return;
+                    e.printStackTrace();
                 }
             }
         });
@@ -537,6 +535,7 @@ public class AutoPlayer extends Panel implements Runnable {
                 if (AutoPlayer.this.displayMode) {
                     AutoPlayer.this.displayMode = false;
                     AutoPlayer.this.player.stop();
+                    AutoPlayer.this.player.setScript(null);
                     return;
                 }
                 if (AutoPlayer.this.player.isActive()) {
@@ -544,7 +543,7 @@ public class AutoPlayer extends Panel implements Runnable {
                     return;
                 }
 
-                String facelets = getCubeString();
+                String facelets = getCubeString(true);
                 String result = searchSolution(facelets);
                 if (result.contains("Error")) {
                     String message = "校验不通过：" + AutoPlayer.getErrMessage(result);
@@ -1033,28 +1032,43 @@ public class AutoPlayer extends Panel implements Runnable {
         return result;
     }
 
-    // 清除魔方旋转记录并重置魔方状态
-    // 用于编辑和自动复原功能，这两个是基于魔方未旋转状态，如果有旋转，设置和获取方块颜色时会错位
+    /**
+     * 清除魔方旋转记录并重置魔方状态
+     * 用于编辑和自动复原功能，这两个是基于魔方未旋转状态，如果有旋转，设置和获取方块颜色时会错位
+     * @param facelets 类似 UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB
+     */
     private void cleanAndResetCube(String facelets) {
+        // 复制一份颜色表，已经添加到colorCurrent的从该表去除，用于去重
+        ArrayList<Color> colorList = new ArrayList<>();
+        for (Color c : this.colors) {
+            colorList.add(c);
+        }
+
         ArrayList<Color> colorCurrent = new ArrayList<>();
+        int currentIndex = 0;
         for (int i = 0; i < 6; i++) {
             // 以中心块的颜色为基准
             Color c = this.player.getCube3D().getStickerColor(i, 4);
-            if (colorCurrent.contains(c)) {
-                break;
+            if (!colorCurrent.contains(c) && !this.colors.get(6).equals(c)) {
+                colorCurrent.add(currentIndex++, c);
+                colorList.remove(c);
             }
-            colorCurrent.add(i, c);
         }
 
-        // 只有6个面都有颜色时才执行重置
-        if (colorCurrent.size() == 6) {
-            colorCurrent.add(6, this.colors.get(6));
-            // 重置魔方状态，保留块的颜色和顺序
-            this.player.getCube3D().getModel().reset();
-            setCubeByString(facelets, colorCurrent);
+        // colorCurrent长度需要为7，不足的补齐。第7个灰色必然会补
+        while (currentIndex < 7) {
+            colorCurrent.add(currentIndex++, colorList.remove(0));
         }
+        // 重置魔方状态，保留块的颜色和顺序
+        this.player.getCube3D().getModel().reset();
+        setCubeByString(facelets, colorCurrent);
     }
 
+    /**
+     * 搜索自动复原方案
+     * @param cubeString 类似 UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB
+     * @return 输出类似 R2 F' L
+     */
     public String searchSolution(String cubeString) {
         if (lastResult[0] != null && lastResult[0].equals(cubeString)) {
             return lastResult[1];
@@ -1091,22 +1105,39 @@ public class AutoPlayer extends Panel implements Runnable {
         return result;
     }
 
-    // 初始状态应该获取到的序列为：UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB
-    public String getCubeString() {
+    /**
+     * 初始状态应该获取到的序列为：UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB
+     * check: 是否校验魔方是否完整
+    */
+    public String getCubeString(boolean check) {
         AbstractCube3DAWT cube = this.player.getCube3D();
         RubiksCubeCore model = cube.getModel();
         // 初始化颜色对应表，顺序：front, right, down, back, left, up
-        final char[] chars = {'F', 'R', 'D', 'B', 'L', 'U'};
-        Map<Color, Character> colorMap = new HashMap<>();
+        final char[] chars = {'F', 'R', 'D', 'B', 'L', 'U', sevenChar};
+        // 复制一份字符表，已经添加到colorMap的从该表去除，用于去重
+        ArrayList<Character> charList = new ArrayList<>();
+        ArrayList<Color> tmp = new ArrayList<>();
         for (int i = 0; i < chars.length; i++) {
-            // 以中心块的颜色为基准
-            colorMap.put(cube.getStickerColor(i, 4), chars[i]);
+            charList.add(chars[i]);
+            tmp.add(this.colors.get(i));
         }
-        if (colorMap.size() < 6) {
+
+        Map<Color, Character> colorMap = new HashMap<>();
+        colorMap.put(this.colors.get(6), sevenChar);
+        for (int i = 0; i < 6; i++) {
+            // 以中心块的颜色为基准
+            Color centerColor = cube.getStickerColor(i, 4);
+            if (!colorMap.containsKey(centerColor)) {
+                colorMap.put(centerColor, charList.remove(0));
+            }
+        }
+        if (check && colorMap.size() < 6) {
             return "Error 9";
         }
-        if (!colorMap.containsKey(this.colors.get(6))) {
-            colorMap.put(this.colors.get(6), sevenChar);
+
+        tmp.removeAll(colorMap.keySet());
+        for (int i = 0; i < tmp.size(); i++) {
+            colorMap.put(tmp.get(i), charList.remove(0));
         }
 
         // CORNER_MAP[CornerSide][cornerLoc % 4] （详见图片<块的命名>）
@@ -1158,7 +1189,11 @@ public class AutoPlayer extends Panel implements Runnable {
         return new String(searchInput);
     }
 
-    // cubeString形如：UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB
+    /**
+     *  用标准记号法按块设置颜色
+     * @param cubeString 形如：UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB
+     * @param curColors 对应颜色序列，长度需要7，顺序为U R F D L B
+     */
     public void setCubeByString(String cubeString, ArrayList<Color> curColors) {
         // 初始化颜色对应表，顺序：front, right, down, back, left, up
         final char[] chars = {'F', 'R', 'D', 'B', 'L', 'U', sevenChar};
