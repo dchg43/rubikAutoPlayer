@@ -1,6 +1,11 @@
 {
   "resources":{
-  "includes":[]},
+    "includes":[
+      {"pattern":"\\Qico.png\\E"}
+    ],
+    "excludes": [
+    ]
+  },
   "bundles":[
     {
       "name":"com.sun.swing.internal.plaf.basic.resources.basic",

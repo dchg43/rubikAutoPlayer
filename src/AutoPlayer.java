@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.StringTokenizer;
 
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -317,6 +318,12 @@ public class AutoPlayer extends Panel implements Runnable {
         frame.setPreferredSize(new java.awt.Dimension(600, 600));
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
+
+        // 设置窗口图标
+        ImageIcon icon = new ImageIcon(getClass().getClassLoader().getResource("ico.png"));
+        Image image = icon.getImage();
+        frame.setIconImage(image);
+
         frame.addWindowListener(new WindowAdapter() // 添加退出事件
         {
             @Override

@@ -56,7 +56,8 @@ if exist "%BASEDIR%\%APP_NAME%.jar" (
 
 :: jar
 xcopy /e /q /y "%BASEDIR%\META-INF\native-image\" "%destDir%\META-INF\native-image\"
-echo 打包jar：jar cfm FileSync.jar META-INF/MANIFEST.MF -C %destDir% com
+copy "%BASEDIR%\resources\*" "%destDir%\"
+echo 打包jar：jar cfm %APP_NAME%.jar META-INF/MANIFEST.MF -C %destDir% com
 "%JAR%" cfm "%BASEDIR%\%APP_NAME%.jar" "%BASEDIR%\META-INF\MANIFEST.MF" -C "%destDir%" .
 if not "%errorlevel%" == "0" (
     pause
@@ -71,10 +72,7 @@ for /f "delims=" %%I in ('dir /B "%BASEDIR%\META-INF\native-image\"^|findstr "ag
     rmdir /s /q "%BASEDIR%\META-INF\native-image\%%I"
 )
 start %JAVA% -Dfile.encoding=utf-8 -agentlib:native-image-agent=config-merge-dir="%BASEDIR%\META-INF\native-image" -Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 -Dconsole.encoding=UTF-8 -Duser.language=en -Duser.region=US -jar "%BASEDIR%\%APP_NAME%.jar" --display true -backgroundImage "%systemroot%\Web\Wallpaper\Windows\img0.jpg"
-if not "%errorlevel%" == "0" (
-    pause
-    exit /b %errorlevel%
-)
+
 
 echo 等待一段时间并结束进程
 timeout /nobreak /T 5 >nul
@@ -97,21 +95,28 @@ cd "%destDir%"
 echo 使用VS打包成exe文件
 ::--no-fallback 构建不依赖jvm的native image或显示构建失败
 ::-H:EnableURLProtocols参数用于启用必要的网络协议支持
-::-H:+ReportExceptionStackTraces 显示构建异常的堆栈
 ::--link-at-build-time 在构建时报告类和包的链接错误
 ::-H:ConfigurationFileDirectories 配置采集到的meta信息的路径
 ::-H:+AddAllCharsets 支持所有字符集，防止中文乱码
+::-H:-CheckToolchain 取消编译时对工具链的检查，可以避免指定了非英文语言环境或文件编码后报错。
+::-H:+StaticExecutableWithDynamicLibC 以大部分静态库且小部分动态库的方式构建原生应用
+::-H:+ReportExceptionStackTraces 构建原生应用时输出详细错误信息
 call "%MSVC_NATIVE_TOOLS%"
 call "%NATIVE_IMAGE%" "--no-fallback" ^
     "-H:ConfigurationFileDirectories=%BASEDIR%\META-INF\native-image" ^
     "-H:+ReportExceptionStackTraces" ^
+    "-H:IncludeResources=resources\.*" ^
     "-H:+AddAllCharsets" ^
     "-H:Name=%APP_NAME%" ^
-    "--enable-url-protocols=http,https" ^
+    "-H:-CheckToolchain" ^
+    "-H:+AllowIncompleteClasspath" ^
+    "-H:+StaticExecutableWithDynamicLibC" ^
+    "-J-Dfile.encoding=UTF-8" ^
     "--install-exit-handlers" ^
     "--link-at-build-time" ^
     "--enable-preview" ^
     "--verbose" ^
+    "--no-server" ^
     "-O1" ^
     "-jar" "%BASEDIR%\%APP_NAME%.jar"
 if not "%errorlevel%" == "0" (

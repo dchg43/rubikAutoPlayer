@@ -50,7 +50,8 @@ if exist "%BASEDIR%\%APP_NAME%.jar" (
 )
 
 :: jar
-echo "jar cfm FileSync.jar META-INF/MANIFEST.MF -C %destDir% com"
+copy "%BASEDIR%\resources\*" "%destDir%\"
+echo "jar cfm %APP_NAME%.jar META-INF/MANIFEST.MF -C %destDir% com"
 "%JAR%" cfm "%BASEDIR%\%APP_NAME%.jar" "%BASEDIR%\META-INF\MANIFEST.MF" -C "%destDir%" .
 if not "%errorlevel%" == "0" (
     pause

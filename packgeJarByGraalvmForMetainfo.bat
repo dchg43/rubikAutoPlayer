@@ -51,7 +51,8 @@ if exist "%BASEDIR%\%APP_NAME%.jar" (
 
 :: jar
 xcopy /e /q /y "%BASEDIR%\META-INF\native-image\" "%destDir%\META-INF\native-image\"
-echo 打包jar：jar cfm FileSync.jar META-INF/MANIFEST.MF -C %destDir% com
+copy "%BASEDIR%\resources\*" "%destDir%\"
+echo 打包jar：jar cfm %APP_NAME%.jar META-INF/MANIFEST.MF -C %destDir% com
 "%JAR%" cfm "%BASEDIR%\%APP_NAME%.jar" "%BASEDIR%\META-INF\MANIFEST.MF" -C "%destDir%" .
 if not "%errorlevel%" == "0" (
     pause

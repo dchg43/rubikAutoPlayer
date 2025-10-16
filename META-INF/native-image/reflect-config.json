@@ -5,7 +5,7 @@
 {
   "name":"java.awt.BasicStroke",
   "fields":[
-    {"name":"CAP_BUTT"},
+    {"name":"CAP_BUTT"}, 
     {"name":"JOIN_BEVEL"}
   ],
   "methods":[{"name":"<init>","parameterTypes":["float","int","int"] }]
@@ -13,18 +13,18 @@
 {
   "name":"java.awt.Graphics2D",
   "methods":[
-    {"name":"draw","parameterTypes":["java.awt.Shape"] },
-    {"name":"fill","parameterTypes":["java.awt.Shape"] },
-    {"name":"setRenderingHint","parameterTypes":["java.awt.RenderingHints$Key","java.lang.Object"] },
+    {"name":"draw","parameterTypes":["java.awt.Shape"] }, 
+    {"name":"fill","parameterTypes":["java.awt.Shape"] }, 
+    {"name":"setRenderingHint","parameterTypes":["java.awt.RenderingHints$Key","java.lang.Object"] }, 
     {"name":"setStroke","parameterTypes":["java.awt.Stroke"] }
   ]
 },
 {
   "name":"java.awt.RenderingHints",
   "fields":[
-    {"name":"KEY_ANTIALIASING"},
-    {"name":"KEY_FRACTIONALMETRICS"},
-    {"name":"VALUE_ANTIALIAS_ON"},
+    {"name":"KEY_ANTIALIASING"}, 
+    {"name":"KEY_FRACTIONALMETRICS"}, 
+    {"name":"VALUE_ANTIALIAS_ON"}, 
     {"name":"VALUE_FRACTIONALMETRICS_ON"}
   ]
 },
@@ -44,10 +44,10 @@
 {
   "name":"java.awt.event.KeyEvent",
   "fields":[
-    {"name":"VK_CONTEXT_MENU"},
-    {"name":"VK_ENTER"},
-    {"name":"VK_ESCAPE"},
-    {"name":"VK_F10"},
+    {"name":"VK_CONTEXT_MENU"}, 
+    {"name":"VK_ENTER"}, 
+    {"name":"VK_ESCAPE"}, 
+    {"name":"VK_F10"}, 
     {"name":"VK_SPACE"}
   ]
 },
@@ -62,7 +62,7 @@
 {
   "name":"java.awt.geom.Path2D$Float",
   "methods":[
-    {"name":"lineTo","parameterTypes":["double","double"] },
+    {"name":"lineTo","parameterTypes":["double","double"] }, 
     {"name":"moveTo","parameterTypes":["double","double"] }
   ]
 },
@@ -73,7 +73,7 @@
 {
   "name":"javax.swing.plaf.basic.BasicOptionPaneUI",
   "methods":[
-    {"name":"createUI","parameterTypes":["javax.swing.JComponent"] },
+    {"name":"createUI","parameterTypes":["javax.swing.JComponent"] }, 
     {"name":"loadActionMap","parameterTypes":["javax.swing.plaf.basic.LazyActionMap"] }
   ]
 },
