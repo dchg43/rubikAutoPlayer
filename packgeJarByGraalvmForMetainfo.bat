@@ -51,7 +51,7 @@ if exist "%BASEDIR%\%APP_NAME%.jar" (
 
 :: jar
 xcopy /e /q /y "%BASEDIR%\META-INF\native-image\" "%destDir%\META-INF\native-image\"
-copy "%BASEDIR%\resources\*" "%destDir%\"
+copy "%BASEDIR%\resources\ico.png" "%destDir%\"
 echo ´ò°üjar£ºjar cfm %APP_NAME%.jar META-INF/MANIFEST.MF -C %destDir% com
 "%JAR%" cfm "%BASEDIR%\%APP_NAME%.jar" "%BASEDIR%\META-INF\MANIFEST.MF" -C "%destDir%" .
 if not "%errorlevel%" == "0" (

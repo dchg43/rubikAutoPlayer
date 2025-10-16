@@ -56,7 +56,7 @@ if exist "%BASEDIR%\%APP_NAME%.jar" (
 
 :: jar
 xcopy /e /q /y "%BASEDIR%\META-INF\native-image\" "%destDir%\META-INF\native-image\"
-copy "%BASEDIR%\resources\*" "%destDir%\"
+copy "%BASEDIR%\resources\ico.png" "%destDir%\"
 echo 打包jar：jar cfm %APP_NAME%.jar META-INF/MANIFEST.MF -C %destDir% com
 "%JAR%" cfm "%BASEDIR%\%APP_NAME%.jar" "%BASEDIR%\META-INF\MANIFEST.MF" -C "%destDir%" .
 if not "%errorlevel%" == "0" (
@@ -105,7 +105,6 @@ call "%MSVC_NATIVE_TOOLS%"
 call "%NATIVE_IMAGE%" "--no-fallback" ^
     "-H:ConfigurationFileDirectories=%BASEDIR%\META-INF\native-image" ^
     "-H:+ReportExceptionStackTraces" ^
-    "-H:IncludeResources=resources\.*" ^
     "-H:Name=%APP_NAME%" ^
     "-H:-CheckToolchain" ^
     "-H:+AllowIncompleteClasspath" ^
@@ -128,8 +127,8 @@ del /f /q "%destDir%\%APP_NAME%.build_artifacts.txt" >nul 2>nul
 mkdir "%destDir%\lib\"
 copy "%BASEDIR%\lib\fontconfig.bfc" "%destDir%\lib\"
 
-echo 去除命令行窗口
-"%MSVC_EDITBIN%" /subsystem:windows "%destDir%\%APP_NAME%.exe"
+echo 增加exe文件图标。因为java中设置的图标只在窗口上生效，文件图标和任务栏均不生效
+"%BASEDIR%\tool\rcedit-x64.exe" "%destDir%\%APP_NAME%.exe" --set-icon "%BASEDIR%\resources\rubik.ico"
 if not "%errorlevel%" == "0" (
     pause
     exit /b %errorlevel%
@@ -137,6 +136,13 @@ if not "%errorlevel%" == "0" (
 
 echo 增加系统dpi缩放感知
 "%SDK_KITS_MT%" -manifest "%BASEDIR%\META-INF\rubikAutoPlayer.exe.manifest" -outputresource:"%destDir%\%APP_NAME%.exe;#1"
+if not "%errorlevel%" == "0" (
+    pause
+    exit /b %errorlevel%
+)
+
+echo 去除命令行窗口
+"%MSVC_EDITBIN%" /subsystem:windows "%destDir%\%APP_NAME%.exe"
 if not "%errorlevel%" == "0" (
     pause
     exit /b %errorlevel%
