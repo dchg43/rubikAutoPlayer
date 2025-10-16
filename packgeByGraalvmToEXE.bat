@@ -71,7 +71,7 @@ del /f /q "%BASEDIR%\META-INF\native-image\.lock" 2>nul
 for /f "delims=" %%I in ('dir /B "%BASEDIR%\META-INF\native-image\"^|findstr "agent-pid"') do (
     rmdir /s /q "%BASEDIR%\META-INF\native-image\%%I"
 )
-start %JAVA% -Dfile.encoding=utf-8 -agentlib:native-image-agent=config-merge-dir="%BASEDIR%\META-INF\native-image" -Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 -Dconsole.encoding=UTF-8 -Duser.language=en -Duser.region=US -jar "%BASEDIR%\%APP_NAME%.jar" --display true -backgroundImage "%systemroot%\Web\Wallpaper\Windows\img0.jpg"
+start %JAVA% -agentlib:native-image-agent=config-merge-dir="%BASEDIR%\META-INF\native-image" -Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 -Dconsole.encoding=UTF-8 -Duser.language=en -Duser.region=US -jar "%BASEDIR%\%APP_NAME%.jar" --display true -backgroundImage "%systemroot%\Web\Wallpaper\Windows\img0.jpg"
 
 
 echo 等待一段时间并结束进程
@@ -109,7 +109,6 @@ call "%NATIVE_IMAGE%" "--no-fallback" ^
     "-H:-CheckToolchain" ^
     "-H:+AllowIncompleteClasspath" ^
     "-H:+StaticExecutableWithDynamicLibC" ^
-    "-J-Dfile.encoding=UTF-8" ^
     "--install-exit-handlers" ^
     "--link-at-build-time" ^
     "--enable-preview" ^
