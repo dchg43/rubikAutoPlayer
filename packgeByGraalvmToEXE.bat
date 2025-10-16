@@ -106,7 +106,6 @@ call "%NATIVE_IMAGE%" "--no-fallback" ^
     "-H:ConfigurationFileDirectories=%BASEDIR%\META-INF\native-image" ^
     "-H:+ReportExceptionStackTraces" ^
     "-H:IncludeResources=resources\.*" ^
-    "-H:+AddAllCharsets" ^
     "-H:Name=%APP_NAME%" ^
     "-H:-CheckToolchain" ^
     "-H:+AllowIncompleteClasspath" ^
