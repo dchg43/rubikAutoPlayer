@@ -232,6 +232,7 @@ public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener
         }
     }
 
+    // 绘制魔方(略粗略)
     protected void paint3D(Graphics graphics) {
         if (this.scene == null) {
             return;
