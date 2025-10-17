@@ -543,7 +543,6 @@ public class ScriptParser {
         }
         expressionNode.setEndPosition(parseStatement(streamPosTokenizer, scriptNode2).getEndPosition());
         ScriptNode childNode = (ScriptNode) expressionNode.getChildAt(0);
-        // TODO: 有可能死循环？
         while ((scriptNodeTmp = parseSuffix(streamPosTokenizer, expressionNode)) != null) {
             scriptNodeTmp.add(childNode);
             childNode = scriptNodeTmp;
@@ -552,7 +551,6 @@ public class ScriptParser {
         return expressionNode;
     }
 
-    // TODO: 看起来不正确
     private ScriptNode parsePrefix(StreamPosTokenizer streamPosTokenizer, ScriptNode scriptNode) throws IOException, NumberFormatException {
         if (this.DEBUG) {
             printVerbose(streamPosTokenizer, "prefix", scriptNode);

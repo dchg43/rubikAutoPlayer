@@ -66,7 +66,12 @@ del /f /q "%nativeImageAgentDir%\.lock" 2>nul
 for /f "delims=" %%I in ('dir /B "%nativeImageAgentDir%\"^|findstr "agent-pid"') do (
     rmdir /s /q "%nativeImageAgentDir%\%%I"
 )
-start %JAVA% -Dfile.encoding=utf-8 -agentlib:native-image-agent=config-merge-dir="%nativeImageAgentDir%" -Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 -Dconsole.encoding=UTF-8 -Duser.language=en -Duser.region=US -jar "%BASEDIR%\%APP_NAME%.jar" --display true -backgroundImage "%systemroot%\Web\Wallpaper\Windows\img0.jpg"
+set "createOrMerge=config-merge-dir"
+if not exist "%nativeImageAgentDir%" (
+    mkdir "%nativeImageAgentDir%"
+    set "createOrMerge=config-output-dir"
+)
+start %JAVA% -agentlib:native-image-agent=%createOrMerge%="%nativeImageAgentDir%" -Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 -Dconsole.encoding=UTF-8 -Duser.language=en -Duser.region=US -jar "%BASEDIR%\%APP_NAME%.jar" --display true -backgroundImage "%systemroot%\Web\Wallpaper\Windows\img0.jpg"
 if not "%errorlevel%" == "0" (
     pause
     exit /b %errorlevel%

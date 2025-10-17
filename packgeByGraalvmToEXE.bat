@@ -7,6 +7,7 @@ set APP_NAME=rubikAutoPlayer
 set "srcDir=%BASEDIR%\src"
 set "libDir=%BASEDIR%\lib"
 set "destDir=%BASEDIR%\%APP_NAME%"
+set "nativeImageAgentDir=%BASEDIR%\META-INF\native-image"
 
 set "VisualStudioDir=C:\Program Files\Microsoft Visual Studio\2022\Professional"
 set "VisualStudioKits=C:\Program Files (x86)\Windows Kits\10"
@@ -67,11 +68,16 @@ rmdir /s /q "%destDir%"
 
 
 echo 生成native-image-conf，需要运行程序生成
-del /f /q "%BASEDIR%\META-INF\native-image\.lock" 2>nul
-for /f "delims=" %%I in ('dir /B "%BASEDIR%\META-INF\native-image\"^|findstr "agent-pid"') do (
-    rmdir /s /q "%BASEDIR%\META-INF\native-image\%%I"
+del /f /q "%nativeImageAgentDir%\.lock" 2>nul
+for /f "delims=" %%I in ('dir /B "%nativeImageAgentDir%\"^|findstr "agent-pid"') do (
+    rmdir /s /q "%nativeImageAgentDir%\%%I"
 )
-start %JAVA% -agentlib:native-image-agent=config-merge-dir="%BASEDIR%\META-INF\native-image" -Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 -Dconsole.encoding=UTF-8 -Duser.language=en -Duser.region=US -jar "%BASEDIR%\%APP_NAME%.jar" --display true -backgroundImage "%systemroot%\Web\Wallpaper\Windows\img0.jpg"
+set "createOrMerge=config-merge-dir"
+if not exist "%nativeImageAgentDir%" (
+    mkdir "%nativeImageAgentDir%"
+    set "createOrMerge=config-output-dir"
+)
+start %JAVA% -agentlib:native-image-agent=%createOrMerge%="%nativeImageAgentDir%" -Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 -Dconsole.encoding=UTF-8 -Duser.language=en -Duser.region=US -jar "%BASEDIR%\%APP_NAME%.jar" --display true -backgroundImage "%systemroot%\Web\Wallpaper\Windows\img0.jpg"
 
 
 echo 等待一段时间并结束进程
