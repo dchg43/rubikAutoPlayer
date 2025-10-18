@@ -292,7 +292,7 @@ public class CommandParser {
             numValueOf = Integer.valueOf(str.substring(i2), i);
             numValueOf = z ? -numValueOf : numValueOf;
         } catch (NumberFormatException e) {
-            numValueOf = Integer.valueOf(z ? new String(new StringBuffer().append("-").append(str.substring(i2)).toString()) : str.substring(i2), i);
+            numValueOf = Integer.valueOf(z ? "-" + str.substring(i2) : str.substring(i2), i);
         }
         return numValueOf;
     }

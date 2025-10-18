@@ -350,7 +350,7 @@ public class MainProgram extends JFrame {
             colorMap.put(facelet[i][4].getBackground(), chars[i]);
         }
 
-        StringBuffer s = new StringBuffer(54);
+        StringBuilder s = new StringBuilder(54);
         for (int i = 0; i < 6; i++) {
             // read the 54 facelets
             for (int j = 0; j < 9; j++) {

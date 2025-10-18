@@ -152,7 +152,7 @@ public class AutoPlayer extends Panel implements Runnable {
         final String supportTokens = "R;U;F;L;D;B;R';U';F';L';D';B';R2;U2;F2;L2;D2;B2;R2';U2';F2';L2';D2';B2';MR;MU;MF;ML;MD;MB;MR';MU';MF';ML';MD';MB';MR2;MU2;MF2;ML2;MD2;MB2;MR2';MU2';MF2';ML2';MD2';MB2';CR;CU;CF;CL;CD;CB;CR';CU';CF';CL';CD';CB';CR2;CU2;CF2;CL2;CD2;CB2;CR2';CU2';CF2';CL2';CD2';CB2'";
         String[] tokens = supportTokens.split(";");
         final Random gen = new Random();
-        StringBuffer buffer = new StringBuffer();
+        StringBuilder buffer = new StringBuilder();
         while (displayMode) {
             for (int i = 0; i < 20; i++) {
                 buffer.append(tokens[gen.nextInt(tokens.length)]).append(' ');
@@ -510,7 +510,7 @@ public class AutoPlayer extends Panel implements Runnable {
                 }
 
                 String[] splits = script.split(" +|\n");
-                StringBuffer result = new StringBuffer();
+                StringBuilder result = new StringBuilder();
                 for (int i = splits.length - 1; i >= 0; i--) {
                     String tmp = splits[i];
                     if (tmp.length() <= 1) {
@@ -685,13 +685,13 @@ public class AutoPlayer extends Panel implements Runnable {
                     continue;
                 }
             } catch (NumberFormatException e) {
-                showError(new StringBuffer().append("Invalid parameter 'colorTable', value ").append(Arrays.toString(colors_str)).append(
+                showError(new StringBuilder().append("Invalid parameter 'colorTable', value ").append(Arrays.toString(colors_str)).append(
                         " is illegal.\n").append(AutoPlayer.getString(e)).toString());
             }
             // 设置参数异常时使用默认值
             Color c = new Color(CommandParser.decode(dflt[colorIndex]));
             if (this.colors.contains(c)) {
-                throw new IllegalArgumentException(new StringBuffer().append("Invalid parameter 'colorTable' value ").append(Arrays.toString(
+                throw new IllegalArgumentException(new StringBuilder().append("Invalid parameter 'colorTable' value ").append(Arrays.toString(
                         colors_str)).append(" is illegal.").toString());
             }
             this.colors.add(colorIndex, c);
@@ -700,7 +700,7 @@ public class AutoPlayer extends Panel implements Runnable {
         for (; colorIndex < dflt.length; colorIndex++) {
             Color c = new Color(CommandParser.decode(dflt[colorIndex]));
             if (this.colors.contains(c)) {
-                throw new IllegalArgumentException(new StringBuffer().append("Invalid parameter 'colorTable' value ").append(Arrays.toString(
+                throw new IllegalArgumentException(new StringBuilder().append("Invalid parameter 'colorTable' value ").append(Arrays.toString(
                         colors_str)).append(" is illegal.").toString());
             }
             this.colors.add(colorIndex, c);
@@ -904,7 +904,7 @@ public class AutoPlayer extends Panel implements Runnable {
                     for (int j = 0; j < 9; j++) {
                         int entry = Integer.parseInt(colorLists[j]);
                         if (this.colors.size() <= entry) {
-                            showError(new StringBuffer().append("Invalid parameter '").append(strArr[i]).append("', unknown entry '").append(
+                            showError(new StringBuilder().append("Invalid parameter '").append(strArr[i]).append("', unknown entry '").append(
                                     colorLists[j]).append("'.").toString());
                             break;
                         } else {
@@ -912,7 +912,7 @@ public class AutoPlayer extends Panel implements Runnable {
                         }
                     }
                 } else {
-                    showError(new StringBuffer().append("Invalid parameter '").append(strArr[i]).append("' provides ").append(colorLists.length).append(
+                    showError(new StringBuilder().append("Invalid parameter '").append(strArr[i]).append("' provides ").append(colorLists.length).append(
                             " instead of 9 entries.").toString());
                 }
             }
@@ -1282,7 +1282,7 @@ public class AutoPlayer extends Panel implements Runnable {
                 break;
             }
             if (parameters2.length != 54) {
-                throw new IllegalArgumentException(new StringBuffer().append("Invalid parameter 'stickers' provides ").append(parameters2.length).append(
+                throw new IllegalArgumentException(new StringBuilder().append("Invalid parameter 'stickers' provides ").append(parameters2.length).append(
                         " instead of 54 entries.").toString());
             }
             int i = 0;
@@ -1290,7 +1290,7 @@ public class AutoPlayer extends Panel implements Runnable {
                 for (int i6 = 0; i6 < 9; i6++) {
                     int param = Integer.parseInt(parameters2[i++]);
                     if (this.colors.size() <= param) {
-                        throw new IllegalArgumentException(new StringBuffer().append("Invalid parameter 'stickers', unknown entry '").append(param).append(
+                        throw new IllegalArgumentException(new StringBuilder().append("Invalid parameter 'stickers', unknown entry '").append(param).append(
                                 "'.").toString());
                     }
                     cube.setStickerColor(i5, i6, this.colors.get(param));
@@ -1339,7 +1339,7 @@ public class AutoPlayer extends Panel implements Runnable {
         case 26: // "lightSourceIntensity"
         case 27: // "lightSourcePosition"
         default:
-            throw new IllegalArgumentException(new StringBuffer().append("Invalid parameter ").append(key).append(", value ").append(value).append(
+            throw new IllegalArgumentException(new StringBuilder().append("Invalid parameter ").append(key).append(", value ").append(value).append(
                     " is illegal.").toString());
         }
     }

@@ -71,9 +71,9 @@ public abstract class AbstractCube3DAWT implements RubikListener {
 
     protected TransformNode[] sideTransforms = new TransformNode[6];
 
-    RubiksCubeCore model = new RubiksCubeCore();
+    private RubiksCubeCore model = new RubiksCubeCore();
 
-    EventListenerList listenerList = new EventListenerList();
+    private EventListenerList listenerList = new EventListenerList();
 
     private double explosion = 0.0d;
 
@@ -678,98 +678,7 @@ public abstract class AbstractCube3DAWT implements RubikListener {
         return this.dispatcher;
     }
 
-    public void setMode(int mode) {
-        switch (mode) {
-        case 0:
-            for (int i = 0; i < 8; i++) {
-                Shape3D corner = this.cornerShapes[i];
-                if (corner.isWireframe()) {
-                    corner.setWireframe(false);
-                    corner.setVisible(false);
-                }
-            }
-            for (int i = 0; i < 12; i++) {
-                Shape3D edge = this.edgeShapes[i];
-                if (edge.isWireframe()) {
-                    edge.setWireframe(false);
-                    edge.setVisible(false);
-                }
-            }
-            for (int i = 0; i < 6; i++) {
-                Shape3D side = this.sideShapes[i];
-                if (side.isWireframe()) {
-                    side.setWireframe(false);
-                    side.setVisible(false);
-                }
-            }
-            Shape3D center = this.centerShape;
-            if (center.isWireframe()) {
-                center.setWireframe(false);
-                center.setVisible(false);
-                break;
-            }
-            break;
-        case 1:
-            for (int i = 0; i < 8; i++) {
-                Shape3D corner = this.cornerShapes[i];
-                if (!corner.isVisible()) {
-                    corner.setWireframe(true);
-                    corner.setVisible(true);
-                }
-            }
-            for (int i = 0; i < 12; i++) {
-                Shape3D edge = this.edgeShapes[i];
-                if (!edge.isVisible()) {
-                    edge.setWireframe(true);
-                    edge.setVisible(true);
-                }
-            }
-            for (int i = 0; i < 6; i++) {
-                Shape3D side = this.sideShapes[i];
-                if (!side.isVisible()) {
-                    side.setWireframe(true);
-                    side.setVisible(true);
-                }
-            }
-            Shape3D center1 = this.centerShape;
-            if (!center1.isVisible()) {
-                center1.setWireframe(true);
-                center1.setVisible(true);
-                break;
-            }
-            break;
-        }
-        fireStateChanged();
-    }
-
     public abstract String getName();
-
-    public String getCubeStringForAutoSearch() {
-        StringBuffer result = new StringBuffer();
-        for (int i = 0; i < 8; i++) {
-            Shape3D corner = this.cornerShapes[i];
-            if (!corner.isVisible()) {
-                corner.setWireframe(true);
-                corner.setVisible(true);
-            }
-        }
-        for (int i = 0; i < 12; i++) {
-            Shape3D edge = this.edgeShapes[i];
-            if (!edge.isVisible()) {
-                edge.setWireframe(true);
-                edge.setVisible(true);
-            }
-        }
-        for (int i = 0; i < 6; i++) {
-            Shape3D side = this.sideShapes[i];
-            if (!side.isVisible()) {
-                side.setWireframe(true);
-                side.setVisible(true);
-            }
-        }
-
-        return result.toString();
-    }
 
     public boolean isEditMode() {
         return editMode;

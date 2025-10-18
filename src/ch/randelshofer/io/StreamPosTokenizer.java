@@ -545,12 +545,12 @@ public class StreamPosTokenizer {
 
     public void setSlashStarTokens(String slashStar, String starSlash) {
         if (slashStar.length() != starSlash.length()) {
-            throw new IllegalArgumentException(new StringBuffer().append("SlashStar and StarSlash tokens must be of same length: '").append(slashStar).append(
+            throw new IllegalArgumentException(new StringBuilder().append("SlashStar and StarSlash tokens must be of same length: '").append(slashStar).append(
                     "' '").append(starSlash).append("'").toString());
         }
         if (slashStar.length() < 1 || slashStar.length() > 2) {
-            throw new IllegalArgumentException(new StringBuffer().append("SlashStar and StarSlash tokens must be of length 1 or 2: '").append(slashStar).append(
-                    "' '").append(starSlash).append("'").toString());
+            throw new IllegalArgumentException(new StringBuilder().append("SlashStar and StarSlash tokens must be of length 1 or 2: '").append(
+                    slashStar).append("' '").append(starSlash).append("'").toString());
         }
         this.slashStar = slashStar.toCharArray();
         this.starSlash = starSlash.toCharArray();
@@ -559,7 +559,7 @@ public class StreamPosTokenizer {
 
     public void setSlashSlashToken(String slashSlash) {
         if (slashSlash.length() < 1 || slashSlash.length() > 2) {
-            throw new IllegalArgumentException(new StringBuffer().append("SlashSlash token must be of length 1 or 2: '").append(slashSlash).append(
+            throw new IllegalArgumentException(new StringBuilder().append("SlashSlash token must be of length 1 or 2: '").append(slashSlash).append(
                     "'").toString());
         }
         this.slashSlash = slashSlash.toCharArray();
@@ -599,7 +599,7 @@ public class StreamPosTokenizer {
             str = this.sval;
             break;
         case TT_NUMBER: /* -2 */
-            str = new StringBuffer().append("n=").append(this.nval).toString();
+            str = "n=" + this.nval;
             break;
         case -1:
             str = "EOF";
@@ -621,6 +621,6 @@ public class StreamPosTokenizer {
             str = "EOL";
             break;
         }
-        return new StringBuffer().append("Token[").append(str).append("], line ").append(this.LINENO).toString();
+        return new StringBuilder().append("Token[").append(str).append("], line ").append(this.LINENO).toString();
     }
 }

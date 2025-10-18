@@ -96,11 +96,12 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
         this.controls.setPlayer(this);
         this.controlPanel.add("Center", this.controls);
         this.resetButton = new AbstractButton();
-        this.resetButton.setIcon(new PolygonIcon( // 设置重置按钮大小
-                new Polygon[]{new Polygon(new int[]{2 * scaling, 3 * scaling, 3 * scaling, 2 * scaling}, new int[]{2 * scaling, 2 * scaling, 10 * scaling, 10
-                                                                                                                                                           * scaling},
-                        4), new Polygon(new int[]{9 * scaling, 9 * scaling, 4 * scaling}, new int[]{2 * scaling, 10 * scaling, 6 * scaling}, 3)}, new Dimension(
-                                12 * scaling, 12 * scaling)));
+        this.resetButton.setIcon(new PolygonIcon(new Polygon[]{ // 设置重置按钮大小
+                new Polygon(new int[]{2 * scaling, 3 * scaling, 3 * scaling, 2 * scaling}, //
+                        new int[]{2 * scaling, 2 * scaling, 10 * scaling, 10 * scaling}, 4), // 竖条部分
+                new Polygon(new int[]{9 * scaling, 9 * scaling, 4 * scaling}, //
+                        new int[]{2 * scaling, 10 * scaling, 6 * scaling}, 3)}, // 箭头部分
+                new Dimension(12 * scaling, 12 * scaling))); // 宽高
         this.resetButton.setPreferredSize(new Dimension(15 * scaling, 15 * scaling));
         this.resetButton.addActionListener(this);
         this.controlPanel.add("West", this.resetButton);

@@ -50,9 +50,9 @@ public class RubiksCubeCore implements Cloneable {
             return false;
         }
         RubiksCubeCore rubiksCubeCore = (RubiksCubeCore) obj;
-        return Arrays.equals(rubiksCubeCore.cornerLoc, this.cornerLoc) && Arrays.equals(rubiksCubeCore.cornerOrient, this.cornerOrient) && Arrays.equals(
-                rubiksCubeCore.edgeLoc, this.edgeLoc) && Arrays.equals(rubiksCubeCore.edgeOrient, this.edgeOrient) && Arrays.equals(rubiksCubeCore.sideLoc,
-                        this.sideLoc) && Arrays.equals(rubiksCubeCore.sideOrient, this.sideOrient);
+        return Arrays.equals(rubiksCubeCore.cornerLoc, this.cornerLoc) && Arrays.equals(rubiksCubeCore.cornerOrient, this.cornerOrient) // corner
+               && Arrays.equals(rubiksCubeCore.edgeLoc, this.edgeLoc) && Arrays.equals(rubiksCubeCore.edgeOrient, this.edgeOrient) // edge
+               && Arrays.equals(rubiksCubeCore.sideLoc, this.sideLoc) && Arrays.equals(rubiksCubeCore.sideOrient, this.sideOrient); // side
     }
 
     @Override
@@ -315,23 +315,23 @@ public class RubiksCubeCore implements Cloneable {
     }
 
     public void transform(RubiksCubeCore rubiksCubeCore) {
-        int[] iArr = this.cornerLoc;
-        int[] iArr2 = this.cornerOrient;
+        int[] cornerLoc = this.cornerLoc;
+        int[] cornerOrient = this.cornerOrient;
         for (int i = 0; i < rubiksCubeCore.cornerLoc.length; i++) {
-            this.cornerLoc[i] = iArr[rubiksCubeCore.cornerLoc[i]];
-            this.cornerOrient[i] = (iArr2[rubiksCubeCore.cornerLoc[i]] + rubiksCubeCore.cornerOrient[i]) % 3;
+            this.cornerLoc[i] = cornerLoc[rubiksCubeCore.cornerLoc[i]];
+            this.cornerOrient[i] = (cornerOrient[rubiksCubeCore.cornerLoc[i]] + rubiksCubeCore.cornerOrient[i]) % 3;
         }
-        int[] iArr3 = this.edgeLoc;
-        int[] iArr4 = this.edgeOrient;
+        int[] edgeLoc = this.edgeLoc;
+        int[] edgeOrient = this.edgeOrient;
         for (int i2 = 0; i2 < rubiksCubeCore.edgeLoc.length; i2++) {
-            this.edgeLoc[i2] = iArr3[rubiksCubeCore.edgeLoc[i2]];
-            this.edgeOrient[i2] = (iArr4[rubiksCubeCore.edgeLoc[i2]] + rubiksCubeCore.edgeOrient[i2]) % 2;
+            this.edgeLoc[i2] = edgeLoc[rubiksCubeCore.edgeLoc[i2]];
+            this.edgeOrient[i2] = (edgeOrient[rubiksCubeCore.edgeLoc[i2]] + rubiksCubeCore.edgeOrient[i2]) % 2;
         }
-        int[] iArr5 = this.sideLoc;
-        int[] iArr6 = this.sideOrient;
+        int[] sideLoc = this.sideLoc;
+        int[] sideOrient = this.sideOrient;
         for (int i3 = 0; i3 < rubiksCubeCore.sideLoc.length; i3++) {
-            this.sideLoc[i3] = iArr5[rubiksCubeCore.sideLoc[i3]];
-            this.sideOrient[i3] = (iArr6[rubiksCubeCore.sideLoc[i3]] + rubiksCubeCore.sideOrient[i3]) % 4;
+            this.sideLoc[i3] = sideLoc[rubiksCubeCore.sideLoc[i3]];
+            this.sideOrient[i3] = (sideOrient[rubiksCubeCore.sideLoc[i3]] + rubiksCubeCore.sideOrient[i3]) % 4;
         }
         fireRubikChanged(new RubikEvent(this, 0, 0, 0));
     }
@@ -992,7 +992,7 @@ public class RubiksCubeCore implements Cloneable {
         case 1:
             return EDGE_TRANSLATION[edgeLocation][(6 - (this.edgeOrient[edgeLocation] * 2)) % 4];
         default:
-            throw new IllegalArgumentException(new StringBuffer().append("invalid orientation:").append(orient).toString());
+            throw new IllegalArgumentException("invalid orientation:" + orient);
         }
     }
 

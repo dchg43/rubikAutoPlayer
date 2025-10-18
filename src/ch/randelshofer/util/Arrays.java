@@ -142,7 +142,7 @@ public class Arrays {
 
     private static void rangeCheck(int i, int i2, int i3) {
         if (i2 > i3) {
-            throw new IllegalArgumentException(new StringBuffer().append("fromIndex(").append(i2).append(") > toIndex(").append(i3).append(")").toString());
+            throw new IllegalArgumentException(new StringBuilder().append("fromIndex(").append(i2).append(") > toIndex(").append(i3).append(")").toString());
         }
         if (i2 < 0) {
             throw new ArrayIndexOutOfBoundsException(i2);

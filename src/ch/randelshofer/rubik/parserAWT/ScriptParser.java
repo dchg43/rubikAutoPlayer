@@ -403,21 +403,21 @@ public class ScriptParser {
                                                                                 || this.tokens[110].length != 1 || this.tokens[111].length != 1
                                                                                 || this.tokens[110][0].length() < 1 || this.tokens[110][0].length() > 2
                                                                                 || this.tokens[111][0].length() < 1 || this.tokens[111][0].length() > 2)) {
-            throw new IllegalArgumentException(new StringBuffer().append("Illegal Comment Tokens ").append(Arrays.toString(this.tokens[110])).append(
+            throw new IllegalArgumentException(new StringBuilder().append("Illegal Comment Tokens ").append(Arrays.toString(this.tokens[110])).append(
                     " ").append(Arrays.toString(this.tokens[111])).toString());
         }
         if (this.tokens[112].length != 0 && (this.tokens[112].length != 1 || this.tokens[112][0].length() < 1 || this.tokens[112][0].length() > 2)) {
-            StringBuffer stringBuffer = new StringBuffer();
-            stringBuffer.append("Illegal Single Line Comment Token ");
+            StringBuilder sb = new StringBuilder();
+            sb.append("Illegal Single Line Comment Token ");
             for (int i8 = 0; i8 < this.tokens[112].length; i8++) {
                 if (i8 > 0) {
-                    stringBuffer.append(',');
+                    sb.append(',');
                 }
-                stringBuffer.append('\'');
-                stringBuffer.append(this.tokens[112][i8]);
-                stringBuffer.append('\'');
+                sb.append('\'');
+                sb.append(this.tokens[112][i8]);
+                sb.append('\'');
             }
-            throw new IllegalArgumentException(stringBuffer.toString());
+            throw new IllegalArgumentException(sb.toString());
         }
     }
 
@@ -508,16 +508,16 @@ public class ScriptParser {
             return;
         }
         int depth = scriptNode.getDepth();
-        StringBuffer stringBuffer = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         while (depth-- > 0) {
-            stringBuffer.append('.');
+            sb.append('.');
         }
-        stringBuffer.append(str);
-        stringBuffer.append(' ');
+        sb.append(str);
+        sb.append(' ');
         streamPosTokenizer.nextToken();
-        stringBuffer.append(streamPosTokenizer.sval);
+        sb.append(streamPosTokenizer.sval);
         streamPosTokenizer.pushBack();
-        System.out.println(stringBuffer.toString());
+        System.out.println(sb.toString());
     }
 
     private ExpressionNode parseExpression(StreamPosTokenizer streamPosTokenizer, ScriptNode scriptNode) throws IOException, NumberFormatException {
@@ -631,8 +631,8 @@ public class ScriptParser {
         String greedy = parseGreedy(streamPosTokenizer.sval);
         Integer num = hashtable.get(greedy);
         if (num == null || num.intValue() != 95) {
-            throw new ParseException(new StringBuffer().append("Invertor: Illegal token ").append(streamPosTokenizer.sval).toString(),
-                    streamPosTokenizer.getStartPosition(), streamPosTokenizer.getEndPosition());
+            throw new ParseException("Invertor: Illegal token " + streamPosTokenizer.sval, streamPosTokenizer.getStartPosition(),
+                    streamPosTokenizer.getEndPosition());
         }
         inversionNode.setEndPosition((streamPosTokenizer.getStartPosition() + greedy.length()) - 1);
         consumeGreedy(streamPosTokenizer, greedy);
@@ -662,19 +662,17 @@ public class ScriptParser {
         }
         String greedyInt = parseGreedyInt(streamPosTokenizer.sval);
         if (greedyInt == "\000") {
-            throw new ParseException(new StringBuffer().append("Repetitor: Invalid repeat count ").append(streamPosTokenizer.sval).toString(),
-                    streamPosTokenizer.getStartPosition(), streamPosTokenizer.getEndPosition());
+            throw new ParseException("Repetitor: Invalid repeat count " + streamPosTokenizer.sval, streamPosTokenizer.getStartPosition(),
+                    streamPosTokenizer.getEndPosition());
         }
         int i;
         try {
             i = Integer.parseInt(greedyInt);
         } catch (NumberFormatException e) {
-            throw new ParseException(new StringBuffer().append("Repetitor: Internal Error ").append(e.getMessage()).toString(),
-                    streamPosTokenizer.getStartPosition(), streamPosTokenizer.getEndPosition());
+            throw new ParseException("Repetitor: Internal Error " + e.getMessage(), streamPosTokenizer.getStartPosition(), streamPosTokenizer.getEndPosition());
         }
         if (i < 1) {
-            throw new ParseException(new StringBuffer().append("Repetitor: Invalid repeat count ").append(i).toString(), streamPosTokenizer.getStartPosition(),
-                    streamPosTokenizer.getEndPosition());
+            throw new ParseException("Repetitor: Invalid repeat count " + i, streamPosTokenizer.getStartPosition(), streamPosTokenizer.getEndPosition());
         }
         repetitionNode.setRepeatCount(i);
         repetitionNode.setEndPosition((streamPosTokenizer.getStartPosition() + greedyInt.length()) - 1);
@@ -709,8 +707,8 @@ public class ScriptParser {
         Integer num = this.transformationMap.get(greedy);
         if (num == null) {
             if (this.macroMap.get(greedy) == null) {
-                throw new ParseException(new StringBuffer().append("Statement: Unknown token ").append(streamPosTokenizer.sval).toString(),
-                        streamPosTokenizer.getStartPosition(), streamPosTokenizer.getEndPosition());
+                throw new ParseException("Statement: Unknown token " + streamPosTokenizer.sval, streamPosTokenizer.getStartPosition(),
+                        streamPosTokenizer.getEndPosition());
             }
             streamPosTokenizer.pushBack();
             return parseMacro(streamPosTokenizer, scriptNode);
@@ -732,8 +730,8 @@ public class ScriptParser {
             return parsePermutation(streamPosTokenizer, scriptNode, startPosition2);
         }
         if (iIntValue != 97 && iIntValue != 100 && ((iIntValue != 107 || this.conjugatorPos != 2) && (iIntValue != 104 || this.commutatorPos != 2))) {
-            throw new ParseException(new StringBuffer().append("Statement: Illegal Token ").append(streamPosTokenizer.sval).toString(),
-                    streamPosTokenizer.getStartPosition(), streamPosTokenizer.getEndPosition());
+            throw new ParseException("Statement: Illegal Token " + streamPosTokenizer.sval, streamPosTokenizer.getStartPosition(),
+                    streamPosTokenizer.getEndPosition());
         }
         int startPosition3 = streamPosTokenizer.getStartPosition();
         consumeGreedy(streamPosTokenizer, greedy);
@@ -922,8 +920,8 @@ public class ScriptParser {
         String greedy = parseGreedy(streamPosTokenizer.sval);
         Integer num = this.permutationMap.get(greedy);
         if (num == null) {
-            throw new ParseException(new StringBuffer().append("PermutationItem: Illegal token ").append(streamPosTokenizer.sval).toString(),
-                    streamPosTokenizer.getStartPosition(), streamPosTokenizer.getEndPosition());
+            throw new ParseException("PermutationItem: Illegal token " + streamPosTokenizer.sval, streamPosTokenizer.getStartPosition(),
+                    streamPosTokenizer.getEndPosition());
         }
         int iIntValue = num.intValue();
         int i;
@@ -948,16 +946,16 @@ public class ScriptParser {
             String greedy2 = parseGreedy(streamPosTokenizer.sval);
             Integer num2 = this.permutationMap.get(greedy2);
             if (num2 == null) {
-                throw new ParseException(new StringBuffer().append("PermutationItem: Illegal or unknown token ").append(streamPosTokenizer.sval).toString(),
-                        streamPosTokenizer.getStartPosition(), streamPosTokenizer.getEndPosition());
+                throw new ParseException("PermutationItem: Illegal or unknown token " + streamPosTokenizer.sval, streamPosTokenizer.getStartPosition(),
+                        streamPosTokenizer.getEndPosition());
             }
             int iIntValue2 = num2.intValue();
             if (85 > iIntValue2 || iIntValue2 > 90) {
-                throw new ParseException(new StringBuffer().append("PermutationItem: Illegal token ").append(streamPosTokenizer.sval).toString(),
-                        streamPosTokenizer.getStartPosition(), streamPosTokenizer.getEndPosition());
+                throw new ParseException("PermutationItem: Illegal token " + streamPosTokenizer.sval, streamPosTokenizer.getStartPosition(),
+                        streamPosTokenizer.getEndPosition());
             }
             if (this.DEBUG) {
-                printVerbose(streamPosTokenizer, new StringBuffer().append("permutationItem Face:").append(greedy2).toString(), permutationNode);
+                printVerbose(streamPosTokenizer, "permutationItem Face:" + greedy2, permutationNode);
             }
             iArr[i2++] = iIntValue2;
             consumeGreedy(streamPosTokenizer, greedy2);
@@ -999,8 +997,8 @@ public class ScriptParser {
         Integer num = this.transformationMap.get(greedy);
         int iIntValue = num == null ? -1 : num.intValue();
         if (0 > iIntValue || iIntValue > 84) {
-            throw new ParseException(new StringBuffer().append("Twist: Illegal token ").append(streamPosTokenizer.sval).toString(),
-                    streamPosTokenizer.getStartPosition(), streamPosTokenizer.getEndPosition());
+            throw new ParseException("Twist: Illegal token " + streamPosTokenizer.sval, streamPosTokenizer.getStartPosition(),
+                    streamPosTokenizer.getEndPosition());
         }
         twistNode.setSymbol(iIntValue);
         twistNode.setEndPosition((streamPosTokenizer.getStartPosition() + greedy.length()) - 1);
@@ -1041,11 +1039,11 @@ public class ScriptParser {
                 return macroNode;
             } catch (IOException e) {
                 if (!(e instanceof ParseException)) {
-                    throw new ParseException(new StringBuffer().append("Macro '").append(greedy).append("': ").append(e.getMessage()).toString(),
+                    throw new ParseException(new StringBuilder().append("Macro '").append(greedy).append("': ").append(e.getMessage()).toString(),
                             streamPosTokenizer.getStartPosition(), (streamPosTokenizer.getStartPosition() + greedy.length()) - 1);
                 }
                 ParseException parseException = (ParseException) e;
-                throw new ParseException(new StringBuffer().append("Macro '").append(greedy).append("': ").append(e.getMessage()).append(" @").append(
+                throw new ParseException(new StringBuilder().append("Macro '").append(greedy).append("': ").append(e.getMessage()).append(" @").append(
                         parseException.getStartPosition()).append("..").append(parseException.getEndPosition()).toString(),
                         streamPosTokenizer.getStartPosition(), (streamPosTokenizer.getStartPosition() + greedy.length()) - 1);
             }
@@ -1288,20 +1286,20 @@ public class ScriptParser {
 
     @Override
     public String toString() {
-        StringBuffer stringBuffer = new StringBuffer();
-        stringBuffer.append(getClass().getName());
-        stringBuffer.append('\n');
+        StringBuilder sb = new StringBuilder();
+        sb.append(getClass().getName());
+        sb.append('\n');
         for (int i = 0; i < this.tokens.length; i++) {
-            stringBuffer.append(new StringBuffer().append(i).append(":").toString());
+            sb.append(i).append(":");
             for (int i2 = 0; i2 < this.tokens[i].length; i2++) {
                 if (i2 != 0) {
-                    stringBuffer.append(",");
+                    sb.append(",");
                 }
-                stringBuffer.append(this.tokens[i][i2]);
+                sb.append(this.tokens[i][i2]);
             }
-            stringBuffer.append('\n');
+            sb.append('\n');
         }
-        return stringBuffer.toString();
+        return sb.toString();
     }
 
     private static synchronized String[] getDefaultTokens() {

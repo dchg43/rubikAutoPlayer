@@ -245,7 +245,7 @@ public class Transform3D implements Cloneable {
 
     @Override
     public String toString() {
-        return new StringBuffer().append("{").append(this.m00).append(",").append(this.m10).append(",").append(this.m20).append(",").append(this.m30).append(
+        return new StringBuilder().append("{").append(this.m00).append(",").append(this.m10).append(",").append(this.m20).append(",").append(this.m30).append(
                 "\n").append(this.m01).append(",").append(this.m11).append(",").append(this.m21).append(",").append(this.m31).append("\n").append(
                         this.m02).append(",").append(this.m12).append(",").append(this.m22).append(",").append(this.m32).append("}").toString();
     }

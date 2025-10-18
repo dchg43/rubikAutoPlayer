@@ -18,7 +18,7 @@ public class Point3D {
 
     @Override
     public String toString() {
-        return new StringBuffer().append("Point3D[").append(this.x).append(", ").append(this.y).append(", ").append(this.z).append("]").toString();
+        return new StringBuilder().append("Point3D[").append(this.x).append(", ").append(this.y).append(", ").append(this.z).append("]").toString();
     }
 
     public double getX() {

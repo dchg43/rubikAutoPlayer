@@ -150,9 +150,12 @@ public class DefaultBoundedRangeModel implements BoundedRangeModel {
 
     @Override
     public String toString() {
-        return new StringBuffer().append(getClass().getName()).append("[").append(new StringBuffer().append("value=").append(getValue()).append(", ").append(
-                "extent=").append(getExtent()).append(", ").append("min=").append(getMinimum()).append(", ").append("max=").append(getMaximum()).append(
-                        ", ").append("adj=").append(getValueIsAdjusting()).toString()).append("]").toString();
+        return new StringBuilder().append(getClass().getName()).append("[") // name
+                .append("value=").append(getValue()).append(", ") // value
+                .append("extent=").append(getExtent()).append(", ") // extent
+                .append("min=").append(getMinimum()).append(", ") // min
+                .append("max=").append(getMaximum()).append(", ") // max
+                .append("adj=").append(getValueIsAdjusting()).append("]").toString(); // adj
     }
 
 }

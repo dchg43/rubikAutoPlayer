@@ -44,7 +44,7 @@ public class ConcurrentDispatcherAWT implements Runnable {
                 }
             }
             this.queue.addElement(runnable);
-            Thread thread = new Thread(this, new StringBuffer().append(this).append(" Processor").toString());
+            Thread thread = new Thread(this, this + " Processor");
             this.threadCount++;
             try {
                 thread.setDaemon(false);

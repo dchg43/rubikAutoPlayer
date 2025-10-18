@@ -8,11 +8,13 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.MediaTracker;
 import java.awt.Polygon;
+import java.awt.Shape;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.Comparator;
 import java.util.Vector;
 
 import ch.randelshofer.geom3d.DefaultTransform3DModel;
@@ -23,7 +25,6 @@ import ch.randelshofer.geom3d.Transform3D;
 import ch.randelshofer.geom3d.Transform3DModel;
 import ch.randelshofer.gui.event.ChangeEvent;
 import ch.randelshofer.gui.event.ChangeListener;
-import ch.randelshofer.util.Arrays;
 
 /** 控制魔方3D展示 */
 public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener, MouseMotionListener {
@@ -70,7 +71,7 @@ public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener
 
     protected double scaleFactor = 1.0d;
 
-    protected Vector<Object> activeFaces = new Vector<>();
+    protected Vector<FaceElement> activeFaces = new Vector<>();
 
     private boolean isRotateOnMouseDrag = false;
 
@@ -246,15 +247,13 @@ public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener
         Vector<Face3D> visibleFaces = new Vector<>();
         this.activeFaces.removeAllElements();
         this.scene.addVisibleFaces(visibleFaces, transform, this.observer);
-        Face3D[] visibleFacesArr = new Face3D[visibleFaces.size()];
-        visibleFaces.copyInto(visibleFacesArr);
-        Arrays.sort(visibleFacesArr);
+        visibleFaces.sort(new Face3DComparator());
         int[] xpoints = new int[5];
         int[] ypoints = new int[5];
         double x = this.observer.x;
         double y = this.observer.y;
         double z = this.observer.z;
-        for (Face3D face3D : visibleFacesArr) {
+        for (Face3D face3D : visibleFaces) {
             double[] coords = face3D.getCoords();
             int[] vertices = face3D.getVertices();
             if (xpoints.length < vertices.length + 1) {
@@ -288,8 +287,7 @@ public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener
                 graphics.drawPolygon(xpoints, ypoints, vertices.length + 1);
             }
             if (face3D.getAction() != null) {
-                this.activeFaces.addElement(new Polygon(xpoints, ypoints, vertices.length));
-                this.activeFaces.addElement(face3D);
+                this.activeFaces.addElement(new FaceElement(new Polygon(xpoints, ypoints, vertices.length), face3D));
             }
         }
     }
@@ -303,11 +301,10 @@ public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener
         int y = mouseEvent.getY();
         this.prevx = x;
         this.prevy = y;
-        for (int size = this.activeFaces.size() - 2; size >= 0; size -= 2) {
-            Polygon polygon = (Polygon) this.activeFaces.elementAt(size);
-            Face3D face3D = (Face3D) this.activeFaces.elementAt(size + 1);
-            if (polygon.contains(x, y)) {
-                face3D.handleEvent(mouseEvent);
+        for (int size = this.activeFaces.size() - 1; size >= 0; size--) {
+            FaceElement face = this.activeFaces.elementAt(size);
+            if (face.getShape().contains(x, y)) {
+                face.getFace3D().handleEvent(mouseEvent);
                 return;
             }
         }
@@ -410,4 +407,31 @@ public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener
         }
         propertyChangeSupport.firePropertyChange(propertyName, oldValue, newValue);
     }
+
+    public final class FaceElement {
+        private Shape shape;
+
+        private Face3D face3D;
+
+        public FaceElement(Shape shape, Face3D face3D) {
+            this.shape = shape;
+            this.face3D = face3D;
+        }
+
+        public Shape getShape() {
+            return shape;
+        }
+
+        public Face3D getFace3D() {
+            return face3D;
+        }
+    }
+
+    public final class Face3DComparator implements Comparator<Face3D> {
+        @Override
+        public int compare(Face3D a, Face3D b) {
+            return a.compareTo(b);
+        }
+    }
+
 }

@@ -28,10 +28,10 @@ public class EventListenerList {
 
     public synchronized void add(Class<?> cls, EventListener eventListener) {
         if (!cls.isInstance(eventListener)) {
-            throw new IllegalArgumentException(new StringBuffer().append("Listener ").append(eventListener).append(" is not of type ").append(cls).toString());
+            throw new IllegalArgumentException(new StringBuilder().append("Listener ").append(eventListener).append(" is not of type ").append(cls).toString());
         }
         if (eventListener == null) {
-            throw new IllegalArgumentException(new StringBuffer().append("Listener ").append(eventListener).append(" is null").toString());
+            throw new IllegalArgumentException(new StringBuilder().append("Listener ").append(eventListener).append(" is null").toString());
         }
         ListenerNode node = new ListenerNode(cls, eventListener);
         this.listenerList.add(node);
