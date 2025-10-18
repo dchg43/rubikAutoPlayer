@@ -107,6 +107,7 @@ public abstract class AbstractCube3DAWT implements RubikListener {
                     int mapindex = (cornerSide == 2 || cornerSide == 5) ? (this.corner / 2) : (this.corner % 4);
                     int cornerIndex = CORNER_MAP[cornerSide][mapindex];
                     this.awtInstance.setStickerColor(cornerSide, cornerIndex, getSelectColor());
+                    fireStateChanged();
                 } else {
                     this.awtInstance.getDispatcher().dispatch(new SideEvent(this.awtInstance, this.awtInstance.model.getCornerSide(this.corner,
                             this.orientation), (actionEvent.getModifiers() & 0x9) != 0));
@@ -146,6 +147,7 @@ public abstract class AbstractCube3DAWT implements RubikListener {
                     int edgeSide = this.awtInstance.model.getEdgeSide(this.edge, this.orientation ^ 1);
                     int edgeIndex = EDGE_MAP[edgeSide][this.edge];
                     this.awtInstance.setStickerColor(edgeSide, edgeIndex, getSelectColor());
+                    fireStateChanged();
                 } else {
                     this.awtInstance.getDispatcher().dispatch(new EdgeEvent(this.awtInstance, this.awtInstance.model.getEdgeLayerSide(this.edge,
                             this.orientation), (actionEvent.getModifiers() & 0x9) != 0));
@@ -172,6 +174,7 @@ public abstract class AbstractCube3DAWT implements RubikListener {
             if (actionEvent.getSource() instanceof MouseEvent && ((MouseEvent) actionEvent.getSource()).getClickCount() <= 1) {
                 if (isEditMode()) {
                     this.awtInstance.setStickerColor(this.side, 4, getSelectColor());
+                    fireStateChanged();
                 } else {
                     this.awtInstance.getDispatcher().dispatch(new SideEvent(this.awtInstance, this.awtInstance.model.getSideLocation(this.side),
                             (actionEvent.getModifiers() & 0x9) == 0));
