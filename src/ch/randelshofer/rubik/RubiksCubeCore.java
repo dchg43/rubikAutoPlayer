@@ -1,11 +1,11 @@
 package ch.randelshofer.rubik;
 
+import java.util.Arrays;
 import java.util.List;
 
 import ch.randelshofer.gui.event.EventListenerList;
 import ch.randelshofer.gui.event.EventListenerList.ListenerNode;
 import ch.randelshofer.rubik.parserAWT.ScriptParser;
-import ch.randelshofer.util.Arrays;
 
 public class RubiksCubeCore implements Cloneable {
     // 8个角块位置信息
@@ -32,11 +32,11 @@ public class RubiksCubeCore implements Cloneable {
 
     //    private static final int[] SIDE_TRANSLATION = {0, 1, 2, 3, 4, 5};
 
-    private static final int[][] EDGE_TRANSLATION = {{0, 1, 5, 7}, {4, 5, 0, 3}, {0, 7, 2, 1}, {5, 5, 1, 1}, {1, 3, 0, 5}, {2, 5, 1, 7}, {3, 1, 5, 1}, {1, 5, 3,
-            3}, {3, 7, 2, 7}, {5, 3, 4, 1}, {4, 3, 3, 5}, {2, 3, 4, 7}};
+    private static final int[][] EDGE_TRANSLATION = {{0, 1, 5, 7}, {4, 5, 0, 3}, {0, 7, 2, 1}, {5, 5, 1, 1}, {1, 3, 0, 5}, {2, 5, 1, 7}, {3, 1, 5, 1},
+            {1, 5, 3, 3}, {3, 7, 2, 7}, {5, 3, 4, 1}, {4, 3, 3, 5}, {2, 3, 4, 7}};
 
-    private static final int[][] CORNER_TRANSLATION = {{5, 6, 0, 0, 4, 2}, {2, 0, 4, 8, 0, 6}, {5, 8, 1, 0, 0, 2}, {2, 2, 0, 8, 1, 6}, {5, 2, 3, 0, 1, 2}, {2,
-            8, 1, 8, 3, 6}, {5, 0, 4, 0, 3, 2}, {2, 6, 3, 8, 4, 6}};
+    private static final int[][] CORNER_TRANSLATION = {{5, 6, 0, 0, 4, 2}, {2, 0, 4, 8, 0, 6}, {5, 8, 1, 0, 0, 2}, {2, 2, 0, 8, 1, 6}, {5, 2, 3, 0, 1, 2},
+            {2, 8, 1, 8, 3, 6}, {5, 0, 4, 0, 3, 2}, {2, 6, 3, 8, 4, 6}};
 
     private static final int[][] EDGE_SIDE_MAP = {{4, 1}, {5, 2}, {1, 4}, {3, 0}, {2, 5}, {0, 3}, {1, 4}, {5, 2}, {4, 1}, {0, 3}, {2, 5}, {3, 0}};
 

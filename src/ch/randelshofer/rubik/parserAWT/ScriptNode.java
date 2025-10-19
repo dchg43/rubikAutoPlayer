@@ -16,8 +16,8 @@ public class ScriptNode extends DefaultMutableTreeNode {
 
     private int endpos;
 
-    private static final int[][] orientationToSymbolMap = {new int[0], {72}, {78}, {75}, {73}, {79}, {76}, {74}, {80}, {77}, {72, 73}, {72, 79}, {72, 76}, {78,
-            73}, {78, 76}, {75, 73}, {75, 79}, {75, 76}, {72, 74}, {72, 77}, {78, 74}, {78, 77}, {75, 74}, {75, 77}};
+    private static final int[][] orientationToSymbolMap = {new int[0], {72}, {78}, {75}, {73}, {79}, {76}, {74}, {80}, {77}, {72, 73}, {72, 79}, {72, 76},
+            {78, 73}, {78, 76}, {75, 73}, {75, 79}, {75, 76}, {72, 74}, {72, 77}, {78, 74}, {78, 77}, {75, 74}, {75, 77}};
 
     private static class ResolvedEnumeration implements Enumeration<DefaultMutableTreeNode> {
         private ScriptNode root;

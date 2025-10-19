@@ -431,12 +431,12 @@ public class Search {
     }
 
     private int initPhase2(int p2corn, int p2csym, int p2edge, int p2esym, int p2mid, int edgei, int corni) {
-        int prun = Math.max(CoordCube.getPruning(CoordCube.EPermCCombPPrun, (edgei >> 4) * CoordCube.N_COMB
-                                                                            + CoordCube.CCombPConj[CubieCube.Perm2CombP[corni >> 4]
-                                                                                                   & 0xff][CubieCube.SymMultInv[edgei & 0xf][corni & 0xf]]),
-                Math.max(CoordCube.getPruning(CoordCube.EPermCCombPPrun, p2edge * CoordCube.N_COMB + CoordCube.CCombPConj[CubieCube.Perm2CombP[p2corn]
-                                                                                                                          & 0xff][CubieCube.SymMultInv[p2esym][p2csym]]),
-                        CoordCube.getPruning(CoordCube.MCPermPrun, p2corn * CoordCube.N_MPERM + CoordCube.MPermConj[p2mid][p2csym])));
+        int comba = CoordCube.CCombPConj[CubieCube.Perm2CombP[corni >> 4] & 0xff][CubieCube.SymMultInv[edgei & 0xf][corni & 0xf]];
+        int combb = CoordCube.CCombPConj[CubieCube.Perm2CombP[p2corn] & 0xff][CubieCube.SymMultInv[p2esym][p2csym]];
+        int pruna = CoordCube.getPruning(CoordCube.EPermCCombPPrun, (edgei >> 4) * CoordCube.N_COMB + comba);
+        int prunb = CoordCube.getPruning(CoordCube.EPermCCombPPrun, p2edge * CoordCube.N_COMB + combb);
+        int prunc = CoordCube.getPruning(CoordCube.MCPermPrun, p2corn * CoordCube.N_MPERM + CoordCube.MPermConj[p2mid][p2csym]);
+        int prun = Math.max(pruna, Math.max(prunb, prunc));
 
         if (prun > maxDep2) {
             return prun - maxDep2;
@@ -640,19 +640,19 @@ public class Search {
             int edgei = CubieCube.getPermSymInv(edgex, esymx, false);
             int corni = CubieCube.getPermSymInv(cornx, csymx, true);
 
-            int prun = CoordCube.getPruning(CoordCube.EPermCCombPPrun, (edgei >> 4) * CoordCube.N_COMB + CoordCube.CCombPConj[CubieCube.Perm2CombP[corni >> 4]
-                                                                                                                              & 0xff][CubieCube.SymMultInv[edgei
-                                                                                                                                                           & 0xf][corni
-                                                                                                                                                                  & 0xf]]);
+            int comba = CoordCube.CCombPConj[CubieCube.Perm2CombP[corni >> 4] & 0xff][CubieCube.SymMultInv[edgei & 0xf][corni & 0xf]];
+            int prun = CoordCube.getPruning(CoordCube.EPermCCombPPrun, (edgei >> 4) * CoordCube.N_COMB + comba);
             if (prun > maxl + 1) {
                 return maxl - prun + 1;
             } else if (prun >= maxl) {
                 m += 0x42 >> m & 3 & (maxl - prun);
                 continue;
             }
-            prun = Math.max(CoordCube.getPruning(CoordCube.MCPermPrun, cornx * CoordCube.N_MPERM + CoordCube.MPermConj[midx][csymx]), CoordCube.getPruning(
-                    CoordCube.EPermCCombPPrun, edgex * CoordCube.N_COMB + CoordCube.CCombPConj[CubieCube.Perm2CombP[cornx]
-                                                                                               & 0xff][CubieCube.SymMultInv[esymx][csymx]]));
+
+            int combb = CoordCube.CCombPConj[CubieCube.Perm2CombP[cornx] & 0xff][CubieCube.SymMultInv[esymx][csymx]];
+            int prunb = CoordCube.getPruning(CoordCube.EPermCCombPPrun, edgex * CoordCube.N_COMB + combb);
+            int prunc = CoordCube.getPruning(CoordCube.MCPermPrun, cornx * CoordCube.N_MPERM + CoordCube.MPermConj[midx][csymx]);
+            prun = Math.max(prunb, prunc);
             if (prun >= maxl) {
                 m += 0x42 >> m & 3 & (maxl - prun);
                 continue;

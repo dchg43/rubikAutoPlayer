@@ -403,13 +403,15 @@ public class PermutationNode extends ScriptNode {
         }
         int length = permutationItemArr.length - 1;
         while (length > 0) {
-            int i3 = ((permutationItemArr[length - 1].orientation - permutationItemArr[length].orientation)
-                      + edgeOrientations[permutationItemArr[length].location]) % i2;
+            int i3 = (permutationItemArr[length - 1].orientation - permutationItemArr[length].orientation
+                      + edgeOrientations[permutationItemArr[length].location])
+                     % i2;
             edgeOrientations[permutationItemArr[length].location] = i3 < 0 ? i2 + i3 : i3;
             length--;
         }
-        int i4 = ((((-this.sign) + permutationItemArr[permutationItemArr.length - 1].orientation) - permutationItemArr[length].orientation)
-                  + edgeOrientations[permutationItemArr[length].location]) % i2;
+        int i4 = (permutationItemArr[permutationItemArr.length - 1].orientation - permutationItemArr[length].orientation
+                  + edgeOrientations[permutationItemArr[length].location] - this.sign)
+                 % i2;
         edgeOrientations[permutationItemArr[length].location] = i4 < 0 ? i2 + i4 : i4;
         int i5 = edgeLocations[permutationItemArr[0].location];
         int i6 = edgeOrientations[permutationItemArr[0].location];

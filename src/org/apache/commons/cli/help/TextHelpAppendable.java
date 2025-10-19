@@ -218,8 +218,8 @@ public class TextHelpAppendable extends FilterHelpAppendable {
             final TextStyle.Builder builder = TextStyle.builder().setLeftPad(textStyleBuilder.getLeftPad()).setIndent(DEFAULT_LIST_INDENT);
             int i = 1;
             for (final CharSequence line : list) {
-                final String entry = ordered ? String.format(" %s. %s", i++, Util.defaultValue(line, BLANK_LINE)) : String.format(" * %s", Util.defaultValue(
-                        line, BLANK_LINE));
+                final String entry = ordered ? String.format(" %s. %s", i++, Util.defaultValue(line, BLANK_LINE)) : String.format(" * %s",
+                        Util.defaultValue(line, BLANK_LINE));
                 builder.setMaxWidth(Math.min(textStyleBuilder.getMaxWidth(), entry.length()));
                 printQueue(makeColumnQueue(entry, builder.get()));
             }

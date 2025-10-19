@@ -410,8 +410,8 @@ public class MainProgram extends JFrame {
         } else {
             int solLen = (result.length() - (useSeparator ? 3 : 0) - (showLength ? 4 : 0)) / 3;
             spinnerMaxMoves.setValue(solLen - 1);
-            jTextPane1.setText(String.format("%s\n" /* , %s ms, %d probes\n */, result/* , Double.toString((t / 1000) / 1000.0), n_probe */)
-                               + jTextPane1.getText());
+            jTextPane1.setText(
+                    String.format("%s\n" /* , %s ms, %d probes\n */, result/* , Double.toString((t / 1000) / 1000.0), n_probe */) + jTextPane1.getText());
             jTextPane1.requestFocusInWindow();
             jTextPane1.select(0, result.length());
         }

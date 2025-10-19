@@ -545,12 +545,14 @@ public class StreamPosTokenizer {
 
     public void setSlashStarTokens(String slashStar, String starSlash) {
         if (slashStar.length() != starSlash.length()) {
-            throw new IllegalArgumentException(new StringBuilder().append("SlashStar and StarSlash tokens must be of same length: '").append(slashStar).append(
-                    "' '").append(starSlash).append("'").toString());
+            throw new IllegalArgumentException(
+                    new StringBuilder().append("SlashStar and StarSlash tokens must be of same length: '").append(slashStar).append("' '").append(
+                            starSlash).append("'").toString());
         }
         if (slashStar.length() < 1 || slashStar.length() > 2) {
-            throw new IllegalArgumentException(new StringBuilder().append("SlashStar and StarSlash tokens must be of length 1 or 2: '").append(
-                    slashStar).append("' '").append(starSlash).append("'").toString());
+            throw new IllegalArgumentException(
+                    new StringBuilder().append("SlashStar and StarSlash tokens must be of length 1 or 2: '").append(slashStar).append("' '").append(
+                            starSlash).append("'").toString());
         }
         this.slashStar = slashStar.toCharArray();
         this.starSlash = starSlash.toCharArray();
@@ -559,8 +561,8 @@ public class StreamPosTokenizer {
 
     public void setSlashSlashToken(String slashSlash) {
         if (slashSlash.length() < 1 || slashSlash.length() > 2) {
-            throw new IllegalArgumentException(new StringBuilder().append("SlashSlash token must be of length 1 or 2: '").append(slashSlash).append(
-                    "'").toString());
+            throw new IllegalArgumentException(
+                    new StringBuilder().append("SlashSlash token must be of length 1 or 2: '").append(slashSlash).append("'").toString());
         }
         this.slashSlash = slashSlash.toCharArray();
         commentChar(this.slashSlash[0]);

@@ -44,14 +44,15 @@ public class Canvas3DT2D extends Canvas3DAWT {
         Insets insets = this.paintInsets;
         Dimension size = getSize();
         Transform3D transform = this.transformModel.getTransform();
-        double width = insets.left + (((size.width - insets.left) - insets.right) / 2);
-        double height = insets.top + (((size.height - insets.top) - insets.bottom) / 2);
-        double scale = Math.min(((size.width - insets.left) - insets.right) / 2, ((size.height - insets.top) - insets.bottom) / 2) * this.scaleFactor;
-        double scaleNeg = -scale;
+        double width = (size.width - insets.left - insets.right) / 2;
+        double height = (size.height - insets.top - insets.bottom) / 2;
+        double scale = this.scaleFactor * Math.min(width, height);
+        width += insets.left;
+        height += insets.top;
         Vector<Face3D> visibleFaces = new Vector<>();
         this.activeFaces.removeAllElements();
         this.scene.addVisibleFaces(visibleFaces, transform, this.observer);
-        visibleFaces.sort(new Face3DComparator());
+        visibleFaces.sort(Face3DComparator.getInstance());
         double x = this.observer.x;
         double y = this.observer.y;
         double z = this.observer.z;
@@ -63,34 +64,35 @@ public class Canvas3DT2D extends Canvas3DAWT {
             double d1 = coords[(vertices[0] * 3) + 2] - z;
             if (d1 != 0.0d) {
                 int j = vertices[0] * 3;
-                double pointx = width + ((x - (((z * coords[j]) - x) / d1)) * scale);
-                double pointy = height + ((y - (((z * coords[j + 1]) - y) / d1)) * scaleNeg);
+                double pointx = width + ((x - ((z * coords[j] - x) / d1)) * scale);
+                double pointy = height - ((y - ((z * coords[j + 1] - y) / d1)) * scale);
                 generalPath.moveTo(pointx, pointy);
             } else {
                 double pointx = width + (x * scale);
-                double pointy = height + (y * scaleNeg);
+                double pointy = height - (y * scale);
                 generalPath.moveTo(pointx, pointy);
             }
             for (int i = 1; i < vertices.length; i++) {
                 double d = coords[(vertices[i] * 3) + 2] - z;
                 if (d != 0.0d) {
                     int j = vertices[i] * 3;
-                    double pointx = width + ((x - (((z * coords[j]) - x) / d)) * scale);
-                    double pointy = height + ((y - (((z * coords[j + 1]) - y) / d)) * scaleNeg);
+                    double pointx = width + ((x - ((z * coords[j] - x) / d)) * scale);
+                    double pointy = height - ((y - ((z * coords[j + 1] - y) / d)) * scale);
                     generalPath.lineTo(pointx, pointy);
                 } else {
                     double pointx = width + (x * scale);
-                    double pointy = height + (y * scaleNeg);
+                    double pointy = height - (y * scale);
                     generalPath.lineTo(pointx, pointy);
                 }
             }
             generalPath.closePath();
             Color color = face3D.getFillColor();
             if (color != null) {
-                double brightness = this.lightSource == null ? 1.0d : face3D.getBrightness(this.lightSource, this.lightSourceIntensity,
-                        this.ambientLightIntensity);
-                g2d.setColor(new Color(Math.min(255, (int) (color.getRed() * brightness)), Math.min(255, (int) (color.getGreen() * brightness)), Math.min(255,
-                        (int) (color.getBlue() * brightness))));
+                double brightness = face3D.getBrightness(this.lightSource, this.lightSourceIntensity, this.ambientLightIntensity);
+                if (brightness < 1.0d) {
+                    color = new Color((int) (brightness * color.getRed()), (int) (brightness * color.getGreen()), (int) (brightness * color.getBlue()));
+                }
+                g2d.setColor(color);
                 g2d.fill(generalPath);
             }
             Color borderColor = face3D.getBorderColor();

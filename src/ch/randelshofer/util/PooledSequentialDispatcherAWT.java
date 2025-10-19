@@ -61,6 +61,10 @@ public class PooledSequentialDispatcherAWT implements Runnable {
         }
     }
 
+    public boolean isRunning() {
+        return this.state != STOPPED;
+    }
+
     @Override
     public void run() {
         Runnable objElementAt;

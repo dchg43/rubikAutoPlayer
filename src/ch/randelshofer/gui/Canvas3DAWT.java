@@ -242,12 +242,11 @@ public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener
         Dimension size = getSize();
         int width = size.width / 2;
         int height = size.height / 2;
-        double scale = Math.min(width, height) * this.scaleFactor;
-        double scaleNeg = -scale;
+        double scale = this.scaleFactor * Math.min(width, height);
         Vector<Face3D> visibleFaces = new Vector<>();
         this.activeFaces.removeAllElements();
         this.scene.addVisibleFaces(visibleFaces, transform, this.observer);
-        visibleFaces.sort(new Face3DComparator());
+        visibleFaces.sort(Face3DComparator.getInstance());
         int[] xpoints = new int[5];
         int[] ypoints = new int[5];
         double x = this.observer.x;
@@ -264,19 +263,20 @@ public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener
                 double d = coords[(vertices[i] * 3) + 2] - z;
                 if (d != 0.0d) {
                     int j = vertices[i] * 3;
-                    xpoints[i] = width + ((int) ((x - (((z * coords[j]) - x) / d)) * scale));
-                    ypoints[i] = height + ((int) ((y - (((z * coords[j + 1]) - y) / d)) * scaleNeg));
+                    xpoints[i] = width + (int) ((x - ((z * coords[j] - x) / d)) * scale);
+                    ypoints[i] = height - (int) ((y - ((z * coords[j + 1] - y) / d)) * scale);
                 } else {
-                    xpoints[i] = width + ((int) (x * scale));
-                    ypoints[i] = height + ((int) (y * scaleNeg));
+                    xpoints[i] = width + (int) (x * scale);
+                    ypoints[i] = height - (int) (y * scale);
                 }
             }
             Color color = face3D.getFillColor();
             if (color != null) {
-                double brightness = this.lightSource == null ? 1.0d : face3D.getBrightness(this.lightSource, this.lightSourceIntensity,
-                        this.ambientLightIntensity);
-                graphics.setColor(new Color(Math.min(255, (int) (color.getRed() * brightness)), Math.min(255, (int) (color.getGreen() * brightness)), Math.min(
-                        255, (int) (color.getBlue() * brightness))));
+                double brightness = face3D.getBrightness(this.lightSource, this.lightSourceIntensity, this.ambientLightIntensity);
+                if (brightness < 1.0d) {
+                    color = new Color((int) (brightness * color.getRed()), (int) (brightness * color.getGreen()), (int) (brightness * color.getBlue()));
+                }
+                graphics.setColor(color);
                 graphics.fillPolygon(xpoints, ypoints, vertices.length);
             }
             Color borderColor = face3D.getBorderColor();
@@ -408,7 +408,7 @@ public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener
         propertyChangeSupport.firePropertyChange(propertyName, oldValue, newValue);
     }
 
-    public final class FaceElement {
+    public static final class FaceElement {
         private Shape shape;
 
         private Face3D face3D;
@@ -427,10 +427,19 @@ public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener
         }
     }
 
-    public final class Face3DComparator implements Comparator<Face3D> {
+    public static final class Face3DComparator implements Comparator<Face3D> {
+        private static final Face3DComparator instance = new Face3DComparator();
+
+        private Face3DComparator() {
+        }
+
         @Override
         public int compare(Face3D a, Face3D b) {
             return a.compareTo(b);
+        }
+
+        public static Face3DComparator getInstance() {
+            return instance;
         }
     }
 

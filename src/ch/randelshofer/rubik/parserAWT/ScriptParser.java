@@ -399,12 +399,13 @@ public class ScriptParser {
         this.isAmbiguousSeqEndCmtrEnd = isAmbiguous(98, COMMUTATOR_END);
         this.isAmbiguousSeqEndCngrEnd = isAmbiguous(98, CONJUGATOR_END);
         this.isAmbiguousCngrEndCmtrEnd = isAmbiguous(COMMUTATOR_END, CONJUGATOR_END);
-        if (!(this.tokens[110].length == 0 && this.tokens[111].length == 0) && (this.tokens[110].length == 0 || this.tokens[111].length == 0
-                                                                                || this.tokens[110].length != 1 || this.tokens[111].length != 1
-                                                                                || this.tokens[110][0].length() < 1 || this.tokens[110][0].length() > 2
-                                                                                || this.tokens[111][0].length() < 1 || this.tokens[111][0].length() > 2)) {
-            throw new IllegalArgumentException(new StringBuilder().append("Illegal Comment Tokens ").append(Arrays.toString(this.tokens[110])).append(
-                    " ").append(Arrays.toString(this.tokens[111])).toString());
+        if (!(this.tokens[110].length == 0 && this.tokens[111].length == 0)
+            && (this.tokens[110].length == 0 || this.tokens[111].length == 0 || this.tokens[110].length != 1 || this.tokens[111].length != 1
+                || this.tokens[110][0].length() < 1 || this.tokens[110][0].length() > 2 || this.tokens[111][0].length() < 1
+                || this.tokens[111][0].length() > 2)) {
+            throw new IllegalArgumentException(
+                    new StringBuilder().append("Illegal Comment Tokens ").append(Arrays.toString(this.tokens[110])).append(" ").append(
+                            Arrays.toString(this.tokens[111])).toString());
         }
         if (this.tokens[112].length != 0 && (this.tokens[112].length != 1 || this.tokens[112][0].length() < 1 || this.tokens[112][0].length() > 2)) {
             StringBuilder sb = new StringBuilder();
@@ -1015,13 +1016,13 @@ public class ScriptParser {
             String greedy = parseGreedy(streamPosTokenizer.sval);
             Object obj = this.macroMap.get(greedy);
             if (obj == null) {
-                throw new ParseException("Macro: Unexpected or unknown Token.", streamPosTokenizer.getStartPosition(), (streamPosTokenizer.getStartPosition()
-                                                                                                                        + greedy.length()) - 1);
+                throw new ParseException("Macro: Unexpected or unknown Token.", streamPosTokenizer.getStartPosition(),
+                        (streamPosTokenizer.getStartPosition() + greedy.length()) - 1);
             }
             MacroNode macroNode;
             if (obj instanceof String) {
-                macroNode = new MacroNode(greedy, (String) obj, streamPosTokenizer.getStartPosition(), (streamPosTokenizer.getStartPosition() + greedy.length())
-                                                                                                       - 1);
+                macroNode = new MacroNode(greedy, (String) obj, streamPosTokenizer.getStartPosition(),
+                        (streamPosTokenizer.getStartPosition() + greedy.length()) - 1);
                 this.macroMap.put(greedy, macroNode);
             } else {
                 macroNode = (MacroNode) ((MacroNode) obj).cloneSubtree();
@@ -1043,8 +1044,9 @@ public class ScriptParser {
                             streamPosTokenizer.getStartPosition(), (streamPosTokenizer.getStartPosition() + greedy.length()) - 1);
                 }
                 ParseException parseException = (ParseException) e;
-                throw new ParseException(new StringBuilder().append("Macro '").append(greedy).append("': ").append(e.getMessage()).append(" @").append(
-                        parseException.getStartPosition()).append("..").append(parseException.getEndPosition()).toString(),
+                throw new ParseException(
+                        new StringBuilder().append("Macro '").append(greedy).append("': ").append(e.getMessage()).append(" @").append(
+                                parseException.getStartPosition()).append("..").append(parseException.getEndPosition()).toString(),
                         streamPosTokenizer.getStartPosition(), (streamPosTokenizer.getStartPosition() + greedy.length()) - 1);
             }
         case StreamPosTokenizer.TT_EOF: /* -1 */
@@ -1055,8 +1057,8 @@ public class ScriptParser {
     }
 
     private String parseGreedy(String str) {
-        return (this.transformationMap.get(str) == null && this.permutationMap.get(str) == null && this.macroMap.get(
-                str) == null) ? str.length() > 1 ? parseGreedy(str.substring(0, str.length() - 1)) : "\000" : str;
+        return (this.transformationMap.get(str) == null && this.permutationMap.get(str) == null
+                && this.macroMap.get(str) == null) ? str.length() > 1 ? parseGreedy(str.substring(0, str.length() - 1)) : "\000" : str;
     }
 
     private String parseGreedyInt(String str) throws NumberFormatException {

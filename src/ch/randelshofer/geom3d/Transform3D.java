@@ -163,8 +163,8 @@ public class Transform3D implements Cloneable {
     }
 
     public double[][] getMatrix() {
-        return new double[][]{{this.m00, this.m10, this.m20, this.m30}, {this.m01, this.m11, this.m21, this.m31}, {this.m02, this.m12, this.m22, this.m32}, {
-                0.0d, 0.0d, 0.0d, 1.0d}};
+        return new double[][]{{this.m00, this.m10, this.m20, this.m30}, {this.m01, this.m11, this.m21, this.m31}, {this.m02, this.m12, this.m22, this.m32},
+                {0.0d, 0.0d, 0.0d, 1.0d}};
     }
 
     @Override
@@ -251,9 +251,9 @@ public class Transform3D implements Cloneable {
     }
 
     public boolean isNaN() {
-        return Double.isNaN(this.m00) || Double.isNaN(this.m10) || Double.isNaN(this.m20) || Double.isNaN(this.m30) || Double.isNaN(this.m01) || Double.isNaN(
-                this.m11) || Double.isNaN(this.m21) || Double.isNaN(this.m31) || Double.isNaN(this.m02) || Double.isNaN(this.m12) || Double.isNaN(this.m22)
-               || Double.isNaN(this.m32);
+        return Double.isNaN(this.m00) || Double.isNaN(this.m10) || Double.isNaN(this.m20) || Double.isNaN(this.m30) || Double.isNaN(this.m01)
+               || Double.isNaN(this.m11) || Double.isNaN(this.m21) || Double.isNaN(this.m31) || Double.isNaN(this.m02) || Double.isNaN(this.m12)
+               || Double.isNaN(this.m22) || Double.isNaN(this.m32);
     }
 
     public void setTransform(Transform3D transform3D) {

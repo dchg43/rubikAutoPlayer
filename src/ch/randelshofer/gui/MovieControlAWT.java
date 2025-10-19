@@ -41,8 +41,9 @@ public class MovieControlAWT extends Panel implements ActionListener, ItemListen
         setLayout(gridBagLayout);
         this.startButton = new ToggleButton();
         this.startButton.setUnselectedIcon(new PolygonIcon(new Polygon(new int[]{4, 7, 7, 4}, new int[]{2, 5, 6, 9}, 4), dimension2));
-        this.startButton.setSelectedIcon(new PolygonIcon(new Polygon[]{new Polygon(new int[]{3, 4, 4, 3}, new int[]{2, 2, 9, 9}, 4), new Polygon(new int[]{7, 8,
-                8, 7}, new int[]{2, 2, 9, 9}, 4)}, dimension2));
+        this.startButton.setSelectedIcon(new PolygonIcon(
+                new Polygon[]{new Polygon(new int[]{3, 4, 4, 3}, new int[]{2, 2, 9, 9}, 4), new Polygon(new int[]{7, 8, 8, 7}, new int[]{2, 2, 9, 9}, 4)},
+                dimension2));
         this.startButton.addItemListener(this);
         this.startButton.setPreferredSize(dimension);
         this.startButton.setMinimumSize(dimension);
@@ -56,8 +57,9 @@ public class MovieControlAWT extends Panel implements ActionListener, ItemListen
         gridBagLayout.setConstraints(this.slider, gridBagConstraints);
         add(this.slider);
         this.rewindButton = new AbstractButton();
-        this.rewindButton.setIcon(new PolygonIcon(new Polygon[]{new Polygon(new int[]{4, 4, 1, 1}, new int[]{2, 9, 6, 5}, 4), new Polygon(new int[]{7, 8, 8, 7},
-                new int[]{2, 2, 9, 9}, 4)}, dimension2));
+        this.rewindButton.setIcon(new PolygonIcon(
+                new Polygon[]{new Polygon(new int[]{4, 4, 1, 1}, new int[]{2, 9, 6, 5}, 4), new Polygon(new int[]{7, 8, 8, 7}, new int[]{2, 2, 9, 9}, 4)},
+                dimension2));
         this.rewindButton.setPreferredSize(dimension);
         this.rewindButton.setMinimumSize(dimension);
         GridBagConstraints gridBagConstraints2 = new GridBagConstraints();
@@ -66,8 +68,9 @@ public class MovieControlAWT extends Panel implements ActionListener, ItemListen
         add(this.rewindButton);
         this.rewindButton.addActionListener(this);
         this.forwardButton = new AbstractButton();
-        this.forwardButton.setIcon(new PolygonIcon(new Polygon[]{new Polygon(new int[]{2, 3, 3, 2}, new int[]{2, 2, 9, 9}, 4), new Polygon(new int[]{6, 9, 9,
-                6}, new int[]{2, 5, 6, 9}, 4)}, dimension2));
+        this.forwardButton.setIcon(new PolygonIcon(
+                new Polygon[]{new Polygon(new int[]{2, 3, 3, 2}, new int[]{2, 2, 9, 9}, 4), new Polygon(new int[]{6, 9, 9, 6}, new int[]{2, 5, 6, 9}, 4)},
+                dimension2));
         this.forwardButton.setPreferredSize(dimension);
         this.forwardButton.setMinimumSize(dimension);
         GridBagConstraints gridBagConstraints3 = new GridBagConstraints();

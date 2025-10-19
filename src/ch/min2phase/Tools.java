@@ -320,8 +320,8 @@ public class Tools {
     }
 
     public static String randomLastSlot() {
-        return randomState(new byte[]{-1, -1, -1, -1, -1, 5, 6, 7}, new byte[]{-1, -1, -1, -1, -1, 0, 0, 0}, new byte[]{-1, -1, -1, -1, 4, 5, 6, 7, -1, 9, 10,
-                11}, new byte[]{-1, -1, -1, -1, 0, 0, 0, 0, -1, 0, 0, 0}, gen);
+        return randomState(new byte[]{-1, -1, -1, -1, -1, 5, 6, 7}, new byte[]{-1, -1, -1, -1, -1, 0, 0, 0},
+                new byte[]{-1, -1, -1, -1, 4, 5, 6, 7, -1, 9, 10, 11}, new byte[]{-1, -1, -1, -1, 0, 0, 0, 0, -1, 0, 0, 0}, gen);
     }
 
     public static String randomZBLastLayer() {
@@ -339,8 +339,8 @@ public class Tools {
     }
 
     public static String randomCrossSolved() {
-        return randomState(STATE_RANDOM, STATE_RANDOM, new byte[]{-1, -1, -1, -1, 4, 5, 6, 7, -1, -1, -1, -1}, new byte[]{-1, -1, -1, -1, 0, 0, 0, 0, -1, -1,
-                -1, -1}, gen);
+        return randomState(STATE_RANDOM, STATE_RANDOM, new byte[]{-1, -1, -1, -1, 4, 5, 6, 7, -1, -1, -1, -1},
+                new byte[]{-1, -1, -1, -1, 0, 0, 0, 0, -1, -1, -1, -1}, gen);
     }
 
     public static String randomEdgeSolved() {

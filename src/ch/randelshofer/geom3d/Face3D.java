@@ -5,9 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 
-import ch.randelshofer.util.Comparable;
-
-public class Face3D implements Comparable {
+public class Face3D implements Comparable<Face3D> {
     private double[] coords;
 
     private int[] vertices;
@@ -88,28 +86,18 @@ public class Face3D implements Comparable {
     }
 
     public double getBrightness(Point3D point3D, double sourceIntensity, double ambientIntensity) {
-        getNormal();
         double x = point3D.x - this.normal.x;
         double y = point3D.y - this.normal.y;
         double z = point3D.z - this.normal.z;
-        double dSqrt = (((this.normal.x * x) + (this.normal.y * y)) + (this.normal.z * z)) / Math.sqrt((((this.normal.x * this.normal.x) + (this.normal.y
-                                                                                                                                            * this.normal.y))
-                                                                                                        + (this.normal.z * this.normal.z)) * (((x * x) + (y
-                                                                                                                                                          * y))
-                                                                                                                                              + (z * z)));
+        double normalother = this.normal.x * x + this.normal.y * y + this.normal.z * z;
+        double squareNormal = this.normal.x * this.normal.x + this.normal.y * this.normal.y + this.normal.z * this.normal.z;
+        double squareother = x * x + y * y + z * z;
+        double dSqrt = normalother / Math.sqrt(squareNormal * squareother);
         return dSqrt < 0.0d ? ambientIntensity - (dSqrt * sourceIntensity) : ambientIntensity;
     }
 
     @Override
-    public int compareTo(Object obj) {
-        double d = this.zAvg - ((Face3D) obj).zAvg;
-        if (d > 0.0d) {
-            return 1;
-        }
-        return d < 0.0d ? -1 : 0;
-    }
-
-    private Point3D getNormal() {
-        return this.normal;
+    public int compareTo(Face3D obj) {
+        return Double.compare(this.zAvg, obj.zAvg);
     }
 }

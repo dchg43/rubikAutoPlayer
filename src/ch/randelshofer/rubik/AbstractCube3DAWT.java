@@ -43,15 +43,15 @@ public abstract class AbstractCube3DAWT implements RubikListener {
 
     public static final Color PART_BORDER_COLOR = Color.black;
 
-    public static final double[][] CORNER_EXPLODE_TRANSLATION = {{-1.0d, 1.0d, 1.0d}, {-1.0d, -1.0d, 1.0d}, {1.0d, 1.0d, 1.0d}, {1.0d, -1.0d, 1.0d}, {1.0d,
-            1.0d, -1.0d}, {1.0d, -1.0d, -1.0d}, {-1.0d, 1.0d, -1.0d}, {-1.0d, -1.0d, -1.0d}};
+    public static final double[][] CORNER_EXPLODE_TRANSLATION = {{-1.0d, 1.0d, 1.0d}, {-1.0d, -1.0d, 1.0d}, {1.0d, 1.0d, 1.0d}, {1.0d, -1.0d, 1.0d},
+            {1.0d, 1.0d, -1.0d}, {1.0d, -1.0d, -1.0d}, {-1.0d, 1.0d, -1.0d}, {-1.0d, -1.0d, -1.0d}};
 
-    public static final double[][] EDGE_EXPLODE_TRANSLATION = {{0.0d, 1.0d, 1.0d}, {-1.0d, 0.0d, 1.0d}, {0.0d, -1.0d, 1.0d}, {1.0d, 1.0d, 0.0d}, {1.0d, 0.0d,
-            1.0d}, {1.0d, -1.0d, 0.0d}, {0.0d, 1.0d, -1.0d}, {1.0d, 0.0d, -1.0d}, {0.0d, -1.0d, -1.0d}, {-1.0d, 1.0d, 0.0d}, {-1.0d, 0.0d, -1.0d}, {-1.0d,
-                    -1.0d, 0.0d}};
+    public static final double[][] EDGE_EXPLODE_TRANSLATION = {{0.0d, 1.0d, 1.0d}, {-1.0d, 0.0d, 1.0d}, {0.0d, -1.0d, 1.0d}, {1.0d, 1.0d, 0.0d},
+            {1.0d, 0.0d, 1.0d}, {1.0d, -1.0d, 0.0d}, {0.0d, 1.0d, -1.0d}, {1.0d, 0.0d, -1.0d}, {0.0d, -1.0d, -1.0d}, {-1.0d, 1.0d, 0.0d}, {-1.0d, 0.0d, -1.0d},
+            {-1.0d, -1.0d, 0.0d}};
 
-    public static final double[][] SIDE_EXPLODE_TRANSLATION = {{0.0d, 0.0d, 1.0d}, {1.0d, 0.0d, 0.0d}, {0.0d, -1.0d, 0.0d}, {0.0d, 0.0d, -1.0d}, {-1.0d, 0.0d,
-            0.0d}, {0.0d, 1.0d, 0.0d}};
+    public static final double[][] SIDE_EXPLODE_TRANSLATION = {{0.0d, 0.0d, 1.0d}, {1.0d, 0.0d, 0.0d}, {0.0d, -1.0d, 0.0d}, {0.0d, 0.0d, -1.0d},
+            {-1.0d, 0.0d, 0.0d}, {0.0d, 1.0d, 0.0d}};
 
     protected Shape3D[] cornerShapes = new Shape3D[8];
 
@@ -107,10 +107,10 @@ public abstract class AbstractCube3DAWT implements RubikListener {
                     int mapindex = (cornerSide == 2 || cornerSide == 5) ? (this.corner / 2) : (this.corner % 4);
                     int cornerIndex = CORNER_MAP[cornerSide][mapindex];
                     this.awtInstance.setStickerColor(cornerSide, cornerIndex, getSelectColor());
-                    fireStateChanged();
+                    waitStateChangedFinished();
                 } else {
-                    this.awtInstance.getDispatcher().dispatch(new SideEvent(this.awtInstance, this.awtInstance.model.getCornerSide(this.corner,
-                            this.orientation), (actionEvent.getModifiers() & 0x9) != 0));
+                    this.awtInstance.getDispatcher().dispatch(new SideEvent(this.awtInstance,
+                            this.awtInstance.model.getCornerSide(this.corner, this.orientation), (actionEvent.getModifiers() & 0x9) != 0));
                 }
             }
         }
@@ -147,10 +147,10 @@ public abstract class AbstractCube3DAWT implements RubikListener {
                     int edgeSide = this.awtInstance.model.getEdgeSide(this.edge, this.orientation ^ 1);
                     int edgeIndex = EDGE_MAP[edgeSide][this.edge];
                     this.awtInstance.setStickerColor(edgeSide, edgeIndex, getSelectColor());
-                    fireStateChanged();
+                    waitStateChangedFinished();
                 } else {
-                    this.awtInstance.getDispatcher().dispatch(new EdgeEvent(this.awtInstance, this.awtInstance.model.getEdgeLayerSide(this.edge,
-                            this.orientation), (actionEvent.getModifiers() & 0x9) != 0));
+                    this.awtInstance.getDispatcher().dispatch(new EdgeEvent(this.awtInstance,
+                            this.awtInstance.model.getEdgeLayerSide(this.edge, this.orientation), (actionEvent.getModifiers() & 0x9) != 0));
                 }
             }
         }
@@ -174,10 +174,10 @@ public abstract class AbstractCube3DAWT implements RubikListener {
             if (actionEvent.getSource() instanceof MouseEvent && ((MouseEvent) actionEvent.getSource()).getClickCount() <= 1) {
                 if (isEditMode()) {
                     this.awtInstance.setStickerColor(this.side, 4, getSelectColor());
-                    fireStateChanged();
+                    waitStateChangedFinished();
                 } else {
-                    this.awtInstance.getDispatcher().dispatch(new SideEvent(this.awtInstance, this.awtInstance.model.getSideLocation(this.side),
-                            (actionEvent.getModifiers() & 0x9) == 0));
+                    this.awtInstance.getDispatcher().dispatch(
+                            new SideEvent(this.awtInstance, this.awtInstance.model.getSideLocation(this.side), (actionEvent.getModifiers() & 0x9) == 0));
                 }
             }
         }
@@ -271,9 +271,8 @@ public abstract class AbstractCube3DAWT implements RubikListener {
                     break;
                 }
                 Transform3D transform3D3 = (Transform3D) this.cornerIdentityTransforms[cornerLocation].clone();
-                transform3D3.translate(CORNER_EXPLODE_TRANSLATION[cornerLocation][0] * this.explosion, CORNER_EXPLODE_TRANSLATION[cornerLocation][1]
-                                                                                                       * this.explosion,
-                        CORNER_EXPLODE_TRANSLATION[cornerLocation][2] * this.explosion);
+                transform3D3.translate(CORNER_EXPLODE_TRANSLATION[cornerLocation][0] * this.explosion,
+                        CORNER_EXPLODE_TRANSLATION[cornerLocation][1] * this.explosion, CORNER_EXPLODE_TRANSLATION[cornerLocation][2] * this.explosion);
                 transform2.concatenate(transform3D3);
             }
         }
@@ -666,6 +665,17 @@ public abstract class AbstractCube3DAWT implements RubikListener {
                     this.changeEvent = new ChangeEvent(this);
                 }
                 ((ChangeListener) node.getListener()).stateChanged(this.changeEvent);
+            }
+        }
+    }
+
+    public void waitStateChangedFinished() {
+        fireStateChanged();
+        while (this.dispatcher.isRunning()) {
+            try {
+                Thread.sleep(30L);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }

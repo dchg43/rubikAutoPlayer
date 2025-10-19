@@ -420,7 +420,7 @@ public class AutoPlayer extends Panel implements Runnable {
                     }
                 }
                 // 刷新魔方
-                cube.fireStateChanged();
+                cube.waitStateChangedFinished();
             }
         });
 
@@ -485,12 +485,14 @@ public class AutoPlayer extends Panel implements Runnable {
                     return;
                 }
 
-                // 进度条移到最后
-                BoundedRangeModel progress = AutoPlayer.this.player.getBoundedRangeModel();
-                progress.setValue(progress.getMaximum());
-                // 刷新魔方
                 AbstractCube3DAWT cube = AutoPlayer.this.player.getCube3D();
-                cube.fireStateChanged();
+                BoundedRangeModel progress = AutoPlayer.this.player.getBoundedRangeModel();
+                if (progress.getValue() != progress.getMaximum()) {
+                    // 进度条移到最后
+                    progress.setValue(progress.getMaximum());
+                    // 刷新魔方
+                    cube.waitStateChangedFinished();
+                }
 
                 // 取消编辑
                 if (cube.isEditMode()) {
@@ -554,7 +556,7 @@ public class AutoPlayer extends Panel implements Runnable {
                         }
                     }
                     // 刷新魔方
-                    cube.fireStateChanged();
+                    cube.waitStateChangedFinished();
                     return;
                 }
                 if (AutoPlayer.this.player.isActive()) {
@@ -691,8 +693,9 @@ public class AutoPlayer extends Panel implements Runnable {
             // 设置参数异常时使用默认值
             Color c = new Color(CommandParser.decode(dflt[colorIndex]));
             if (this.colors.contains(c)) {
-                throw new IllegalArgumentException(new StringBuilder().append("Invalid parameter 'colorTable' value ").append(Arrays.toString(
-                        colors_str)).append(" is illegal.").toString());
+                throw new IllegalArgumentException(
+                        new StringBuilder().append("Invalid parameter 'colorTable' value ").append(Arrays.toString(colors_str)).append(
+                                " is illegal.").toString());
             }
             this.colors.add(colorIndex, c);
         }
@@ -700,8 +703,9 @@ public class AutoPlayer extends Panel implements Runnable {
         for (; colorIndex < dflt.length; colorIndex++) {
             Color c = new Color(CommandParser.decode(dflt[colorIndex]));
             if (this.colors.contains(c)) {
-                throw new IllegalArgumentException(new StringBuilder().append("Invalid parameter 'colorTable' value ").append(Arrays.toString(
-                        colors_str)).append(" is illegal.").toString());
+                throw new IllegalArgumentException(
+                        new StringBuilder().append("Invalid parameter 'colorTable' value ").append(Arrays.toString(colors_str)).append(
+                                " is illegal.").toString());
             }
             this.colors.add(colorIndex, c);
         }
@@ -1235,7 +1239,7 @@ public class AutoPlayer extends Panel implements Runnable {
                 }
             }
         }
-        cube.fireStateChanged();
+        cube.waitStateChangedFinished();
     }
 
     public void doParameter(String key) throws IOException {
@@ -1290,13 +1294,13 @@ public class AutoPlayer extends Panel implements Runnable {
                 for (int i6 = 0; i6 < 9; i6++) {
                     int param = Integer.parseInt(parameters2[i++]);
                     if (this.colors.size() <= param) {
-                        throw new IllegalArgumentException(new StringBuilder().append("Invalid parameter 'stickers', unknown entry '").append(param).append(
-                                "'.").toString());
+                        throw new IllegalArgumentException(
+                                new StringBuilder().append("Invalid parameter 'stickers', unknown entry '").append(param).append("'.").toString());
                     }
                     cube.setStickerColor(i5, i6, this.colors.get(param));
                 }
             }
-            cube.fireStateChanged();
+            cube.waitStateChangedFinished();
             break;
         case 15: // "rearView"
             // 默认true
@@ -1339,8 +1343,8 @@ public class AutoPlayer extends Panel implements Runnable {
         case 26: // "lightSourceIntensity"
         case 27: // "lightSourcePosition"
         default:
-            throw new IllegalArgumentException(new StringBuilder().append("Invalid parameter ").append(key).append(", value ").append(value).append(
-                    " is illegal.").toString());
+            throw new IllegalArgumentException(
+                    new StringBuilder().append("Invalid parameter ").append(key).append(", value ").append(value).append(" is illegal.").toString());
         }
     }
 

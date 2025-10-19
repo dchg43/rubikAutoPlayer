@@ -41,17 +41,17 @@ public class EventListenerList {
         this.listenerList.remove(new ListenerNode(cls, eventListener));
     }
 
-    public final class ListenerNode {
+    public static final class ListenerNode {
         private Class<?> clazz;
 
         private EventListener listener;
 
         public Class<?> getClazz() {
-            return clazz;
+            return this.clazz;
         }
 
         public EventListener getListener() {
-            return listener;
+            return this.listener;
         }
 
         public ListenerNode(Class<?> clazz, EventListener listener) {
@@ -61,7 +61,7 @@ public class EventListenerList {
 
         @Override
         public int hashCode() {
-            return Objects.hash(clazz, listener);
+            return Objects.hash(this.clazz, this.listener);
         }
 
         @Override
@@ -73,7 +73,7 @@ public class EventListenerList {
                 return false;
             }
             ListenerNode other = (ListenerNode) obj;
-            return Objects.equals(clazz, other.clazz) && Objects.equals(listener, other.listener);
+            return Objects.equals(this.clazz, other.clazz) && Objects.equals(this.listener, other.listener);
         }
 
     }

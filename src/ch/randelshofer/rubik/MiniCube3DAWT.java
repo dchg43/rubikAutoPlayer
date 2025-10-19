@@ -18,8 +18,8 @@ public class MiniCube3DAWT extends AbstractCube3DAWT {
     /**
      * 默认各面的颜色，顺序是 正面蓝色，右面红色，底面白色，背面绿色，左面橙色，顶面黄色
      */
-    public static final Color[] STICKER_COLORS = {new Color(33, 33, 189), new Color(237, 0, 15), new Color(248, 248, 248), new Color(0, 115, 47), new Color(255,
-            70, 0), new Color(248, 210, 0)};
+    public static final Color[] STICKER_COLORS = {new Color(33, 33, 189), new Color(237, 0, 15), new Color(248, 248, 248), new Color(0, 115, 47),
+            new Color(255, 70, 0), new Color(248, 210, 0)};
 
     private static final double[] fArr = {-8.0d, 8.0d, 9.0d, -8.0d, -8.0d, 9.0d, 8.0d, 8.0d, 9.0d, 8.0d, -8.0d, 9.0d, 8.0d, 8.0d, -9.0d, 8.0d, -8.0d, -9.0d,
             -8.0d, 8.0d, -9.0d, -8.0d, -8.0d, -9.0d, -9.0d, 8.0d, 8.0d, -9.0d, -8.0d, 8.0d, 9.0d, 8.0d, 8.0d, 9.0d, -8.0d, 8.0d, 9.0d, 8.0d, -8.0d, 9.0d, -8.0d,
@@ -371,8 +371,8 @@ public class MiniCube3DAWT extends AbstractCube3DAWT {
     @Override
     protected void initCorners() {
         int[][] iArr = {{16, 22, 20, 18}, {0, 2, 3, 1}, {14, 8, 9, 15}, {12, 13, 11, 10}, {17, 19, 21, 23}, {4, 6, 7, 5}, {17, 9, 1}, {19, 3, 11}, {23, 7, 15},
-                {16, 0, 8}, {18, 10, 2}, {22, 14, 6}, {20, 4, 12}, {16, 18, 2, 0}, {18, 20, 12, 10}, {20, 22, 6, 4}, {22, 16, 8, 14}, {19, 17, 1, 3}, {21, 19,
-                        11, 13}, {23, 21, 5, 7}, {17, 23, 15, 9}, {3, 2, 10, 11}, {0, 1, 9, 8}, {4, 5, 13, 12}, {7, 6, 14, 15}};
+                {16, 0, 8}, {18, 10, 2}, {22, 14, 6}, {20, 4, 12}, {16, 18, 2, 0}, {18, 20, 12, 10}, {20, 22, 6, 4}, {22, 16, 8, 14}, {19, 17, 1, 3},
+                {21, 19, 11, 13}, {23, 21, 5, 7}, {17, 23, 15, 9}, {3, 2, 10, 11}, {0, 1, 9, 8}, {4, 5, 13, 12}, {7, 6, 14, 15}};
         Color[][][] colorArr = new Color[8][iArr.length][0];
         colorArr[0][0] = new Color[]{STICKER_COLORS[5], AbstractCube3DAWT.PART_BORDER_COLOR};
         colorArr[0][1] = new Color[]{STICKER_COLORS[0], AbstractCube3DAWT.PART_BORDER_COLOR};
@@ -412,9 +412,9 @@ public class MiniCube3DAWT extends AbstractCube3DAWT {
      */
     @Override
     protected void initEdges() {
-        int[][] iArr = {{0, 2, 3, 1}, {16, 22, 20, 18}, {14, 8, 9, 15}, {12, 13, 11, 10}, {17, 19, 21, 23}, {4, 6, 7, 5}, {17, 9, 1}, {19, 3, 11}, {16, 0, 8}, {
-                18, 10, 2}, {22, 14, 6}, {20, 4, 12}, {16, 18, 2, 0}, {18, 20, 12, 10}, {20, 22, 6, 4}, {22, 16, 8, 14}, {19, 17, 1, 3}, {21, 19, 11, 13}, {17,
-                        23, 15, 9}, {3, 2, 10, 11}, {0, 1, 9, 8}, {4, 5, 13, 12}, {7, 6, 14, 15}};
+        int[][] iArr = {{0, 2, 3, 1}, {16, 22, 20, 18}, {14, 8, 9, 15}, {12, 13, 11, 10}, {17, 19, 21, 23}, {4, 6, 7, 5}, {17, 9, 1}, {19, 3, 11}, {16, 0, 8},
+                {18, 10, 2}, {22, 14, 6}, {20, 4, 12}, {16, 18, 2, 0}, {18, 20, 12, 10}, {20, 22, 6, 4}, {22, 16, 8, 14}, {19, 17, 1, 3}, {21, 19, 11, 13},
+                {17, 23, 15, 9}, {3, 2, 10, 11}, {0, 1, 9, 8}, {4, 5, 13, 12}, {7, 6, 14, 15}};
         Color[][][] colorArr = new Color[12][iArr.length][0];
         colorArr[0][0] = new Color[]{STICKER_COLORS[5], AbstractCube3DAWT.PART_BORDER_COLOR};
         colorArr[0][1] = new Color[]{STICKER_COLORS[0], AbstractCube3DAWT.PART_BORDER_COLOR};
@@ -454,8 +454,8 @@ public class MiniCube3DAWT extends AbstractCube3DAWT {
      */
     @Override
     protected void initSides() {
-        int[][] iArr = {{0, 2, 3, 1}, {16, 22, 20, 18}, {14, 8, 9, 15}, {12, 13, 11, 10}, {17, 19, 21, 23}, {17, 9, 1}, {19, 3, 11}, {16, 0, 8}, {18, 10, 2}, {
-                16, 18, 2, 0}, {18, 20, 12, 10}, {22, 16, 8, 14}, {19, 17, 1, 3}, {21, 19, 11, 13}, {17, 23, 15, 9}, {3, 2, 10, 11}, {0, 1, 9, 8}};
+        int[][] iArr = {{0, 2, 3, 1}, {16, 22, 20, 18}, {14, 8, 9, 15}, {12, 13, 11, 10}, {17, 19, 21, 23}, {17, 9, 1}, {19, 3, 11}, {16, 0, 8}, {18, 10, 2},
+                {16, 18, 2, 0}, {18, 20, 12, 10}, {22, 16, 8, 14}, {19, 17, 1, 3}, {21, 19, 11, 13}, {17, 23, 15, 9}, {3, 2, 10, 11}, {0, 1, 9, 8}};
         Color[][][] colorArr = new Color[6][iArr.length][0];
         colorArr[0][0] = new Color[]{STICKER_COLORS[0], AbstractCube3DAWT.PART_BORDER_COLOR};
         colorArr[1][0] = new Color[]{STICKER_COLORS[1], AbstractCube3DAWT.PART_BORDER_COLOR};

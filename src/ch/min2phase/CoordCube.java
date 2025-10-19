@@ -385,8 +385,9 @@ public class CoordCube {
     }
 
     public void calcPruning(boolean isPhase1) {
-        prun = Math.max(Math.max(getPruning(UDSliceTwistPrun, twist * N_SLICE + UDSliceConj[slice][tsym]), getPruning(UDSliceFlipPrun, flip * N_SLICE
-                                                                                                                                       + UDSliceConj[slice][fsym])),
+        prun = Math.max(
+                Math.max(getPruning(UDSliceTwistPrun, twist * N_SLICE + UDSliceConj[slice][tsym]),
+                        getPruning(UDSliceFlipPrun, flip * N_SLICE + UDSliceConj[slice][fsym])),
                 Math.max(Search.USE_CONJ_PRUN ? getPruning(TwistFlipPrun, (twistc >> 3) << 11 | CubieCube.FlipS2RF[flipc ^ (twistc & 7)]) : 0,
                         Search.USE_TWIST_FLIP_PRUN ? getPruning(TwistFlipPrun, twist << 11 | CubieCube.FlipS2RF[flip << 3 | (fsym ^ tsym)]) : 0));
     }
@@ -406,8 +407,8 @@ public class CoordCube {
         flip = flip >> 3;
 
         slice = cc.getUDSlice();
-        prun = Math.max(prun, Math.max(getPruning(UDSliceTwistPrun, twist * N_SLICE + UDSliceConj[slice][tsym]), getPruning(UDSliceFlipPrun, flip * N_SLICE
-                                                                                                                                             + UDSliceConj[slice][fsym])));
+        prun = Math.max(prun, Math.max(getPruning(UDSliceTwistPrun, twist * N_SLICE + UDSliceConj[slice][tsym]),
+                getPruning(UDSliceFlipPrun, flip * N_SLICE + UDSliceConj[slice][fsym])));
         if (prun > depth) {
             return false;
         }
@@ -438,8 +439,9 @@ public class CoordCube {
         tsym = (twist & 7) ^ cc.tsym;
         twist >>= 3;
 
-        prun = Math.max(Math.max(getPruning(UDSliceTwistPrun, twist * N_SLICE + UDSliceConj[slice][tsym]), getPruning(UDSliceFlipPrun, flip * N_SLICE
-                                                                                                                                       + UDSliceConj[slice][fsym])),
+        prun = Math.max(
+                Math.max(getPruning(UDSliceTwistPrun, twist * N_SLICE + UDSliceConj[slice][tsym]),
+                        getPruning(UDSliceFlipPrun, flip * N_SLICE + UDSliceConj[slice][fsym])),
                 Search.USE_TWIST_FLIP_PRUN ? getPruning(TwistFlipPrun, twist << 11 | CubieCube.FlipS2RF[flip << 3 | (fsym ^ tsym)]) : 0);
         return prun;
     }
