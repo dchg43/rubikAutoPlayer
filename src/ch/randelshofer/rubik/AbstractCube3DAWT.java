@@ -107,7 +107,7 @@ public abstract class AbstractCube3DAWT implements RubikListener {
                     int mapindex = (cornerSide == 2 || cornerSide == 5) ? (this.corner / 2) : (this.corner % 4);
                     int cornerIndex = CORNER_MAP[cornerSide][mapindex];
                     this.awtInstance.setStickerColor(cornerSide, cornerIndex, getSelectColor());
-                    waitStateChangedFinished();
+                    fireStateChanged();
                 } else {
                     this.awtInstance.getDispatcher().dispatch(new SideEvent(this.awtInstance,
                             this.awtInstance.model.getCornerSide(this.corner, this.orientation), (actionEvent.getModifiers() & 0x9) != 0));
@@ -147,7 +147,7 @@ public abstract class AbstractCube3DAWT implements RubikListener {
                     int edgeSide = this.awtInstance.model.getEdgeSide(this.edge, this.orientation ^ 1);
                     int edgeIndex = EDGE_MAP[edgeSide][this.edge];
                     this.awtInstance.setStickerColor(edgeSide, edgeIndex, getSelectColor());
-                    waitStateChangedFinished();
+                    fireStateChanged();
                 } else {
                     this.awtInstance.getDispatcher().dispatch(new EdgeEvent(this.awtInstance,
                             this.awtInstance.model.getEdgeLayerSide(this.edge, this.orientation), (actionEvent.getModifiers() & 0x9) != 0));
@@ -174,7 +174,7 @@ public abstract class AbstractCube3DAWT implements RubikListener {
             if (actionEvent.getSource() instanceof MouseEvent && ((MouseEvent) actionEvent.getSource()).getClickCount() <= 1) {
                 if (isEditMode()) {
                     this.awtInstance.setStickerColor(this.side, 4, getSelectColor());
-                    waitStateChangedFinished();
+                    fireStateChanged();
                 } else {
                     this.awtInstance.getDispatcher().dispatch(
                             new SideEvent(this.awtInstance, this.awtInstance.model.getSideLocation(this.side), (actionEvent.getModifiers() & 0x9) == 0));
@@ -665,17 +665,6 @@ public abstract class AbstractCube3DAWT implements RubikListener {
                     this.changeEvent = new ChangeEvent(this);
                 }
                 ((ChangeListener) node.getListener()).stateChanged(this.changeEvent);
-            }
-        }
-    }
-
-    public void waitStateChangedFinished() {
-        fireStateChanged();
-        while (this.dispatcher.isRunning()) {
-            try {
-                Thread.sleep(30L);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
             }
         }
     }

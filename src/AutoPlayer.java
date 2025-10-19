@@ -420,7 +420,7 @@ public class AutoPlayer extends Panel implements Runnable {
                     }
                 }
                 // 刷新魔方
-                cube.waitStateChangedFinished();
+                cube.fireStateChanged();
             }
         });
 
@@ -491,7 +491,8 @@ public class AutoPlayer extends Panel implements Runnable {
                     // 进度条移到最后
                     progress.setValue(progress.getMaximum());
                     // 刷新魔方
-                    cube.waitStateChangedFinished();
+                    cube.fireStateChanged();
+                    AutoPlayer.this.player.makesureFinished();
                 }
 
                 // 取消编辑
@@ -556,7 +557,7 @@ public class AutoPlayer extends Panel implements Runnable {
                         }
                     }
                     // 刷新魔方
-                    cube.waitStateChangedFinished();
+                    cube.fireStateChanged();
                     return;
                 }
                 if (AutoPlayer.this.player.isActive()) {
@@ -1239,7 +1240,7 @@ public class AutoPlayer extends Panel implements Runnable {
                 }
             }
         }
-        cube.waitStateChangedFinished();
+        cube.fireStateChanged();
     }
 
     public void doParameter(String key) throws IOException {
@@ -1300,7 +1301,7 @@ public class AutoPlayer extends Panel implements Runnable {
                     cube.setStickerColor(i5, i6, this.colors.get(param));
                 }
             }
-            cube.waitStateChangedFinished();
+            cube.fireStateChanged();
             break;
         case 15: // "rearView"
             // 默认true
