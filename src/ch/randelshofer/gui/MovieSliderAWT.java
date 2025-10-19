@@ -20,30 +20,30 @@ public class MovieSliderAWT extends Canvas implements ChangeListener {
 
     // private static final int HALF_THUMB_WIDTH = 4;
 
-    private int progressPos_;
+    private int progressPos;
 
-    private BoundedRangeModel model_ = new DefaultBoundedRangeModel();
+    private BoundedRangeModel model = new DefaultBoundedRangeModel();
 
-    private int thumbPos_ = 0;
+    private int thumbPos = 0;
 
-    private BoundedRangeModel progressModel_ = new DefaultBoundedRangeModel(1, 0, 0, 1);
+    private BoundedRangeModel progressModel = new DefaultBoundedRangeModel(1, 0, 0, 1);
 
     public MovieSliderAWT() {
-        this.model_.addChangeListener(this);
+        this.model.addChangeListener(this);
         setBackground(Color.lightGray);
     }
 
     public synchronized void setModel(BoundedRangeModel boundedRangeModel) {
-        if (this.model_ != null) {
-            this.model_.removeChangeListener(this);
+        if (this.model != null) {
+            this.model.removeChangeListener(this);
         }
-        this.model_ = boundedRangeModel == null ? new DefaultBoundedRangeModel() : boundedRangeModel;
-        this.model_.addChangeListener(this);
+        this.model = boundedRangeModel == null ? new DefaultBoundedRangeModel() : boundedRangeModel;
+        this.model.addChangeListener(this);
         repaint();
     }
 
     public synchronized BoundedRangeModel getModel() {
-        return this.model_;
+        return this.model;
     }
 
     @Override
@@ -73,7 +73,7 @@ public class MovieSliderAWT extends Canvas implements ChangeListener {
     public void processMouseMotionEvent(MouseEvent e) {
         int id = e.getID();
         switch (id) {
-        case MouseEvent.MOUSE_DRAGGED:
+        case MouseEvent.MOUSE_DRAGGED: // 拖动
             if (isEnabled()) {
                 moveThumb(e.getX());
             }
@@ -113,43 +113,43 @@ public class MovieSliderAWT extends Canvas implements ChangeListener {
         if (x >= p - 4) {
             x = (p - 4) - 1;
         }
-        int h = this.model_.getMaximum() - this.model_.getMinimum();
+        int h = this.model.getMaximum() - this.model.getMinimum();
         int j = Math.max(1, 2 * h);
         int f = ((x - 4 - 1) * h + p * h / j) / (p - 10);
-        this.model_.setValue(f);
+        this.model.setValue(f);
     }
 
     protected int computeThumbPos() {
-        if (this.model_ == null) {
+        if (this.model == null) {
             return 4;
         }
         int i = (computeProgressPos() - 4) + 2;
         int f = 0;
-        if (this.model_.getMaximum() != this.model_.getMinimum()) {
-            f = i * this.model_.getValue() / (this.model_.getMaximum() - this.model_.getMinimum());
+        if (this.model.getMaximum() != this.model.getMinimum()) {
+            f = i * this.model.getValue() / (this.model.getMaximum() - this.model.getMinimum());
         }
         return Math.max(0, f) + 4;
     }
 
     public synchronized void setProgressModel(BoundedRangeModel boundedRangeModel) {
-        if (this.progressModel_ != null) {
-            this.progressModel_.removeChangeListener(this);
+        if (this.progressModel != null) {
+            this.progressModel.removeChangeListener(this);
         }
-        this.progressModel_ = boundedRangeModel;
-        if (this.progressModel_ != null) {
-            this.progressModel_.addChangeListener(this);
+        this.progressModel = boundedRangeModel;
+        if (this.progressModel != null) {
+            this.progressModel.addChangeListener(this);
         }
     }
 
     public synchronized BoundedRangeModel getProgressModel() {
-        return this.progressModel_;
+        return this.progressModel;
     }
 
     @Override
     public void paint(Graphics graphics) {
-        this.thumbPos_ = computeThumbPos();
-        this.progressPos_ = computeProgressPos();
-        paint(graphics, this.thumbPos_, this.progressPos_);
+        this.thumbPos = computeThumbPos();
+        this.progressPos = computeProgressPos();
+        paint(graphics, this.thumbPos, this.progressPos);
     }
 
     public void paint(Graphics graphics, int x, int y) {
@@ -181,7 +181,7 @@ public class MovieSliderAWT extends Canvas implements ChangeListener {
     }
 
     protected int computeProgressPos() {
-        BoundedRangeModel boundedRangeModel = this.progressModel_;
+        BoundedRangeModel boundedRangeModel = this.progressModel;
         int i = (getSize().width - 8) - 3;
         if (boundedRangeModel == null) {
             return 6;
@@ -195,7 +195,7 @@ public class MovieSliderAWT extends Canvas implements ChangeListener {
 
     @Override
     public void stateChanged(ChangeEvent changeEvent) {
-        if (computeProgressPos() != this.progressPos_ || computeThumbPos() != this.thumbPos_) {
+        if (computeProgressPos() != this.progressPos || computeThumbPos() != this.thumbPos) {
             repaint();
         }
     }

@@ -413,10 +413,11 @@ public class AutoPlayer extends Panel implements Runnable {
                     return;
                 }
 
+                Color c = AutoPlayer.this.colors.get(6);
                 AbstractCube3DAWT cube = AutoPlayer.this.player.getCube3D();
                 for (int i = 0; i < 6; i++) {
                     for (int j = 0; j < 9; j++) {
-                        cube.setStickerColor(i, j, AutoPlayer.this.colors.get(6));
+                        cube.setStickerColor(i, j, c);
                     }
                 }
                 // 刷新魔方
@@ -485,7 +486,13 @@ public class AutoPlayer extends Panel implements Runnable {
                     return;
                 }
 
+                // 取消编辑
                 AbstractCube3DAWT cube = AutoPlayer.this.player.getCube3D();
+                if (cube.isEditMode()) {
+                    buttonEdit.setBackground(deselectColor);
+                    cube.setEditMode(false);
+                }
+
                 BoundedRangeModel progress = AutoPlayer.this.player.getBoundedRangeModel();
                 if (progress.getValue() != progress.getMaximum()) {
                     // 进度条移到最后
@@ -495,11 +502,6 @@ public class AutoPlayer extends Panel implements Runnable {
                     AutoPlayer.this.player.makesureFinished();
                 }
 
-                // 取消编辑
-                if (cube.isEditMode()) {
-                    buttonEdit.setBackground(deselectColor);
-                    cube.setEditMode(false);
-                }
                 // 判断魔方是否有旋转，因为编辑时仍然能执行反序，如果有旋转，设置方块颜色时会错位
                 if (!cube.getModel().isSolved()) {
                     // 有旋转，重置为旋转前状态
@@ -507,26 +509,29 @@ public class AutoPlayer extends Panel implements Runnable {
                     AutoPlayer.this.cleanAndResetCube(facelets);
                 }
 
+                // 获取旋转序列
                 int index = script.indexOf('(');
                 if (index > 0) {
                     script = script.substring(0, script.indexOf('(') - 1);
                 }
 
+                // 将旋转序列反序
                 String[] splits = script.split(" +|\n");
                 StringBuilder result = new StringBuilder();
                 for (int i = splits.length - 1; i >= 0; i--) {
                     String tmp = splits[i];
                     if (tmp.length() <= 1) {
-                        result.append(tmp).append("\' ");
+                        result.append(tmp).append('\'');
                     } else if (tmp.charAt(1) == '\'') {
-                        result.append(tmp.charAt(0)).append("  ");
+                        result.append(tmp.charAt(0)).append(' ');
                     } else {
-                        result.append(tmp).append(' ');
+                        result.append(tmp);
                     }
+                    result.append(' ');
                 }
                 String newScript = result.toString();
 
-                // 自动计算复位方法
+                // 写回反序序列并执行
                 try {
                     AutoPlayer.this.cmd.setParameter("script", newScript);
                     doParameter("script", newScript);
@@ -552,8 +557,9 @@ public class AutoPlayer extends Panel implements Runnable {
                     AutoPlayer.this.player.setScript(null);
                     // 初始化颜色
                     for (int i = 0; i < 6; i++) {
+                        Color c = AutoPlayer.this.colors.get(i);
                         for (int j = 0; j < 9; j++) {
-                            cube.setStickerColor(i, j, AutoPlayer.this.colors.get(i));
+                            cube.setStickerColor(i, j, c);
                         }
                     }
                     // 刷新魔方
@@ -565,29 +571,32 @@ public class AutoPlayer extends Panel implements Runnable {
                     return;
                 }
 
+                // 求解并校验
                 String facelets = getCubeString(true);
                 String result = searchSolution(facelets);
                 if (result.contains("Error")) {
                     String message = "校验不通过：" + AutoPlayer.getErrMessage(result);
                     JOptionPane.showMessageDialog(AutoPlayer.this, message, "失败", JOptionPane.ERROR_MESSAGE);
-                } else {
-                    // 取消编辑
-                    if (cube.isEditMode()) {
-                        buttonEdit.setBackground(deselectColor);
-                        cube.setEditMode(false);
-                    }
-                    // 有旋转，重置为旋转前状态
-                    if (!cube.getModel().isSolved()) {
-                        AutoPlayer.this.cleanAndResetCube(facelets);
-                    }
+                    return;
+                }
 
-                    // 自动计算复位方法
-                    try {
-                        AutoPlayer.this.cmd.setParameter("script", result);
-                        doParameter("script", result);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                // 取消编辑
+                if (cube.isEditMode()) {
+                    buttonEdit.setBackground(deselectColor);
+                    cube.setEditMode(false);
+                }
+
+                // 有旋转，重置为旋转前状态
+                if (!cube.getModel().isSolved()) {
+                    AutoPlayer.this.cleanAndResetCube(facelets);
+                }
+
+                // 自动执行复位方法
+                try {
+                    AutoPlayer.this.cmd.setParameter("script", result);
+                    doParameter("script", result);
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
         });
