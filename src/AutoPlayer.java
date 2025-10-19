@@ -87,8 +87,6 @@ public class AutoPlayer extends Panel implements Runnable {
 
     private Panel rearComponent = null;
 
-    private RubiksCubeCore initCube;
-
     private CommandParser cmd;
 
     private Hashtable<URL, Image> imageCache = new Hashtable<>();
@@ -266,10 +264,9 @@ public class AutoPlayer extends Panel implements Runnable {
             @Override
             public void reset() {
                 super.reset();
-                getCubeModel().setTo(AutoPlayer.this.initCube);
+                // getCubeModel().setTo(AutoPlayer.this.initCube);
             }
         };
-        this.initCube = new RubiksCubeCore();
         this.scriptTextArea = new MultilineLabel();
         this.controlsPanel = new Panel(); // 底部整个控制框
         this.controlsPanel.setLayout(new BorderLayout());
@@ -280,7 +277,9 @@ public class AutoPlayer extends Panel implements Runnable {
             @Override
             public void mousePressed(MouseEvent mouseEvent) {
                 int cursor = AutoPlayer.this.scriptTextArea.viewToModel(mouseEvent.getX(), mouseEvent.getY());
-                AutoPlayer.this.player.moveToCaret(cursor);
+                if (cursor < AutoPlayer.this.scriptTextArea.getText().length()) {
+                    AutoPlayer.this.player.moveToCaret(cursor);
+                }
             }
         });
         this.scriptTextArea.setSize(getSize());
@@ -666,6 +665,9 @@ public class AutoPlayer extends Panel implements Runnable {
             startPosition = currentSymbol.getStartPosition();
             endPosition = currentSymbol.getEndPosition() + 1;
         }
+        if (endPosition > this.scriptTextArea.getText().length()) {
+            return;
+        }
         Color backColor = this.player.isProcessingCurrentSymbol() ? MultilineLabel.activeSelectionBackground : MultilineLabel.inactiveSelectionBackground;
         this.scriptTextArea.select(startPosition, endPosition);
         this.scriptTextArea.setSelectionBackground(backColor);
@@ -771,21 +773,22 @@ public class AutoPlayer extends Panel implements Runnable {
             showError("Invalid parameter 'script'\n" + AutoPlayer.getString(e));
         }
 
-        this.initCube.reset();
+        RubiksCubeCore initCube = new RubiksCubeCore();
         String initScript = this.cmd.getParameter("initScript");
         if (initScript != null) {
             initScript = initScript.replace("\\n", "\n");
             try {
-                scriptParser.parse(new StringReader(initScript)).applySubtreeTo(this.initCube, false);
+                scriptParser.parse(new StringReader(initScript)).applySubtreeTo(initCube, false);
             } catch (Exception e) {
                 showError("Invalid parameter 'initScript'\n" + AutoPlayer.getString(e));
             }
         }
 
         if (this.isSolver && this.player.getScript() != null) {
-            this.player.getScript().applySubtreeTo(this.initCube, true);
+            this.player.getScript().applySubtreeTo(initCube, true);
         }
         this.player.reset();
+        this.player.getCubeModel().setTo(initCube);
         try {
             int scriptProgress = this.cmd.getParameter("scriptProgress", (this.isSolver || this.cmd.getParameter("autoPlay", true)) ? 0 : -1);
             if (scriptProgress < 0) {
@@ -1145,7 +1148,6 @@ public class AutoPlayer extends Panel implements Runnable {
     */
     public String getCubeString(boolean check) {
         AbstractCube3DAWT cube = this.player.getCube3D();
-        RubiksCubeCore model = cube.getModel();
         // 初始化颜色对应表，顺序：front, right, down, back, left, up
         final char[] chars = {'F', 'R', 'D', 'B', 'L', 'U', sevenChar};
         // 复制一份字符表，已经添加到colorMap的从该表去除，用于去重
@@ -1192,6 +1194,7 @@ public class AutoPlayer extends Panel implements Runnable {
         RubiksCubeCore initModel = new RubiksCubeCore();
 
         // 从RubiksCubeCore中根据旋转情况计算每个块的实际位置
+        RubiksCubeCore model = cube.getModel();
         char[] searchInput = new char[54];
         int[] cornerLoc = model.getCornerLocations();
         int[] cornerOrient = model.getCornerOrientations();
@@ -1285,8 +1288,10 @@ public class AutoPlayer extends Panel implements Runnable {
         case 5: // "initScript"
             if (value != null) {
                 value = value.replace("\\n", "\n");
-                this.scriptParser.parse(new StringReader(value)).applySubtreeTo(this.initCube, false);
+                RubiksCubeCore initCube = new RubiksCubeCore();
+                this.scriptParser.parse(new StringReader(value)).applySubtreeTo(initCube, false);
                 this.player.reset();
+                this.player.getCubeModel().setTo(initCube);
             }
             break;
         case 8: // "stickers"

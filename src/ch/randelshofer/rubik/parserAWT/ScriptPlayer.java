@@ -176,11 +176,7 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
                 }
                 return;
             }
-            if (scriptNode.getStartPosition() > cursor) {
-                return;
-            }
         }
-        // this.progress.setValue(this.scriptVector.size()); // 点击步骤后边的空白移到最后
     }
 
     private void updateEnabled() {
