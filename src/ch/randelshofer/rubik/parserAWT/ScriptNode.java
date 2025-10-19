@@ -96,7 +96,7 @@ public class ScriptNode extends DefaultMutableTreeNode {
     }
 
     public int getSymbol() {
-        return 113;
+        return ScriptParser.SCRIPT_EXPRESSION;
     }
 
     public void transform(int axis) {

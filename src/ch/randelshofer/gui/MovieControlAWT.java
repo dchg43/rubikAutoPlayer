@@ -84,12 +84,16 @@ public class MovieControlAWT extends Panel implements ActionListener, ItemListen
         if (this.player != null) {
             this.player.removeChangeListener(this);
         }
-        this.player = player;
-        this.boundedRangeModel = this.player == null ? null : this.player.getBoundedRangeModel();
-        this.slider.setModel(this.boundedRangeModel);
-        if (this.player != null) {
+        if (player != null) {
+            this.player = player;
+            this.boundedRangeModel = this.player.getBoundedRangeModel();
+            this.slider.setModel(this.boundedRangeModel);
             this.startButton.setSelected(this.player.isActive());
             this.player.addChangeListener(this);
+        } else {
+            this.player = null;
+            this.boundedRangeModel = null;
+            this.slider.setModel(null);
         }
     }
 

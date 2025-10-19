@@ -38,9 +38,7 @@ public class MovieSliderAWT extends Canvas implements ChangeListener {
             this.model_.removeChangeListener(this);
         }
         this.model_ = boundedRangeModel == null ? new DefaultBoundedRangeModel() : boundedRangeModel;
-        if (this.model_ != null) {
-            this.model_.addChangeListener(this);
-        }
+        this.model_.addChangeListener(this);
         repaint();
     }
 

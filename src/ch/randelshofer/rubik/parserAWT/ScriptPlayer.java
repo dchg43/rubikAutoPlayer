@@ -129,7 +129,7 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
     public void setCube3D(AbstractCube3DAWT abstractCube3DAWT) {
         if (this.cube3D != null) {
             this.cube3D.removeChangeListener(this.canvas);
-            this.cube3D.setModel(new RubiksCubeCore());
+            this.cube3D.setModel(null);
         }
         this.cube3D = abstractCube3DAWT;
         if (this.cube3D != null) {
@@ -230,7 +230,6 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
             this.state = RUNNING;
         }
 
-        fireStateChanged();
         if (this.progress.getMaximum() > 0) {
             if (this.progress.getValue() == this.progress.getMaximum()) {
                 this.progress.setValue(0);
@@ -242,8 +241,8 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
                 this.model.setQuiet(false);
             }
             this.isProcessingCurrentSymbol = true;
+            fireStateChanged();
             while ((this.state == RUNNING && this.progress.getValue() != this.progress.getMaximum()) || this.scriptIndex != this.progress.getValue()) {
-                fireStateChanged();
                 int iMin = Math.min(this.progress.getValue() + 1, this.progress.getMaximum());
                 if (this.scriptIndex == iMin - 1) {
                     ScriptNode scriptNode = this.scriptVector.elementAt(this.scriptIndex++);
