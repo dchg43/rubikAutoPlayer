@@ -126,9 +126,12 @@ public class MultilineLabel extends Canvas {
     }
 
     public synchronized void select(int startPosition, int endPosition) {
+        if (endPosition > this.text.length() || endPosition < startPosition || startPosition < 0) {
+            return;
+        }
         if (this.selectionStart != startPosition || this.selectionEnd != endPosition) {
-            this.selectionStart = Math.min(this.text.length(), Math.max(0, startPosition));
-            this.selectionEnd = Math.min(this.text.length(), Math.max(startPosition, endPosition));
+            this.selectionStart = startPosition;
+            this.selectionEnd = endPosition;
             repaint();
         }
     }

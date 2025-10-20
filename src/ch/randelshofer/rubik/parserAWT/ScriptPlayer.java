@@ -167,13 +167,7 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
         for (int i = 0; i < this.scriptVector.size(); i++) {
             ScriptNode scriptNode = this.scriptVector.elementAt(i);
             if (scriptNode.getStartPosition() <= cursor && scriptNode.getEndPosition() >= cursor) {
-                if (isActive()) {
-                    stop();
-                    this.progress.setValue(i);
-                    start();
-                } else {
-                    this.progress.setValue(i);
-                }
+                this.progress.setValue(i);
                 return;
             }
         }
@@ -243,22 +237,23 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
                 if (this.scriptIndex == iMin - 1) {
                     ScriptNode scriptNode = this.scriptVector.elementAt(this.scriptIndex++);
                     scriptNode.applyTo(this.model);
+                    this.progress.setValue(this.progress.getValue() + 1);
                 } else if (this.scriptIndex == iMin + 1) {
                     ScriptNode scriptNode = this.scriptVector.elementAt(--this.scriptIndex);
                     scriptNode.applyInverseTo(this.model);
+                    this.progress.setValue(this.progress.getValue() + 1);
                 } else {
                     this.model.setQuiet(true);
-                    while (this.scriptIndex < iMin) {
+                    while (this.scriptIndex < iMin - 1) {
                         ScriptNode scriptNode = this.scriptVector.elementAt(this.scriptIndex++);
                         scriptNode.applyTo(this.model);
                     }
-                    while (this.scriptIndex > iMin) {
+                    while (this.scriptIndex > iMin - 1) {
                         ScriptNode scriptNode = this.scriptVector.elementAt(--this.scriptIndex);
                         scriptNode.applyInverseTo(this.model);
                     }
                     this.model.setQuiet(false);
                 }
-                this.progress.setValue(this.progress.getValue() + 1);
                 fireStateChanged();
             }
             this.isProcessingCurrentSymbol = false;
@@ -352,7 +347,7 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
     }
 
     public ScriptNode getCurrentSymbol() {
-        int i = this.scriptIndex;
+        int i = this.progress.getValue();
         if (i < this.scriptVector.size()) {
             return this.scriptVector.elementAt(i);
         }
@@ -392,10 +387,10 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
         }
         int value = this.progress.getValue();
         if (this.scriptIndex == value - 1) {
-            fireStateChanged();
+            // fireStateChanged();
             this.scriptVector.elementAt(this.scriptIndex++).applyTo(this.model);
         } else if (this.scriptIndex == value + 1) {
-            fireStateChanged();
+            // fireStateChanged();
             ScriptNode scriptNode = this.scriptVector.elementAt(--this.scriptIndex);
             scriptNode.applyInverseTo(this.model);
         } else {

@@ -665,9 +665,6 @@ public class AutoPlayer extends Panel implements Runnable {
             startPosition = currentSymbol.getStartPosition();
             endPosition = currentSymbol.getEndPosition() + 1;
         }
-        if (endPosition > this.scriptTextArea.getText().length()) {
-            return;
-        }
         Color backColor = this.player.isProcessingCurrentSymbol() ? MultilineLabel.activeSelectionBackground : MultilineLabel.inactiveSelectionBackground;
         this.scriptTextArea.select(startPosition, endPosition);
         this.scriptTextArea.setSelectionBackground(backColor);

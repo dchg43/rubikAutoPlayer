@@ -6,8 +6,8 @@ public class SequenceNode extends ScriptNode {
     public SequenceNode() {
     }
 
-    public SequenceNode(int i, int i2) {
-        super(i, i2);
+    public SequenceNode(int startpos, int endpos) {
+        super(startpos, endpos);
     }
 
     @Override
