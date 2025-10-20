@@ -6,24 +6,24 @@ import java.util.NoSuchElementException;
 import ch.randelshofer.gui.tree.DefaultMutableTreeNode;
 
 public class SingletonEnumeration implements Enumeration<DefaultMutableTreeNode> {
-    private DefaultMutableTreeNode object;
+    private DefaultMutableTreeNode aloneNode;
 
     public SingletonEnumeration(DefaultMutableTreeNode defaultMutableTreeNode) {
-        this.object = defaultMutableTreeNode;
+        this.aloneNode = defaultMutableTreeNode;
     }
 
     @Override
     public boolean hasMoreElements() {
-        return this.object != null;
+        return this.aloneNode != null;
     }
 
     @Override
     public synchronized DefaultMutableTreeNode nextElement() {
-        if (this.object == null) {
+        if (this.aloneNode == null) {
             throw new NoSuchElementException();
         }
-        DefaultMutableTreeNode obj = this.object;
-        this.object = null;
-        return obj;
+        DefaultMutableTreeNode node = this.aloneNode;
+        this.aloneNode = null;
+        return node;
     }
 }

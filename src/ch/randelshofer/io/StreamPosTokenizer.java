@@ -195,8 +195,7 @@ public class StreamPosTokenizer {
     private int read() throws IOException {
         int iIntValue;
         if (this.unread.size() > 0) {
-            iIntValue = this.unread.lastElement().intValue();
-            this.unread.removeElementAt(this.unread.size() - 1);
+            iIntValue = this.unread.remove(this.unread.size() - 1).intValue();
         } else {
             iIntValue = this.reader.read();
         }

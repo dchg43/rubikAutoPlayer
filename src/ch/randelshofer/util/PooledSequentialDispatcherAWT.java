@@ -30,33 +30,33 @@ public class PooledSequentialDispatcherAWT implements Runnable {
             this.queue.addElement(runnable);
             if (this.state == STOPPED) {
                 this.state = STARTING;
-                concurrentDispatcherAWT.dispatch(this);
             }
         }
+        concurrentDispatcherAWT.dispatch(this);
     }
 
     public void reassign() {
+        stop();
         synchronized (this.queue) {
-            stop();
             if (!this.queue.isEmpty()) {
                 this.state = STARTING;
-                threadPool.dispatch(this);
             }
         }
+        threadPool.dispatch(this);
     }
 
     public void stop() {
         synchronized (this.queue) {
             if (this.state == RUNNING) {
                 this.state = STOPPING;
-                while (this.state != STOPPED) {
-                    try {
-                        this.queue.wait();
-                    } catch (InterruptedException e) {
-                    }
-                }
             } else {
                 this.state = STOPPED;
+            }
+            while (this.state != STOPPED) {
+                try {
+                    this.queue.wait();
+                } catch (InterruptedException e) {
+                }
             }
         }
     }
@@ -71,23 +71,24 @@ public class PooledSequentialDispatcherAWT implements Runnable {
         synchronized (this.queue) {
             if (this.state == STARTING) {
                 this.state = RUNNING;
-                while (true) {
-                    synchronized (this.queue) {
-                        if (this.queue.isEmpty() || this.state != RUNNING) {
-                            break;
-                        }
-                        objElementAt = this.queue.elementAt(0);
-                        this.queue.removeElementAt(0);
-                    }
-                    try {
-                        objElementAt.run();
-                    } catch (Throwable th) {
-                        th.printStackTrace();
-                    }
-                }
-                this.state = STOPPED;
-                this.queue.notifyAll();
             }
+        }
+        while (true) {
+            synchronized (this.queue) {
+                if (this.queue.isEmpty() || this.state != RUNNING) {
+                    break;
+                }
+                objElementAt = this.queue.remove(0);
+            }
+            try {
+                objElementAt.run();
+            } catch (Throwable th) {
+                th.printStackTrace();
+            }
+        }
+        synchronized (this.queue) {
+            this.state = STOPPED;
+            this.queue.notifyAll(); // Interrupted this.queue.wait()
         }
     }
 }

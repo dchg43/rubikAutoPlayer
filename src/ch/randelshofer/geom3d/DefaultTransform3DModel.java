@@ -55,14 +55,14 @@ public class DefaultTransform3DModel extends AbstractStateModel implements Trans
     }
 
     @Override
-    public void concatenate(Transform3D transform3D) {
-        this.transform.concatenate(transform3D);
+    public void concatenate(Transform3D transform) {
+        this.transform.concatenate(transform);
         fireStateChanged();
     }
 
     @Override
-    public void setTransform(Transform3D transform3D) {
-        this.transform.setTransform(transform3D);
+    public void setTransform(Transform3D transform) {
+        this.transform.setTransform(transform);
         fireStateChanged();
     }
 
@@ -72,9 +72,9 @@ public class DefaultTransform3DModel extends AbstractStateModel implements Trans
     }
 
     @Override
-    public Transform3D getTransform(Transform3D transform3D) {
-        transform3D.setTransform(this.transform);
-        return transform3D;
+    public Transform3D getTransform(Transform3D transform) {
+        transform.setTransform(this.transform);
+        return transform;
     }
 
     @Override

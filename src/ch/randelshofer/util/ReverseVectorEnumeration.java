@@ -22,9 +22,6 @@ public class ReverseVectorEnumeration implements Enumeration<DefaultMutableTreeN
 
     @Override
     public DefaultMutableTreeNode nextElement() {
-        Vector<DefaultMutableTreeNode> vector = this.vector;
-        int i = this.index;
-        this.index = i - 1;
-        return vector.elementAt(i);
+        return this.vector.elementAt(this.index--);
     }
 }

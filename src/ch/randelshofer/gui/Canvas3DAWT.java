@@ -141,12 +141,12 @@ public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener
             this.backSize = size;
             this.unpaintedStates = 1;
         }
-        synchronized (this.lock) {
-            if (this.unpaintedStates > 0) {
+        if (this.unpaintedStates > 0) {
+            synchronized (this.lock) {
                 this.unpaintedStates = 0;
-                paintBackground(this.backGfx);
-                paint3D(this.backGfx);
             }
+            paintBackground(this.backGfx);
+            paint3D(this.backGfx);
         }
         graphics.drawImage(this.backImg, 0, 0, this);
     }

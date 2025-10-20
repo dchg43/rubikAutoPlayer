@@ -16,14 +16,14 @@ public class TwistNode extends ScriptNode {
         setAllowsChildren(false);
     }
 
-    public TwistNode(int i) {
-        this.symbol = i;
+    public TwistNode(int symbol) {
+        this.symbol = symbol;
         setAllowsChildren(false);
     }
 
-    public TwistNode(int i, int i2, int i3) {
-        super(i2, i3);
-        this.symbol = i;
+    public TwistNode(int symbol, int startpos, int endpos) {
+        super(startpos, endpos);
+        this.symbol = symbol;
         setAllowsChildren(false);
     }
 
@@ -32,8 +32,8 @@ public class TwistNode extends ScriptNode {
         return this.symbol;
     }
 
-    public void setSymbol(int i) {
-        this.symbol = i;
+    public void setSymbol(int symbol) {
+        this.symbol = symbol;
     }
 
     @Override
@@ -41,8 +41,8 @@ public class TwistNode extends ScriptNode {
         applyTo(rubiksCubeCore, false);
     }
 
-    public void applyTo(RubiksCubeCore rubiksCubeCore, boolean z) {
-        ScriptParser.applyTo(rubiksCubeCore, this.symbol, z);
+    public void applyTo(RubiksCubeCore rubiksCubeCore, boolean inverse) {
+        ScriptParser.applyTo(rubiksCubeCore, this.symbol, inverse);
     }
 
     @Override
@@ -71,8 +71,8 @@ public class TwistNode extends ScriptNode {
     }
 
     @Override
-    public Enumeration<DefaultMutableTreeNode> resolvedEnumeration(boolean z) {
-        if (z) {
+    public Enumeration<DefaultMutableTreeNode> resolvedEnumeration(boolean inverse) {
+        if (inverse) {
             TwistNode twistNode = (TwistNode) clone();
             twistNode.inverse();
             return new SingletonEnumeration(twistNode);
@@ -81,8 +81,8 @@ public class TwistNode extends ScriptNode {
     }
 
     @Override
-    public void transform(int i) {
-        this.symbol = ScriptParser.transformSymbol(i, this.symbol);
+    public void transform(int symbol) {
+        this.symbol = ScriptParser.transformSymbol(symbol, this.symbol);
     }
 
     @Override

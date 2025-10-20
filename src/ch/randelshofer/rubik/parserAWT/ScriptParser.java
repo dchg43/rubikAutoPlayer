@@ -1070,25 +1070,25 @@ public class ScriptParser {
         }
     }
 
-    private void consumeGreedy(StreamPosTokenizer streamPosTokenizer, String str) {
-        if (str.length() < streamPosTokenizer.sval.length()) {
+    private void consumeGreedy(StreamPosTokenizer streamPosTokenizer, String token) {
+        if (token.length() < streamPosTokenizer.sval.length()) {
             streamPosTokenizer.pushBack();
-            streamPosTokenizer.setStartPosition(streamPosTokenizer.getStartPosition() + str.length());
-            streamPosTokenizer.sval = streamPosTokenizer.sval.substring(str.length());
+            streamPosTokenizer.setStartPosition(streamPosTokenizer.getStartPosition() + token.length());
+            streamPosTokenizer.sval = streamPosTokenizer.sval.substring(token.length());
         }
     }
 
-    public String getFirstToken(int i) {
-        if (0 > i || i >= this.tokens.length || this.tokens[i] == null || this.tokens[i].length <= 0) {
+    public String getFirstToken(int line) {
+        if (0 > line || line >= this.tokens.length || this.tokens[line] == null || this.tokens[line].length <= 0) {
             return null;
         }
-        return this.tokens[i][0];
+        return this.tokens[line][0];
     }
 
-    public int getSymbol(String str) {
-        Integer num = this.transformationMap.get(str);
+    public int getSymbol(String token) {
+        Integer num = this.transformationMap.get(token);
         if (num == null) {
-            num = this.permutationMap.get(str);
+            num = this.permutationMap.get(token);
         }
         if (num == null) {
             return -1;
@@ -1096,194 +1096,194 @@ public class ScriptParser {
         return num.intValue();
     }
 
-    public static void applyTo(RubiksCubeCore rubiksCubeCore, int i, boolean z) {
-        if (0 > i || i >= 84) {
+    public static void applyTo(RubiksCubeCore rubiksCubeCore, int symbol, boolean inverse) {
+        if (0 > symbol || symbol >= 84) {
             return;
         }
-        int angle = getAngle(i);
-        rubiksCubeCore.transform(getAxis(i), getLayerMask(i), z ? -angle : angle);
+        int angle = getAngle(symbol);
+        rubiksCubeCore.transform(getAxis(symbol), getLayerMask(symbol), inverse ? -angle : angle);
     }
 
-    public static int getAxis(int i) {
-        if (0 > i || i >= 84) {
+    public static int getAxis(int symbol) {
+        if (0 > symbol || symbol >= 84) {
             return -1;
         }
-        return i % 3;
+        return symbol % 3;
     }
 
-    public static int getAngle(int i) {
-        if (0 > i || i >= 84) {
+    public static int getAngle(int symbol) {
+        if (0 > symbol || symbol >= 84) {
             return 0;
         }
-        int i2 = (i / 3) % 2 == 0 ? 1 : -1;
-        if (i <= 47) {
-            i2 = (i / 6) % 2 == 0 ? i2 : -i2;
+        int i2 = (symbol / 3) % 2 == 0 ? 1 : -1;
+        if (symbol <= 47) {
+            i2 = (symbol / 6) % 2 == 0 ? i2 : -i2;
         }
-        if ((12 <= i && i <= 23) || ((36 <= i && i <= 47) || ((54 <= i && i <= 59) || ((66 <= i && i <= 71) || (78 <= i && i <= 83))))) {
+        if ((12 <= symbol && symbol <= 23) || ((36 <= symbol && symbol <= 47) || ((54 <= symbol && symbol <= 59) || ((66 <= symbol && symbol <= 71) || (78 <= symbol && symbol <= 83))))) {
             i2 *= 2;
         }
         return i2;
     }
 
-    public static int getLayerMask(int i) {
-        if (0 > i || i > 83) {
+    public static int getLayerMask(int symbol) {
+        if (0 > symbol || symbol > 83) {
             return 0;
         }
-        if (i <= 23) {
-            return ((i / 3) & 1) == 1 ? 1 : 4;
+        if (symbol <= 23) {
+            return ((symbol / 3) & 1) == 1 ? 1 : 4;
         }
-        if (i <= 47) {
-            return ((i / 3) & 1) == 1 ? 3 : 6;
+        if (symbol <= 47) {
+            return ((symbol / 3) & 1) == 1 ? 3 : 6;
         }
-        if (i <= 59) {
+        if (symbol <= 59) {
             return 2;
         }
-        return i <= 71 ? 5 : 7;
+        return symbol <= 71 ? 5 : 7;
     }
 
-    public static int getSymbol(int i, int i2, int i3) {
-        if (i == -1 || i2 == 0 || i3 == 0) {
+    public static int getSymbol(int axis, int layer, int angle) {
+        if (axis == -1 || layer == 0 || angle == 0) {
             return 84;
         }
-        int i4 = (i3 == 2 || i3 == -2) ? 1 : 0;
-        int i5 = i3 < 0 ? 1 : 0;
-        switch (i2) {
+        int i4 = (angle == 2 || angle == -2) ? 1 : 0;
+        int i5 = angle < 0 ? 1 : 0;
+        switch (layer) {
         case 1:
-            return 3 + i + (i4 * 12) + ((1 - i5) * 6);
+            return 3 + axis + (i4 * 12) + ((1 - i5) * 6);
         case 2:
-            return 48 + i + (i4 * 6) + (i5 * 3);
+            return 48 + axis + (i4 * 6) + (i5 * 3);
         case 3:
-            return 27 + i + (i4 * 12) + ((1 - i5) * 6);
+            return 27 + axis + (i4 * 12) + ((1 - i5) * 6);
         case D: /* 4 */
-            return 0 + i + (i4 * 12) + (i5 * 6);
+            return 0 + axis + (i4 * 12) + (i5 * 6);
         case B: /* 5 */
-            return 60 + i + (i4 * 12) + (i5 * 6);
+            return 60 + axis + (i4 * 12) + (i5 * 6);
         case Ri:/* 6 */
-            return 24 + i + (i4 * 12) + (i5 * 6);
+            return 24 + axis + (i4 * 12) + (i5 * 6);
         case Ui: /* 7 */
-            return 72 + i + (i4 * 6) + (i5 * 3);
+            return 72 + axis + (i4 * 6) + (i5 * 3);
         default:
             return 84;
         }
     }
 
-    public static int inverseSymbol(int i) {
-        if (i >= 0) {
-            if (i <= 47) {
-                return (i / 6) % 2 == 0 ? i + 6 : i - 6;
+    public static int inverseSymbol(int symbol) {
+        if (symbol >= 0) {
+            if (symbol <= 47) {
+                return (symbol / 6) % 2 == 0 ? symbol + 6 : symbol - 6;
             }
-            if (i <= 83) {
-                return ((i - 48) / 3) % 2 == 0 ? i + 3 : i - 3;
+            if (symbol <= 83) {
+                return ((symbol - 48) / 3) % 2 == 0 ? symbol + 3 : symbol - 3;
             }
         }
-        return i;
+        return symbol;
     }
 
-    public static int reflectSymbol(int paramInt) {
-        if (0 > paramInt || paramInt > 84) {
-            return paramInt;
+    public static int reflectSymbol(int symbol) {
+        if (0 > symbol || symbol > 84) {
+            return symbol;
         }
-        int i = getAxis(paramInt);
-        int j = getLayerMask(paramInt);
-        int k = getAngle(paramInt);
-        int m = (j & 0x4) >>> 2 | j & 0x2 | (j & 0x1) << 2;
-        return getSymbol(i, m, k);
+        int axis = getAxis(symbol);
+        int layerMask = getLayerMask(symbol);
+        int angle = getAngle(symbol);
+        int layer = (layerMask & 0x4) >>> 2 | layerMask & 0x2 | (layerMask & 0x1) << 2;
+        return getSymbol(axis, layer, angle);
     }
 
-    public static boolean isRotationSymbol(int i) {
-        return 72 <= i && i <= 83;
+    public static boolean isRotationSymbol(int symbol) {
+        return 72 <= symbol && symbol <= 83;
     }
 
-    public static boolean isMidlayerSymbol(int i) {
-        return 48 <= i && i <= 59;
+    public static boolean isMidlayerSymbol(int symbol) {
+        return 48 <= symbol && symbol <= 59;
     }
 
-    public static boolean isSliceSymbol(int i) {
-        return 60 <= i && i <= 71;
+    public static boolean isSliceSymbol(int symbol) {
+        return 60 <= symbol && symbol <= 71;
     }
 
-    public static int transformSymbol(int i, int i2) {
-        if (i == 96) {
-            return reflectSymbol(i2);
+    public static int transformSymbol(int srcSymbol, int destSymbol) {
+        if (srcSymbol == 96) {
+            return reflectSymbol(destSymbol);
         }
-        if (i == 95) {
-            return inverseSymbol(i2);
+        if (srcSymbol == 95) {
+            return inverseSymbol(destSymbol);
         }
-        if (i2 >= 84 || i >= 84) {
-            return i2;
+        if (destSymbol >= 84 || srcSymbol >= 84) {
+            return destSymbol;
         }
-        int axis = getAxis(i2);
-        int axis2 = getAxis(i);
-        int angle = getAngle(i2);
-        int angle2 = getAngle(i);
-        int layerMask = getLayerMask(i2);
-        int i3 = -1;
-        int i4 = -1;
-        int i5 = -1;
-        int i6 = ((layerMask & 0x4) >>> 2) | (layerMask & 0x2) | ((layerMask & 0x1) << 2);
-        if (axis == axis2 || angle2 == 0) {
-            return i2;
+        int axisSrc = getAxis(srcSymbol);
+        int axisDest = getAxis(destSymbol);
+        int angleSrc = getAngle(srcSymbol);
+        int angleDest = getAngle(destSymbol);
+        int layerMask = getLayerMask(destSymbol);
+        int axis = -1;
+        int angle = -1;
+        int layer = -1;
+        int layerDest = ((layerMask & 0x4) >>> 2) | (layerMask & 0x2) | ((layerMask & 0x1) << 2);
+        if (axisDest == axisSrc || angleSrc == 0) {
+            return destSymbol;
         }
-        switch (axis2) {
+        switch (axisSrc) {
         case 0:
-            switch (angle2) {
+            switch (angleSrc) {
             case StreamPosTokenizer.TT_NUMBER: /* -2 */
             case 2:
-                i3 = axis;
-                i4 = -angle;
-                i5 = i6;
+                axis = axisDest;
+                angle = -angleDest;
+                layer = layerDest;
                 break;
             case StreamPosTokenizer.TT_EOF: /* -1 */
-                i3 = axis == 2 ? 1 : 2;
-                i5 = axis == 2 ? i6 : layerMask;
-                i4 = axis == 2 ? -angle : angle;
+                axis = axisDest == 2 ? 1 : 2;
+                layer = axisDest == 2 ? layerDest : layerMask;
+                angle = axisDest == 2 ? -angleDest : angleDest;
                 break;
             case 1:
-                i3 = axis == 1 ? 2 : 1;
-                i5 = axis == 1 ? i6 : layerMask;
-                i4 = axis == 1 ? -angle : angle;
+                axis = axisDest == 1 ? 2 : 1;
+                layer = axisDest == 1 ? layerDest : layerMask;
+                angle = axisDest == 1 ? -angleDest : angleDest;
                 break;
             }
         case 1:
-            switch (angle2) {
+            switch (angleSrc) {
             case StreamPosTokenizer.TT_NUMBER: /* -2 */
             case 2:
-                i3 = axis;
-                i5 = i6;
-                i4 = -angle;
+                axis = axisDest;
+                layer = layerDest;
+                angle = -angleDest;
                 break;
             case -1:
-                i3 = axis == 0 ? 2 : 0;
-                i5 = axis == 0 ? i6 : layerMask;
-                i4 = axis == 0 ? -angle : angle;
+                axis = axisDest == 0 ? 2 : 0;
+                layer = axisDest == 0 ? layerDest : layerMask;
+                angle = axisDest == 0 ? -angleDest : angleDest;
                 break;
             case 1:
-                i3 = axis == 2 ? 0 : 2;
-                i5 = axis == 2 ? i6 : layerMask;
-                i4 = axis == 2 ? -angle : angle;
+                axis = axisDest == 2 ? 0 : 2;
+                layer = axisDest == 2 ? layerDest : layerMask;
+                angle = axisDest == 2 ? -angleDest : angleDest;
                 break;
             }
         case 2:
-            switch (angle2) {
+            switch (angleSrc) {
             case StreamPosTokenizer.TT_NUMBER: /* -2 */
             case 2:
-                i3 = axis;
-                i5 = i6;
-                i4 = -angle;
+                axis = axisDest;
+                layer = layerDest;
+                angle = -angleDest;
                 break;
             case -1:
-                i3 = axis == 1 ? 0 : 1;
-                i5 = axis == 1 ? i6 : layerMask;
-                i4 = axis == 1 ? -angle : angle;
+                axis = axisDest == 1 ? 0 : 1;
+                layer = axisDest == 1 ? layerDest : layerMask;
+                angle = axisDest == 1 ? -angleDest : angleDest;
                 break;
             case 1:
-                i3 = axis == 0 ? 1 : 0;
-                i5 = axis == 0 ? i6 : layerMask;
-                i4 = axis == 0 ? -angle : angle;
+                axis = axisDest == 0 ? 1 : 0;
+                layer = axisDest == 0 ? layerDest : layerMask;
+                angle = axisDest == 0 ? -angleDest : angleDest;
                 break;
             }
         }
-        return getSymbol(i3, i5, i4);
+        return getSymbol(axis, layer, angle);
     }
 
     @Override

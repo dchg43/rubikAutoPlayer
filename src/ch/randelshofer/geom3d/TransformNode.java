@@ -18,8 +18,8 @@ public class TransformNode implements SceneNode {
         return this.children.elementAt(i);
     }
 
-    public void setTransform(Transform3D transform3D) {
-        this.transform = transform3D;
+    public void setTransform(Transform3D transform) {
+        this.transform = transform;
     }
 
     public Transform3D getTransform() {
@@ -31,13 +31,13 @@ public class TransformNode implements SceneNode {
     }
 
     @Override
-    public void addVisibleFaces(Vector<Face3D> visibleFaces, Transform3D transform3D, Point3D point3D) {
+    public void addVisibleFaces(Vector<Face3D> visibleFaces, Transform3D transform, Point3D point3D) {
         if (this.isVisible) {
-            Transform3D transform3D2 = (Transform3D) this.transform.clone();
-            transform3D2.concatenate(transform3D);
+            Transform3D transformClone = (Transform3D) this.transform.clone();
+            transformClone.concatenate(transform);
             Enumeration<SceneNode> enumerationElements = this.children.elements();
             while (enumerationElements.hasMoreElements()) {
-                enumerationElements.nextElement().addVisibleFaces(visibleFaces, transform3D2, point3D);
+                enumerationElements.nextElement().addVisibleFaces(visibleFaces, transformClone, point3D);
             }
         }
     }

@@ -186,8 +186,7 @@ public class DefaultMutableTreeNode implements Cloneable, Serializable {
     }
 
     public void remove(int index) {
-        DefaultMutableTreeNode child = getChildAt(index);
-        this.children.removeElementAt(index);
+        DefaultMutableTreeNode child = this.children.remove(index);
         child.setParent(null);
     }
 

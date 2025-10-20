@@ -15,21 +15,21 @@ public class RotatedTransform3DModel extends AbstractStateModel implements Trans
         this.model.addChangeListener(this);
     }
 
-    public RotatedTransform3DModel(double x, double y, double z, Transform3DModel transform3DModel) {
+    public RotatedTransform3DModel(double x, double y, double z, Transform3DModel model) {
         this.rotator = new Transform3D(x, y, z);
-        this.model = transform3DModel;
+        this.model = model;
         this.model.addChangeListener(this);
     }
 
-    public void setModel(Transform3DModel transform3DModel) {
+    public void setModel(Transform3DModel model) {
         this.model.removeChangeListener(this);
-        this.model = transform3DModel;
+        this.model = model;
         this.model.addChangeListener(this);
     }
 
     @Override
-    public void concatenate(Transform3D transform3D) {
-        this.model.concatenate(transform3D);
+    public void concatenate(Transform3D transform) {
+        this.model.concatenate(transform);
     }
 
     @Override
@@ -40,10 +40,10 @@ public class RotatedTransform3DModel extends AbstractStateModel implements Trans
     }
 
     @Override
-    public Transform3D getTransform(Transform3D transform3D) {
-        this.model.getTransform(transform3D);
-        transform3D.concatenate(this.rotator);
-        return transform3D;
+    public Transform3D getTransform(Transform3D transform) {
+        this.model.getTransform(transform);
+        transform.concatenate(this.rotator);
+        return transform;
     }
 
     @Override
@@ -89,8 +89,8 @@ public class RotatedTransform3DModel extends AbstractStateModel implements Trans
     }
 
     @Override
-    public void setTransform(Transform3D transform3D) {
-        this.model.setTransform(transform3D);
+    public void setTransform(Transform3D transform) {
+        this.model.setTransform(transform);
     }
 
     @Override

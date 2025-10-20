@@ -81,16 +81,16 @@ public class Shape3D implements SceneNode {
     }
 
     @Override
-    public void addVisibleFaces(Vector<Face3D> visibleFaces, Transform3D transform3D, Point3D point3D) {
+    public void addVisibleFaces(Vector<Face3D> visibleFaces, Transform3D transform, Point3D point3D) {
         if (this.isVisible) {
-            Transform3D transform3D2 = (Transform3D) this.transform.clone();
-            transform3D2.concatenate(transform3D);
-            double[] fArr = new double[this.coords.length];
-            transform3D2.transformTo(this.coords, 0, fArr, 0, this.coords.length);
+            Transform3D transformClone = (Transform3D) this.transform.clone();
+            transformClone.concatenate(transform);
+            double[] coords = new double[this.coords.length];
+            transformClone.transformTo(this.coords, 0, coords, 0, this.coords.length);
             createFaces();
             int length = this.isReduced ? this.reducedFaceCount : this.faces.length;
             for (int i = 0; i < length; i++) {
-                this.faces3D[i].setCoords(fArr);
+                this.faces3D[i].setCoords(coords);
                 if (this.faces3D[i].isVisible(point3D)) {
                     visibleFaces.addElement(this.faces3D[i]);
                 }

@@ -17,13 +17,13 @@ public interface Transform3DModel {
 
     void translate(double x, double y, double z);
 
-    void concatenate(Transform3D transform3D);
+    void concatenate(Transform3D transform);
 
     Transform3D getTransform();
 
-    Transform3D getTransform(Transform3D transform3D);
+    Transform3D getTransform(Transform3D transform);
 
-    void setTransform(Transform3D transform3D);
+    void setTransform(Transform3D transform);
 
     void addChangeListener(ChangeListener changeListener);
 

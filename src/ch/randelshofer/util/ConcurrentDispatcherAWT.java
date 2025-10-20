@@ -21,41 +21,44 @@ public class ConcurrentDispatcherAWT implements Runnable {
         this(5, 5);
     }
 
-    public ConcurrentDispatcherAWT(int i, int i2) {
+    public ConcurrentDispatcherAWT(int priority, int threadMax) {
         this.queue = new Vector<>();
         this.blockingPolicy = ENQUEUE_WHEN_BLOCKED;
-        this.priority = i;
-        this.threadMax = i2;
+        this.priority = priority;
+        this.threadMax = threadMax;
     }
 
-    public void setMaxThreads(int i) {
-        this.threadMax = i;
+    public void setMaxThreads(int threadMax) {
+        this.threadMax = threadMax;
     }
 
     public void dispatch(Runnable runnable) {
-        synchronized (this.queue) {
-            if (this.threadCount >= this.threadMax) {
-                if (this.blockingPolicy == ENQUEUE_WHEN_BLOCKED) {
+        if (this.threadCount >= this.threadMax) {
+            if (this.blockingPolicy == ENQUEUE_WHEN_BLOCKED) {
+                synchronized (this.queue) {
                     this.queue.addElement(runnable);
-                    return;
-                } else {
-                    runnable.run();
-                    return;
+                    this.threadCount++;
                 }
+            } else {
+                runnable.run();
             }
-            this.queue.addElement(runnable);
-            Thread thread = new Thread(this, this + " Processor");
-            this.threadCount++;
-            try {
-                thread.setDaemon(false);
-            } catch (SecurityException e) {
-            }
-            try {
-                thread.setPriority(this.priority);
-            } catch (SecurityException e2) {
-            }
-            thread.start();
+            return;
         }
+        synchronized (this.queue) {
+            this.queue.addElement(runnable);
+            this.threadCount++;
+        }
+
+        Thread thread = new Thread(this, this + " Processor");
+        try {
+            thread.setDaemon(false);
+        } catch (SecurityException e) {
+        }
+        try {
+            thread.setPriority(this.priority);
+        } catch (SecurityException e2) {
+        }
+        thread.start();
     }
 
     @Override
@@ -67,8 +70,7 @@ public class ConcurrentDispatcherAWT implements Runnable {
                     this.threadCount--;
                     return;
                 } else {
-                    objElementAt = this.queue.elementAt(0);
-                    this.queue.removeElementAt(0);
+                    objElementAt = this.queue.remove(0);
                 }
             }
             try {

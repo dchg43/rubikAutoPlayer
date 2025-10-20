@@ -37,7 +37,6 @@ public class Polygon3D {
     }
 
     public Polygon3D(short[][] points, int pos, int npoints) {
-        this.npoints = npoints;
         this.xpoints = new double[npoints];
         this.ypoints = new double[npoints];
         this.zpoints = new double[npoints];
@@ -46,6 +45,7 @@ public class Polygon3D {
             this.ypoints[i3] = points[i3][1];
             this.zpoints[i3] = points[i3][2];
         }
+        this.npoints = npoints;
     }
 
     public void addPoint(double x, double y, double z) {

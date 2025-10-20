@@ -167,7 +167,9 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
         for (int i = 0; i < this.scriptVector.size(); i++) {
             ScriptNode scriptNode = this.scriptVector.elementAt(i);
             if (scriptNode.getStartPosition() <= cursor && scriptNode.getEndPosition() >= cursor) {
+                // stop();
                 this.progress.setValue(i);
+                // start();
                 return;
             }
         }
@@ -193,14 +195,12 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
 
     @Override
     public void start() {
-        boolean z = false;
-        synchronized (this) {
-            if (this.state == STOPPED) {
-                this.state = STARTING;
-                z = true;
+        if (this.state == STOPPED) {
+            synchronized (this) {
+                if (this.state == STOPPED) {
+                    this.state = STARTING;
+                }
             }
-        }
-        if (z) {
             this.cube3D.getDispatcher().dispatch(this, threadPool);
             fireStateChanged();
         }
@@ -209,9 +209,6 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
     // 循环执行自动脚本
     @Override
     public void run() {
-        if (this.state == STOPPED) {
-            return;
-        }
         synchronized (this) {
             if (this.state != STARTING) {
                 this.state = STOPPED;
@@ -258,30 +255,30 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
             }
             this.isProcessingCurrentSymbol = false;
         }
+
         synchronized (this) {
             this.state = STOPPED;
-            notifyAll();
+            notifyAll(); // Interrupted wait()
         }
         fireStateChanged();
     }
 
     @Override
     public void stop() {
-        if (this.state == STOPPED) {
-            return;
-        }
         synchronized (this) {
-            if (this.state == RUNNING || this.state == STARTING) {
+            if (this.state == STOPPED) {
+                return;
+            }
+            if (this.state != STOPPING) {
                 this.state = STOPPING;
             } else {
                 this.state = STOPPED;
             }
-        }
-        while (this.state != STOPPED) {
-            try {
-                Thread.sleep(10L);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            while (this.state != STOPPED) {
+                try {
+                    wait();
+                } catch (InterruptedException e) {
+                }
             }
         }
         this.cube3D.getDispatcher().reassign();
