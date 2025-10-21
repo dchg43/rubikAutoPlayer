@@ -1118,21 +1118,21 @@ public class AutoPlayer extends Panel implements Runnable {
         }
 
         int mask = 0;
-        int depth = 18; // 建议 Step: 15 ~ 18
-        int maxDepth = 25;
-        int maxTries = 200; // 建议 200 ~ 1000
+        int depth = 15; // 建议 Step: 15 ~ 18
+        int maxDepth = 22;
+        int[] maxTries = {0, 0, 1, 3, 5, 300, 3000, 30000}; // 对应depth的15 16 17 18 19 20 21 22
         String result = "Error 8";
         char errkey = '8';
         while ((errkey == '8' && depth <= maxDepth) || errkey == '7') {
             result = this.search.solution(cubeString, depth, 100, 0, mask);
             errkey = result.length() > 0 ? result.charAt(result.length() - 1) : '0';
-            int tries = maxTries;
+            int tries = maxTries[depth - 15];
             while (errkey == '8' && tries > 0) {
                 result = this.search.next(100, 0, mask);
                 errkey = result.charAt(result.length() - 1);
                 tries--;
             }
-            System.out.println("depth:" + depth + ", result: " + result);
+            System.out.println("depth:" + depth + ", tries: " + (maxTries[depth - 15] - tries) + ", result: " + result);
             depth++;
         }
         lastResult = new String[]{cubeString, result};
