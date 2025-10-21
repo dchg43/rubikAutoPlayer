@@ -23,7 +23,7 @@ public class StreamPosTokenizer {
 
     private static final int NEED_CHAR = Integer.MAX_VALUE;
 
-    private static final int SKIP_LF = NEED_CHAR - 1;
+    private static final int SKIP_LF = Integer.MAX_VALUE - 1;
 
     private boolean pushedBack;
 

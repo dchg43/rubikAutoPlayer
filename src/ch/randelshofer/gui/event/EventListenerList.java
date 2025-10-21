@@ -33,8 +33,7 @@ public class EventListenerList {
         if (eventListener == null) {
             throw new IllegalArgumentException(new StringBuilder().append("Listener ").append(eventListener).append(" is null").toString());
         }
-        ListenerNode node = new ListenerNode(cls, eventListener);
-        this.listenerList.add(node);
+        this.listenerList.add(new ListenerNode(cls, eventListener));
     }
 
     public synchronized void remove(Class<?> cls, EventListener eventListener) {

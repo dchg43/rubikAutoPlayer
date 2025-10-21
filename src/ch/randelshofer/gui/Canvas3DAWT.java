@@ -273,9 +273,8 @@ public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener
             Color color = face3D.getFillColor();
             if (color != null) {
                 double brightness = face3D.getBrightness(this.lightSource, this.lightSourceIntensity, this.ambientLightIntensity);
-                if (brightness < 1.0d) {
-                    color = new Color((int) (brightness * color.getRed()), (int) (brightness * color.getGreen()), (int) (brightness * color.getBlue()));
-                }
+                color = new Color(Math.min(255, (int) (brightness * color.getRed())), Math.min(255, (int) (brightness * color.getGreen())),
+                        Math.min(255, (int) (brightness * color.getBlue())));
                 graphics.setColor(color);
                 graphics.fillPolygon(xpoints, ypoints, vertices.length);
             }

@@ -165,7 +165,7 @@ public class RubiksCubeCore implements Cloneable {
      * @param layerMask
      * @param times 旋转次数，负数表示逆时针
      */
-    public  void  transform(int axis, int layerMask, int times) {
+    public void transform(int axis, int layerMask, int times) {
         if (axis < 0 || axis > 2) {
             throw new IllegalArgumentException("axis: " + axis);
         }

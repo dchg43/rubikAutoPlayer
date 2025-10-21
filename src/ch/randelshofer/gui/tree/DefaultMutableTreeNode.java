@@ -19,7 +19,7 @@ public class DefaultMutableTreeNode implements Cloneable, Serializable {
 
     private boolean allowsChildren;
 
-    final class BreadthFirstEnumeration implements Enumeration<DefaultMutableTreeNode> {
+    public static final class BreadthFirstEnumeration implements Enumeration<DefaultMutableTreeNode> {
         private Queue queue;
 
         @SuppressWarnings("unused")
@@ -98,7 +98,7 @@ public class DefaultMutableTreeNode implements Cloneable, Serializable {
 
         @Override
         public boolean hasMoreElements() {
-            return !this.queue.isEmpty() && (this.queue.firstObject()).hasMoreElements();
+            return !this.queue.isEmpty() && this.queue.firstObject().hasMoreElements();
         }
 
         @Override
@@ -116,7 +116,7 @@ public class DefaultMutableTreeNode implements Cloneable, Serializable {
         }
     }
 
-    final class PreorderEnumeration implements Enumeration<DefaultMutableTreeNode> {
+    public static final class PreorderEnumeration implements Enumeration<DefaultMutableTreeNode> {
         private Stack<Enumeration<DefaultMutableTreeNode>> stack;
 
         @SuppressWarnings("unused")
@@ -301,43 +301,41 @@ public class DefaultMutableTreeNode implements Cloneable, Serializable {
     }
 
     public int getDepth() {
-        Object leaf = null;
-        Enumeration<?> elems = breadthFirstEnumeration();
+        DefaultMutableTreeNode leaf = null;
+        BreadthFirstEnumeration elems = breadthFirstEnumeration();
         while (elems.hasMoreElements()) {
             leaf = elems.nextElement();
         }
         if (leaf == null) {
             throw new Error("nodes should be null");
         }
-        return ((DefaultMutableTreeNode) leaf).getLevel() - getLevel();
+        return leaf.getLevel() - getLevel();
     }
 
     public int getLevel() {
         int i = 0;
         DefaultMutableTreeNode parent = this.getParent();
         while (parent != null) {
-            parent = parent.getParent();
             i++;
+            parent = parent.getParent();
         }
         return i;
     }
 
-    public Enumeration<?> preorderEnumeration() {
+    public PreorderEnumeration preorderEnumeration() {
         return new PreorderEnumeration(this, this);
     }
 
-    public Enumeration<?> breadthFirstEnumeration() {
+    public BreadthFirstEnumeration breadthFirstEnumeration() {
         return new BreadthFirstEnumeration(this, this);
     }
 
     public boolean isNodeChild(DefaultMutableTreeNode child) {
-        boolean z;
         if (child == null || getChildCount() == 0) {
-            z = false;
+            return false;
         } else {
-            z = child.getParent() == this;
+            return child.getParent() == this;
         }
-        return z;
     }
 
     @Override

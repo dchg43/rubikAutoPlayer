@@ -8,20 +8,16 @@ import java.awt.LayoutManager;
 public class RatioLayout implements LayoutManager {
     private double ratio;
 
-    public RatioLayout(double ratio) {
-        this.ratio = ratio;
-    }
-
     public RatioLayout() {
         this.ratio = 0.5d;
     }
 
-    public void setRatio(double ratio) {
+    public RatioLayout(double ratio) {
         this.ratio = ratio;
     }
 
-    @Override
-    public void addLayoutComponent(String name, Component comp) {
+    public void setRatio(double ratio) {
+        this.ratio = ratio;
     }
 
     @Override
@@ -61,6 +57,10 @@ public class RatioLayout implements LayoutManager {
             dimension.width += preferredSize.width;
         }
         return dimension;
+    }
+
+    @Override
+    public void addLayoutComponent(String name, Component comp) {
     }
 
     @Override

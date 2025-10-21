@@ -218,7 +218,7 @@ public class AutoPlayer extends Panel implements Runnable {
 
     public void init() {
         initComponents();
-        initCube();
+        initControlsPanel();
         initGUI();
         PooledSequentialDispatcherAWT.dispatchConcurrently(this);
         while (!this.initialized) // 等待启动完成
@@ -228,6 +228,10 @@ public class AutoPlayer extends Panel implements Runnable {
             } catch (InterruptedException e) {
             }
         }
+    }
+
+    private void initComponents() {
+        setLayout(new BorderLayout());
     }
 
     private void initDefaultFont() {
@@ -255,11 +259,7 @@ public class AutoPlayer extends Panel implements Runnable {
         }
     }
 
-    private void initComponents() {
-        setLayout(new BorderLayout());
-    }
-
-    private void initCube() {
+    private void initControlsPanel() {
         this.player = new ScriptPlayer() {
             @Override
             public void reset() {
@@ -285,7 +285,7 @@ public class AutoPlayer extends Panel implements Runnable {
         this.scriptTextArea.setSize(getSize());
 
         try {
-            readParameters();
+            initCube();
             ChangeListener changeListener = new ChangeListener() {
                 @Override
                 public void stateChanged(ChangeEvent changeEvent) {
@@ -308,6 +308,348 @@ public class AutoPlayer extends Panel implements Runnable {
             System.err.println(errString);
             textArea.setText(CommandParser.getAppInfo() + "\n\n" + errString);
         }
+    }
+
+    private void initCube() throws IllegalArgumentException {
+        AbstractCube3DAWT cube = this.player.getCube3D();
+        Color colorBack = new Color(this.cmd.getParameter("backgroundColor", 0xeeeeee));
+        this.player.getControlPanelComponent().setBackground(colorBack);
+        this.controlsPanel.setBackground(colorBack);
+        Transform3D transform3D = new Transform3D();
+        transform3D.rotateY((this.cmd.getParameter("beta", 45) / 180.0d) * Math.PI);
+        transform3D.rotateX((this.cmd.getParameter("alpha", -25) / 180.0d) * Math.PI);
+        this.player.setTransform(transform3D);
+
+        // 设置各面颜色, 顺序：正面, 右面, 底面, 背面, 左面, 顶面
+        String[] dflt = {"0x8c000f", "0xffd200", "0x00732f", "0xff4600", "0xf8f8f8", "0x003373", "0x707070"};
+        String[] colors_str = this.cmd.getParameters("colorTable", dflt);
+        if (colors_str.length < 6) {
+            showError("Invalid parameter 'colorTable', must have 6 entries");
+        }
+        this.colors = new ArrayList<>(dflt.length);
+        int colorIndex = 0;
+        for (; colorIndex < colors_str.length; colorIndex++) {
+            try {
+                Color c = new Color(CommandParser.decode(colors_str[colorIndex]));
+                if (!this.colors.contains(c)) {
+                    this.colors.add(colorIndex, c);
+                    continue;
+                }
+            } catch (NumberFormatException e) {
+                showError(new StringBuilder().append("Invalid parameter 'colorTable', value ").append(Arrays.toString(colors_str)).append(
+                        " is illegal.\n").append(AutoPlayer.getString(e)).toString());
+            }
+            // 设置参数异常时使用默认值
+            Color c = new Color(CommandParser.decode(dflt[colorIndex]));
+            if (this.colors.contains(c)) {
+                throw new IllegalArgumentException(
+                        new StringBuilder().append("Invalid parameter 'colorTable' value ").append(Arrays.toString(colors_str)).append(
+                                " is illegal.").toString());
+            }
+            this.colors.add(colorIndex, c);
+        }
+        // 补充未设置的颜色
+        for (; colorIndex < dflt.length; colorIndex++) {
+            Color c = new Color(CommandParser.decode(dflt[colorIndex]));
+            if (this.colors.contains(c)) {
+                throw new IllegalArgumentException(
+                        new StringBuilder().append("Invalid parameter 'colorTable' value ").append(Arrays.toString(colors_str)).append(
+                                " is illegal.").toString());
+            }
+            this.colors.add(colorIndex, c);
+        }
+        // 初始化颜色
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 9; j++) {
+                cube.setStickerColor(i, j, this.colors.get(i));
+            }
+        }
+
+        // 设置用户自定义颜色
+        initColors();
+
+        String language = this.cmd.getParameter("scriptLanguage");
+        if (language == null || language.equalsIgnoreCase("BandelowENG")) {
+            this.scriptParser = new BandelowENGParser();
+        } else if (language.equalsIgnoreCase("RandelshoferGER")) {
+            this.scriptParser = new RandelshoferGERParser();
+        } else if (language.equalsIgnoreCase("ScriptFRA")) {
+            this.scriptParser = new ScriptFRAParser();
+        } else if (language.equalsIgnoreCase("SupersetENG")) {
+            this.scriptParser = new SupersetENGParser();
+        } else if (language.equalsIgnoreCase("HarrisENG")) {
+            this.scriptParser = new HarrisENGParser();
+        } else if (language.equalsIgnoreCase("TouchardDeledicqFRA")) {
+            this.scriptParser = new TouchardDeledicqFRAParser();
+        } else if (language.equalsIgnoreCase("Castella")) {
+            this.scriptParser = new CastellaParser();
+        } else {
+            showError("Invalid parameter 'scriptLanguage': Unsupported language " + language);
+            this.scriptParser = new BandelowENGParser();
+        }
+
+        String scriptType = this.cmd.getParameter("scriptType", "Generator");
+        if (scriptType.equalsIgnoreCase("Solver")) {
+            this.isSolver = true;
+        } else if (scriptType.equalsIgnoreCase("Generator")) {
+            this.isSolver = false;
+        } else {
+            showError("Invalid parameter 'scriptType': Unsupported type " + scriptType);
+            this.isSolver = false;
+        }
+
+        String script = this.cmd.getParameter("script", "");
+        script = script.replace("\\n", "\n");
+        try {
+            ScriptNode scriptNode = scriptParser.parse(new StringReader(script));
+            this.scriptTextArea.setText(script);
+            this.player.setScript(scriptNode);
+        } catch (Exception e) {
+            this.scriptTextArea.setText(null);
+            this.player.setScript(null);
+            showError("Invalid parameter 'script'\n" + AutoPlayer.getString(e));
+        }
+
+        RubiksCubeCore initCube = new RubiksCubeCore();
+        String initScript = this.cmd.getParameter("initScript");
+        if (initScript != null) {
+            initScript = initScript.replace("\\n", "\n");
+            try {
+                scriptParser.parse(new StringReader(initScript)).applySubtreeTo(initCube, false);
+            } catch (Exception e) {
+                showError("Invalid parameter 'initScript'\n" + AutoPlayer.getString(e));
+            }
+        }
+
+        if (this.isSolver && this.player.getScript() != null) {
+            this.player.getScript().applySubtreeTo(initCube, true);
+        }
+        this.player.reset();
+        this.player.getCubeModel().setTo(initCube);
+        try {
+            int scriptProgress = this.cmd.getParameter("scriptProgress", (this.isSolver || this.cmd.getParameter("autoPlay", true)) ? 0 : -1);
+            if (scriptProgress < 0) {
+                scriptProgress += this.player.getBoundedRangeModel().getMaximum();
+            }
+            this.player.getBoundedRangeModel().setValue(scriptProgress);
+        } catch (IndexOutOfBoundsException e) {
+            showError("Invalid parameter 'scriptProgress'\n" + AutoPlayer.getString(e));
+        }
+
+        String displayLines = this.cmd.getParameter("displayLines", "1");
+        int iCountTokens = script == null ? 1 : new StringTokenizer(script, "\n").countTokens();
+        try {
+            iCountTokens = Math.max(Integer.parseInt(displayLines), iCountTokens);
+        } catch (NumberFormatException e) {
+            showError("Invalid parameter 'displayLines'\n" + AutoPlayer.getString(e));
+        }
+        if (iCountTokens <= 0) {
+            this.scriptTextArea.setVisible(false);
+        } else {
+            try {
+                this.scriptTextArea.setMinRows(iCountTokens);
+            } catch (NoSuchMethodError e5) {
+            }
+        }
+
+        // 配置魔方视图
+        Canvas3DAWT visualComponent = (Canvas3DAWT) this.player.getVisualComponent();
+        visualComponent.setBackground(colorBack);
+        visualComponent.setLightSourceIntensity(this.cmd.getParameter("lightSourceIntensity", 1.0d));
+        visualComponent.setAmbientLightIntensity(this.cmd.getParameter("ambientLightIntensity", 0.6d));
+        visualComponent.setPreferredSize(new Dimension(1, 1));
+        int[] lightSource = this.cmd.getParameters("lightSourcePosition", new int[]{-500, 500, 1000});
+        if (lightSource.length != 3) {
+            showError("Invalid parameter 'lightSourcePosition' provides " + lightSource.length + " instead of 3 entries.");
+        }
+        visualComponent.setLightSource(new Point3D(lightSource[0], lightSource[1], lightSource[2]));
+        String backgroundImage = this.cmd.getParameter("backgroundImage");
+        if (backgroundImage != null) {
+            try {
+                File imageFile = new File(backgroundImage);
+                if (!imageFile.exists()) {
+                    imageFile = new File(System.getProperty("user.dir"), backgroundImage);
+                }
+                if (imageFile.exists()) {
+                    URL url = imageFile.toURI().toURL();
+                    visualComponent.setBackgroundImage(getImage(url));
+                }
+            } catch (MalformedURLException e) {
+                showError("Invalid parameter 'backgroundImage' malformed URL: " + backgroundImage + "\n" + AutoPlayer.getString(e));
+            }
+        }
+
+        // 配置魔方后视图
+        Component panelComponent;
+        if ("false".equalsIgnoreCase(this.cmd.getParameter("rearView", "true"))) {
+            panelComponent = visualComponent; // 不包含后视图
+        } else {
+            initRearComponent();
+            panelComponent = this.rearComponent;
+        }
+        add("Center", panelComponent);
+    }
+
+    // 设置用户自定义颜色
+    private void initColors() {
+        AbstractCube3DAWT cube = this.player.getCube3D();
+
+        // 按面自定义颜色，顺序为正面 右面 底面 背面 左面 顶面，形如0,1,2,3,4,5
+        String[] faceColors = this.cmd.getParameters("faces", (String[]) null);
+        if (faceColors != null) {
+            if (faceColors.length == 6) {
+                for (int i = 0; i < 6; i++) {
+                    int entry = Integer.parseInt(faceColors[i]);
+                    if (this.colors.size() <= entry) {
+                        showError("Invalid parameter 'faces', entry " + faceColors[i] + " > " + (this.colors.size() - 1));
+                    } else {
+                        Color color = this.colors.get(entry);
+                        for (int j = 0; j < 9; j++) {
+                            cube.setStickerColor(i, j, color);
+                        }
+                    }
+                }
+            } else {
+                showError("Invalid parameter 'faces' provides " + faceColors.length + " instead of 6 entries.");
+            }
+        }
+
+        // 按块自定义颜色，顺序为前右下后左上，共54个数字，0~5各需出现9次，例如
+        // 0,0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1,1, 2,2,2,2,2,2,2,2,2, 3,3,3,3,3,3,3,3,3, 4,4,4,4,4,4,4,4,4, 5,5,5,5,5,5,5,5,5
+        String[] stickerColors = this.cmd.getParameters("stickers", (String[]) null);
+        if (stickerColors != null) {
+            if (stickerColors.length == 54) {
+                for (int i = 0; i < 6; i++) {
+                    for (int j = 0; j < 9; j++) {
+                        try {
+                            int entry = Integer.parseInt(stickerColors[i * 9 + j]);
+                            if (this.colors.size() <= entry) {
+                                showError("'stickers', entry " + entry + " > " + (this.colors.size() - 1));
+                            } else {
+                                cube.setStickerColor(i, j, this.colors.get(entry));
+                            }
+                        } catch (NumberFormatException e) {
+                            showError("'stickers', entry " + stickerColors[i * 9 + j] + " not digit");
+                        }
+                    }
+                }
+            } else {
+                showError("Invalid parameter 'stickers' provides " + stickerColors.length + " instead of 54 entries.");
+            }
+        }
+
+        // 标准记号法定义颜色：顺序是：上面U 右面R 前面F 下面D 左面L 后面B
+        // 例如 UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB
+        String facelets = this.cmd.getParameter("facelets");
+        if (facelets != null) {
+            if (facelets.trim().length() == 54) {
+                setCubeByString(facelets, this.colors);
+            } else {
+                showError("Invalid parameter 'facelets' provides " + facelets.trim().length() + " instead of 54.");
+            }
+        }
+
+        // 按单个面自定义每块颜色，类似stickers，每个参数只需要9个数字，形如0,0,0,0,0,0,0,0,0
+        String[] strArr = {"stickersFront", "stickersRight", "stickersDown", "stickersBack", "stickersLeft", "stickersUp"};
+        for (int i = 0; i < strArr.length; i++) {
+            String[] colorLists = this.cmd.getParameters(strArr[i], (String[]) null);
+            if (colorLists != null) {
+                if (colorLists.length == 9) {
+                    for (int j = 0; j < 9; j++) {
+                        int entry = Integer.parseInt(colorLists[j]);
+                        if (this.colors.size() <= entry) {
+                            showError(new StringBuilder().append("Invalid parameter '").append(strArr[i]).append("', unknown entry '").append(
+                                    colorLists[j]).append("'.").toString());
+                            break;
+                        } else {
+                            cube.setStickerColor(i, j, this.colors.get(entry));
+                        }
+                    }
+                } else {
+                    showError(new StringBuilder().append("Invalid parameter '").append(strArr[i]).append("' provides ").append(colorLists.length).append(
+                            " instead of 9 entries.").toString());
+                }
+            }
+        }
+    }
+
+    private void initRearComponent() {
+        if (this.rearComponent != null) {
+            double fMax = Math.max(0.1d, Math.min(1.0d, this.cmd.getParameter("rearViewScaleFactor", 0.75d)));
+            this.rearComponent.setLayout(new RatioLayout(1.0d - (0.5d * fMax)));
+            return;
+        }
+
+        Canvas3DAWT visualComponent = (Canvas3DAWT) this.player.getVisualComponent();
+        Canvas3DAWT rearCanvas3D = Canvas3DJ2D.createCanvas3D(); // 创建后视图
+        rearCanvas3D.setScene(this.player.getCube3D().getScene());
+        rearCanvas3D.setSyncObject(this.player.getCube3D().getModel());
+        int[] rearViewRotation = this.cmd.getParameters("rearViewRotation", new int[]{180, 0, 0});
+        if (rearViewRotation.length != 3) {
+            showError("Invalid parameter 'rearViewRotation' provides " + rearViewRotation.length + " instead of 3 values.");
+        }
+        rearCanvas3D.setTransformModel(new RotatedTransform3DModel((rearViewRotation[0] / 180.0d) * Math.PI, (rearViewRotation[1] / 180.0d) * Math.PI,
+                (rearViewRotation[2] / 180.0d) * Math.PI, visualComponent.getTransformModel()));
+        double fMax = Math.max(0.1d, Math.min(1.0d, this.cmd.getParameter("rearViewScaleFactor", 0.75d)));
+        rearCanvas3D.setScaleFactor(visualComponent.getScaleFactor() * fMax);
+        rearCanvas3D.setPreferredSize(visualComponent.getPreferredSize());
+
+        rearCanvas3D.setBackground(new Color(this.cmd.getParameter("rearViewBackgroundColor", this.cmd.getParameter("backgroundColor", 0xeeeeee))));
+        String rearImage = this.cmd.getParameter("rearViewBackgroundImage", this.cmd.getParameter("backgroundImage"));
+        if (rearImage != null) {
+            try {
+                File imageFile = new File(rearImage);
+                if (!imageFile.exists()) {
+                    imageFile = new File(System.getProperty("user.dir"), rearImage);
+                }
+                if (imageFile.exists()) {
+                    URL url = imageFile.toURI().toURL();
+                    rearCanvas3D.setBackgroundImage(getImage(url));
+                }
+            } catch (MalformedURLException e) {
+                showError("Invalid parameter 'backgroundImage' malformed URL: " + rearImage + "\n" + AutoPlayer.getString(e));
+            }
+        }
+        rearCanvas3D.setLightSourceIntensity(this.cmd.getParameter("lightSourceIntensity", 1.0d));
+        rearCanvas3D.setAmbientLightIntensity(this.cmd.getParameter("ambientLightIntensity", 0.6d));
+        int[] lightSource = this.cmd.getParameters("lightSourcePosition", new int[]{-500, 500, 1000});
+        if (lightSource.length != 3) {
+            showError("Invalid parameter 'lightSourcePosition' provides " + lightSource.length + " instead of 3 entries.");
+        }
+        rearCanvas3D.setLightSource(new Point3D(lightSource[0], lightSource[1], lightSource[2]));
+
+        this.player.getCube3D().addChangeListener(rearCanvas3D);
+        Panel panel = new Panel();
+        panel.setLayout(new RatioLayout(1.0d - (0.5d * fMax)));
+        panel.add(visualComponent);
+        panel.add(rearCanvas3D);
+        this.rearComponent = panel;
+    }
+
+    public Image getImage(URL url) {
+        Image img = imageCache.get(url);
+        if (img != null) {
+            return img;
+        }
+        try {
+            Object o = url.getContent();
+            if (o == null) {
+                return null;
+            }
+            if (o instanceof Image) {
+                img = (Image) o;
+                imageCache.put(url, img);
+                return img;
+            }
+            // Otherwise it must be an ImageProducer.
+            img = this.createImage((ImageProducer) o);
+            imageCache.put(url, img);
+            return img;
+
+        } catch (Exception ex) {
+            return null;
+        }
+
     }
 
     private void initGUI() {
@@ -668,348 +1010,6 @@ public class AutoPlayer extends Panel implements Runnable {
         Color backColor = this.player.isProcessingCurrentSymbol() ? MultilineLabel.activeSelectionBackground : MultilineLabel.inactiveSelectionBackground;
         this.scriptTextArea.select(startPosition, endPosition);
         this.scriptTextArea.setSelectionBackground(backColor);
-    }
-
-    private void readParameters() throws IllegalArgumentException {
-        AbstractCube3DAWT cube = this.player.getCube3D();
-        Color colorBack = new Color(this.cmd.getParameter("backgroundColor", 0xeeeeee));
-        this.player.getControlPanelComponent().setBackground(colorBack);
-        this.controlsPanel.setBackground(colorBack);
-        Transform3D transform3D = new Transform3D();
-        transform3D.rotateY((this.cmd.getParameter("beta", 45) / 180.0d) * Math.PI);
-        transform3D.rotateX((this.cmd.getParameter("alpha", -25) / 180.0d) * Math.PI);
-        this.player.setTransform(transform3D);
-
-        // 设置各面颜色, 顺序：正面, 右面, 底面, 背面, 左面, 顶面
-        String[] dflt = {"0x8c000f", "0xffd200", "0x00732f", "0xff4600", "0xf8f8f8", "0x003373", "0x707070"};
-        String[] colors_str = this.cmd.getParameters("colorTable", dflt);
-        if (colors_str.length < 6) {
-            showError("Invalid parameter 'colorTable', must have 6 entries");
-        }
-        this.colors = new ArrayList<>(dflt.length);
-        int colorIndex = 0;
-        for (; colorIndex < colors_str.length; colorIndex++) {
-            try {
-                Color c = new Color(CommandParser.decode(colors_str[colorIndex]));
-                if (!this.colors.contains(c)) {
-                    this.colors.add(colorIndex, c);
-                    continue;
-                }
-            } catch (NumberFormatException e) {
-                showError(new StringBuilder().append("Invalid parameter 'colorTable', value ").append(Arrays.toString(colors_str)).append(
-                        " is illegal.\n").append(AutoPlayer.getString(e)).toString());
-            }
-            // 设置参数异常时使用默认值
-            Color c = new Color(CommandParser.decode(dflt[colorIndex]));
-            if (this.colors.contains(c)) {
-                throw new IllegalArgumentException(
-                        new StringBuilder().append("Invalid parameter 'colorTable' value ").append(Arrays.toString(colors_str)).append(
-                                " is illegal.").toString());
-            }
-            this.colors.add(colorIndex, c);
-        }
-        // 补充未设置的颜色
-        for (; colorIndex < dflt.length; colorIndex++) {
-            Color c = new Color(CommandParser.decode(dflt[colorIndex]));
-            if (this.colors.contains(c)) {
-                throw new IllegalArgumentException(
-                        new StringBuilder().append("Invalid parameter 'colorTable' value ").append(Arrays.toString(colors_str)).append(
-                                " is illegal.").toString());
-            }
-            this.colors.add(colorIndex, c);
-        }
-        // 初始化颜色
-        for (int i = 0; i < 6; i++) {
-            for (int j = 0; j < 9; j++) {
-                cube.setStickerColor(i, j, this.colors.get(i));
-            }
-        }
-
-        // 设置用户自定义颜色
-        setCustomColors();
-
-        String language = this.cmd.getParameter("scriptLanguage");
-        if (language == null || language.equalsIgnoreCase("BandelowENG")) {
-            this.scriptParser = new BandelowENGParser();
-        } else if (language.equalsIgnoreCase("RandelshoferGER")) {
-            this.scriptParser = new RandelshoferGERParser();
-        } else if (language.equalsIgnoreCase("ScriptFRA")) {
-            this.scriptParser = new ScriptFRAParser();
-        } else if (language.equalsIgnoreCase("SupersetENG")) {
-            this.scriptParser = new SupersetENGParser();
-        } else if (language.equalsIgnoreCase("HarrisENG")) {
-            this.scriptParser = new HarrisENGParser();
-        } else if (language.equalsIgnoreCase("TouchardDeledicqFRA")) {
-            this.scriptParser = new TouchardDeledicqFRAParser();
-        } else if (language.equalsIgnoreCase("Castella")) {
-            this.scriptParser = new CastellaParser();
-        } else {
-            showError("Invalid parameter 'scriptLanguage': Unsupported language " + language);
-            this.scriptParser = new BandelowENGParser();
-        }
-
-        String scriptType = this.cmd.getParameter("scriptType", "Generator");
-        if (scriptType.equalsIgnoreCase("Solver")) {
-            this.isSolver = true;
-        } else if (scriptType.equalsIgnoreCase("Generator")) {
-            this.isSolver = false;
-        } else {
-            showError("Invalid parameter 'scriptType': Unsupported type " + scriptType);
-            this.isSolver = false;
-        }
-
-        String script = this.cmd.getParameter("script", "");
-        script = script.replace("\\n", "\n");
-        try {
-            ScriptNode scriptNode = scriptParser.parse(new StringReader(script));
-            this.scriptTextArea.setText(script);
-            this.player.setScript(scriptNode);
-        } catch (Exception e) {
-            this.scriptTextArea.setText(null);
-            this.player.setScript(null);
-            showError("Invalid parameter 'script'\n" + AutoPlayer.getString(e));
-        }
-
-        RubiksCubeCore initCube = new RubiksCubeCore();
-        String initScript = this.cmd.getParameter("initScript");
-        if (initScript != null) {
-            initScript = initScript.replace("\\n", "\n");
-            try {
-                scriptParser.parse(new StringReader(initScript)).applySubtreeTo(initCube, false);
-            } catch (Exception e) {
-                showError("Invalid parameter 'initScript'\n" + AutoPlayer.getString(e));
-            }
-        }
-
-        if (this.isSolver && this.player.getScript() != null) {
-            this.player.getScript().applySubtreeTo(initCube, true);
-        }
-        this.player.reset();
-        this.player.getCubeModel().setTo(initCube);
-        try {
-            int scriptProgress = this.cmd.getParameter("scriptProgress", (this.isSolver || this.cmd.getParameter("autoPlay", true)) ? 0 : -1);
-            if (scriptProgress < 0) {
-                scriptProgress += this.player.getBoundedRangeModel().getMaximum();
-            }
-            this.player.getBoundedRangeModel().setValue(scriptProgress);
-        } catch (IndexOutOfBoundsException e) {
-            showError("Invalid parameter 'scriptProgress'\n" + AutoPlayer.getString(e));
-        }
-
-        String displayLines = this.cmd.getParameter("displayLines", "1");
-        int iCountTokens = script == null ? 1 : new StringTokenizer(script, "\n").countTokens();
-        try {
-            iCountTokens = Math.max(Integer.parseInt(displayLines), iCountTokens);
-        } catch (NumberFormatException e) {
-            showError("Invalid parameter 'displayLines'\n" + AutoPlayer.getString(e));
-        }
-        if (iCountTokens <= 0) {
-            this.scriptTextArea.setVisible(false);
-        } else {
-            try {
-                this.scriptTextArea.setMinRows(iCountTokens);
-            } catch (NoSuchMethodError e5) {
-            }
-        }
-
-        // 配置魔方视图
-        Canvas3DAWT visualComponent = (Canvas3DAWT) this.player.getVisualComponent();
-        visualComponent.setBackground(colorBack);
-        visualComponent.setLightSourceIntensity(this.cmd.getParameter("lightSourceIntensity", 1.0d));
-        visualComponent.setAmbientLightIntensity(this.cmd.getParameter("ambientLightIntensity", 0.6d));
-        visualComponent.setPreferredSize(new Dimension(1, 1));
-        int[] lightSource = this.cmd.getParameters("lightSourcePosition", new int[]{-500, 500, 1000});
-        if (lightSource.length != 3) {
-            showError("Invalid parameter 'lightSourcePosition' provides " + lightSource.length + " instead of 3 entries.");
-        }
-        visualComponent.setLightSource(new Point3D(lightSource[0], lightSource[1], lightSource[2]));
-        String backgroundImage = this.cmd.getParameter("backgroundImage");
-        if (backgroundImage != null) {
-            try {
-                File imageFile = new File(backgroundImage);
-                if (!imageFile.exists()) {
-                    imageFile = new File(System.getProperty("user.dir"), backgroundImage);
-                }
-                if (imageFile.exists()) {
-                    URL url = imageFile.toURI().toURL();
-                    visualComponent.setBackgroundImage(getImage(url));
-                }
-            } catch (MalformedURLException e) {
-                showError("Invalid parameter 'backgroundImage' malformed URL: " + backgroundImage + "\n" + AutoPlayer.getString(e));
-            }
-        }
-
-        // 配置魔方后视图
-        Component panelComponent;
-        if ("false".equalsIgnoreCase(this.cmd.getParameter("rearView", "true"))) {
-            panelComponent = visualComponent; // 不包含后视图
-        } else {
-            initRearComponent();
-            panelComponent = this.rearComponent;
-        }
-        add("Center", panelComponent);
-    }
-
-    // 设置用户自定义颜色
-    private void setCustomColors() {
-        AbstractCube3DAWT cube = this.player.getCube3D();
-
-        // 按面自定义颜色，顺序为正面 右面 底面 背面 左面 顶面，形如0,1,2,3,4,5
-        String[] faceColors = this.cmd.getParameters("faces", (String[]) null);
-        if (faceColors != null) {
-            if (faceColors.length == 6) {
-                for (int i = 0; i < 6; i++) {
-                    int entry = Integer.parseInt(faceColors[i]);
-                    if (this.colors.size() <= entry) {
-                        showError("Invalid parameter 'faces', entry " + faceColors[i] + " > " + (this.colors.size() - 1));
-                    } else {
-                        Color color = this.colors.get(entry);
-                        for (int j = 0; j < 9; j++) {
-                            cube.setStickerColor(i, j, color);
-                        }
-                    }
-                }
-            } else {
-                showError("Invalid parameter 'faces' provides " + faceColors.length + " instead of 6 entries.");
-            }
-        }
-
-        // 按块自定义颜色，顺序为前右下后左上，共54个数字，0~5各需出现9次，例如
-        // 0,0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1,1, 2,2,2,2,2,2,2,2,2, 3,3,3,3,3,3,3,3,3, 4,4,4,4,4,4,4,4,4, 5,5,5,5,5,5,5,5,5
-        String[] stickerColors = this.cmd.getParameters("stickers", (String[]) null);
-        if (stickerColors != null) {
-            if (stickerColors.length == 54) {
-                for (int i = 0; i < 6; i++) {
-                    for (int j = 0; j < 9; j++) {
-                        try {
-                            int entry = Integer.parseInt(stickerColors[i * 9 + j]);
-                            if (this.colors.size() <= entry) {
-                                showError("'stickers', entry " + entry + " > " + (this.colors.size() - 1));
-                            } else {
-                                cube.setStickerColor(i, j, this.colors.get(entry));
-                            }
-                        } catch (NumberFormatException e) {
-                            showError("'stickers', entry " + stickerColors[i * 9 + j] + " not digit");
-                        }
-                    }
-                }
-            } else {
-                showError("Invalid parameter 'stickers' provides " + stickerColors.length + " instead of 54 entries.");
-            }
-        }
-
-        // 标准记号法定义颜色：顺序是：上面U 右面R 前面F 下面D 左面L 后面B
-        // 例如 UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB
-        String facelets = this.cmd.getParameter("facelets");
-        if (facelets != null) {
-            if (facelets.trim().length() == 54) {
-                setCubeByString(facelets, this.colors);
-            } else {
-                showError("Invalid parameter 'facelets' provides " + facelets.trim().length() + " instead of 54.");
-            }
-        }
-
-        // 按单个面自定义每块颜色，类似stickers，每个参数只需要9个数字，形如0,0,0,0,0,0,0,0,0
-        String[] strArr = {"stickersFront", "stickersRight", "stickersDown", "stickersBack", "stickersLeft", "stickersUp"};
-        for (int i = 0; i < strArr.length; i++) {
-            String[] colorLists = this.cmd.getParameters(strArr[i], (String[]) null);
-            if (colorLists != null) {
-                if (colorLists.length == 9) {
-                    for (int j = 0; j < 9; j++) {
-                        int entry = Integer.parseInt(colorLists[j]);
-                        if (this.colors.size() <= entry) {
-                            showError(new StringBuilder().append("Invalid parameter '").append(strArr[i]).append("', unknown entry '").append(
-                                    colorLists[j]).append("'.").toString());
-                            break;
-                        } else {
-                            cube.setStickerColor(i, j, this.colors.get(entry));
-                        }
-                    }
-                } else {
-                    showError(new StringBuilder().append("Invalid parameter '").append(strArr[i]).append("' provides ").append(colorLists.length).append(
-                            " instead of 9 entries.").toString());
-                }
-            }
-        }
-    }
-
-    private void initRearComponent() {
-        if (this.rearComponent != null) {
-            double fMax = Math.max(0.1d, Math.min(1.0d, this.cmd.getParameter("rearViewScaleFactor", 0.75d)));
-            this.rearComponent.setLayout(new RatioLayout(1.0d - (0.5d * fMax)));
-            return;
-        }
-
-        Canvas3DAWT visualComponent = (Canvas3DAWT) this.player.getVisualComponent();
-        Canvas3DAWT rearCanvas3D = Canvas3DJ2D.createCanvas3D(); // 创建后视图
-        rearCanvas3D.setScene(this.player.getCube3D().getScene());
-        rearCanvas3D.setSyncObject(this.player.getCube3D().getModel());
-        int[] rearViewRotation = this.cmd.getParameters("rearViewRotation", new int[]{180, 0, 0});
-        if (rearViewRotation.length != 3) {
-            showError("Invalid parameter 'rearViewRotation' provides " + rearViewRotation.length + " instead of 3 values.");
-        }
-        rearCanvas3D.setTransformModel(new RotatedTransform3DModel((rearViewRotation[0] / 180.0d) * Math.PI, (rearViewRotation[1] / 180.0d) * Math.PI,
-                (rearViewRotation[2] / 180.0d) * Math.PI, visualComponent.getTransformModel()));
-        double fMax = Math.max(0.1d, Math.min(1.0d, this.cmd.getParameter("rearViewScaleFactor", 0.75d)));
-        rearCanvas3D.setScaleFactor(visualComponent.getScaleFactor() * fMax);
-        rearCanvas3D.setPreferredSize(visualComponent.getPreferredSize());
-
-        rearCanvas3D.setBackground(new Color(this.cmd.getParameter("rearViewBackgroundColor", this.cmd.getParameter("backgroundColor", 0xeeeeee))));
-        String rearImage = this.cmd.getParameter("rearViewBackgroundImage", this.cmd.getParameter("backgroundImage"));
-        if (rearImage != null) {
-            try {
-                File imageFile = new File(rearImage);
-                if (!imageFile.exists()) {
-                    imageFile = new File(System.getProperty("user.dir"), rearImage);
-                }
-                if (imageFile.exists()) {
-                    URL url = imageFile.toURI().toURL();
-                    rearCanvas3D.setBackgroundImage(getImage(url));
-                }
-            } catch (MalformedURLException e) {
-                showError("Invalid parameter 'backgroundImage' malformed URL: " + rearImage + "\n" + AutoPlayer.getString(e));
-            }
-        }
-        rearCanvas3D.setLightSourceIntensity(this.cmd.getParameter("lightSourceIntensity", 1.0d));
-        rearCanvas3D.setAmbientLightIntensity(this.cmd.getParameter("ambientLightIntensity", 0.6d));
-        int[] lightSource = this.cmd.getParameters("lightSourcePosition", new int[]{-500, 500, 1000});
-        if (lightSource.length != 3) {
-            showError("Invalid parameter 'lightSourcePosition' provides " + lightSource.length + " instead of 3 entries.");
-        }
-        rearCanvas3D.setLightSource(new Point3D(lightSource[0], lightSource[1], lightSource[2]));
-
-        this.player.getCube3D().addChangeListener(rearCanvas3D);
-        Panel panel = new Panel();
-        panel.setLayout(new RatioLayout(1.0d - (0.5d * fMax)));
-        panel.add(visualComponent);
-        panel.add(rearCanvas3D);
-        this.rearComponent = panel;
-    }
-
-    public Image getImage(URL url) {
-        Image img = imageCache.get(url);
-        if (img != null) {
-            return img;
-        }
-        try {
-            Object o = url.getContent();
-            if (o == null) {
-                return null;
-            }
-            if (o instanceof Image) {
-                img = (Image) o;
-                imageCache.put(url, img);
-                return img;
-            }
-            // Otherwise it must be an ImageProducer.
-            img = this.createImage((ImageProducer) o);
-            imageCache.put(url, img);
-            return img;
-
-        } catch (Exception ex) {
-            return null;
-        }
-
     }
 
     private void showError(String message) {

@@ -4,10 +4,10 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.Arrays;
-import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 
+import ch.randelshofer.gui.tree.DefaultMutableTreeNode.PreorderEnumeration;
 import ch.randelshofer.io.ParseException;
 import ch.randelshofer.io.StreamPosTokenizer;
 import ch.randelshofer.rubik.RubiksCubeCore;
@@ -1026,9 +1026,9 @@ public class ScriptParser {
                 this.macroMap.put(greedy, macroNode);
             } else {
                 macroNode = (MacroNode) ((MacroNode) obj).cloneSubtree();
-                Enumeration<?> enumerationPreorderEnumeration = macroNode.preorderEnumeration();
-                while (enumerationPreorderEnumeration.hasMoreElements()) {
-                    ScriptNode scriptNode2 = (ScriptNode) enumerationPreorderEnumeration.nextElement();
+                PreorderEnumeration preorderNode = macroNode.preorderEnumeration();
+                while (preorderNode.hasMoreElements()) {
+                    ScriptNode scriptNode2 = (ScriptNode) preorderNode.nextElement();
                     scriptNode2.setStartPosition(streamPosTokenizer.getStartPosition());
                     scriptNode2.setEndPosition((streamPosTokenizer.getStartPosition() + greedy.length()) - 1);
                 }
@@ -1119,7 +1119,8 @@ public class ScriptParser {
         if (symbol <= 47) {
             i2 = (symbol / 6) % 2 == 0 ? i2 : -i2;
         }
-        if ((12 <= symbol && symbol <= 23) || ((36 <= symbol && symbol <= 47) || ((54 <= symbol && symbol <= 59) || ((66 <= symbol && symbol <= 71) || (78 <= symbol && symbol <= 83))))) {
+        if ((12 <= symbol && symbol <= 23)
+            || ((36 <= symbol && symbol <= 47) || ((54 <= symbol && symbol <= 59) || ((66 <= symbol && symbol <= 71) || (78 <= symbol && symbol <= 83))))) {
             i2 *= 2;
         }
         return i2;
