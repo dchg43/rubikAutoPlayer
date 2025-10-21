@@ -45,12 +45,12 @@ public class RepetitionNode extends ScriptNode {
 
         @Override
         public DefaultMutableTreeNode nextElement() {
-            DefaultMutableTreeNode objNextElement;
+            DefaultMutableTreeNode nextElement;
             if (this.subtree.hasMoreElements()) {
-                objNextElement = this.subtree.nextElement();
-            } else if (!this.children.hasMoreElements()) {
+                nextElement = this.subtree.nextElement();
+            } else if (this.children.hasMoreElements()) {
                 this.subtree = ((ScriptNode) this.children.nextElement()).resolvedEnumeration(this.inverse);
-                objNextElement = this.subtree.nextElement();
+                nextElement = this.subtree.nextElement();
                 if (!this.children.hasMoreElements() && this.repeatCount > 1) {
                     this.repeatCount--;
                     this.children = this.cachedChildren.elements();
@@ -58,7 +58,7 @@ public class RepetitionNode extends ScriptNode {
             } else {
                 throw new NoSuchElementException();
             }
-            return objNextElement;
+            return nextElement;
         }
     }
 

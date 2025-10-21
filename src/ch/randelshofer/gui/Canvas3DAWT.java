@@ -121,8 +121,8 @@ public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener
         this.paintInsets.right = right;
     }
 
-    public void setSyncObject(Object obj) {
-        this.lock = obj;
+    public void setSyncObject(Object lock) {
+        this.lock = lock;
     }
 
     @Override
@@ -183,8 +183,8 @@ public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener
         mediaTracker.checkID(0, true);
     }
 
-    public void setTransform(Transform3D transform3D) {
-        this.transformModel.setTransform(transform3D);
+    public void setTransform(Transform3D transform) {
+        this.transformModel.setTransform(transform);
     }
 
     public Transform3D getTransform() {

@@ -1034,9 +1034,9 @@ public class RubiksCubeCore implements Cloneable {
         }
     }
 
-    public void setQuiet(boolean quiet) {
-        if (quiet != this.quiet) {
-            this.quiet = quiet;
+    public void setQuiet(boolean isQuiet) {
+        if (this.quiet != isQuiet) {
+            this.quiet = isQuiet;
             if (this.quiet) {
                 return;
             }

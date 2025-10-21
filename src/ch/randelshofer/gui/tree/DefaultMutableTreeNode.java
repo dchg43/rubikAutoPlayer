@@ -19,7 +19,7 @@ public class DefaultMutableTreeNode implements Cloneable, Serializable {
 
     private boolean allowsChildren;
 
-    public static final class BreadthFirstEnumeration implements Enumeration<DefaultMutableTreeNode> {
+    private static final class BreadthFirstEnumeration implements Enumeration<DefaultMutableTreeNode> {
         private Queue queue;
 
         @SuppressWarnings("unused")
@@ -116,7 +116,7 @@ public class DefaultMutableTreeNode implements Cloneable, Serializable {
         }
     }
 
-    public static final class PreorderEnumeration implements Enumeration<DefaultMutableTreeNode> {
+    private static final class PreorderEnumeration implements Enumeration<DefaultMutableTreeNode> {
         private Stack<Enumeration<DefaultMutableTreeNode>> stack;
 
         @SuppressWarnings("unused")
@@ -302,7 +302,7 @@ public class DefaultMutableTreeNode implements Cloneable, Serializable {
 
     public int getDepth() {
         DefaultMutableTreeNode leaf = null;
-        BreadthFirstEnumeration elems = breadthFirstEnumeration();
+        Enumeration<DefaultMutableTreeNode> elems = breadthFirstEnumeration();
         while (elems.hasMoreElements()) {
             leaf = elems.nextElement();
         }
@@ -322,11 +322,11 @@ public class DefaultMutableTreeNode implements Cloneable, Serializable {
         return i;
     }
 
-    public PreorderEnumeration preorderEnumeration() {
+    public Enumeration<DefaultMutableTreeNode> preorderEnumeration() {
         return new PreorderEnumeration(this, this);
     }
 
-    public BreadthFirstEnumeration breadthFirstEnumeration() {
+    public Enumeration<DefaultMutableTreeNode> breadthFirstEnumeration() {
         return new BreadthFirstEnumeration(this, this);
     }
 

@@ -487,8 +487,8 @@ public class PermutationNode extends ScriptNode {
     }
 
     @Override
-    public Enumeration<DefaultMutableTreeNode> resolvedEnumeration(boolean z) {
-        if (z) {
+    public Enumeration<DefaultMutableTreeNode> resolvedEnumeration(boolean inverse) {
+        if (inverse) {
             PermutationNode permutationNode = (PermutationNode) clone();
             permutationNode.inverse();
             return new SingletonEnumeration(permutationNode);
@@ -497,11 +497,11 @@ public class PermutationNode extends ScriptNode {
     }
 
     @Override
-    public void transform(int i) {
+    public void transform(int symbol) {
         RubiksCubeCore rubiksCubeCore = new RubiksCubeCore();
-        int axis = ScriptParser.getAxis(i);
-        int layerMask = ScriptParser.getLayerMask(i);
-        int angle = ScriptParser.getAngle(i);
+        int axis = ScriptParser.getAxis(symbol);
+        int layerMask = ScriptParser.getLayerMask(symbol);
+        int angle = ScriptParser.getAngle(symbol);
         if (axis == -1 || angle == 0 || layerMask == -1) {
             return;
         }

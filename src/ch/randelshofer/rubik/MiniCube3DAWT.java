@@ -21,7 +21,7 @@ public class MiniCube3DAWT extends AbstractCube3DAWT {
     public static final Color[] STICKER_COLORS = {new Color(33, 33, 189), new Color(237, 0, 15), new Color(248, 248, 248), new Color(0, 115, 47),
             new Color(255, 70, 0), new Color(248, 210, 0)};
 
-    private static final double[] fArr = {-8.0d, 8.0d, 9.0d, -8.0d, -8.0d, 9.0d, 8.0d, 8.0d, 9.0d, 8.0d, -8.0d, 9.0d, 8.0d, 8.0d, -9.0d, 8.0d, -8.0d, -9.0d,
+    private static final double[] coords = {-8.0d, 8.0d, 9.0d, -8.0d, -8.0d, 9.0d, 8.0d, 8.0d, 9.0d, 8.0d, -8.0d, 9.0d, 8.0d, 8.0d, -9.0d, 8.0d, -8.0d, -9.0d,
             -8.0d, 8.0d, -9.0d, -8.0d, -8.0d, -9.0d, -9.0d, 8.0d, 8.0d, -9.0d, -8.0d, 8.0d, 9.0d, 8.0d, 8.0d, 9.0d, -8.0d, 8.0d, 9.0d, 8.0d, -8.0d, 9.0d, -8.0d,
             -8.0d, -9.0d, 8.0d, -8.0d, -9.0d, -8.0d, -8.0d, -8.0d, 9.0d, 8.0d, -8.0d, -9.0d, 8.0d, 8.0d, 9.0d, 8.0d, 8.0d, -9.0d, 8.0d, 8.0d, 9.0d, -8.0d, 8.0d,
             -9.0d, -8.0d, -8.0d, 9.0d, -8.0d, -8.0d, -9.0d, -8.0d};
@@ -403,7 +403,7 @@ public class MiniCube3DAWT extends AbstractCube3DAWT {
             for (int j = 3; j < iArr.length; j++) {
                 colorArr[i][j] = colorArr2;
             }
-            this.cornerShapes[i] = new Shape3D(fArr, iArr, colorArr[i]);
+            this.cornerShapes[i] = new Shape3D(coords, iArr, colorArr[i]);
         }
     }
 
@@ -445,7 +445,7 @@ public class MiniCube3DAWT extends AbstractCube3DAWT {
             for (int j = 2; j < iArr.length; j++) {
                 colorArr[i][j] = colorArr2;
             }
-            this.edgeShapes[i] = new Shape3D(fArr, iArr, colorArr[i]);
+            this.edgeShapes[i] = new Shape3D(coords, iArr, colorArr[i]);
         }
     }
 
@@ -468,7 +468,7 @@ public class MiniCube3DAWT extends AbstractCube3DAWT {
             for (int j = 1; j < iArr.length; j++) {
                 colorArr[i][j] = colorArr2;
             }
-            this.sideShapes[i] = new Shape3D(fArr, iArr, colorArr[i]);
+            this.sideShapes[i] = new Shape3D(coords, iArr, colorArr[i]);
         }
     }
 

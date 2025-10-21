@@ -111,9 +111,9 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
         return this.model;
     }
 
-    public void setTransform(Transform3D transform3D) {
-        this.transform = transform3D;
-        this.canvas.setTransform(transform3D);
+    public void setTransform(Transform3D transform) {
+        this.transform = transform;
+        this.canvas.setTransform(transform);
     }
 
     public void setCubeModel(RubiksCubeCore rubiksCubeCore) {
@@ -126,12 +126,12 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
         return this.cube3D;
     }
 
-    public void setCube3D(AbstractCube3DAWT abstractCube3DAWT) {
+    public void setCube3D(AbstractCube3DAWT cube3D) {
         if (this.cube3D != null) {
             this.cube3D.removeChangeListener(this.canvas);
             this.cube3D.setModel(null);
         }
-        this.cube3D = abstractCube3DAWT;
+        this.cube3D = cube3D;
         if (this.cube3D != null) {
             this.cube3D.setAnimated(true);
             this.cube3D.addChangeListener(this.canvas);
@@ -151,9 +151,9 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
         this.scriptVector.removeAllElements();
         this.scriptIndex = 0;
         if (script != null) {
-            Enumeration<DefaultMutableTreeNode> resolves = script.resolvedEnumeration(false);
-            while (resolves.hasMoreElements()) {
-                ScriptNode scriptNode = (ScriptNode) resolves.nextElement();
+            Enumeration<DefaultMutableTreeNode> resolveNode = script.resolvedEnumeration(false);
+            while (resolveNode.hasMoreElements()) {
+                ScriptNode scriptNode = (ScriptNode) resolveNode.nextElement();
                 if (((scriptNode instanceof TwistNode) && ((TwistNode) scriptNode).getSymbol() != 84) || (scriptNode instanceof PermutationNode)) {
                     this.scriptVector.addElement(scriptNode);
                 }
@@ -351,8 +351,8 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
         return null;
     }
 
-    public void setResetButtonVisible(boolean z) {
-        this.resetButton.setVisible(z);
+    public void setResetButtonVisible(boolean isVisible) {
+        this.resetButton.setVisible(isVisible);
     }
 
     public boolean isProcessingCurrentSymbol() {

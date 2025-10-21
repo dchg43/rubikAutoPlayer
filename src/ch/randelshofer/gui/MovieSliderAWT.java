@@ -33,11 +33,11 @@ public class MovieSliderAWT extends Canvas implements ChangeListener {
         setBackground(Color.lightGray);
     }
 
-    public synchronized void setModel(BoundedRangeModel boundedRangeModel) {
+    public synchronized void setModel(BoundedRangeModel model) {
         if (this.model != null) {
             this.model.removeChangeListener(this);
         }
-        this.model = boundedRangeModel == null ? new DefaultBoundedRangeModel() : boundedRangeModel;
+        this.model = model == null ? new DefaultBoundedRangeModel() : model;
         this.model.addChangeListener(this);
         repaint();
     }
@@ -131,11 +131,11 @@ public class MovieSliderAWT extends Canvas implements ChangeListener {
         return Math.max(0, f) + 4;
     }
 
-    public synchronized void setProgressModel(BoundedRangeModel boundedRangeModel) {
+    public synchronized void setProgressModel(BoundedRangeModel progressModel) {
         if (this.progressModel != null) {
             this.progressModel.removeChangeListener(this);
         }
-        this.progressModel = boundedRangeModel;
+        this.progressModel = progressModel;
         if (this.progressModel != null) {
             this.progressModel.addChangeListener(this);
         }

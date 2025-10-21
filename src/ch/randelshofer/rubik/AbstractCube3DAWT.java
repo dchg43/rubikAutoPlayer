@@ -332,9 +332,9 @@ public abstract class AbstractCube3DAWT implements RubikListener {
         return this.explosion / 27.0d;
     }
 
-    public abstract void setStickerColor(int i, int i2, Color color);
+    public abstract void setStickerColor(int face, int sticker, Color color);
 
-    public abstract Color getStickerColor(int i, int i2);
+    public abstract Color getStickerColor(int face, int sticker);
 
     protected void init() {
         initCorners();
@@ -686,8 +686,8 @@ public abstract class AbstractCube3DAWT implements RubikListener {
         return editMode;
     }
 
-    public void setEditMode(boolean editMode) {
-        this.editMode = editMode;
+    public void setEditMode(boolean isEditMode) {
+        this.editMode = isEditMode;
     }
 
     public Color getSelectColor() {

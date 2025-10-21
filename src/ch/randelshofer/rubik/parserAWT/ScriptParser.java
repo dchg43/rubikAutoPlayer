@@ -4,10 +4,11 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.Arrays;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.StringTokenizer;
 
-import ch.randelshofer.gui.tree.DefaultMutableTreeNode.PreorderEnumeration;
+import ch.randelshofer.gui.tree.DefaultMutableTreeNode;
 import ch.randelshofer.io.ParseException;
 import ch.randelshofer.io.StreamPosTokenizer;
 import ch.randelshofer.rubik.RubiksCubeCore;
@@ -422,11 +423,11 @@ public class ScriptParser {
         }
     }
 
-    private boolean isAmbiguous(int i, int i2) {
-        String[] strArr = this.tokens[i];
+    private boolean isAmbiguous(int i1, int i2) {
+        String[] strArr1 = this.tokens[i1];
         String[] strArr2 = this.tokens[i2];
-        if (strArr != null && strArr2 != null) {
-            for (String element : strArr) {
+        if (strArr1 != null && strArr2 != null) {
+            for (String element : strArr1) {
                 if (element.length() > 0) {
                     for (String str : strArr2) {
                         if (element.equals(str)) {
@@ -748,130 +749,125 @@ public class ScriptParser {
         return parsePermutation(streamPosTokenizer, scriptNode, startPosition3);
     }
 
-    private ScriptNode parseSequence(StreamPosTokenizer paramStreamPosTokenizer, ScriptNode paramScriptNode, int paramInt1, int paramInt2) throws IOException {
+    private ScriptNode parseSequence(StreamPosTokenizer tokenizer, ScriptNode nodes, int startPosition, int sign) throws IOException {
         if (this.DEBUG) {
-            printVerbose(paramStreamPosTokenizer, "sequence", paramScriptNode);
+            printVerbose(tokenizer, "sequence", nodes);
         }
         ScriptNode scriptNode1 = new ScriptNode();
-        scriptNode1.setStartPosition(paramInt1);
-        paramScriptNode.add(scriptNode1);
+        scriptNode1.setStartPosition(startPosition);
+        nodes.add(scriptNode1);
         ScriptNode scriptNode2 = null;
         ScriptNode scriptNode3 = scriptNode1;
         while (true) {
-            int next = paramStreamPosTokenizer.nextToken();
+            int next = tokenizer.nextToken();
             if (next == StreamPosTokenizer.TT_WORD /* -3 */) {
-                String str = parseGreedy(paramStreamPosTokenizer.sval);
+                String str = parseGreedy(tokenizer.sval);
                 Integer integer = this.transformationMap.get(str);
                 int bool = (integer == null) ? -1 : integer.intValue();
                 if (bool == 98 || bool == 101) {
                     if (!this.isAmbiguousSeqEndCngrEnd) {
-                        paramInt2 &= 0x5;
+                        sign &= 0x5;
                     }
                     if (!this.isAmbiguousSeqEndCmtrEnd) {
-                        paramInt2 &= 0x3;
+                        sign &= 0x3;
                     }
-                    scriptNode3.setEndPosition(paramStreamPosTokenizer.getStartPosition() + str.length() - 1);
-                    consumeGreedy(paramStreamPosTokenizer, str);
+                    scriptNode3.setEndPosition(tokenizer.getStartPosition() + str.length() - 1);
+                    consumeGreedy(tokenizer, str);
                     break;
                 }
                 if (bool == 109 && this.conjugatorPos == 2) {
-                    if ((paramInt2 & 0x1) == 1 && !this.isAmbiguousSeqBeginCngrBegin) {
-                        throw new ParseException("Sequence: Illegal delimiter.", paramStreamPosTokenizer.getStartPosition(),
-                                paramStreamPosTokenizer.getEndPosition());
+                    if ((sign & 0x1) == 1 && !this.isAmbiguousSeqBeginCngrBegin) {
+                        throw new ParseException("Sequence: Illegal delimiter.", tokenizer.getStartPosition(), tokenizer.getEndPosition());
                     }
                     if (!this.isAmbiguousCngrDelimCmtrDelim) {
-                        paramInt2 = 2;
+                        sign = 2;
                     }
                     if (scriptNode2 == null) {
-                        scriptNode1.setEndPosition(paramStreamPosTokenizer.getStartPosition());
+                        scriptNode1.setEndPosition(tokenizer.getStartPosition());
                         scriptNode2 = new ScriptNode();
-                        scriptNode2.setStartPosition(paramStreamPosTokenizer.getEndPosition());
-                        paramScriptNode.add(scriptNode2);
+                        scriptNode2.setStartPosition(tokenizer.getEndPosition());
+                        nodes.add(scriptNode2);
                         scriptNode3 = scriptNode2;
                     } else {
-                        throw new ParseException("Conjugation: Delimiter must occur only once", paramStreamPosTokenizer.getStartPosition(),
-                                paramStreamPosTokenizer.getEndPosition());
+                        throw new ParseException("Conjugation: Delimiter must occur only once", tokenizer.getStartPosition(), tokenizer.getEndPosition());
                     }
-                    consumeGreedy(paramStreamPosTokenizer, str);
+                    consumeGreedy(tokenizer, str);
                     continue;
                 }
                 if (bool == 106 && this.commutatorPos == 2) {
-                    if ((paramInt2 & 0x1) == 1 && !this.isAmbiguousSeqBeginCmtrBegin) {
-                        throw new ParseException("Sequence: Illegal delimiter.", paramStreamPosTokenizer.getStartPosition(),
-                                paramStreamPosTokenizer.getEndPosition());
+                    if ((sign & 0x1) == 1 && !this.isAmbiguousSeqBeginCmtrBegin) {
+                        throw new ParseException("Sequence: Illegal delimiter.", tokenizer.getStartPosition(), tokenizer.getEndPosition());
                     }
                     if (!this.isAmbiguousCngrDelimCmtrDelim) {
-                        paramInt2 = 4;
+                        sign = 4;
                     }
                     if (scriptNode2 == null) {
-                        scriptNode1.setEndPosition(paramStreamPosTokenizer.getStartPosition());
+                        scriptNode1.setEndPosition(tokenizer.getStartPosition());
                         scriptNode2 = new ScriptNode();
-                        scriptNode2.setStartPosition(paramStreamPosTokenizer.getEndPosition());
-                        paramScriptNode.add(scriptNode2);
+                        scriptNode2.setStartPosition(tokenizer.getEndPosition());
+                        nodes.add(scriptNode2);
                         scriptNode3 = scriptNode2;
                     } else {
-                        throw new ParseException("Commutation: Delimiter must occur only once", paramStreamPosTokenizer.getStartPosition(),
-                                paramStreamPosTokenizer.getEndPosition());
+                        throw new ParseException("Commutation: Delimiter must occur only once", tokenizer.getStartPosition(), tokenizer.getEndPosition());
                     }
-                    consumeGreedy(paramStreamPosTokenizer, str);
+                    consumeGreedy(tokenizer, str);
                     continue;
                 }
                 if (bool == 108 && this.conjugatorPos == 2) {
                     if (!this.isAmbiguousCngrEndCmtrEnd) {
-                        paramInt2 &= 0x3;
+                        sign &= 0x3;
                     }
                     if (!this.isAmbiguousSeqEndCngrEnd) {
-                        paramInt2 &= 0x6;
+                        sign &= 0x6;
                     }
-                    scriptNode3.setEndPosition(paramStreamPosTokenizer.getStartPosition() + str.length() - 1);
-                    consumeGreedy(paramStreamPosTokenizer, str);
+                    scriptNode3.setEndPosition(tokenizer.getStartPosition() + str.length() - 1);
+                    consumeGreedy(tokenizer, str);
                     break;
                 }
                 if (bool == 105 && this.commutatorPos == 2) {
                     if (!this.isAmbiguousCngrEndCmtrEnd) {
-                        paramInt2 &= 0x5;
+                        sign &= 0x5;
                     }
                     if (!this.isAmbiguousSeqEndCmtrEnd) {
-                        paramInt2 &= 0x6;
+                        sign &= 0x6;
                     }
-                    scriptNode3.setEndPosition(paramStreamPosTokenizer.getStartPosition() + str.length() - 1);
-                    consumeGreedy(paramStreamPosTokenizer, str);
+                    scriptNode3.setEndPosition(tokenizer.getStartPosition() + str.length() - 1);
+                    consumeGreedy(tokenizer, str);
                     break;
                 }
-                paramStreamPosTokenizer.pushBack();
-                parseExpression(paramStreamPosTokenizer, scriptNode3);
+                tokenizer.pushBack();
+                parseExpression(tokenizer, scriptNode3);
                 continue;
             } else if (next == -1) {
-                throw new ParseException("Sequence: Close bracket missing.", paramStreamPosTokenizer.getStartPosition(),
-                        paramStreamPosTokenizer.getEndPosition());
+                throw new ParseException("Sequence: Close bracket missing.", tokenizer.getStartPosition(), tokenizer.getEndPosition());
             } else {
-                throw new ParseException("Sequence: Internal error.", paramStreamPosTokenizer.getStartPosition(), paramStreamPosTokenizer.getEndPosition());
+                throw new ParseException("Sequence: Internal error.", tokenizer.getStartPosition(), tokenizer.getEndPosition());
             }
         }
         scriptNode1.removeFromParent();
         if (scriptNode2 != null) {
             scriptNode2.removeFromParent();
         }
-        switch (paramInt2) {
+        switch (sign) {
         case 1:
             if (scriptNode2 != null) {
-                throw new ParseException("Sequence: Illegal Sequence.", paramInt1, paramStreamPosTokenizer.getEndPosition());
+                throw new ParseException("Sequence: Illegal Sequence.", startPosition, tokenizer.getEndPosition());
             }
-            scriptNode3 = new SequenceNode(paramInt1, paramStreamPosTokenizer.getEndPosition());
+            scriptNode3 = new SequenceNode(startPosition, tokenizer.getEndPosition());
             scriptNode3.add(scriptNode1);
             break;
         }
-        paramScriptNode.add(scriptNode3);
+        nodes.add(scriptNode3);
         return scriptNode3;
     }
 
-    private ScriptNode parsePermutation(StreamPosTokenizer paramStreamPosTokenizer, ScriptNode paramScriptNode, int paramInt) throws IOException {
+    private ScriptNode parsePermutation(StreamPosTokenizer paramStreamPosTokenizer, ScriptNode paramScriptNode, int startPosition) throws IOException {
         if (this.DEBUG) {
             printVerbose(paramStreamPosTokenizer, "permutation", paramScriptNode);
         }
         PermutationNode permutationNode = new PermutationNode();
         paramScriptNode.add(permutationNode);
-        permutationNode.setStartPosition(paramInt);
+        permutationNode.setStartPosition(startPosition);
         while (true) {
             switch (paramStreamPosTokenizer.nextToken()) {
             case StreamPosTokenizer.TT_WORD: /* -3 */
@@ -1026,7 +1022,7 @@ public class ScriptParser {
                 this.macroMap.put(greedy, macroNode);
             } else {
                 macroNode = (MacroNode) ((MacroNode) obj).cloneSubtree();
-                PreorderEnumeration preorderNode = macroNode.preorderEnumeration();
+                Enumeration<DefaultMutableTreeNode> preorderNode = macroNode.preorderEnumeration();
                 while (preorderNode.hasMoreElements()) {
                     ScriptNode scriptNode2 = (ScriptNode) preorderNode.nextElement();
                     scriptNode2.setStartPosition(streamPosTokenizer.getStartPosition());
@@ -1056,9 +1052,9 @@ public class ScriptParser {
         }
     }
 
-    private String parseGreedy(String str) {
-        return (this.transformationMap.get(str) == null && this.permutationMap.get(str) == null
-                && this.macroMap.get(str) == null) ? str.length() > 1 ? parseGreedy(str.substring(0, str.length() - 1)) : "\000" : str;
+    private String parseGreedy(String token) {
+        return (this.transformationMap.get(token) == null && this.permutationMap.get(token) == null
+                && this.macroMap.get(token) == null) ? token.length() > 1 ? parseGreedy(token.substring(0, token.length() - 1)) : "\000" : token;
     }
 
     private String parseGreedyInt(String str) throws NumberFormatException {

@@ -45,12 +45,11 @@ public class ScriptNode extends DefaultMutableTreeNode {
             DefaultMutableTreeNode nextElement;
             if (this.subtree.hasMoreElements()) {
                 nextElement = this.subtree.nextElement();
-            } else {
-                if (!this.children.hasMoreElements()) {
-                    throw new NoSuchElementException();
-                }
+            } else if (this.children.hasMoreElements()) {
                 this.subtree = ((ScriptNode) this.children.nextElement()).resolvedEnumeration(this.inverse);
                 nextElement = this.subtree.nextElement();
+            } else {
+                throw new NoSuchElementException();
             }
             return nextElement;
         }
@@ -86,9 +85,9 @@ public class ScriptNode extends DefaultMutableTreeNode {
     }
 
     public void applySubtreeTo(RubiksCubeCore rubiksCubeCore, boolean inverse) {
-        Enumeration<DefaultMutableTreeNode> enumerationResolvedEnumeration = resolvedEnumeration(inverse);
-        while (enumerationResolvedEnumeration.hasMoreElements()) {
-            ((ScriptNode) enumerationResolvedEnumeration.nextElement()).applyTo(rubiksCubeCore);
+        Enumeration<DefaultMutableTreeNode> resolvedNode = resolvedEnumeration(inverse);
+        while (resolvedNode.hasMoreElements()) {
+            ((ScriptNode) resolvedNode.nextElement()).applyTo(rubiksCubeCore);
         }
     }
 
@@ -99,22 +98,22 @@ public class ScriptNode extends DefaultMutableTreeNode {
         return ScriptParser.SCRIPT_EXPRESSION;
     }
 
-    public void transform(int axis) {
-        Enumeration<DefaultMutableTreeNode> enumerationChildren = children();
-        while (enumerationChildren.hasMoreElements()) {
-            ((ScriptNode) enumerationChildren.nextElement()).transform(axis);
+    public void transform(int symbol) {
+        Enumeration<DefaultMutableTreeNode> children = children();
+        while (children.hasMoreElements()) {
+            ((ScriptNode) children.nextElement()).transform(symbol);
         }
     }
 
-    public void transformOrientation(int i) {
-        if (i >= 1) {
-            if (orientationToSymbolMap[i].length == 2) {
+    public void transformOrientation(int index) {
+        if (index >= 1) {
+            if (orientationToSymbolMap[index].length == 2) {
                 SequenceNode sequenceNode = new SequenceNode();
-                sequenceNode.add(new TwistNode(orientationToSymbolMap[i][0]));
-                sequenceNode.add(new TwistNode(orientationToSymbolMap[i][1]));
+                sequenceNode.add(new TwistNode(orientationToSymbolMap[index][0]));
+                sequenceNode.add(new TwistNode(orientationToSymbolMap[index][1]));
                 insert(sequenceNode, 0);
             } else {
-                insert(new TwistNode(orientationToSymbolMap[i][0]), 0);
+                insert(new TwistNode(orientationToSymbolMap[index][0]), 0);
             }
             insert(new TwistNode(84), 1);
         }
@@ -122,10 +121,10 @@ public class ScriptNode extends DefaultMutableTreeNode {
 
     public void inverse() {
         if (this.children != null) {
-            Enumeration<DefaultMutableTreeNode> enumerationEnumerateChildrenReversed = enumerateChildrenReversed();
+            Enumeration<DefaultMutableTreeNode> enumerateNode = enumerateChildrenReversed();
             this.children = new Vector<>();
-            while (enumerationEnumerateChildrenReversed.hasMoreElements()) {
-                ScriptNode scriptNode = (ScriptNode) enumerationEnumerateChildrenReversed.nextElement();
+            while (enumerateNode.hasMoreElements()) {
+                ScriptNode scriptNode = (ScriptNode) enumerateNode.nextElement();
                 scriptNode.inverse();
                 this.children.addElement(scriptNode);
             }
@@ -134,9 +133,9 @@ public class ScriptNode extends DefaultMutableTreeNode {
 
     public void reflect() {
         if (this.children != null) {
-            Enumeration<DefaultMutableTreeNode> enumerationChildren = children();
-            while (enumerationChildren.hasMoreElements()) {
-                ((ScriptNode) enumerationChildren.nextElement()).reflect();
+            Enumeration<DefaultMutableTreeNode> children = children();
+            while (children.hasMoreElements()) {
+                ((ScriptNode) children.nextElement()).reflect();
             }
         }
     }
@@ -151,27 +150,27 @@ public class ScriptNode extends DefaultMutableTreeNode {
 
     public int getFullTurnCount() {
         int fullTurnCount = 0;
-        Enumeration<DefaultMutableTreeNode> enumerationChildren = children();
-        while (enumerationChildren.hasMoreElements()) {
-            fullTurnCount += ((ScriptNode) enumerationChildren.nextElement()).getFullTurnCount();
+        Enumeration<DefaultMutableTreeNode> children = children();
+        while (children.hasMoreElements()) {
+            fullTurnCount += ((ScriptNode) children.nextElement()).getFullTurnCount();
         }
         return fullTurnCount;
     }
 
     public int getQuarterTurnCount() {
         int quarterTurnCount = 0;
-        Enumeration<DefaultMutableTreeNode> enumerationChildren = children();
-        while (enumerationChildren.hasMoreElements()) {
-            quarterTurnCount += ((ScriptNode) enumerationChildren.nextElement()).getQuarterTurnCount();
+        Enumeration<DefaultMutableTreeNode> children = children();
+        while (children.hasMoreElements()) {
+            quarterTurnCount += ((ScriptNode) children.nextElement()).getQuarterTurnCount();
         }
         return quarterTurnCount;
     }
 
     public ScriptNode cloneSubtree() {
         ScriptNode scriptNode = (ScriptNode) clone();
-        Enumeration<DefaultMutableTreeNode> enumerationChildren = children();
-        while (enumerationChildren.hasMoreElements()) {
-            scriptNode.add(((ScriptNode) enumerationChildren.nextElement()).cloneSubtree());
+        Enumeration<DefaultMutableTreeNode> children = children();
+        while (children.hasMoreElements()) {
+            scriptNode.add(((ScriptNode) children.nextElement()).cloneSubtree());
         }
         return scriptNode;
     }
