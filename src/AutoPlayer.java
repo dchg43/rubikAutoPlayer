@@ -75,6 +75,8 @@ import ch.randelshofer.util.PooledSequentialDispatcherAWT;
 public class AutoPlayer extends Panel implements Runnable {
     private static final long serialVersionUID = -698774308591767978L;
 
+    private static final String completeCube = "UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB";
+
     private static final char sevenChar = '0';
 
     private ScriptPlayer player;
@@ -181,6 +183,7 @@ public class AutoPlayer extends Panel implements Runnable {
 
     public void autoTest(int testTimes) {
         // 测试自动求解算法
+        long start = System.nanoTime();
         for (int i = 0; i < testTimes; i++) {
             this.player.reset();
             String facelets = Tools.randomCube();
@@ -200,13 +203,14 @@ public class AutoPlayer extends Panel implements Runnable {
             progress.setValue(progress.getMaximum());
             this.player.makesureFinished();
             String faceletsCur = getCubeString(false);
-            if (!faceletsCur.equals("UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB")) {
+            if (!completeCube.equals(faceletsCur)) {
                 String message = "Auto test failed. \n  input: " + facelets + "\n script: " + result + "\n result: " + faceletsCur;
                 JOptionPane.showMessageDialog(this, message, "失败", JOptionPane.ERROR_MESSAGE);
                 return;
             }
         }
-        JOptionPane.showMessageDialog(this, "测试通过", "成功", JOptionPane.INFORMATION_MESSAGE);
+        String message = String.format("测试通过，用时%.1fs", (System.nanoTime() - start) / 1000000000.0d);
+        JOptionPane.showMessageDialog(this, message, "成功", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public AutoPlayer() {
@@ -1159,7 +1163,7 @@ public class AutoPlayer extends Panel implements Runnable {
 
         int mask = 0;
         int depth = 15; // 建议 Step: 15 ~ 18
-        int[] maxTries = {0, 0, 1, 3, 5, 300, 3000, 30000}; // 对应depth的15 16 17 18 19 20 21 22
+        int[] maxTries = {0, 0, 0, 0, 5, 300, 3000, 30000}; // 对应depth的15 16 17 18 19 20 21 22
         int maxDepth = depth + maxTries.length - 1;
         String result = "Error 8";
         char errkey = '8';
