@@ -193,7 +193,7 @@ public class AutoPlayer extends Panel implements Runnable {
             try {
                 scriptNode = this.scriptParser.parse(new StringReader(result));
             } catch (IOException e) {
-                String message = "Auto test parse script failed. input: " + facelets + ", script: " + result;
+                String message = "Auto test parse script failed.\n input: " + facelets + "\n script: " + result;
                 JOptionPane.showMessageDialog(this, message, "失败", JOptionPane.ERROR_MESSAGE);
                 return;
             }
@@ -204,7 +204,7 @@ public class AutoPlayer extends Panel implements Runnable {
             this.player.makesureFinished();
             String faceletsCur = getCubeString(false);
             if (!completeCube.equals(faceletsCur)) {
-                String message = "Auto test failed. \n  input: " + facelets + "\n script: " + result + "\n result: " + faceletsCur;
+                String message = "Auto test failed.\n  input: " + facelets + "\n script: " + result + "\n result: " + faceletsCur;
                 JOptionPane.showMessageDialog(this, message, "失败", JOptionPane.ERROR_MESSAGE);
                 return;
             }
@@ -1155,7 +1155,7 @@ public class AutoPlayer extends Panel implements Runnable {
         if (cubeString.contains("Error")) {
             return cubeString;
         }
-        System.out.println("input: " + cubeString);
+        // System.out.println("input: " + cubeString);
 
         if (!this.search.isInited()) {
             this.search.init();
@@ -1179,7 +1179,7 @@ public class AutoPlayer extends Panel implements Runnable {
             }
             depth++;
         }
-        System.out.println("depth:" + (--depth) + ", tries: " + (maxTries[depth - 15] - tries) + ", result: " + result);
+        // System.out.println("depth:" + (--depth) + ", tries: " + (maxTries[depth - 15] - tries) + ", result: " + result);
         lastResult = new String[]{cubeString, result};
         return result;
     }
