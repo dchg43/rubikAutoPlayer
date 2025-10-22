@@ -801,6 +801,7 @@ public class AutoPlayer extends Panel implements Runnable {
                 }
                 // 刷新魔方
                 cube.fireStateChanged();
+                AutoPlayer.this.player.makesureFinished();
             }
         });
 
@@ -876,15 +877,15 @@ public class AutoPlayer extends Panel implements Runnable {
                     cube.setEditMode(false);
                 }
 
+                AutoPlayer.this.player.makesureFinished();
                 BoundedRangeModel progress = AutoPlayer.this.player.getBoundedRangeModel();
                 if (progress.getValue() != progress.getMaximum()) {
                     // 进度条移到最后
                     progress.setValue(progress.getMaximum());
                     // 刷新魔方
                     cube.fireStateChanged();
+                    AutoPlayer.this.player.makesureFinished();
                 }
-
-                AutoPlayer.this.player.makesureFinished();
 
                 // 判断魔方是否有旋转，因为编辑时仍然能执行反序，如果有旋转，设置方块颜色时会错位
                 if (!cube.getModel().isSolved()) {
@@ -906,10 +907,10 @@ public class AutoPlayer extends Panel implements Runnable {
                     String tmp = splits[i];
                     if (tmp.length() <= 1) {
                         result.append(tmp).append('\'');
-                    } else if (tmp.charAt(1) == '\'') {
-                        result.append(tmp.charAt(0)).append(' ');
+                    } else if (tmp.charAt(tmp.length() - 1) == '\'') {
+                        result.append(tmp.substring(0, tmp.length() - 1)).append(' ');
                     } else {
-                        result.append(tmp);
+                        result.append(tmp); // .append('\'');
                     }
                     result.append(' ');
                 }
@@ -917,7 +918,6 @@ public class AutoPlayer extends Panel implements Runnable {
 
                 // 写回反序序列并执行
                 try {
-                    AutoPlayer.this.cmd.setParameter("script", newScript);
                     doParameter("script", newScript);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -948,6 +948,7 @@ public class AutoPlayer extends Panel implements Runnable {
                     }
                     // 刷新魔方
                     cube.fireStateChanged();
+                    AutoPlayer.this.player.makesureFinished();
                     return;
                 }
                 if (AutoPlayer.this.player.isActive()) {
@@ -1295,6 +1296,7 @@ public class AutoPlayer extends Panel implements Runnable {
             }
         }
         cube.fireStateChanged();
+        AutoPlayer.this.player.makesureFinished();
     }
 
     public void doParameter(String key) throws IOException {
@@ -1358,6 +1360,7 @@ public class AutoPlayer extends Panel implements Runnable {
                 }
             }
             cube.fireStateChanged();
+            AutoPlayer.this.player.makesureFinished();
             break;
         case 15: // "rearView"
             // 默认true
