@@ -83,7 +83,7 @@ public class CubieCube {
 
     private CubieCube temps = null;
 
-    static {
+    public static void init() {
         CubieCube.initMove();
         CubieCube.initSym();
     }
@@ -103,12 +103,8 @@ public class CubieCube {
     }
 
     public void copy(CubieCube c) {
-        for (int i = 0; i < 8; i++) {
-            this.ca[i] = c.ca[i];
-        }
-        for (int i = 0; i < 12; i++) {
-            this.ea[i] = c.ea[i];
-        }
+        System.arraycopy(c.ca, 0, this.ca, 0, this.ca.length);
+        System.arraycopy(c.ea, 0, this.ea, 0, this.ea.length);
     }
 
     private static int ESym2CSym(int idx) {
@@ -338,10 +334,10 @@ public class CubieCube {
             sum ^= ea[e] & 1;
         }
         if (edgeMask != 0xfff) {
-            return -2;// missing edges
+            return 2;// missing edges
         }
         if (sum != 0) {
-            return -3;
+            return 3;
         }
         int cornMask = 0;
         sum = 0;
@@ -350,13 +346,13 @@ public class CubieCube {
             sum += ca[c] >> 3;
         }
         if (cornMask != 0xff) {
-            return -4;// missing corners
+            return 4;// missing corners
         }
         if (sum % 3 != 0) {
-            return -5;// twisted corner
+            return 5;// twisted corner
         }
         if ((Util.getNParity(Util.getNPerm(ea, 12, true), 12) ^ Util.getNParity(getCPerm(), 8)) != 0) {
-            return -6;// parity error
+            return 6;// parity error
         }
         return 0;// cube ok
     }

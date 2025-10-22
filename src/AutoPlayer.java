@@ -133,6 +133,9 @@ public class AutoPlayer extends Panel implements Runnable {
             }
         }
 
+        if (scriptPlayer.getCmd().getParameter("autoTest", 0) > 0) {
+            scriptPlayer.autoTest(scriptPlayer.getCmd().getParameter("autoTest", 0));
+        }
         if ("true".equalsIgnoreCase(scriptPlayer.getCmd().getParameter("display"))) {
             scriptPlayer.displayDemo();
         }
@@ -174,6 +177,36 @@ public class AutoPlayer extends Panel implements Runnable {
                 }
             }
         }
+    }
+
+    public void autoTest(int testTimes) {
+        // 测试自动求解算法
+        for (int i = 0; i < testTimes; i++) {
+            this.player.reset();
+            String facelets = Tools.randomCube();
+            setCubeByString(facelets, this.colors);
+            String result = searchSolution(facelets);
+            ScriptNode scriptNode = null;
+            try {
+                scriptNode = this.scriptParser.parse(new StringReader(result));
+            } catch (IOException e) {
+                String message = "Auto test parse script failed. input: " + facelets + ", script: " + result;
+                JOptionPane.showMessageDialog(this, message, "失败", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            this.player.setScript(scriptNode);
+            this.player.makesureFinished();
+            BoundedRangeModel progress = this.player.getBoundedRangeModel();
+            progress.setValue(progress.getMaximum());
+            this.player.makesureFinished();
+            String faceletsCur = getCubeString(false);
+            if (!faceletsCur.equals("UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB")) {
+                String message = "Auto test failed. \n  input: " + facelets + "\n script: " + result + "\n result: " + faceletsCur;
+                JOptionPane.showMessageDialog(this, message, "失败", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+        }
+        JOptionPane.showMessageDialog(this, "测试通过", "成功", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public AutoPlayer() {
@@ -720,6 +753,7 @@ public class AutoPlayer extends Panel implements Runnable {
                     return;
                 }
 
+                AutoPlayer.this.player.makesureFinished();
                 AbstractCube3DAWT cube = AutoPlayer.this.player.getCube3D();
                 // 判断魔方是否有旋转，因为编辑功能是基于魔方未旋转状态，如果有旋转，设置方块颜色时会错位
                 if (!cube.getModel().isSolved()) {
@@ -767,6 +801,9 @@ public class AutoPlayer extends Panel implements Runnable {
         });
 
         // 校验按钮
+        // 有一种错误的魔方序列校验应该失败，但是却校验成功并给出解法，但是实际无法复原
+        // 错误序列如一个对向中心块互换。
+        // 所有这些错误序列给的复原解法执行后最终都会变成这个序列 DUDUUUDUDRRRRRRRRRFFFFFFFFFUDUDDDUDULLLLLLLLLBBBBBBBBB
         final JButton buttonCheck = new JButton("check");
         frame.add(buttonCheck);
         buttonCheck.setBounds(420, 20, 65, 40);
@@ -779,6 +816,7 @@ public class AutoPlayer extends Panel implements Runnable {
                     return;
                 }
 
+                AutoPlayer.this.player.makesureFinished();
                 String cubeString = getCubeString(true);
                 String result = searchSolution(cubeString);
                 if (result.contains("Error")) {
@@ -840,8 +878,9 @@ public class AutoPlayer extends Panel implements Runnable {
                     progress.setValue(progress.getMaximum());
                     // 刷新魔方
                     cube.fireStateChanged();
-                    AutoPlayer.this.player.makesureFinished();
                 }
+
+                AutoPlayer.this.player.makesureFinished();
 
                 // 判断魔方是否有旋转，因为编辑时仍然能执行反序，如果有旋转，设置方块颜色时会错位
                 if (!cube.getModel().isSolved()) {
@@ -913,6 +952,7 @@ public class AutoPlayer extends Panel implements Runnable {
                 }
 
                 // 求解并校验
+                AutoPlayer.this.player.makesureFinished();
                 String facelets = getCubeString(true);
                 String result = searchSolution(facelets);
                 if (result.contains("Error")) {
@@ -1113,8 +1153,8 @@ public class AutoPlayer extends Panel implements Runnable {
         }
         System.out.println("input: " + cubeString);
 
-        if (!Search.isInited()) {
-            Search.init();
+        if (!this.search.isInited()) {
+            this.search.init();
         }
 
         int mask = 0;

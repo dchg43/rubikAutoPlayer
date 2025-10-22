@@ -76,8 +76,8 @@ public class Tools {
      *            Where to read tables.
      * @see ch.min2phase.Tools#saveTo(java.io.DataOutput)
      */
-    public static void initFrom(DataInput in) throws IOException {
-        if (Search.inited && CoordCube.initLevel == 2) {
+    public static void initFrom(Search search, DataInput in) throws IOException {
+        if (search.isInited() && CoordCube.initLevel == 2) {
             return;
         }
         CubieCube.initMove();
@@ -111,7 +111,7 @@ public class Tools {
             read(CubieCube.FlipS2RF, in);
             read(CoordCube.TwistFlipPrun, in);
         }
-        Search.inited = true;
+        search.setInited(true);
         CoordCube.initLevel = 2;
     }
 
@@ -122,8 +122,8 @@ public class Tools {
      *            Where to cache tables.
      * @see ch.min2phase.Tools#initFrom(java.io.DataInput)
      */
-    public static void saveTo(DataOutput out) throws IOException {
-        Search.init();
+    public static void saveTo(Search search, DataOutput out) throws IOException {
+        search.init();
         while (CoordCube.initLevel != 2) {
             CoordCube.init(true);
         } // w/o TFP w/ TFP
@@ -425,20 +425,5 @@ public class Tools {
             ret[j] = arr[j];
         }
         return fromScramble(ret);
-    }
-
-    /**
-     * Check whether the cube definition string s represents a solvable cube.
-     *
-     * @param facelets
-     *            is the cube definition string , see
-     *            {@link ch.min2phase.Search#solution(java.lang.String facelets, int maxDepth, long timeOut, long timeMin, int verbose)}
-     * @return 0: Cube is solvable<br> -1: There is not exactly one facelet of each colour<br> -2: Not all 12 edges
-     *         exist exactly once<br> -3: Flip error: One edge has to be flipped<br> -4: Not all 8 corners exist exactly
-     *         once<br> -5: Twist error: One corner has to be twisted<br> -6: Parity error: Two corners or two edges
-     *         have to be exchanged
-     */
-    public static int verify(String facelets) {
-        return new Search().verify(facelets);
     }
 }

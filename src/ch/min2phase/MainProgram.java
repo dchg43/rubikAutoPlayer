@@ -82,15 +82,15 @@ public class MainProgram extends JFrame {
 
     private int maxDepth = 21, maxTime = 5;
 
-    boolean useSeparator = true;
+    private boolean useSeparator = true;
 
-    boolean showString = false;
+    private boolean showString = false;
 
-    boolean inverse = true;
+    private boolean inverse = true;
 
-    boolean showLength = true;
+    private boolean showLength = true;
 
-    Search search = new Search();
+    private Search search = new Search();
 
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     public static void main(String[] args) {
@@ -107,25 +107,25 @@ public class MainProgram extends JFrame {
         //            e.printStackTrace();
         //            System.exit(1);
         //        }
-        if (!Search.isInited()) {
-            Search.init();
-            //            try
-            //            {
-            //                DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fileName)));
-            //                Tools.saveTo(dos);
-            //                dos.close();
-            //            }
-            //            catch (IOException e)
-            //            {
-            //                e.printStackTrace();
-            //                System.exit(1);
-            //            }
-        }
+        //            try
+        //            {
+        //                DataOutputStream dos = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(fileName)));
+        //                Tools.saveTo(dos);
+        //                dos.close();
+        //            }
+        //            catch (IOException e)
+        //            {
+        //                e.printStackTrace();
+        //                System.exit(1);
+        //            }
 
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
                 MainProgram inst = new MainProgram();
+                if (!inst.search.isInited()) {
+                    inst.search.init();
+                }
                 inst.setLocationRelativeTo(null);
                 inst.setVisible(true);
             }
