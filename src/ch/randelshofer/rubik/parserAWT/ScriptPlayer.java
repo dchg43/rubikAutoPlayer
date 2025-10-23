@@ -281,9 +281,9 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
                 }
             }
         }
-        makesureFinished();
         this.cube3D.getDispatcher().reassign();
         update();
+        makesureFinished();
     }
 
     public void reset() {
