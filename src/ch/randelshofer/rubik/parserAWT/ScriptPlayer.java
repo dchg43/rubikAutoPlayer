@@ -385,10 +385,10 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
         }
         int value = this.progress.getValue();
         if (this.scriptIndex == value - 1) {
-            // fireStateChanged();
+            fireStateChanged();
             this.scriptVector.elementAt(this.scriptIndex++).applyTo(this.model);
         } else if (this.scriptIndex == value + 1) {
-            // fireStateChanged();
+            fireStateChanged();
             ScriptNode scriptNode = this.scriptVector.elementAt(--this.scriptIndex);
             scriptNode.applyInverseTo(this.model);
         } else {

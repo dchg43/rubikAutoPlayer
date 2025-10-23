@@ -764,6 +764,7 @@ public class AutoPlayer extends Panel implements Runnable {
                     // 重置魔方状态，保留块的颜色和顺序
                     String facelets = getCubeString(false);
                     AutoPlayer.this.cleanAndResetCube(facelets);
+                    AutoPlayer.this.player.makesureFinished();
                 }
 
                 if (cube.isEditMode()) {
@@ -892,6 +893,7 @@ public class AutoPlayer extends Panel implements Runnable {
                     // 有旋转，重置为旋转前状态
                     String facelets = getCubeString(false);
                     AutoPlayer.this.cleanAndResetCube(facelets);
+                    AutoPlayer.this.player.makesureFinished();
                 }
 
                 // 获取旋转序列
@@ -975,6 +977,7 @@ public class AutoPlayer extends Panel implements Runnable {
                 // 有旋转，重置为旋转前状态
                 if (!cube.getModel().isSolved()) {
                     AutoPlayer.this.cleanAndResetCube(facelets);
+                    AutoPlayer.this.player.makesureFinished();
                 }
 
                 // 自动执行复位方法
@@ -1156,7 +1159,7 @@ public class AutoPlayer extends Panel implements Runnable {
         if (cubeString.contains("Error")) {
             return cubeString;
         }
-        // System.out.println("input: " + cubeString);
+        System.out.println("input: " + cubeString);
 
         if (!this.search.isInited()) {
             this.search.init();
@@ -1180,7 +1183,7 @@ public class AutoPlayer extends Panel implements Runnable {
             }
             depth++;
         }
-        // System.out.println("depth:" + (--depth) + ", tries: " + (maxTries[depth - 15] - tries) + ", result: " + result);
+        System.out.println("depth:" + (--depth) + ", tries: " + (maxTries[depth - 15] - tries) + ", result: " + result);
         lastResult = new String[]{cubeString, result};
         return result;
     }
@@ -1296,7 +1299,6 @@ public class AutoPlayer extends Panel implements Runnable {
             }
         }
         cube.fireStateChanged();
-        AutoPlayer.this.player.makesureFinished();
     }
 
     public void doParameter(String key) throws IOException {
