@@ -386,7 +386,7 @@ public class CubieCube {
     // ********************************************* Initialization functions
     // *********************************************
 
-    public static void initMove() {
+    public synchronized static void initMove() {
         moveCube[0] = new CubieCube(15120, 0, 119750400, 0);
         moveCube[3] = new CubieCube(21021, 1494, 323403417, 0);
         moveCube[6] = new CubieCube(8064, 1236, 29441808, 550);
@@ -415,7 +415,7 @@ public class CubieCube {
         return sb.toString();
     }
 
-    public static void initSym() {
+    public synchronized static void initSym() {
         CubieCube c = new CubieCube();
         CubieCube d = new CubieCube();
         CubieCube t;

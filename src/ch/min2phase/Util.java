@@ -387,7 +387,7 @@ public class Util {
         }
     }
 
-    public static void init() {
+    public synchronized static void init() {
         for (int i = 0; i < 18; i++) {
             std2ud[ud2std[i]] = i;
         }

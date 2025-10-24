@@ -213,7 +213,7 @@ public class Search {
      *         Error 7: No solution exists for the given maxDepth<br>
      *         Error 8: Probe limit exceeded, no solution within given probMax
      */
-    public synchronized String solution(String facelets, int maxDepth, long probeMax, long probeMin, int verbose) {
+    public String solution(String facelets, int maxDepth, long probeMax, long probeMin, int verbose) {
         String check = verify(facelets);
         if (check != null) {
             return check;
@@ -230,7 +230,7 @@ public class Search {
         return (verbose & OPTIMAL_SOLUTION) == 0 ? search() : searchopt();
     }
 
-    private void prepareSearch(CubieCube cc) {
+    private synchronized void prepareSearch(CubieCube cc) {
         conjMask = (TRY_INVERSE ? 0 : 0x38) | (TRY_THREE_AXES ? 0 : 0x36);
         selfSym = cc.selfSymmetry();
         conjMask |= (selfSym >> 16 & 0xffff) != 0 ? 0x12 : 0;
@@ -249,7 +249,7 @@ public class Search {
         }
     }
 
-    public synchronized String next(long probeMax, long probeMin, int verbose) {
+    public String next(long probeMax, long probeMin, int verbose) {
         this.probe = 0;
         this.probeMax = probeMax;
         this.probeMin = Math.min(probeMin, probeMax);
@@ -293,23 +293,19 @@ public class Search {
     public String verify(String facelets) {
         int count = 0x000000;
         byte[] f = new byte[54];
-        try {
-            ArrayList<Character> center = new ArrayList<>();
-            center.add(facelets.charAt(Util.U5));
-            center.add(facelets.charAt(Util.R5));
-            center.add(facelets.charAt(Util.F5));
-            center.add(facelets.charAt(Util.D5));
-            center.add(facelets.charAt(Util.L5));
-            center.add(facelets.charAt(Util.B5));
-            for (int i = 0; i < 54; i++) {
-                f[i] = (byte) center.indexOf(facelets.charAt(i));
-                if (f[i] == -1) {
-                    return "Error 1";
-                }
-                count += 1 << (f[i] << 2);
+        ArrayList<Character> center = new ArrayList<>();
+        center.add(facelets.charAt(Util.U5));
+        center.add(facelets.charAt(Util.R5));
+        center.add(facelets.charAt(Util.F5));
+        center.add(facelets.charAt(Util.D5));
+        center.add(facelets.charAt(Util.L5));
+        center.add(facelets.charAt(Util.B5));
+        for (int i = 0; i < 54; i++) {
+            f[i] = (byte) center.indexOf(facelets.charAt(i));
+            if (f[i] == -1) {
+                return "Error 1";
             }
-        } catch (Exception e) {
-            return "Error 1";
+            count += 1 << (f[i] << 2);
         }
         if (count != 0x999999) {
             return "Error 1";
