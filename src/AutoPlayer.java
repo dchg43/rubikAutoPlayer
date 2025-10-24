@@ -982,7 +982,6 @@ public class AutoPlayer extends Panel implements Runnable {
 
                 // 自动执行复位方法
                 try {
-                    AutoPlayer.this.cmd.setParameter("script", result);
                     doParameter("script", result);
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -1002,7 +1001,7 @@ public class AutoPlayer extends Panel implements Runnable {
                 buttonRandom.setLocation(width - 105, 20); // 打乱
                 buttonSolver.setLocation(width - 180, 70); // 反序
                 buttonSolution.setLocation(width - 105, 70); // 求解
-                frame.setVisible(true); // 刷新
+                AutoPlayer.this.scriptTextArea.revalidate(); // 刷新
             }
         });
 
