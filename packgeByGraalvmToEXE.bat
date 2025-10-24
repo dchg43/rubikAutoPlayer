@@ -9,12 +9,17 @@ set "libDir=%BASEDIR%\lib"
 set "destDir=%BASEDIR%\%APP_NAME%"
 set "nativeImageAgentDir=%BASEDIR%\META-INF\native-image"
 
+:: 必须安装Visual studio或Visual studio Professional
 set "VisualStudioDir=C:\Program Files\Microsoft Visual Studio\2022\Professional"
-set "VisualStudioKits=C:\Program Files (x86)\Windows Kits\10"
 set "MSVC_NATIVE_TOOLS=%VisualStudioDir%\VC\Auxiliary\Build\vcvars64.bat"
+:: 安装Visual studio时需要选择组件MSVC，最新版本为v143
 set "MSVC_EDITBIN=%VisualStudioDir%\VC\Tools\MSVC\14.44.35207\bin\Hostx64\x64\editbin.exe"
+:: 安装Visual studio时需要选择组件Windows 10 SDK（根据系统选择）
+set "VisualStudioKits=C:\Program Files (x86)\Windows Kits\10"
 set "SDK_KITS_MT=%VisualStudioKits%\bin\10.0.19041.0\x64\mt.exe"
 
+:: 需要安装GraalVM Community Edition，尽量选择与jdk一致的版本
+:: 下载地址https://github.com/graalvm/graalvm-ce-builds/releases
 set "graalvmPath=E:\tools\GraalVM-Native-Image\graalvm-ce-java17-22.3.3"
 set "JAVA=%graalvmPath%\bin\java"
 set "JAVAC=%graalvmPath%\bin\javac"

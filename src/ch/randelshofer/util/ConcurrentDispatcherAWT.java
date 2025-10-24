@@ -11,8 +11,10 @@ public class ConcurrentDispatcherAWT implements Runnable {
 
     private int threadMax;
 
+    // 待执行动画太多时丢弃动画。效果是界面流畅不卡顿，但是会多消耗CPU
     public static int ENQUEUE_WHEN_BLOCKED = 0;
 
+    // 待执行动画太多时以同步阻塞方式执行动画。频繁点击前进后退时（1秒很多次）界面会有卡顿
     public static int RUN_WHEN_BLOCKED = 1;
 
     private int blockingPolicy;
@@ -32,16 +34,16 @@ public class ConcurrentDispatcherAWT implements Runnable {
         this.threadMax = threadMax;
     }
 
+    public int getThreadCount() {
+        return threadCount;
+    }
+
     public void dispatch(Runnable runnable) {
         if (this.threadCount >= this.threadMax) {
-            if (this.blockingPolicy == ENQUEUE_WHEN_BLOCKED) {
-                synchronized (this.queue) {
-                    this.queue.addElement(runnable);
-                    this.threadCount++;
-                }
-            } else {
+            if (this.blockingPolicy == RUN_WHEN_BLOCKED) {
                 runnable.run();
             }
+            // else ==ENQUEUE_WHEN_BLOCKED时直接丢弃runnable，既不显示这个动画
             return;
         }
         synchronized (this.queue) {

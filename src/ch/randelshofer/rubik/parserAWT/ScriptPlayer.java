@@ -91,11 +91,11 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
         this.progress.addChangeListener(this);
         this.controlPanel = new Panel();
         this.controlPanel.setLayout(new BorderLayout());
-        this.controls = new MovieControlAWT(); // 滚动条
+        this.controls = new MovieControlAWT(); // 滚动条 播放、前进、后退按钮
         this.controls.setVisible(true);
         this.controls.setPlayer(this);
         this.controlPanel.add("Center", this.controls);
-        this.resetButton = new AbstractButton();
+        this.resetButton = new AbstractButton(); // reset重置按钮
         this.resetButton.setIcon(new PolygonIcon(new Polygon[]{ // 设置重置按钮大小
                 new Polygon(new int[]{2 * scaling, 3 * scaling, 3 * scaling, 2 * scaling}, //
                         new int[]{2 * scaling, 2 * scaling, 10 * scaling, 10 * scaling}, 4), // 竖条部分
@@ -318,6 +318,11 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
     }
 
     @Override
+    public boolean isInactive() {
+        return this.state != RUNNING;
+    }
+
+    @Override
     public void addChangeListener(ChangeListener changeListener) {
         this.listenerList.add(ChangeListener.class, changeListener);
     }
@@ -379,7 +384,8 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
         }
     }
 
-    private void update() {
+    // synchronized 防止update重复执行，重复执行时魔方动画会有重叠
+    private synchronized void update() {
         if (!this.isProcessingCurrentSymbol) {
             this.isProcessingCurrentSymbol = true;
         }

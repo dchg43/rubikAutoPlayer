@@ -35,56 +35,56 @@ public class MovieControlAWT extends Panel implements ActionListener, ItemListen
 
     public MovieControlAWT() {
         setForeground(Color.black);
-        Dimension dimension = new Dimension(15, 15);
-        Dimension dimension2 = new Dimension(13, 13);
+        Dimension preferredSize = new Dimension(15, 15);
+        Dimension initSize = new Dimension(13, 13);
         GridBagLayout gridBagLayout = new GridBagLayout();
         setLayout(gridBagLayout);
 
         // 播放按钮
         this.startButton = new ToggleButton();
-        this.startButton.setUnselectedIcon(new PolygonIcon(new Polygon(new int[]{4, 7, 7, 4}, new int[]{2, 5, 6, 9}, 4), dimension2));
+        this.startButton.setUnselectedIcon(new PolygonIcon(new Polygon(new int[]{4, 7, 7, 4}, new int[]{2, 5, 6, 9}, 4), initSize));
         this.startButton.setSelectedIcon(new PolygonIcon(
                 new Polygon[]{new Polygon(new int[]{3, 4, 4, 3}, new int[]{2, 2, 9, 9}, 4), new Polygon(new int[]{7, 8, 8, 7}, new int[]{2, 2, 9, 9}, 4)},
-                dimension2));
+                initSize));
         this.startButton.addItemListener(this);
-        this.startButton.setPreferredSize(dimension);
-        this.startButton.setMinimumSize(dimension);
+        this.startButton.setPreferredSize(preferredSize);
+        this.startButton.setMinimumSize(preferredSize);
         gridBagLayout.setConstraints(this.startButton, new GridBagConstraints());
         add(this.startButton);
 
         // 进度条
         this.slider = new MovieSliderAWT();
-        GridBagConstraints gridBagConstraints = new GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.fill = 2;
-        gridBagConstraints.weightx = 1.0d;
-        gridBagLayout.setConstraints(this.slider, gridBagConstraints);
+        GridBagConstraints sliderConstraints = new GridBagConstraints();
+        sliderConstraints.gridx = 1;
+        sliderConstraints.fill = 2;
+        sliderConstraints.weightx = 1.0d;
+        gridBagLayout.setConstraints(this.slider, sliderConstraints);
         add(this.slider);
 
         // 后退按钮
         this.rewindButton = new AbstractButton();
         this.rewindButton.setIcon(new PolygonIcon(
                 new Polygon[]{new Polygon(new int[]{4, 4, 1, 1}, new int[]{2, 9, 6, 5}, 4), new Polygon(new int[]{7, 8, 8, 7}, new int[]{2, 2, 9, 9}, 4)},
-                dimension2));
-        this.rewindButton.setPreferredSize(dimension);
-        this.rewindButton.setMinimumSize(dimension);
+                initSize));
+        this.rewindButton.setPreferredSize(preferredSize);
+        this.rewindButton.setMinimumSize(preferredSize);
         this.rewindButton.addActionListener(this);
-        GridBagConstraints gridBagConstraints2 = new GridBagConstraints();
-        gridBagConstraints2.gridx = 2;
-        gridBagLayout.setConstraints(this.rewindButton, gridBagConstraints2);
+        GridBagConstraints rewindConstraints = new GridBagConstraints();
+        rewindConstraints.gridx = 2;
+        gridBagLayout.setConstraints(this.rewindButton, rewindConstraints);
         add(this.rewindButton);
 
         // 前进按钮
         this.forwardButton = new AbstractButton();
         this.forwardButton.setIcon(new PolygonIcon(
                 new Polygon[]{new Polygon(new int[]{2, 3, 3, 2}, new int[]{2, 2, 9, 9}, 4), new Polygon(new int[]{6, 9, 9, 6}, new int[]{2, 5, 6, 9}, 4)},
-                dimension2));
-        this.forwardButton.setPreferredSize(dimension);
-        this.forwardButton.setMinimumSize(dimension);
+                initSize));
+        this.forwardButton.setPreferredSize(preferredSize);
+        this.forwardButton.setMinimumSize(preferredSize);
         this.forwardButton.addActionListener(this);
-        GridBagConstraints gridBagConstraints3 = new GridBagConstraints();
-        gridBagConstraints3.gridx = 3;
-        gridBagLayout.setConstraints(this.forwardButton, gridBagConstraints3);
+        GridBagConstraints forwardConstraints = new GridBagConstraints();
+        forwardConstraints.gridx = 3;
+        gridBagLayout.setConstraints(this.forwardButton, forwardConstraints);
         add(this.forwardButton);
     }
 
@@ -140,6 +140,12 @@ public class MovieControlAWT extends Panel implements ActionListener, ItemListen
         }
         if (this.startButton.isSelected()) {
             this.player.start();
+            while (this.player.isInactive()) { // 解决频繁点击启动停止按钮会卡死的问题
+                try {
+                    Thread.sleep(10L);
+                } catch (InterruptedException e) {
+                }
+            }
         } else {
             this.player.stop();
         }

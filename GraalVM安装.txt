@@ -1,0 +1,45 @@
+1、官方安装包，版本是免安装的，需要配置path并放在其他jdk前边，用graalvm带的jdk(有很多种软件，注意需要下载GraalVM Community Edition，并需要选跟jdk一致的版本，目前最新是https://github.com/graalvm/graalvm-ce-builds/releases/download/vm-22.3.3/graalvm-ce-java17-windows-amd64-22.3.3.zip)
+https://github.com/graalvm/graalvm-ce-builds/releases
+官方安装文档
+https://www.graalvm.org/22.0/docs/getting-started/windows/index.html
+
+2、然后安装native-image
+管理员权限打开cmd，输入命令gu install native-image
+
+3、安装Visual studio
+需要勾选3个组件（如果开始没选可以用Installer更新）
+MSVC v143 - VS 2022 C++ x64/x86 生成工具
+Windows 10 SDK (根据系统，如果是win11就选11)
+用于 Windows的C++ CMake工具（可选，如果需要用CMake就选）
+
+然后将类似如下安装目录添加到path环境变量
+C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Tools\MSVC\14.44.35207\bin\Hostx64\x64
+
+创建两个环境变量INCLUDE和LIB，没有时编译和链接时会报不包含路径集和无法打开文件libucrt.lib错误
+INCLUDE内容
+C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Tools\MSVC\14.44.35207\include;
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\shared;
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um;
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\ucrt;
+C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\winrt;
+
+LIB内容
+C:\Program Files\Microsoft Visual Studio\2022\Professional\VC\Tools\MSVC\14.44.35207\lib\x64;
+C:\Program Files (x86)\Windows Kits\10\Lib\10.0.19041.0\ucrt\x86;
+C:\Program Files (x86)\Windows Kits\10\Lib\10.0.19041.0\um\x64;
+
+
+4、打包java项目成exe文件
+注意，java编译时用的jdk需要是graalvm带的jdk，既第1步配置的path要有效或者手工配置
+
+
+
+参考：
+https://blog.csdn.net/catoop/article/details/138269014
+手把手将你的Java maven项目通过GraalVM打包成windows可执行程序
+https://zhuanlan.zhihu.com/p/613341871
+GraalVM NativeImage 小试牛刀 & 踩坑指南
+https://www.ghostchu.com/graalvm-nativeimage-trial/
+Using GraalVM and Native Image on Windows
+https://qbmzc.github.io/2024/12/05/2024/12/051439/
+
