@@ -140,7 +140,7 @@ public class MovieControlAWT extends Panel implements ActionListener, ItemListen
         }
         if (this.startButton.isSelected()) {
             this.player.start();
-            while (this.player.isInactive()) { // 解决频繁点击启动停止按钮会卡死的问题
+            while (this.player.isInactive() && this.player.isActive()) { // 解决频繁点击启动停止按钮会卡死的问题
                 try {
                     Thread.sleep(10L);
                 } catch (InterruptedException e) {
