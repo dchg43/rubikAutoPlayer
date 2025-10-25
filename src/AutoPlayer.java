@@ -278,7 +278,7 @@ public class AutoPlayer extends Panel implements Runnable {
         for (String fontName : fontNames) {
             Font font = new Font(fontName, Font.PLAIN, 15);
             // 判断是否支持中文
-            if (font.canDisplayUpTo("编辑") == -1) {
+            if (font.canDisplayUpTo("编辑©") == -1) {
                 // 判断是否等宽字体
                 if (font.getStringBounds("il", frc).getWidth() == font.getStringBounds("WM", frc).getWidth()) {
                     this.defaultFont = fontName;

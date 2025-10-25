@@ -1,6 +1,7 @@
 package ch.randelshofer.cmd;
 
 import java.awt.Font;
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
@@ -145,8 +146,7 @@ public class CommandParser {
             Thread runnable = new Thread() {
                 @Override
                 public void run() {
-                    String header = null;
-                    String footer = null;
+                    String header = "点击角块顺时针旋转面，点击中心块逆时针旋转面，点击棱块往点击的一侧旋转中间层";
                     Builder builder = HelpFormatter.builder();
                     builder.setShowSince(false);
                     StringWriter stringWriter = new StringWriter();
@@ -156,7 +156,8 @@ public class CommandParser {
                     builder.setHelpAppendable(appendable);
                     HelpFormatter formatter = builder.get();
                     try {
-                        formatter.printHelp(getAppInfo(), header, options, footer, false);
+                        String path = new File(CommandParser.class.getProtectionDomain().getCodeSource().getLocation().getPath()).getAbsolutePath();
+                        formatter.printHelp(path, header, options, getAppInfo(), false);
                         printWriter.close();
                         String message = stringWriter.toString();
                         System.out.println(message); // 命令行输出帮助

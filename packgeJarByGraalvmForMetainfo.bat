@@ -71,7 +71,7 @@ if not exist "%nativeImageAgentDir%" (
     mkdir "%nativeImageAgentDir%"
     set "createOrMerge=config-output-dir"
 )
-start %JAVA% -agentlib:native-image-agent=%createOrMerge%="%nativeImageAgentDir%" -Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 -Dconsole.encoding=UTF-8 -Duser.language=en -Duser.region=US -jar "%BASEDIR%\%APP_NAME%.jar" --autoTest 10 --display true -backgroundImage "%systemroot%\Web\Wallpaper\Windows\img0.jpg"
+start %JAVA% -agentlib:native-image-agent=%createOrMerge%="%nativeImageAgentDir%" -Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 -Dconsole.encoding=UTF-8 -Duser.language=en -Duser.region=US -jar "%BASEDIR%\%APP_NAME%.jar" --autoTest 10 --display true -backgroundImage "%systemroot%\Web\Wallpaper\Windows\img0.jpg" -h
 if not "%errorlevel%" == "0" (
     pause
     exit /b %errorlevel%
