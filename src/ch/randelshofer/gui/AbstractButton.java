@@ -203,8 +203,8 @@ public class AbstractButton extends Canvas implements ItemSelectable {
             repaint();
             break;
         case MouseEvent.MOUSE_RELEASED: // 弹起
-            setPressed(false);
             repaint();
+            setPressed(false);
             break;
         case MouseEvent.MOUSE_CLICKED: // 点击（按下并弹起）
             setArmed(true);
@@ -212,8 +212,8 @@ public class AbstractButton extends Canvas implements ItemSelectable {
             repaint();
             break;
         case MouseEvent.MOUSE_EXITED: // 移开
-            setArmed(false);
             repaint();
+            setArmed(false);
             break;
         case MouseEvent.MOUSE_ENTERED: // 移入
             setArmed(true);
@@ -231,8 +231,8 @@ public class AbstractButton extends Canvas implements ItemSelectable {
 
     @Override
     public boolean mouseExit(Event event, int x, int y) {
-        setArmed(false);
         repaint();
+        setArmed(false);
         return true;
     }
 
@@ -246,8 +246,8 @@ public class AbstractButton extends Canvas implements ItemSelectable {
 
     @Override
     public boolean mouseUp(Event event, int x, int y) {
-        setPressed(false);
         repaint();
+        setPressed(false);
         return true;
     }
 

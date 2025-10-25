@@ -10,12 +10,14 @@ public class ToggleButton extends AbstractButton implements ChangeListener {
     @Override
     public boolean mouseUp(Event event, int x, int y) {
         if (isEnabled() && isArmed()) {
+            setEnabled(false);
             boolean isSelected = !isSelected();
             if (isSelected || this.group == null) {
                 setSelected(isSelected);
             }
+            super.mouseUp(event, x, y);
+            setEnabled(true);
         }
-        super.mouseUp(event, x, y);
         return true;
     }
 }
