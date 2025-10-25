@@ -146,7 +146,7 @@ public class CommandParser {
             Thread runnable = new Thread() {
                 @Override
                 public void run() {
-                    String header = "点击角块顺时针旋转，点击中心块逆时针旋转，点击棱块往点击的一侧旋转中层";
+                    String header = "点击角块顺时针旋转，点击中心块逆时针旋转，点击棱块往点击的一侧旋转中层，拖动旋转魔方";
                     Builder builder = HelpFormatter.builder();
                     builder.setShowSince(false);
                     StringWriter stringWriter = new StringWriter();
