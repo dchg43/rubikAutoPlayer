@@ -19,7 +19,7 @@ public class MultilineLabel extends Canvas {
     // private static final Color activeSelectionBackground = new Color(0xFF, 0xFF, 0x40);
     public static final Color activeSelectionBackground = new Color(0x00, 0xFF, 0x40);
 
-    private Vector<String> lines;
+    private Vector<String> lines = new Vector<>();
 
     private int selectionStart = -1;
 
@@ -36,9 +36,9 @@ public class MultilineLabel extends Canvas {
     private Color selectionBackground;
 
     public MultilineLabel() {
-        initComponents();
         setBackground(Color.white);
         setForeground(Color.black);
+        initComponents();
     }
 
     public void setSelectionBackground(Color selectionBackground) {
@@ -51,7 +51,7 @@ public class MultilineLabel extends Canvas {
     public int viewToModel(int x, int y) {
         FontMetrics fontMetrics = getFontMetrics(getFont());
         int height = (y - this.insets.top) / fontMetrics.getHeight();
-        if (height < 0 || this.lines == null) {
+        if (height < 0) {
             return 0;
         }
         if (height >= this.lines.size()) {
@@ -138,8 +138,8 @@ public class MultilineLabel extends Canvas {
 
     @Override
     public void invalidate() {
-        this.lines = null;
         super.invalidate();
+        initComponents();
     }
 
     public void setInsets(Insets insets) {
@@ -155,9 +155,6 @@ public class MultilineLabel extends Canvas {
     public Dimension getPreferredSize() {
         Dimension size = new Dimension();
         Insets insets = getInsets();
-        if (this.lines == null) {
-            wrapText();
-        }
         FontMetrics fontMetrics = getFontMetrics(getFont());
         for (String line : this.lines) {
             size.width = Math.max(size.width, fontMetrics.stringWidth(line));
@@ -175,27 +172,14 @@ public class MultilineLabel extends Canvas {
 
     @Override
     public void paint(Graphics graphics) {
+        if (this.text == null) {
+            return;
+        }
+
         Dimension size = getSize();
         graphics.setColor(Color.black);
         // 绘制边框 (-1,-1,1,1)刚好不显示；(2,2,-4,-4)显示黑色边框
         graphics.drawRect(-1, -1, size.width + 1, size.height + 1);
-
-        if (this.text == null) {
-            return;
-        }
-        if (this.lines == null) {
-            invalidate();
-            wrapText();
-            Component container = this;
-            Container parent = this.getParent();
-            while (parent != null && parent.isValid()) {
-                container = parent;
-                parent = parent.getParent();
-            }
-            container.validate();
-            return;
-        }
-
         // 绘制选择图层
         Insets insets = getInsets();
         FontMetrics fontMetrics = getFontMetrics(getFont());
@@ -230,5 +214,13 @@ public class MultilineLabel extends Canvas {
     }
 
     private void initComponents() {
+        wrapText();
+        Component container = this;
+        Container parent = this.getParent();
+        while (parent != null && parent.isValid()) {
+            container = parent;
+            parent = parent.getParent();
+        }
+        container.validate();
     }
 }
