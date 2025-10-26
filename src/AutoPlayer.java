@@ -1029,6 +1029,7 @@ public class AutoPlayer extends Panel implements Runnable {
 
         // 显示
         frame.setVisible(true);
+        buttonSolution.requestFocusInWindow(); // 设置默认焦点
         revalidate();
     }
 

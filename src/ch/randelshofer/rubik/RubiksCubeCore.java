@@ -834,7 +834,7 @@ public class RubiksCubeCore implements Cloneable {
             return index;
         }
         int length = this.cornerLoc.length - 1;
-        while (length > 0 && this.cornerLoc[length] != index) {
+        while (length >= 0 && this.cornerLoc[length] != index) {
             length--;
         }
         return length;
@@ -867,7 +867,7 @@ public class RubiksCubeCore implements Cloneable {
             return index;
         }
         int length = this.edgeLoc.length - 1;
-        while (length > 0 && this.edgeLoc[length] != index) {
+        while (length >= 0 && this.edgeLoc[length] != index) {
             length--;
         }
         return length;
@@ -900,7 +900,7 @@ public class RubiksCubeCore implements Cloneable {
             return index;
         }
         int length = this.sideLoc.length - 1;
-        while (length > 0 && this.sideLoc[length] != index) {
+        while (length >= 0 && this.sideLoc[length] != index) {
             length--;
         }
         return length;
