@@ -185,35 +185,45 @@ public class AutoPlayer extends Panel implements Runnable {
 
     public void autoTest(int testTimes) {
         // 测试自动求解算法
+        displayMode = true;
         long start = System.nanoTime();
-        for (int i = 0; i < testTimes; i++) {
-            this.player.getCubeModel().reset();
-            String facelets = Tools.randomCube();
-            setCubeByString(facelets, this.colors);
-            String result = searchSolution(facelets);
-            ScriptNode scriptNode = null;
-            try {
-                scriptNode = this.scriptParser.parse(new StringReader(result));
-            } catch (IOException e) {
-                String message = "Auto test parse script failed.\n input: " + facelets + "\n script: " + result;
-                JOptionPane.showMessageDialog(this, message, "失败", JOptionPane.ERROR_MESSAGE);
-                return;
+        try {
+            for (int i = 0; i < testTimes && displayMode; i++) {
+                this.player.getCubeModel().reset();
+                String facelets = Tools.randomCube();
+                setCubeByString(facelets, this.colors);
+                String result = searchSolution(facelets);
+                ScriptNode scriptNode = this.scriptParser.parse(new StringReader(result));
+                this.player.setScript(scriptNode);
+                this.scriptTextArea.setText(result);
+                this.player.makesureFinished();
+                BoundedRangeModel progress = this.player.getBoundedRangeModel();
+                progress.setValue(progress.getMaximum());
+                this.player.makesureFinished();
+                String faceletsCur = getCubeString(false);
+                if (!completeCube.equals(faceletsCur)) {
+                    if (displayMode) {
+                        displayMode = false;
+                        String message = "Auto test failed.\n  input: " + facelets + "\n script: " + result + "\n result: " + faceletsCur;
+                        JOptionPane.showMessageDialog(this, message, "失败", JOptionPane.ERROR_MESSAGE);
+                        return;
+                    } else {
+                        break;
+                    }
+                }
             }
-            this.player.setScript(scriptNode);
-            this.scriptTextArea.setText(result);
-            this.player.makesureFinished();
-            BoundedRangeModel progress = this.player.getBoundedRangeModel();
-            progress.setValue(progress.getMaximum());
-            this.player.makesureFinished();
-            String faceletsCur = getCubeString(false);
-            if (!completeCube.equals(faceletsCur)) {
-                String message = "Auto test failed.\n  input: " + facelets + "\n script: " + result + "\n result: " + faceletsCur;
-                JOptionPane.showMessageDialog(this, message, "失败", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
+        } catch (Exception e) {
+            displayMode = false;
+            String message = "Auto test failed.";
+            JOptionPane.showMessageDialog(this, message, "失败", JOptionPane.ERROR_MESSAGE);
+            return;
         }
+        displayMode = false;
         String message = String.format("测试通过，用时%.1fs", (System.nanoTime() - start) / 1000000000.0d);
         JOptionPane.showMessageDialog(this, message, "成功", JOptionPane.INFORMATION_MESSAGE);
+        this.player.reset();
+        this.player.setScript(null);
+        this.scriptTextArea.setText(null);
     }
 
     public AutoPlayer() {
@@ -442,11 +452,11 @@ public class AutoPlayer extends Panel implements Runnable {
         script = script.replace("\\n", "\n");
         try {
             ScriptNode scriptNode = scriptParser.parse(new StringReader(script));
-            this.scriptTextArea.setText(script);
             this.player.setScript(scriptNode);
+            this.scriptTextArea.setText(script);
         } catch (Exception e) {
-            this.scriptTextArea.setText(null);
             this.player.setScript(null);
+            this.scriptTextArea.setText(null);
             showError("Invalid parameter 'script'\n" + AutoPlayer.getString(e));
         }
 
@@ -944,6 +954,7 @@ public class AutoPlayer extends Panel implements Runnable {
                     AutoPlayer.this.displayMode = false;
                     AutoPlayer.this.player.reset();
                     AutoPlayer.this.player.setScript(null);
+                    AutoPlayer.this.scriptTextArea.setText(null);
                     // 初始化颜色
                     for (int i = 0; i < 6; i++) {
                         Color c = AutoPlayer.this.colors.get(i);
@@ -1153,7 +1164,7 @@ public class AutoPlayer extends Panel implements Runnable {
      * @param cubeString 类似 UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB
      * @return 输出类似 R2 F' L
      */
-    public String searchSolution(String cubeString) {
+    public synchronized String searchSolution(String cubeString) {
         if (lastResult[0] != null && lastResult[0].equals(cubeString)) {
             return lastResult[1];
         }
@@ -1326,9 +1337,9 @@ public class AutoPlayer extends Panel implements Runnable {
                 this.player.reset();
             }
             value = value.replace("\\n", "\n");
-            this.scriptTextArea.setText(value);
             ScriptNode scriptNode = this.scriptParser.parse(new StringReader(value));
             this.player.setScript(scriptNode);
+            this.scriptTextArea.setText(value);
             if (this.autoPlay) {
                 this.player.start();
             }
