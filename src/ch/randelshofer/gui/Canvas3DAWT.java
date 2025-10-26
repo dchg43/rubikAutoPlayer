@@ -239,9 +239,8 @@ public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener
             return;
         }
         Transform3D transform = this.transformModel.getTransform();
-        Dimension size = getSize();
-        int width = size.width / 2;
-        int height = size.height / 2;
+        int width = getWidth() / 2;
+        int height = getHeight() / 2;
         double scale = this.scaleFactor * Math.min(width, height);
         Vector<Face3D> visibleFaces = new Vector<>();
         this.activeFaces.removeAllElements();
@@ -345,8 +344,7 @@ public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener
         if (this.isAdjusting && this.isArmed && isEnabled()) {
             int x = mouseEvent.getX();
             int y = mouseEvent.getY();
-            Dimension size = getSize();
-            this.transformModel.rotate((this.prevy - y) * (Math.PI * 2 / size.width), (this.prevx - x) * (Math.PI * 2 / size.height), 0.0d);
+            this.transformModel.rotate((this.prevy - y) * (Math.PI * 2 / getWidth()), (this.prevx - x) * (Math.PI * 2 / getHeight()), 0.0d);
             this.prevx = x;
             this.prevy = y;
         }

@@ -32,6 +32,9 @@ public class MultilineLabel extends Canvas {
     // 文本框边距：上 左 下 右
     private Insets insets = new Insets(2, 6, 6, 3);
 
+    // 上一次绘制覆盖图层位置
+    private Insets lastFill = new Insets(0, 0, 0, 0);
+
     // 选中的文本背景色。分为正在执行和未执行两种，分别由active和inactive设置
     private Color selectionBackground;
 
@@ -39,13 +42,6 @@ public class MultilineLabel extends Canvas {
         setBackground(Color.white);
         setForeground(Color.black);
         initComponents();
-    }
-
-    public void setSelectionBackground(Color selectionBackground) {
-        if (!selectionBackground.equals(this.selectionBackground)) {
-            this.selectionBackground = selectionBackground;
-            repaint();
-        }
     }
 
     public int viewToModel(int x, int y) {
@@ -78,8 +74,13 @@ public class MultilineLabel extends Canvas {
         } else {
             this.text = text;
         }
+
         wrapText();
-        revalidate();
+        Graphics g = getGraphics();
+        if (g != null) {
+            g.clearRect(0, 0, getWidth(), getHeight());
+            revalidate();
+        }
     }
 
     private void wrapText() {
@@ -87,7 +88,7 @@ public class MultilineLabel extends Canvas {
             return;
         }
         Vector<String> lines = new Vector<>();
-        int width = (getSize().width - this.insets.left) - this.insets.right;
+        int width = (getWidth() - this.insets.left) - this.insets.right;
         if (width <= 0) {
             lines.addElement(this.text);
             this.lines = lines;
@@ -125,13 +126,19 @@ public class MultilineLabel extends Canvas {
         return this.text;
     }
 
-    public synchronized void select(int startPosition, int endPosition) {
-        if (endPosition > this.text.length() || endPosition < startPosition || startPosition < 0) {
-            return;
-        }
-        if (this.selectionStart != startPosition || this.selectionEnd != endPosition) {
+    public synchronized void select(int startPosition, int endPosition, Color background) {
+        boolean repaint = false;
+        if (endPosition <= this.text.length() && endPosition >= startPosition && startPosition >= 0
+            && (this.selectionStart != startPosition || this.selectionEnd != endPosition)) {
             this.selectionStart = startPosition;
             this.selectionEnd = endPosition;
+            repaint = true;
+        }
+        if (!background.equals(this.selectionBackground)) {
+            this.selectionBackground = background;
+            repaint = true;
+        }
+        if (repaint) {
             repaint();
         }
     }
@@ -171,15 +178,20 @@ public class MultilineLabel extends Canvas {
     }
 
     @Override
+    public void update(Graphics g) {
+        g.clearRect(lastFill.top, lastFill.left, lastFill.bottom, lastFill.right);
+        paint(g);
+    }
+
+    @Override
     public void paint(Graphics graphics) {
         if (this.text == null) {
             return;
         }
 
-        Dimension size = getSize();
         graphics.setColor(Color.black);
         // 绘制边框 (-1,-1,1,1)刚好不显示；(2,2,-4,-4)显示黑色边框
-        graphics.drawRect(-1, -1, size.width + 1, size.height + 1);
+        graphics.drawRect(-1, -1, getWidth() + 1, getHeight() + 1);
         // 绘制选择图层
         Insets insets = getInsets();
         FontMetrics fontMetrics = getFontMetrics(getFont());
@@ -190,11 +202,13 @@ public class MultilineLabel extends Canvas {
             int height = fontMetrics.getHeight();
             for (String line : this.lines) {
                 int length = cur + line.length();
-                if (length >= this.selectionStart && cur <= this.selectionEnd) {
+                if (this.selectionEnd <= length) {
                     int iMax = Math.max(0, this.selectionStart - cur);
                     int x = insets.left + fontMetrics.stringWidth(line.substring(0, iMax));
                     int weight = fontMetrics.stringWidth(line.substring(iMax, Math.max(0, Math.min(line.length(), this.selectionEnd - cur))));
-                    graphics.fillRect(x, y, weight, height); // 绘制选择覆盖图层
+                    lastFill.set(x, y, weight, height);
+                    graphics.fillRect(lastFill.top, lastFill.left, lastFill.bottom, lastFill.right); // 绘制选择覆盖图层
+                    break;
                 }
                 cur = length;
                 y += height;

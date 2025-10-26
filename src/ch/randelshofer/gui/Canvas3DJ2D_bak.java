@@ -120,10 +120,9 @@ public class Canvas3DJ2D_bak extends Canvas3DAWT {
     protected void paint3D(Graphics graphics) {
         try {
             Insets insets = this.paintInsets;
-            Dimension size = getSize();
             Transform3D transform = this.transformModel.getTransform();
-            double width = (size.width - insets.left - insets.right) / 2;
-            double height = (size.height - insets.top - insets.bottom) / 2;
+            double width = (getWidth() - insets.left - insets.right) / 2;
+            double height = (getHeight() - insets.top - insets.bottom) / 2;
             double scale = this.scaleFactor * Math.min(width, height);
             width += insets.left;
             height += insets.top;

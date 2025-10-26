@@ -22,15 +22,16 @@ public class RatioLayout implements LayoutManager {
 
     @Override
     public void layoutContainer(Container parent) {
-        Dimension size = parent.getSize();
-        int i = (int) (size.width * this.ratio);
+        int width = parent.getWidth();
+        int height = parent.getHeight();
+        int i = (int) (width * this.ratio);
         int iMin = Math.min(parent.getComponentCount(), 2);
         for (int i2 = 0; i2 < iMin; i2++) {
             Component component = parent.getComponent(i2);
             if (i2 == 0) {
-                component.setBounds(0, 0, i, size.height);
+                component.setBounds(0, 0, i, height);
             } else {
-                component.setBounds(i, 0, size.width - i, size.height);
+                component.setBounds(i, 0, width - i, height);
             }
         }
     }

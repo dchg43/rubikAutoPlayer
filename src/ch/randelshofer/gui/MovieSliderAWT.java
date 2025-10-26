@@ -5,6 +5,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Event;
 import java.awt.Graphics;
+import java.awt.Insets;
 import java.awt.event.MouseEvent;
 
 import ch.randelshofer.gui.event.ChangeEvent;
@@ -25,6 +26,9 @@ public class MovieSliderAWT extends Canvas implements ChangeListener {
     private BoundedRangeModel model = new DefaultBoundedRangeModel();
 
     private int thumbPos = 0;
+
+    // 上一次绘制覆盖图层位置
+    private Insets lastFill = new Insets(0, 0, 8, 8);
 
     private BoundedRangeModel progressModel = new DefaultBoundedRangeModel(1, 0, 0, 1);
 
@@ -146,6 +150,12 @@ public class MovieSliderAWT extends Canvas implements ChangeListener {
     }
 
     @Override
+    public void update(Graphics g) {
+        g.clearRect(lastFill.top, lastFill.left, lastFill.bottom, lastFill.right);
+        paint(g);
+    }
+
+    @Override
     public void paint(Graphics graphics) {
         this.thumbPos = computeThumbPos();
         this.progressPos = computeProgressPos();
@@ -153,9 +163,8 @@ public class MovieSliderAWT extends Canvas implements ChangeListener {
     }
 
     public void paint(Graphics graphics, int x, int y) {
-        Dimension size = getSize();
-        int width = size.width;
-        int height = size.height;
+        int width = getWidth();
+        int height = getHeight();
         int xMin = Math.min(Math.max(x, 0), width);
         if (!isEnabled()) {
             graphics.setColor(Color.gray);
@@ -178,11 +187,12 @@ public class MovieSliderAWT extends Canvas implements ChangeListener {
         }
         graphics.drawRect(xMin - 4, 0, 8, height - 1);
         graphics.drawRect((xMin - 4) + 2, 2, 4, height - 5);
+        lastFill.set(xMin - 5, 0, 10, height);
     }
 
     protected int computeProgressPos() {
         BoundedRangeModel boundedRangeModel = this.progressModel;
-        int i = (getSize().width - 8) - 3;
+        int i = (getWidth() - 8) - 3;
         if (boundedRangeModel == null) {
             return 6;
         }

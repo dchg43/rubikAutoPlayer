@@ -338,7 +338,7 @@ public class AutoPlayer extends Panel implements Runnable {
                 }
             }
         });
-        this.scriptTextArea.setSize(getSize());
+        this.scriptTextArea.setSize(getWidth(), getHeight());
 
         try {
             initCube();
@@ -1076,8 +1076,7 @@ public class AutoPlayer extends Panel implements Runnable {
             endPosition = currentSymbol.getEndPosition() + 1;
         }
         Color backColor = this.player.isProcessingCurrentSymbol() ? MultilineLabel.activeSelectionBackground : MultilineLabel.inactiveSelectionBackground;
-        this.scriptTextArea.select(startPosition, endPosition);
-        this.scriptTextArea.setSelectionBackground(backColor);
+        this.scriptTextArea.select(startPosition, endPosition, backColor);
     }
 
     private void showError(String message) {

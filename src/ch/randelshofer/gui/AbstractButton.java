@@ -122,9 +122,8 @@ public class AbstractButton extends Canvas implements ItemSelectable {
 
     @Override
     public void paint(Graphics graphics) {
-        Dimension size = getSize();
-        int width = size.width;
-        int height = size.height;
+        int width = getWidth();
+        int height = getHeight();
         if (!isEnabled()) {
             graphics.setColor(Color.gray);
         }
