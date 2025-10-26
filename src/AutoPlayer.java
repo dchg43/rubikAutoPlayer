@@ -149,6 +149,8 @@ public class AutoPlayer extends Panel implements Runnable {
             return;
         }
         displayMode = true;
+        this.scriptTextArea.setText(null);
+
         String facelets = Tools.randomCube();
         setCubeByString(facelets, this.colors);
 
@@ -185,7 +187,7 @@ public class AutoPlayer extends Panel implements Runnable {
         // 测试自动求解算法
         long start = System.nanoTime();
         for (int i = 0; i < testTimes; i++) {
-            this.player.reset();
+            this.player.getCubeModel().reset();
             String facelets = Tools.randomCube();
             setCubeByString(facelets, this.colors);
             String result = searchSolution(facelets);
@@ -198,6 +200,7 @@ public class AutoPlayer extends Panel implements Runnable {
                 return;
             }
             this.player.setScript(scriptNode);
+            this.scriptTextArea.setText(result);
             this.player.makesureFinished();
             BoundedRangeModel progress = this.player.getBoundedRangeModel();
             progress.setValue(progress.getMaximum());
