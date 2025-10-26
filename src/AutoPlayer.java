@@ -219,11 +219,17 @@ public class AutoPlayer extends Panel implements Runnable {
             return;
         }
         displayMode = false;
-        String message = String.format("测试通过，用时%.1fs", (System.nanoTime() - start) / 1000000000.0d);
-        JOptionPane.showMessageDialog(this, message, "成功", JOptionPane.INFORMATION_MESSAGE);
         this.player.reset();
         this.player.setScript(null);
         this.scriptTextArea.setText(null);
+        for (int i = 0; i < 6; i++) {
+            Color c = this.colors.get(i);
+            for (int j = 0; j < 9; j++) {
+                this.player.getCube3D().setStickerColor(i, j, c);
+            }
+        }
+        String message = String.format("测试通过，用时%.1fs", (System.nanoTime() - start) / 1000000000.0d);
+        JOptionPane.showMessageDialog(this, message, "成功", JOptionPane.INFORMATION_MESSAGE);
     }
 
     public AutoPlayer() {
