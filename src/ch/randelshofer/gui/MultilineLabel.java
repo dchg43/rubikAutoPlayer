@@ -84,9 +84,6 @@ public class MultilineLabel extends Canvas {
     }
 
     private void wrapText() {
-        if (this.text == null) {
-            return;
-        }
         Vector<String> lines = new Vector<>();
         int width = (getWidth() - this.insets.left) - this.insets.right;
         if (width <= 0) {
@@ -185,10 +182,6 @@ public class MultilineLabel extends Canvas {
 
     @Override
     public void paint(Graphics graphics) {
-        if (this.text == null) {
-            return;
-        }
-
         // 绘制选择图层
         Insets insets = getInsets();
         FontMetrics fontMetrics = getFontMetrics(getFont());

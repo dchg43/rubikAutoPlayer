@@ -184,7 +184,9 @@ public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener
     }
 
     public void setTransform(Transform3D transform) {
-        this.transformModel.setTransform(transform);
+        if (!transform.equals(getTransform())) {
+            this.transformModel.setTransform(transform);
+        }
     }
 
     public Transform3D getTransform() {
