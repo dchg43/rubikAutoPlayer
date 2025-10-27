@@ -189,9 +189,6 @@ public class MultilineLabel extends Canvas {
             return;
         }
 
-        graphics.setColor(Color.black);
-        // 绘制边框 (-1,-1,1,1)刚好不显示；(2,2,-4,-4)显示黑色边框
-        graphics.drawRect(-1, -1, getWidth() + 1, getHeight() + 1);
         // 绘制选择图层
         Insets insets = getInsets();
         FontMetrics fontMetrics = getFontMetrics(getFont());
@@ -225,6 +222,10 @@ public class MultilineLabel extends Canvas {
             graphics.drawString(line, insets.left, ascent);
             ascent += fontMetrics.getHeight();
         }
+
+        // 绘制边框 (-1,-1,2,2)刚好不显示；(2,2,-4,-4)显示黑色边框
+        graphics.setColor(Color.black);
+        graphics.drawRect(-1, -1, getWidth() + 2, getHeight() + 2);
     }
 
     private void initComponents() {
