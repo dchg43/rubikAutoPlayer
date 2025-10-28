@@ -126,12 +126,12 @@ public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener
     }
 
     @Override
-    public void update(Graphics graphics) {
-        paint(graphics);
+    public void update(Graphics g) {
+        paint(g);
     }
 
     @Override
-    public void paint(Graphics graphics) {
+    public void paint(Graphics g) {
         Dimension size = getSize();
         if (this.backGfx == null || this.backSize.width != size.width || this.backSize.height != size.height) {
             if (size.width <= 0 || size.height <= 0) {
@@ -148,7 +148,7 @@ public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener
             paintBackground(this.backGfx);
             paint3D(this.backGfx);
         }
-        graphics.drawImage(this.backImg, 0, 0, this);
+        g.drawImage(this.backImg, 0, 0, this);
     }
 
     protected void createBackGraphics(Dimension size) {

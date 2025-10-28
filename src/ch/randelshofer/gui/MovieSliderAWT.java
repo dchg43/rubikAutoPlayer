@@ -28,7 +28,7 @@ public class MovieSliderAWT extends Canvas implements ChangeListener {
     private int thumbPos = 0;
 
     // 上一次绘制覆盖图层位置
-    private Insets lastFill = new Insets(0, 0, 8, 8);
+    private Insets lastFill = new Insets(0, 0, 0, 0);
 
     private BoundedRangeModel progressModel = new DefaultBoundedRangeModel(1, 0, 0, 1);
 
@@ -151,42 +151,42 @@ public class MovieSliderAWT extends Canvas implements ChangeListener {
 
     @Override
     public void update(Graphics g) {
-        g.clearRect(lastFill.top, lastFill.left, lastFill.bottom, lastFill.right);
         paint(g);
     }
 
     @Override
-    public void paint(Graphics graphics) {
+    public void paint(Graphics g) {
         this.thumbPos = computeThumbPos();
         this.progressPos = computeProgressPos();
-        paint(graphics, this.thumbPos, this.progressPos);
+        paint(g, this.thumbPos, this.progressPos);
     }
 
-    public void paint(Graphics graphics, int x, int y) {
+    public void paint(Graphics g, int x, int y) {
+        g.clearRect(lastFill.top, lastFill.left, lastFill.bottom, lastFill.right);
         int width = getWidth();
         int height = getHeight();
         int xMin = Math.min(Math.max(x, 0), width);
         if (!isEnabled()) {
-            graphics.setColor(Color.gray);
+            g.setColor(Color.gray);
         }
-        graphics.drawRect(0, 0, width - 1, height - 1);
-        graphics.drawRect(4, 4, (width - 8) - 1, height - 9);
+        g.drawRect(0, 0, width - 1, height - 1);
+        g.drawRect(4, 4, (width - 8) - 1, height - 9);
         if (isEnabled()) {
-            graphics.setColor(Color.white);
-            graphics.drawLine(1, 1, width - 2, 1);
-            graphics.drawLine(1, 2, 1, height - 2);
-            graphics.drawLine(5, 5, (width - 4) - 3, 5);
-            graphics.drawLine(5, 6, 5, height - 6);
+            g.setColor(Color.white);
+            g.drawLine(1, 1, width - 2, 1);
+            g.drawLine(1, 2, 1, height - 2);
+            g.drawLine(5, 5, (width - 4) - 3, 5);
+            g.drawLine(5, 6, 5, height - 6);
             if (y > 0) {
-                graphics.setColor(Color.gray);
-                graphics.fillRect(6, 6, y - 4, height - 11);
+                g.setColor(Color.gray);
+                g.fillRect(6, 6, y - 4, height - 11);
             }
-            graphics.setColor(Color.white);
-            graphics.drawRect((xMin - 4) + 1, 1, 6, height - 3);
-            graphics.setColor(getForeground());
+            g.setColor(Color.white);
+            g.drawRect((xMin - 4) + 1, 1, 6, height - 3);
+            g.setColor(getForeground());
         }
-        graphics.drawRect(xMin - 4, 0, 8, height - 1);
-        graphics.drawRect((xMin - 4) + 2, 2, 4, height - 5);
+        g.drawRect(xMin - 4, 0, 8, height - 1);
+        g.drawRect((xMin - 4) + 2, 2, 4, height - 5);
         lastFill.set(xMin - 5, 0, 10, height);
     }
 

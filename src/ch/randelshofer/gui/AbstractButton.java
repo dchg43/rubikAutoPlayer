@@ -121,40 +121,40 @@ public class AbstractButton extends Canvas implements ItemSelectable {
     }
 
     @Override
-    public void paint(Graphics graphics) {
+    public void paint(Graphics g) {
         int width = getWidth();
         int height = getHeight();
         if (!isEnabled()) {
-            graphics.setColor(Color.gray);
+            g.setColor(Color.gray);
         }
-        graphics.drawRect(0, 0, width - 1, height - 1);
+        g.drawRect(0, 0, width - 1, height - 1);
         if (this.isPressed && this.isArmed) {
-            graphics.setColor(Color.gray.darker());
-            graphics.fillRect(1, 1, width - 3, height - 3);
-            graphics.setColor(Color.darkGray);
-            graphics.drawLine(1, 1, width - 2, 1);
-            graphics.drawLine(1, 1, 1, height - 2);
-            graphics.setColor(Color.gray);
-            graphics.drawLine(2, height - 2, width - 2, height - 2);
-            graphics.drawLine(width - 2, height - 2, width - 2, 2);
+            g.setColor(Color.gray.darker());
+            g.fillRect(1, 1, width - 3, height - 3);
+            g.setColor(Color.darkGray);
+            g.drawLine(1, 1, width - 2, 1);
+            g.drawLine(1, 1, 1, height - 2);
+            g.setColor(Color.gray);
+            g.drawLine(2, height - 2, width - 2, height - 2);
+            g.drawLine(width - 2, height - 2, width - 2, 2);
         } else {
-            graphics.setColor((!this.isSelected || this.group == null) ? Color.lightGray : new Color(160, 160, 160));
-            graphics.fillRect(1, 1, width - 2, height - 2);
+            g.setColor((!this.isSelected || this.group == null) ? Color.lightGray : new Color(160, 160, 160));
+            g.fillRect(1, 1, width - 2, height - 2);
             if (isEnabled()) {
-                graphics.setColor(this.isSelected ? Color.gray : Color.white);
-                graphics.drawLine(1, 1, width - 3, 1);
-                graphics.drawLine(1, 1, 1, height - 3);
+                g.setColor(this.isSelected ? Color.gray : Color.white);
+                g.drawLine(1, 1, width - 3, 1);
+                g.drawLine(1, 1, 1, height - 3);
                 if (!this.isSelected && this.group != null) {
-                    graphics.setColor(Color.gray);
-                    graphics.drawLine(1, height - 2, width - 2, height - 2);
-                    graphics.drawLine(width - 2, height - 2, width - 2, 2);
+                    g.setColor(Color.gray);
+                    g.drawLine(1, height - 2, width - 2, height - 2);
+                    g.drawLine(width - 2, height - 2, width - 2, 2);
                 }
             }
         }
         Icon icon = (!this.isSelected || this.selectedIcon == null) ? this.unselectedIcon : this.selectedIcon;
         if (icon != null) {
-            graphics.setColor(getForeground());
-            icon.paintIcon(this, graphics, 2, 1);
+            g.setColor(getForeground());
+            icon.paintIcon(this, g, 2, 1);
         }
     }
 

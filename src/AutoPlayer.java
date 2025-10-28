@@ -299,7 +299,7 @@ public class AutoPlayer extends Panel implements Runnable {
             // 判断是否支持中文
             if (font.canDisplayUpTo("编辑©") == -1) {
                 // 判断是否等宽字体
-                if (font.getStringBounds("il", frc).getWidth() == font.getStringBounds("WM", frc).getWidth()) {
+                if (font.getStringBounds("il ", frc).getWidth() == font.getStringBounds("WMG", frc).getWidth()) {
                     this.defaultFont = fontName;
                     if ("DialogInput".equals(fontName)) { // 优先
                         return;
@@ -1041,10 +1041,10 @@ public class AutoPlayer extends Panel implements Runnable {
 
     // 默认绘图函数，魔方未加载、加载中或失败时会显示的内容
     @Override
-    public void paint(Graphics graphics) {
-        graphics.setFont(new Font(this.defaultFont, Font.PLAIN, 10));
-        FontMetrics fontMetrics = graphics.getFontMetrics();
-        graphics.drawString("Loading " + CommandParser.getAppInfo(), 12, fontMetrics.getHeight());
+    public void paint(Graphics g) {
+        g.setFont(new Font(this.defaultFont, Font.PLAIN, 10));
+        FontMetrics fontMetrics = g.getFontMetrics();
+        g.drawString("Loading " + CommandParser.getAppInfo(), 12, fontMetrics.getHeight());
         // graphics.drawString(CommandParser.copyright, 12, fontMetrics.getHeight() * 2);
     }
 
