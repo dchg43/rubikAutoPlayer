@@ -1,8 +1,19 @@
 {
   "resources":{
-  "includes":[{
+  "includes":[
+    {
+      "pattern":"\\Qerror40.png\\E"
+    }, 
+    {
+      "pattern":"\\Qhelp40.png\\E"
+    }, 
+    {
       "pattern":"\\Qico.png\\E"
-    }]},
+    }, 
+    {
+      "pattern":"\\Qinfo40.png\\E"
+    }
+  ]},
   "bundles":[
     {
       "name":"com.sun.swing.internal.plaf.basic.resources.basic",

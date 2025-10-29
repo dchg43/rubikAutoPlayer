@@ -94,6 +94,14 @@ public class AutoPlayer extends Panel implements Runnable {
 
     private Map<String, Integer> keyMap = new HashMap<>();
 
+    private Image appIcon;
+
+    private ImageIcon infoIcon;
+
+    private ImageIcon errorIcon;
+
+    private ImageIcon helpIcon;
+
     private ScriptParser scriptParser;
 
     private String defaultFont = null;
@@ -206,7 +214,7 @@ public class AutoPlayer extends Panel implements Runnable {
                     if (displayMode) {
                         displayMode = false;
                         String message = "Auto test failed.\n  input: " + facelets + "\n script: " + result + "\n result: " + faceletsCur;
-                        JOptionPane.showMessageDialog(this, message, "失败", JOptionPane.ERROR_MESSAGE);
+                        JOptionPane.showMessageDialog(this, message, "失败", JOptionPane.ERROR_MESSAGE, this.errorIcon);
                         return;
                     } else {
                         break;
@@ -216,7 +224,7 @@ public class AutoPlayer extends Panel implements Runnable {
         } catch (Exception e) {
             displayMode = false;
             String message = "Auto test failed.";
-            JOptionPane.showMessageDialog(this, message, "失败", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, message, "失败", JOptionPane.ERROR_MESSAGE, this.errorIcon);
             return;
         }
         displayMode = false;
@@ -230,13 +238,20 @@ public class AutoPlayer extends Panel implements Runnable {
             }
         }
         String message = String.format("测试通过，用时%.1fs", (System.nanoTime() - start) / 1000000000.0d);
-        JOptionPane.showMessageDialog(this, message, "成功", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(this, message, "成功", JOptionPane.INFORMATION_MESSAGE, this.infoIcon);
     }
 
     public AutoPlayer() {
+        ClassLoader loader = AutoPlayer.class.getClassLoader();
+        this.appIcon = new ImageIcon(loader.getResource("ico.png")).getImage();
+        this.infoIcon = new ImageIcon(loader.getResource("info40.png"));
+        this.errorIcon = new ImageIcon(loader.getResource("error40.png"));
+        this.helpIcon = new ImageIcon(loader.getResource("help40.png"));
+
         initDefaultFont();
         this.cmd = new CommandParser();
         cmd.setDefaultFont(this.defaultFont);
+        cmd.setHelpIcon(this.helpIcon);
 
         // init keyMap
         keyMap.put("autoPlay", 0);
@@ -709,6 +724,12 @@ public class AutoPlayer extends Panel implements Runnable {
 
     }
 
+    public ImageIcon reSizeIcon(URL imagePath, int newWidth, int newHeight) {
+        Image image = new ImageIcon(imagePath).getImage();
+        Image reSizeImage = image.getScaledInstance(newWidth, newHeight, Image.SCALE_SMOOTH);
+        return new ImageIcon(reSizeImage);
+    }
+
     private void initGUI() {
         final JFrame frame = new JFrame("AutoPlayer"); // 初始化画布
         frame.setTitle("三阶魔方求解器 by Deng");
@@ -716,11 +737,7 @@ public class AutoPlayer extends Panel implements Runnable {
         frame.setPreferredSize(new java.awt.Dimension(600, 600));
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-
-        // 设置窗口图标
-        ImageIcon icon = new ImageIcon(getClass().getClassLoader().getResource("ico.png"));
-        Image image = icon.getImage();
-        frame.setIconImage(image);
+        frame.setIconImage(this.appIcon); // 设置窗口图标
 
         frame.addWindowListener(new WindowAdapter() // 添加退出事件
         {
@@ -847,10 +864,10 @@ public class AutoPlayer extends Panel implements Runnable {
                 String result = searchSolution(cubeString);
                 if (result.contains("Error")) {
                     String message = "校验不通过：" + AutoPlayer.getErrMessage(result);
-                    JOptionPane.showMessageDialog(AutoPlayer.this, message, "失败", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(AutoPlayer.this, message, "失败", JOptionPane.ERROR_MESSAGE, AutoPlayer.this.errorIcon);
                 } else {
                     String message = "校验通过，可求解。";
-                    JOptionPane.showMessageDialog(AutoPlayer.this, message, "成功", JOptionPane.INFORMATION_MESSAGE);
+                    JOptionPane.showMessageDialog(AutoPlayer.this, message, "成功", JOptionPane.INFORMATION_MESSAGE, AutoPlayer.this.infoIcon);
                 }
             }
         });
@@ -985,7 +1002,7 @@ public class AutoPlayer extends Panel implements Runnable {
                 String result = searchSolution(facelets);
                 if (result.contains("Error")) {
                     String message = "校验不通过：" + AutoPlayer.getErrMessage(result);
-                    JOptionPane.showMessageDialog(AutoPlayer.this, message, "失败", JOptionPane.ERROR_MESSAGE);
+                    JOptionPane.showMessageDialog(AutoPlayer.this, message, "失败", JOptionPane.ERROR_MESSAGE, AutoPlayer.this.errorIcon);
                     return;
                 }
 

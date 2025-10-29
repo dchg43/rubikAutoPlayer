@@ -10,6 +10,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.StringTokenizer;
 
+import javax.swing.ImageIcon;
 import javax.swing.JOptionPane;
 import javax.swing.UIManager;
 import javax.swing.plaf.FontUIResource;
@@ -119,6 +120,8 @@ public class CommandParser {
 
     private String defaultFont = null;
 
+    private ImageIcon helpIcon = null;
+
     public CommandParser() {
         this.atts = new HashMap<>();
     }
@@ -164,7 +167,7 @@ public class CommandParser {
                         System.out.println(message); // 命令行输出帮助
                         // 修改字体，改成等宽字体
                         UIManager.put("OptionPane.messageFont", new FontUIResource(new Font(CommandParser.this.defaultFont, Font.BOLD, 13)));
-                        JOptionPane.showMessageDialog(null, message, "帮助", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(null, message, "帮助", JOptionPane.INFORMATION_MESSAGE, CommandParser.this.helpIcon);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -309,8 +312,11 @@ public class CommandParser {
         this.defaultFont = defaultFont;
     }
 
+    public void setHelpIcon(ImageIcon helpIcon) {
+        this.helpIcon = helpIcon;
+    }
+
     public static String getAppInfo() {
         return "Rubik Player " + version + ", " + copyright;
     }
-
 }
