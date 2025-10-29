@@ -42,8 +42,9 @@ public class ConcurrentDispatcherAWT implements Runnable {
         if (this.threadCount >= this.threadMax) {
             if (this.blockingPolicy == RUN_WHEN_BLOCKED) {
                 runnable.run();
+            } else { // else ==ENQUEUE_WHEN_BLOCKED时跳过这个动画显示
+                this.queue.addElement(runnable);
             }
-            // else ==ENQUEUE_WHEN_BLOCKED时直接丢弃runnable，既不显示这个动画
             return;
         }
         synchronized (this.queue) {

@@ -195,15 +195,13 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
 
     @Override
     public void start() {
-        if (this.state == STOPPED) {
-            synchronized (this) {
-                if (this.state == STOPPED) {
-                    this.state = STARTING;
-                }
+        synchronized (this) {
+            if (this.state == STOPPED) {
+                this.state = STARTING;
             }
-            this.cube3D.getDispatcher().dispatch(this, threadPool);
-            fireStateChanged();
         }
+        this.cube3D.getDispatcher().dispatch(this, threadPool);
+        fireStateChanged();
     }
 
     // 循环执行自动脚本

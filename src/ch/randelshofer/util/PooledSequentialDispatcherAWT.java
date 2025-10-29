@@ -30,8 +30,8 @@ public class PooledSequentialDispatcherAWT implements Runnable {
             this.queue.addElement(runnable);
             if (this.state == STOPPED) {
                 this.state = STARTING;
+                concurrentDispatcherAWT.dispatch(this);
             }
-            concurrentDispatcherAWT.dispatch(this);
         }
     }
 
@@ -40,8 +40,8 @@ public class PooledSequentialDispatcherAWT implements Runnable {
         synchronized (this.queue) {
             if (!this.queue.isEmpty()) {
                 this.state = STARTING;
+                threadPool.dispatch(this);
             }
-            threadPool.dispatch(this);
         }
     }
 
@@ -67,15 +67,19 @@ public class PooledSequentialDispatcherAWT implements Runnable {
 
     @Override
     public void run() {
-        Runnable objElementAt;
         synchronized (this.queue) {
             if (this.state == STARTING) {
                 this.state = RUNNING;
+            } else {
+                return;
             }
         }
+        Runnable objElementAt;
         while (true) {
             synchronized (this.queue) {
                 if (this.queue.isEmpty() || this.state != RUNNING) {
+                    this.state = STOPPED;
+                    this.queue.notifyAll(); // Interrupted this.queue.wait()
                     break;
                 }
                 objElementAt = this.queue.remove(0);
@@ -85,10 +89,6 @@ public class PooledSequentialDispatcherAWT implements Runnable {
             } catch (Throwable th) {
                 th.printStackTrace();
             }
-        }
-        synchronized (this.queue) {
-            this.state = STOPPED;
-            this.queue.notifyAll(); // Interrupted this.queue.wait()
         }
     }
 }

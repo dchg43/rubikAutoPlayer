@@ -162,10 +162,11 @@ public class AutoPlayer extends Panel implements Runnable {
             for (int i = 0; i < 20; i++) {
                 buffer.append(tokens[gen.nextInt(tokens.length)]).append(' ');
             }
+            String result = buffer.toString();
 
             ScriptNode script = null;
             try {
-                script = this.scriptParser.parse(new StringReader(buffer.toString()));
+                script = this.scriptParser.parse(new StringReader(result));
             } catch (IOException e) {
                 e.printStackTrace();
                 continue;
@@ -173,6 +174,7 @@ public class AutoPlayer extends Panel implements Runnable {
             buffer.setLength(0);
 
             this.player.setScript(script);
+            // this.scriptTextArea.setText(result);
             this.player.start();
             while (displayMode && this.player.isActive()) {
                 try {
