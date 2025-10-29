@@ -1,6 +1,7 @@
 package ch.randelshofer.rubik.parserAWT;
 
-import java.util.Hashtable;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 public class BandelowENGParser extends ScriptParser {
@@ -27,8 +28,8 @@ public class BandelowENGParser extends ScriptParser {
         return tokens;
     }
 
-    private static Hashtable<String, Object> getMacros() {
-        Hashtable<String, Object> macros = new Hashtable<>();
+    private static Map<String, Object> getMacros() {
+        Map<String, Object> macros = new HashMap<>();
         StringTokenizer stringTokenizer = new StringTokenizer(COMPRESSED_MACROS, ";", false);
         while (stringTokenizer.hasMoreTokens()) {
             StringTokenizer stringTokenizer2 = new StringTokenizer(stringTokenizer.nextToken());

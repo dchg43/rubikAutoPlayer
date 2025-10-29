@@ -31,7 +31,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
 import java.util.Random;
 import java.util.StringTokenizer;
@@ -91,7 +90,7 @@ public class AutoPlayer extends Panel implements Runnable {
 
     private CommandParser cmd;
 
-    private Hashtable<URL, Image> imageCache = new Hashtable<>();
+    private Map<URL, Image> imageCache = new HashMap<>();
 
     private Map<String, Integer> keyMap = new HashMap<>();
 

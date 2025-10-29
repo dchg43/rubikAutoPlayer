@@ -4,8 +4,9 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.Arrays;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import ch.randelshofer.gui.tree.DefaultMutableTreeNode;
@@ -26,11 +27,11 @@ public class ScriptParser {
 
     private String[][] tokens;
 
-    private Hashtable<String, Integer> transformationMap;
+    private Map<String, Integer> transformationMap;
 
-    private Hashtable<String, Integer> permutationMap;
+    private Map<String, Integer> permutationMap;
 
-    private Hashtable<String, Object> macroMap;
+    private Map<String, Object> macroMap;
 
     private int commutatorPos;
 
@@ -356,15 +357,15 @@ public class ScriptParser {
         this(tokens, null, repetitorPos, invertorPos, reflectorPos, conjugatorPos, commutatorPos, true);
     }
 
-    public ScriptParser(String[] tokens, Hashtable<String, Object> hashtable, int repetitorPos, int invertorPos, int reflectorPos, int conjugatorPos,
+    public ScriptParser(String[] tokens, Map<String, Object> macroMap, int repetitorPos, int invertorPos, int reflectorPos, int conjugatorPos,
             int commutatorPos, boolean isSequenceSupported) {
         this.DEBUG = false;
-        this.transformationMap = new Hashtable<>();
-        this.permutationMap = new Hashtable<>();
-        if (hashtable != null) {
-            this.macroMap = hashtable;
+        this.transformationMap = new HashMap<>();
+        this.permutationMap = new HashMap<>();
+        if (macroMap != null) {
+            this.macroMap = macroMap;
         } else {
-            this.macroMap = new Hashtable<>();
+            this.macroMap = new HashMap<>();
         }
         this.isSequenceSupported = isSequenceSupported;
         this.repetitorPos = repetitorPos;
@@ -629,9 +630,9 @@ public class ScriptParser {
         if (streamPosTokenizer.nextToken() != StreamPosTokenizer.TT_WORD /* -3 */) {
             throw new ParseException("Invertor: Token missing.", streamPosTokenizer.getStartPosition(), streamPosTokenizer.getEndPosition());
         }
-        Hashtable<String, Integer> hashtable = this.transformationMap;
+        Map<String, Integer> macroMap = this.transformationMap;
         String greedy = parseGreedy(streamPosTokenizer.sval);
-        Integer num = hashtable.get(greedy);
+        Integer num = macroMap.get(greedy);
         if (num == null || num.intValue() != 95) {
             throw new ParseException("Invertor: Illegal token " + streamPosTokenizer.sval, streamPosTokenizer.getStartPosition(),
                     streamPosTokenizer.getEndPosition());
@@ -651,9 +652,9 @@ public class ScriptParser {
         if (streamPosTokenizer.nextToken() != StreamPosTokenizer.TT_WORD /* -3 */) {
             throw new ParseException("Repetitor: Token missing.", streamPosTokenizer.getStartPosition(), streamPosTokenizer.getEndPosition());
         }
-        Hashtable<String, Integer> hashtable = this.transformationMap;
+        Map<String, Integer> macroMap = this.transformationMap;
         String greedy = parseGreedy(streamPosTokenizer.sval);
-        Integer num = hashtable.get(greedy);
+        Integer num = macroMap.get(greedy);
         if (num == null || num.intValue() != 102) {
             streamPosTokenizer.pushBack();
         } else {
@@ -683,9 +684,8 @@ public class ScriptParser {
             streamPosTokenizer.pushBack();
             return repetitionNode;
         }
-        Hashtable<String, Integer> hashtable2 = this.transformationMap;
         String greedy2 = parseGreedy(streamPosTokenizer.sval);
-        Integer num2 = hashtable2.get(greedy2);
+        Integer num2 = macroMap.get(greedy2);
         if (num2 == null) {
             streamPosTokenizer.pushBack();
             return repetitionNode;

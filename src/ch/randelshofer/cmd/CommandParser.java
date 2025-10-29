@@ -5,8 +5,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.Hashtable;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.StringTokenizer;
 
 import javax.swing.JOptionPane;
@@ -114,12 +115,12 @@ public class CommandParser {
             //            {"rearViewRotation", "", "int,int,int", "Rotation of the rear view on the X, Y and Z axis in degrees. Default: 180,0,0"}
     };
 
-    private Hashtable<String, String> atts;
+    private Map<String, String> atts;
 
     private String defaultFont = null;
 
     public CommandParser() {
-        this.atts = new Hashtable<>();
+        this.atts = new HashMap<>();
     }
 
     public void parse(String[] args) {
@@ -238,14 +239,14 @@ public class CommandParser {
         return default_value;
     }
 
-    public Hashtable<String, Object> getIndexedKeyValueParameters(String key, Hashtable<String, Object> default_value) {
+    public Map<String, Object> getIndexedKeyValueParameters(String key, Map<String, Object> default_value) {
         String value = getParameter(key);
         if (value == null) {
             return default_value;
         }
         String strKey;
         String strValue;
-        Hashtable<String, Object> hashtable = new Hashtable<>();
+        Map<String, Object> items = new HashMap<>();
         StringTokenizer stringTokenizer = new StringTokenizer(value, ", ");
         int iCountTokens = stringTokenizer.countTokens();
         for (int i = 0; i < iCountTokens; i++) {
@@ -260,13 +261,13 @@ public class CommandParser {
             }
             String string = Integer.toString(i);
             if (strKey != null) {
-                hashtable.put(strKey, strValue);
+                items.put(strKey, strValue);
             }
-            if (!hashtable.contains(string)) {
-                hashtable.put(string, strValue);
+            if (!items.containsKey(string)) {
+                items.put(string, strValue);
             }
         }
-        return hashtable;
+        return items;
     }
 
     public static int decode(String str) throws NumberFormatException {
@@ -300,7 +301,7 @@ public class CommandParser {
         return numValueOf;
     }
 
-    public void setParameter(String key, String value) throws IOException {
+    public void setParameter(String key, String value) {
         this.atts.put(key, value);
     }
 
