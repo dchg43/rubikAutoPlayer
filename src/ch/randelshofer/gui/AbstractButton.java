@@ -22,7 +22,7 @@ import ch.randelshofer.gui.event.EventListenerList.ListenerNode;
 public class AbstractButton extends Canvas implements ItemSelectable {
     private static final long serialVersionUID = 5800391645017871439L;
 
-    private ChangeEvent changeEvent;
+    private ChangeEvent changeEvent = new ChangeEvent(this);
 
     private Dimension preferredSize;
 
@@ -298,9 +298,6 @@ public class AbstractButton extends Canvas implements ItemSelectable {
         List<ListenerNode> listenerList = this.listenerList.getListenerList();
         for (ListenerNode node : listenerList) {
             if (node.getClazz() == ChangeListener.class) {
-                if (this.changeEvent == null) {
-                    this.changeEvent = new ChangeEvent(this);
-                }
                 ((ChangeListener) node.getListener()).stateChanged(this.changeEvent);
             }
         }

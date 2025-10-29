@@ -1,8 +1,8 @@
 package ch.randelshofer.rubik.parserAWT;
 
-import java.util.Enumeration;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.NoSuchElementException;
-import java.util.Vector;
 
 import ch.randelshofer.gui.tree.DefaultMutableTreeNode;
 import ch.randelshofer.rubik.RubiksCubeCore;
@@ -19,12 +19,12 @@ public class ScriptNode extends DefaultMutableTreeNode {
     private static final int[][] orientationToSymbolMap = {new int[0], {72}, {78}, {75}, {73}, {79}, {76}, {74}, {80}, {77}, {72, 73}, {72, 79}, {72, 76},
             {78, 73}, {78, 76}, {75, 73}, {75, 79}, {75, 76}, {72, 74}, {72, 77}, {78, 74}, {78, 77}, {75, 74}, {75, 77}};
 
-    private static class ResolvedEnumeration implements Enumeration<DefaultMutableTreeNode> {
+    private static class ResolvedEnumeration implements Iterator<DefaultMutableTreeNode> {
         private ScriptNode root;
 
-        private Enumeration<DefaultMutableTreeNode> children;
+        private Iterator<DefaultMutableTreeNode> children;
 
-        private Enumeration<DefaultMutableTreeNode> subtree;
+        private Iterator<DefaultMutableTreeNode> subtree;
 
         boolean inverse;
 
@@ -36,18 +36,18 @@ public class ScriptNode extends DefaultMutableTreeNode {
         }
 
         @Override
-        public boolean hasMoreElements() {
-            return this.subtree.hasMoreElements() || this.children.hasMoreElements();
+        public boolean hasNext() {
+            return this.subtree.hasNext() || this.children.hasNext();
         }
 
         @Override
-        public DefaultMutableTreeNode nextElement() {
+        public DefaultMutableTreeNode next() {
             DefaultMutableTreeNode nextElement;
-            if (this.subtree.hasMoreElements()) {
-                nextElement = this.subtree.nextElement();
-            } else if (this.children.hasMoreElements()) {
-                this.subtree = ((ScriptNode) this.children.nextElement()).resolvedEnumeration(this.inverse);
-                nextElement = this.subtree.nextElement();
+            if (this.subtree.hasNext()) {
+                nextElement = this.subtree.next();
+            } else if (this.children.hasNext()) {
+                this.subtree = ((ScriptNode) this.children.next()).resolvedEnumeration(this.inverse);
+                nextElement = this.subtree.next();
             } else {
                 throw new NoSuchElementException();
             }
@@ -85,9 +85,9 @@ public class ScriptNode extends DefaultMutableTreeNode {
     }
 
     public void applySubtreeTo(RubiksCubeCore rubiksCubeCore, boolean inverse) {
-        Enumeration<DefaultMutableTreeNode> resolvedNode = resolvedEnumeration(inverse);
-        while (resolvedNode.hasMoreElements()) {
-            ((ScriptNode) resolvedNode.nextElement()).applyTo(rubiksCubeCore);
+        Iterator<DefaultMutableTreeNode> resolvedNode = resolvedEnumeration(inverse);
+        while (resolvedNode.hasNext()) {
+            ((ScriptNode) resolvedNode.next()).applyTo(rubiksCubeCore);
         }
     }
 
@@ -99,9 +99,9 @@ public class ScriptNode extends DefaultMutableTreeNode {
     }
 
     public void transform(int symbol) {
-        Enumeration<DefaultMutableTreeNode> children = children();
-        while (children.hasMoreElements()) {
-            ((ScriptNode) children.nextElement()).transform(symbol);
+        Iterator<DefaultMutableTreeNode> children = children();
+        while (children.hasNext()) {
+            ((ScriptNode) children.next()).transform(symbol);
         }
     }
 
@@ -121,56 +121,56 @@ public class ScriptNode extends DefaultMutableTreeNode {
 
     public void inverse() {
         if (this.children != null) {
-            Enumeration<DefaultMutableTreeNode> enumerateNode = enumerateChildrenReversed();
-            this.children = new Vector<>();
-            while (enumerateNode.hasMoreElements()) {
-                ScriptNode scriptNode = (ScriptNode) enumerateNode.nextElement();
+            Iterator<DefaultMutableTreeNode> enumerateNode = enumerateChildrenReversed();
+            this.children = new ArrayList<>();
+            while (enumerateNode.hasNext()) {
+                ScriptNode scriptNode = (ScriptNode) enumerateNode.next();
                 scriptNode.inverse();
-                this.children.addElement(scriptNode);
+                this.children.add(scriptNode);
             }
         }
     }
 
     public void reflect() {
         if (this.children != null) {
-            Enumeration<DefaultMutableTreeNode> children = children();
-            while (children.hasMoreElements()) {
-                ((ScriptNode) children.nextElement()).reflect();
+            Iterator<DefaultMutableTreeNode> children = children();
+            while (children.hasNext()) {
+                ((ScriptNode) children.next()).reflect();
             }
         }
     }
 
-    public Enumeration<DefaultMutableTreeNode> resolvedEnumeration(boolean inverse) {
+    public Iterator<DefaultMutableTreeNode> resolvedEnumeration(boolean inverse) {
         return new ResolvedEnumeration(this, inverse);
     }
 
-    public Enumeration<DefaultMutableTreeNode> enumerateChildrenReversed() {
+    public Iterator<DefaultMutableTreeNode> enumerateChildrenReversed() {
         return new ReverseVectorEnumeration(this.children);
     }
 
     public int getFullTurnCount() {
         int fullTurnCount = 0;
-        Enumeration<DefaultMutableTreeNode> children = children();
-        while (children.hasMoreElements()) {
-            fullTurnCount += ((ScriptNode) children.nextElement()).getFullTurnCount();
+        Iterator<DefaultMutableTreeNode> children = children();
+        while (children.hasNext()) {
+            fullTurnCount += ((ScriptNode) children.next()).getFullTurnCount();
         }
         return fullTurnCount;
     }
 
     public int getQuarterTurnCount() {
         int quarterTurnCount = 0;
-        Enumeration<DefaultMutableTreeNode> children = children();
-        while (children.hasMoreElements()) {
-            quarterTurnCount += ((ScriptNode) children.nextElement()).getQuarterTurnCount();
+        Iterator<DefaultMutableTreeNode> children = children();
+        while (children.hasNext()) {
+            quarterTurnCount += ((ScriptNode) children.next()).getQuarterTurnCount();
         }
         return quarterTurnCount;
     }
 
     public ScriptNode cloneSubtree() {
         ScriptNode scriptNode = (ScriptNode) clone();
-        Enumeration<DefaultMutableTreeNode> children = children();
-        while (children.hasMoreElements()) {
-            scriptNode.add(((ScriptNode) children.nextElement()).cloneSubtree());
+        Iterator<DefaultMutableTreeNode> children = children();
+        while (children.hasNext()) {
+            scriptNode.add(((ScriptNode) children.next()).cloneSubtree());
         }
         return scriptNode;
     }

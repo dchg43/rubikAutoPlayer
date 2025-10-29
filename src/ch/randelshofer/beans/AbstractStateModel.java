@@ -10,7 +10,7 @@ import ch.randelshofer.gui.event.EventListenerList.ListenerNode;
 public class AbstractStateModel {
     private EventListenerList listenerList = new EventListenerList();
 
-    private ChangeEvent changeEvent;
+    private ChangeEvent changeEvent = new ChangeEvent(this);
 
     public void addChangeListener(ChangeListener changeListener) {
         this.listenerList.add(ChangeListener.class, changeListener);
@@ -24,9 +24,6 @@ public class AbstractStateModel {
         List<ListenerNode> listenerList = this.listenerList.getListenerList();
         for (ListenerNode node : listenerList) {
             if (node.getClazz() == ChangeListener.class) {
-                if (this.changeEvent == null) {
-                    this.changeEvent = new ChangeEvent(this);
-                }
                 ((ChangeListener) node.getListener()).stateChanged(this.changeEvent);
             }
         }

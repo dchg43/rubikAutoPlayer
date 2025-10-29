@@ -4,9 +4,9 @@ import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
-import java.util.Enumeration;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
 import ch.randelshofer.geom3d.SceneNode;
 import ch.randelshofer.geom3d.Shape3D;
@@ -25,7 +25,7 @@ public abstract class AbstractCube3DAWT implements RubikListener {
 
     private TransformNode centerTransform;
 
-    private ChangeEvent changeEvent;
+    private ChangeEvent changeEvent = new ChangeEvent(this);
 
     private boolean isAnimated;
 
@@ -482,7 +482,7 @@ public abstract class AbstractCube3DAWT implements RubikListener {
 
     // 转动一次
     protected void animateTwist(RubikEvent rubikEvent) {
-        Vector<TransformNode> vector = new Vector<>();
+        List<TransformNode> transforms = new ArrayList<>();
         Transform3D transform3D = new Transform3D();
         int layerMask = rubikEvent.getLayerMask();
         double angle = rubikEvent.getAngle();
@@ -492,111 +492,111 @@ public abstract class AbstractCube3DAWT implements RubikListener {
         case 0:
             transform3D.rotateX(d);
             if ((layerMask & 0x1) == 1) {
-                vector.addElement(this.cornerTransforms[this.model.getCornerAt(0)]);
-                vector.addElement(this.cornerTransforms[this.model.getCornerAt(1)]);
-                vector.addElement(this.cornerTransforms[this.model.getCornerAt(6)]);
-                vector.addElement(this.cornerTransforms[this.model.getCornerAt(7)]);
-                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(1)]);
-                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(9)]);
-                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(10)]);
-                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(11)]);
-                vector.addElement(this.sideTransforms[this.model.getSideAt(4)]);
+                transforms.add(this.cornerTransforms[this.model.getCornerAt(0)]);
+                transforms.add(this.cornerTransforms[this.model.getCornerAt(1)]);
+                transforms.add(this.cornerTransforms[this.model.getCornerAt(6)]);
+                transforms.add(this.cornerTransforms[this.model.getCornerAt(7)]);
+                transforms.add(this.edgeTransforms[this.model.getEdgeAt(1)]);
+                transforms.add(this.edgeTransforms[this.model.getEdgeAt(9)]);
+                transforms.add(this.edgeTransforms[this.model.getEdgeAt(10)]);
+                transforms.add(this.edgeTransforms[this.model.getEdgeAt(11)]);
+                transforms.add(this.sideTransforms[this.model.getSideAt(4)]);
             }
             if ((layerMask & 0x2) == 2) {
-                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(0)]);
-                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(2)]);
-                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(6)]);
-                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(8)]);
-                vector.addElement(this.sideTransforms[this.model.getSideAt(0)]);
-                vector.addElement(this.sideTransforms[this.model.getSideAt(2)]);
-                vector.addElement(this.sideTransforms[this.model.getSideAt(3)]);
-                vector.addElement(this.sideTransforms[this.model.getSideAt(5)]);
-                vector.addElement(this.centerTransform);
+                transforms.add(this.edgeTransforms[this.model.getEdgeAt(0)]);
+                transforms.add(this.edgeTransforms[this.model.getEdgeAt(2)]);
+                transforms.add(this.edgeTransforms[this.model.getEdgeAt(6)]);
+                transforms.add(this.edgeTransforms[this.model.getEdgeAt(8)]);
+                transforms.add(this.sideTransforms[this.model.getSideAt(0)]);
+                transforms.add(this.sideTransforms[this.model.getSideAt(2)]);
+                transforms.add(this.sideTransforms[this.model.getSideAt(3)]);
+                transforms.add(this.sideTransforms[this.model.getSideAt(5)]);
+                transforms.add(this.centerTransform);
             }
             if ((layerMask & 0x4) == 4) {
-                vector.addElement(this.cornerTransforms[this.model.getCornerAt(2)]);
-                vector.addElement(this.cornerTransforms[this.model.getCornerAt(3)]);
-                vector.addElement(this.cornerTransforms[this.model.getCornerAt(4)]);
-                vector.addElement(this.cornerTransforms[this.model.getCornerAt(5)]);
-                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(3)]);
-                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(4)]);
-                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(5)]);
-                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(7)]);
-                vector.addElement(this.sideTransforms[this.model.getSideAt(1)]);
+                transforms.add(this.cornerTransforms[this.model.getCornerAt(2)]);
+                transforms.add(this.cornerTransforms[this.model.getCornerAt(3)]);
+                transforms.add(this.cornerTransforms[this.model.getCornerAt(4)]);
+                transforms.add(this.cornerTransforms[this.model.getCornerAt(5)]);
+                transforms.add(this.edgeTransforms[this.model.getEdgeAt(3)]);
+                transforms.add(this.edgeTransforms[this.model.getEdgeAt(4)]);
+                transforms.add(this.edgeTransforms[this.model.getEdgeAt(5)]);
+                transforms.add(this.edgeTransforms[this.model.getEdgeAt(7)]);
+                transforms.add(this.sideTransforms[this.model.getSideAt(1)]);
                 break;
             }
             break;
         case 1:
             transform3D.rotateY(d);
             if ((layerMask & 0x1) == 1) {
-                vector.addElement(this.cornerTransforms[this.model.getCornerAt(1)]);
-                vector.addElement(this.cornerTransforms[this.model.getCornerAt(3)]);
-                vector.addElement(this.cornerTransforms[this.model.getCornerAt(5)]);
-                vector.addElement(this.cornerTransforms[this.model.getCornerAt(7)]);
-                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(2)]);
-                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(5)]);
-                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(8)]);
-                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(11)]);
-                vector.addElement(this.sideTransforms[this.model.getSideAt(2)]);
+                transforms.add(this.cornerTransforms[this.model.getCornerAt(1)]);
+                transforms.add(this.cornerTransforms[this.model.getCornerAt(3)]);
+                transforms.add(this.cornerTransforms[this.model.getCornerAt(5)]);
+                transforms.add(this.cornerTransforms[this.model.getCornerAt(7)]);
+                transforms.add(this.edgeTransforms[this.model.getEdgeAt(2)]);
+                transforms.add(this.edgeTransforms[this.model.getEdgeAt(5)]);
+                transforms.add(this.edgeTransforms[this.model.getEdgeAt(8)]);
+                transforms.add(this.edgeTransforms[this.model.getEdgeAt(11)]);
+                transforms.add(this.sideTransforms[this.model.getSideAt(2)]);
             }
             if ((layerMask & 0x2) == 2) {
-                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(1)]);
-                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(4)]);
-                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(7)]);
-                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(10)]);
-                vector.addElement(this.sideTransforms[this.model.getSideAt(0)]);
-                vector.addElement(this.sideTransforms[this.model.getSideAt(1)]);
-                vector.addElement(this.sideTransforms[this.model.getSideAt(3)]);
-                vector.addElement(this.sideTransforms[this.model.getSideAt(4)]);
-                vector.addElement(this.centerTransform);
+                transforms.add(this.edgeTransforms[this.model.getEdgeAt(1)]);
+                transforms.add(this.edgeTransforms[this.model.getEdgeAt(4)]);
+                transforms.add(this.edgeTransforms[this.model.getEdgeAt(7)]);
+                transforms.add(this.edgeTransforms[this.model.getEdgeAt(10)]);
+                transforms.add(this.sideTransforms[this.model.getSideAt(0)]);
+                transforms.add(this.sideTransforms[this.model.getSideAt(1)]);
+                transforms.add(this.sideTransforms[this.model.getSideAt(3)]);
+                transforms.add(this.sideTransforms[this.model.getSideAt(4)]);
+                transforms.add(this.centerTransform);
             }
             if ((layerMask & 0x4) == 4) {
-                vector.addElement(this.cornerTransforms[this.model.getCornerAt(0)]);
-                vector.addElement(this.cornerTransforms[this.model.getCornerAt(2)]);
-                vector.addElement(this.cornerTransforms[this.model.getCornerAt(4)]);
-                vector.addElement(this.cornerTransforms[this.model.getCornerAt(6)]);
-                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(0)]);
-                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(3)]);
-                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(6)]);
-                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(9)]);
-                vector.addElement(this.sideTransforms[this.model.getSideAt(5)]);
+                transforms.add(this.cornerTransforms[this.model.getCornerAt(0)]);
+                transforms.add(this.cornerTransforms[this.model.getCornerAt(2)]);
+                transforms.add(this.cornerTransforms[this.model.getCornerAt(4)]);
+                transforms.add(this.cornerTransforms[this.model.getCornerAt(6)]);
+                transforms.add(this.edgeTransforms[this.model.getEdgeAt(0)]);
+                transforms.add(this.edgeTransforms[this.model.getEdgeAt(3)]);
+                transforms.add(this.edgeTransforms[this.model.getEdgeAt(6)]);
+                transforms.add(this.edgeTransforms[this.model.getEdgeAt(9)]);
+                transforms.add(this.sideTransforms[this.model.getSideAt(5)]);
                 break;
             }
             break;
         case 2:
             transform3D.rotateZ(d);
             if ((layerMask & 0x1) == 1) {
-                vector.addElement(this.cornerTransforms[this.model.getCornerAt(4)]);
-                vector.addElement(this.cornerTransforms[this.model.getCornerAt(5)]);
-                vector.addElement(this.cornerTransforms[this.model.getCornerAt(6)]);
-                vector.addElement(this.cornerTransforms[this.model.getCornerAt(7)]);
-                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(6)]);
-                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(7)]);
-                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(8)]);
-                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(10)]);
-                vector.addElement(this.sideTransforms[this.model.getSideAt(3)]);
+                transforms.add(this.cornerTransforms[this.model.getCornerAt(4)]);
+                transforms.add(this.cornerTransforms[this.model.getCornerAt(5)]);
+                transforms.add(this.cornerTransforms[this.model.getCornerAt(6)]);
+                transforms.add(this.cornerTransforms[this.model.getCornerAt(7)]);
+                transforms.add(this.edgeTransforms[this.model.getEdgeAt(6)]);
+                transforms.add(this.edgeTransforms[this.model.getEdgeAt(7)]);
+                transforms.add(this.edgeTransforms[this.model.getEdgeAt(8)]);
+                transforms.add(this.edgeTransforms[this.model.getEdgeAt(10)]);
+                transforms.add(this.sideTransforms[this.model.getSideAt(3)]);
             }
             if ((layerMask & 0x2) == 2) {
-                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(3)]);
-                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(5)]);
-                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(9)]);
-                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(11)]);
-                vector.addElement(this.sideTransforms[this.model.getSideAt(1)]);
-                vector.addElement(this.sideTransforms[this.model.getSideAt(2)]);
-                vector.addElement(this.sideTransforms[this.model.getSideAt(4)]);
-                vector.addElement(this.sideTransforms[this.model.getSideAt(5)]);
-                vector.addElement(this.centerTransform);
+                transforms.add(this.edgeTransforms[this.model.getEdgeAt(3)]);
+                transforms.add(this.edgeTransforms[this.model.getEdgeAt(5)]);
+                transforms.add(this.edgeTransforms[this.model.getEdgeAt(9)]);
+                transforms.add(this.edgeTransforms[this.model.getEdgeAt(11)]);
+                transforms.add(this.sideTransforms[this.model.getSideAt(1)]);
+                transforms.add(this.sideTransforms[this.model.getSideAt(2)]);
+                transforms.add(this.sideTransforms[this.model.getSideAt(4)]);
+                transforms.add(this.sideTransforms[this.model.getSideAt(5)]);
+                transforms.add(this.centerTransform);
             }
             if ((layerMask & 0x4) == 4) {
-                vector.addElement(this.cornerTransforms[this.model.getCornerAt(0)]);
-                vector.addElement(this.cornerTransforms[this.model.getCornerAt(1)]);
-                vector.addElement(this.cornerTransforms[this.model.getCornerAt(2)]);
-                vector.addElement(this.cornerTransforms[this.model.getCornerAt(3)]);
-                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(0)]);
-                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(1)]);
-                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(2)]);
-                vector.addElement(this.edgeTransforms[this.model.getEdgeAt(4)]);
-                vector.addElement(this.sideTransforms[this.model.getSideAt(0)]);
+                transforms.add(this.cornerTransforms[this.model.getCornerAt(0)]);
+                transforms.add(this.cornerTransforms[this.model.getCornerAt(1)]);
+                transforms.add(this.cornerTransforms[this.model.getCornerAt(2)]);
+                transforms.add(this.cornerTransforms[this.model.getCornerAt(3)]);
+                transforms.add(this.edgeTransforms[this.model.getEdgeAt(0)]);
+                transforms.add(this.edgeTransforms[this.model.getEdgeAt(1)]);
+                transforms.add(this.edgeTransforms[this.model.getEdgeAt(2)]);
+                transforms.add(this.edgeTransforms[this.model.getEdgeAt(4)]);
+                transforms.add(this.sideTransforms[this.model.getSideAt(0)]);
             }
             break;
         }
@@ -608,9 +608,9 @@ public abstract class AbstractCube3DAWT implements RubikListener {
         long jCurrentTimeMillis = System.currentTimeMillis();
         for (int j = 1; j < i; j++) {
             synchronized (this.model) {
-                Enumeration<TransformNode> enumerationElements = vector.elements();
-                while (enumerationElements.hasMoreElements()) {
-                    enumerationElements.nextElement().getTransform().concatenate(transform3D);
+                Iterator<TransformNode> iterators = transforms.iterator();
+                while (iterators.hasNext()) {
+                    iterators.next().getTransform().concatenate(transform3D);
                 }
             }
             fireStateChanged();
@@ -661,9 +661,6 @@ public abstract class AbstractCube3DAWT implements RubikListener {
         List<ListenerNode> listenerList = this.listenerList.getListenerList();
         for (ListenerNode node : listenerList) {
             if (node.getClazz() == ChangeListener.class) {
-                if (this.changeEvent == null) {
-                    this.changeEvent = new ChangeEvent(this);
-                }
                 ((ChangeListener) node.getListener()).stateChanged(this.changeEvent);
             }
         }

@@ -14,8 +14,9 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
+import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Vector;
+import java.util.List;
 
 import ch.randelshofer.geom3d.DefaultTransform3DModel;
 import ch.randelshofer.geom3d.Face3D;
@@ -71,7 +72,7 @@ public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener
 
     protected double scaleFactor = 1.0d;
 
-    protected Vector<FaceElement> activeFaces = new Vector<>();
+    protected List<FaceElement> activeFaces = new ArrayList<>();
 
     private boolean isRotateOnMouseDrag = false;
 
@@ -244,8 +245,8 @@ public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener
         int width = getWidth() / 2;
         int height = getHeight() / 2;
         double scale = this.scaleFactor * Math.min(width, height);
-        Vector<Face3D> visibleFaces = new Vector<>();
-        this.activeFaces.removeAllElements();
+        List<Face3D> visibleFaces = new ArrayList<>();
+        this.activeFaces.clear();
         this.scene.addVisibleFaces(visibleFaces, transform, this.observer);
         visibleFaces.sort(Face3DComparator.getInstance());
         int[] xpoints = new int[5];
@@ -287,7 +288,7 @@ public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener
                 graphics.drawPolygon(xpoints, ypoints, vertices.length + 1);
             }
             if (face3D.getAction() != null) {
-                this.activeFaces.addElement(new FaceElement(new Polygon(xpoints, ypoints, vertices.length), face3D));
+                this.activeFaces.add(new FaceElement(new Polygon(xpoints, ypoints, vertices.length), face3D));
             }
         }
     }
@@ -302,7 +303,7 @@ public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener
         this.prevx = x;
         this.prevy = y;
         for (int size = this.activeFaces.size() - 1; size >= 0; size--) {
-            FaceElement face = this.activeFaces.elementAt(size);
+            FaceElement face = this.activeFaces.get(size);
             if (face.getShape().contains(x, y)) {
                 face.getFace3D().handleEvent(mouseEvent);
                 return;

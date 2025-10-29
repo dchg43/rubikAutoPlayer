@@ -7,7 +7,8 @@ import java.awt.Insets;
 import java.awt.Shape;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import ch.randelshofer.geom3d.Face3D;
 import ch.randelshofer.geom3d.Transform3D;
@@ -126,8 +127,8 @@ public class Canvas3DJ2D_bak extends Canvas3DAWT {
             double scale = this.scaleFactor * Math.min(width, height);
             width += insets.left;
             height += insets.top;
-            Vector<Face3D> visibleFaces = new Vector<>();
-            this.activeFaces.removeAllElements();
+            List<Face3D> visibleFaces = new ArrayList<>();
+            this.activeFaces.clear();
             this.scene.addVisibleFaces(visibleFaces, transform, this.observer);
             visibleFaces.sort(Face3DComparator.getInstance());
             double pointx;
@@ -177,7 +178,7 @@ public class Canvas3DJ2D_bak extends Canvas3DAWT {
                     drawMethod.invoke(graphics, generalPath);
                 }
                 if (!this.isAdjusting && face3D.getAction() != null) {
-                    this.activeFaces.addElement(new FaceElement(generalPath, face3D));
+                    this.activeFaces.add(new FaceElement(generalPath, face3D));
                 }
             }
         } catch (Exception e) {

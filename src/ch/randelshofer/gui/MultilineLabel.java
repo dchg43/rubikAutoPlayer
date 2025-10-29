@@ -8,8 +8,9 @@ import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Insets;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.StringTokenizer;
-import java.util.Vector;
 
 public class MultilineLabel extends Canvas {
     private static final long serialVersionUID = -1943567795692517989L;
@@ -19,7 +20,7 @@ public class MultilineLabel extends Canvas {
     // private static final Color activeSelectionBackground = new Color(0xFF, 0xFF, 0x40);
     public static final Color activeSelectionBackground = new Color(0x00, 0xFF, 0x40);
 
-    private Vector<String> lines = new Vector<>();
+    private List<String> lines = new ArrayList<>();
 
     private int selectionStart = -1;
 
@@ -56,10 +57,10 @@ public class MultilineLabel extends Canvas {
 
         int length = 0;
         for (int i = 0; i < row; i++) {
-            length += this.lines.elementAt(i).length();
+            length += this.lines.get(i).length();
         }
 
-        String lineHeight = this.lines.elementAt(row);
+        String lineHeight = this.lines.get(row);
         int pos = x - this.insets.left;
         for (int i = pos / fontMetrics.charWidth('l') + 1; i <= lineHeight.length(); i++) {
             if (fontMetrics.stringWidth(lineHeight.substring(0, i)) > pos) {
@@ -85,10 +86,10 @@ public class MultilineLabel extends Canvas {
     }
 
     private void wrapText() {
-        Vector<String> lines = new Vector<>();
+        List<String> lines = new ArrayList<>();
         int width = (getWidth() - this.insets.left) - this.insets.right;
         if (width <= 0) {
-            lines.addElement(this.text);
+            lines.add(this.text);
             this.lines = lines;
             return;
         }
@@ -100,22 +101,22 @@ public class MultilineLabel extends Canvas {
             String strNextToken = stringTokenizer.nextToken();
             if (strNextToken.equals("\n")) {
                 sb.append(strNextToken);
-                lines.addElement(sb.toString());
+                lines.add(sb.toString());
                 sb.setLength(0);
             } else if (fontMetrics.stringWidth(sb + strNextToken) <= width) {
                 sb.append(strNextToken);
             } else if (strNextToken.equals(" ")) {
                 sb.append(strNextToken);
-                lines.addElement(sb.toString());
+                lines.add(sb.toString());
                 sb.setLength(0);
             } else {
-                lines.addElement(sb.toString());
+                lines.add(sb.toString());
                 sb.setLength(0);
                 sb.append(strNextToken);
             }
         }
         if (sb.length() > 0) {
-            lines.addElement(sb.toString());
+            lines.add(sb.toString());
         }
         this.lines = lines;
     }

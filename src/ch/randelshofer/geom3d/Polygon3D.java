@@ -10,12 +10,10 @@ public class Polygon3D {
     public double[] zpoints;
 
     public Polygon3D() {
-        this.npoints = 0;
         setCapacity(4);
     }
 
     public Polygon3D(int npoints) {
-        this.npoints = 0;
         setCapacity(npoints);
     }
 
@@ -27,13 +25,13 @@ public class Polygon3D {
     }
 
     public Polygon3D(double[] xpoints, double[] ypoints, double[] zpoints, int npoints) {
-        this.npoints = npoints;
         this.xpoints = new double[npoints];
         this.ypoints = new double[npoints];
         this.zpoints = new double[npoints];
         System.arraycopy(xpoints, 0, this.xpoints, 0, npoints);
         System.arraycopy(ypoints, 0, this.ypoints, 0, npoints);
         System.arraycopy(zpoints, 0, this.zpoints, 0, npoints);
+        this.npoints = npoints;
     }
 
     public Polygon3D(short[][] points, int pos, int npoints) {

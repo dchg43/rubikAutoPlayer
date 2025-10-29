@@ -1,10 +1,11 @@
 package ch.randelshofer.gui.tree;
 
 import java.io.Serializable;
-import java.util.Enumeration;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Stack;
-import java.util.Vector;
 
 import ch.randelshofer.util.EmptyEnumeration;
 
@@ -13,13 +14,13 @@ public class DefaultMutableTreeNode implements Cloneable, Serializable {
 
     private DefaultMutableTreeNode parent;
 
-    protected Vector<DefaultMutableTreeNode> children;
+    protected List<DefaultMutableTreeNode> children;
 
     private transient Object userObject;
 
     private boolean allowsChildren;
 
-    private static final class BreadthFirstEnumeration implements Enumeration<DefaultMutableTreeNode> {
+    private static final class BreadthFirstEnumeration implements Iterator<DefaultMutableTreeNode> {
         private Queue queue;
 
         @SuppressWarnings("unused")
@@ -34,14 +35,14 @@ public class DefaultMutableTreeNode implements Cloneable, Serializable {
             private final BreadthFirstEnumeration enuInstance;
 
             final class QNode {
-                public Enumeration<DefaultMutableTreeNode> object;
+                public Iterator<DefaultMutableTreeNode> object;
 
                 public QNode next;
 
                 @SuppressWarnings("unused")
                 private final Queue queueInstance;
 
-                public QNode(Queue queue, Enumeration<DefaultMutableTreeNode> obj, QNode next) {
+                public QNode(Queue queue, Iterator<DefaultMutableTreeNode> obj, QNode next) {
                     this.queueInstance = queue;
                     this.object = obj;
                     this.next = next;
@@ -52,7 +53,7 @@ public class DefaultMutableTreeNode implements Cloneable, Serializable {
                 this.enuInstance = enuInstance;
             }
 
-            public void enqueue(Enumeration<DefaultMutableTreeNode> obj) {
+            public void enqueue(Iterator<DefaultMutableTreeNode> obj) {
                 if (this.head == null) {
                     this.head = this.tail = new QNode(this, obj, null);
                 } else {
@@ -61,11 +62,11 @@ public class DefaultMutableTreeNode implements Cloneable, Serializable {
                 }
             }
 
-            public Enumeration<?> dequeue() {
+            public Iterator<?> dequeue() {
                 if (this.head == null) {
                     throw new NoSuchElementException("No more elements");
                 }
-                Enumeration<?> obj = this.head.object;
+                Iterator<?> obj = this.head.object;
                 QNode qNode = this.head;
                 this.head = this.head.next;
                 if (this.head == null) {
@@ -76,7 +77,7 @@ public class DefaultMutableTreeNode implements Cloneable, Serializable {
                 return obj;
             }
 
-            public Enumeration<DefaultMutableTreeNode> firstObject() {
+            public Iterator<DefaultMutableTreeNode> firstObject() {
                 if (this.head == null) {
                     throw new NoSuchElementException("No more elements");
                 }
@@ -90,60 +91,60 @@ public class DefaultMutableTreeNode implements Cloneable, Serializable {
 
         public BreadthFirstEnumeration(DefaultMutableTreeNode head, DefaultMutableTreeNode child) {
             this.headInstance = head;
-            Vector<DefaultMutableTreeNode> vector = new Vector<>(1);
-            vector.addElement(child);
+            List<DefaultMutableTreeNode> list = new ArrayList<>(1);
+            list.add(child);
             this.queue = new Queue(this);
-            this.queue.enqueue(vector.elements());
+            this.queue.enqueue(list.iterator());
         }
 
         @Override
-        public boolean hasMoreElements() {
-            return !this.queue.isEmpty() && this.queue.firstObject().hasMoreElements();
+        public boolean hasNext() {
+            return !this.queue.isEmpty() && this.queue.firstObject().hasNext();
         }
 
         @Override
-        public DefaultMutableTreeNode nextElement() {
-            Enumeration<DefaultMutableTreeNode> first = this.queue.firstObject();
-            DefaultMutableTreeNode next = first.nextElement();
-            Enumeration<DefaultMutableTreeNode> children = next.children();
-            if (!first.hasMoreElements()) {
+        public DefaultMutableTreeNode next() {
+            Iterator<DefaultMutableTreeNode> first = this.queue.firstObject();
+            DefaultMutableTreeNode next = first.next();
+            Iterator<DefaultMutableTreeNode> children = next.children();
+            if (!first.hasNext()) {
                 this.queue.dequeue();
             }
-            if (children.hasMoreElements()) {
+            if (children.hasNext()) {
                 this.queue.enqueue(children);
             }
             return next;
         }
     }
 
-    private static final class PreorderEnumeration implements Enumeration<DefaultMutableTreeNode> {
-        private Stack<Enumeration<DefaultMutableTreeNode>> stack;
+    private static final class PreorderEnumeration implements Iterator<DefaultMutableTreeNode> {
+        private Stack<Iterator<DefaultMutableTreeNode>> stack;
 
         @SuppressWarnings("unused")
         private final DefaultMutableTreeNode headInstance;
 
         public PreorderEnumeration(DefaultMutableTreeNode head, DefaultMutableTreeNode child) {
             this.headInstance = head;
-            Vector<DefaultMutableTreeNode> vector = new Vector<>(1);
-            vector.addElement(child);
+            List<DefaultMutableTreeNode> list = new ArrayList<>(1);
+            list.add(child);
             this.stack = new Stack<>();
-            this.stack.push(vector.elements());
+            this.stack.push(list.iterator());
         }
 
         @Override
-        public boolean hasMoreElements() {
-            return !this.stack.empty() && this.stack.peek().hasMoreElements();
+        public boolean hasNext() {
+            return !this.stack.empty() && this.stack.peek().hasNext();
         }
 
         @Override
-        public DefaultMutableTreeNode nextElement() {
-            Enumeration<DefaultMutableTreeNode> enumeration = this.stack.peek();
-            DefaultMutableTreeNode next = enumeration.nextElement();
-            Enumeration<DefaultMutableTreeNode> children = next.children();
-            if (!enumeration.hasMoreElements()) {
+        public DefaultMutableTreeNode next() {
+            Iterator<DefaultMutableTreeNode> enumeration = this.stack.peek();
+            DefaultMutableTreeNode next = enumeration.next();
+            Iterator<DefaultMutableTreeNode> children = next.children();
+            if (!enumeration.hasNext()) {
                 this.stack.pop();
             }
-            if (children.hasMoreElements()) {
+            if (children.hasNext()) {
                 this.stack.push(children);
             }
             return next;
@@ -180,9 +181,9 @@ public class DefaultMutableTreeNode implements Cloneable, Serializable {
         }
         child.setParent(this);
         if (this.children == null) {
-            this.children = new Vector<>();
+            this.children = new ArrayList<>();
         }
-        this.children.insertElementAt(child, index);
+        this.children.add(index, child);
     }
 
     public void remove(int index) {
@@ -202,7 +203,7 @@ public class DefaultMutableTreeNode implements Cloneable, Serializable {
         if (this.children == null) {
             throw new ArrayIndexOutOfBoundsException("node has no children");
         }
-        return this.children.elementAt(index);
+        return this.children.get(index);
     }
 
     public int getChildCount() {
@@ -222,8 +223,8 @@ public class DefaultMutableTreeNode implements Cloneable, Serializable {
         return -1;
     }
 
-    public Enumeration<DefaultMutableTreeNode> children() {
-        return this.children == null ? EmptyEnumeration.EMPTY_ENUMERATION : this.children.elements();
+    public Iterator<DefaultMutableTreeNode> children() {
+        return this.children == null ? EmptyEnumeration.EMPTY_ENUMERATION : this.children.iterator();
     }
 
     public void setAllowsChildren(boolean allowsChildren) {
@@ -302,9 +303,9 @@ public class DefaultMutableTreeNode implements Cloneable, Serializable {
 
     public int getDepth() {
         DefaultMutableTreeNode leaf = null;
-        Enumeration<DefaultMutableTreeNode> elems = breadthFirstEnumeration();
-        while (elems.hasMoreElements()) {
-            leaf = elems.nextElement();
+        Iterator<DefaultMutableTreeNode> elems = breadthFirstEnumeration();
+        while (elems.hasNext()) {
+            leaf = elems.next();
         }
         if (leaf == null) {
             throw new Error("nodes should be null");
@@ -322,11 +323,11 @@ public class DefaultMutableTreeNode implements Cloneable, Serializable {
         return i;
     }
 
-    public Enumeration<DefaultMutableTreeNode> preorderEnumeration() {
+    public Iterator<DefaultMutableTreeNode> preorderEnumeration() {
         return new PreorderEnumeration(this, this);
     }
 
-    public Enumeration<DefaultMutableTreeNode> breadthFirstEnumeration() {
+    public Iterator<DefaultMutableTreeNode> breadthFirstEnumeration() {
         return new BreadthFirstEnumeration(this, this);
     }
 

@@ -1,23 +1,23 @@
 package ch.randelshofer.util;
 
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import ch.randelshofer.gui.tree.DefaultMutableTreeNode;
 
-public class EmptyEnumeration implements Enumeration<DefaultMutableTreeNode> {
+public class EmptyEnumeration implements Iterator<DefaultMutableTreeNode> {
     public static final EmptyEnumeration EMPTY_ENUMERATION = new EmptyEnumeration();
 
     private EmptyEnumeration() {
     }
 
     @Override
-    public boolean hasMoreElements() {
+    public boolean hasNext() {
         return false;
     }
 
     @Override
-    public DefaultMutableTreeNode nextElement() {
+    public DefaultMutableTreeNode next() {
         throw new NoSuchElementException();
     }
 

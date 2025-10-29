@@ -3,13 +3,14 @@ package ch.randelshofer.gui;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.io.Serializable;
-import java.util.Enumeration;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class ButtonGroup implements Serializable, ItemListener {
     private static final long serialVersionUID = -2734696143977806127L;
 
-    private Vector<AbstractButton> buttons = new Vector<>();
+    private List<AbstractButton> buttons = new ArrayList<>();
 
     private AbstractButton selection = null;
 
@@ -17,7 +18,7 @@ public class ButtonGroup implements Serializable, ItemListener {
         if (abstractButton == null) {
             return;
         }
-        this.buttons.addElement(abstractButton);
+        this.buttons.add(abstractButton);
         abstractButton.setGroup(this);
         if (this.selection == null && abstractButton.isSelected()) {
             this.selection = abstractButton;
@@ -29,7 +30,7 @@ public class ButtonGroup implements Serializable, ItemListener {
         if (abstractButton == null) {
             return;
         }
-        this.buttons.removeElement(abstractButton);
+        this.buttons.remove(abstractButton);
         abstractButton.setGroup(null);
         if (abstractButton == this.selection) {
             this.selection = null;
@@ -37,8 +38,8 @@ public class ButtonGroup implements Serializable, ItemListener {
         abstractButton.removeItemListener(this);
     }
 
-    public Enumeration<AbstractButton> getElements() {
-        return this.buttons.elements();
+    public Iterator<AbstractButton> getElements() {
+        return this.buttons.iterator();
     }
 
     public AbstractButton getSelection() {

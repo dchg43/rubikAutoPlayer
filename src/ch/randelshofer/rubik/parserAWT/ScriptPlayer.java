@@ -9,9 +9,9 @@ import java.awt.Polygon;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.ImageProducer;
-import java.util.Enumeration;
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
 import ch.randelshofer.geom3d.Transform3D;
 import ch.randelshofer.gui.AbstractButton;
@@ -35,7 +35,7 @@ import ch.randelshofer.util.ConcurrentDispatcherAWT;
 public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionListener {
     private volatile int scriptIndex;
 
-    private ChangeEvent changeEvent;
+    private ChangeEvent changeEvent = new ChangeEvent(this);
 
     private static final int STOPPED = 0;
 
@@ -57,7 +57,7 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
 
     private ScriptNode script;
 
-    private Vector<ScriptNode> scriptVector = new Vector<>();
+    private List<ScriptNode> scriptList = new ArrayList<>();
 
     private Transform3D transform = new Transform3D();
 
@@ -148,24 +148,24 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
         stop();
         this.script = script;
         this.progress.setRangeProperties(0, 0, 0, 0, false);
-        this.scriptVector.removeAllElements();
+        this.scriptList.clear();
         this.scriptIndex = 0;
         if (script != null) {
-            Enumeration<DefaultMutableTreeNode> resolveNode = script.resolvedEnumeration(false);
-            while (resolveNode.hasMoreElements()) {
-                ScriptNode scriptNode = (ScriptNode) resolveNode.nextElement();
+            Iterator<DefaultMutableTreeNode> resolveNode = script.resolvedEnumeration(false);
+            while (resolveNode.hasNext()) {
+                ScriptNode scriptNode = (ScriptNode) resolveNode.next();
                 if (((scriptNode instanceof TwistNode) && ((TwistNode) scriptNode).getSymbol() != 84) || (scriptNode instanceof PermutationNode)) {
-                    this.scriptVector.addElement(scriptNode);
+                    this.scriptList.add(scriptNode);
                 }
             }
-            this.progress.setRangeProperties(0, 0, 0, this.scriptVector.size(), false);
+            this.progress.setRangeProperties(0, 0, 0, this.scriptList.size(), false);
         }
         updateEnabled();
     }
 
     public void moveToCaret(int cursor) {
-        for (int i = 0; i < this.scriptVector.size(); i++) {
-            ScriptNode scriptNode = this.scriptVector.elementAt(i);
+        for (int i = 0; i < this.scriptList.size(); i++) {
+            ScriptNode scriptNode = this.scriptList.get(i);
             if (scriptNode.getStartPosition() <= cursor && scriptNode.getEndPosition() >= cursor) {
                 // stop();
                 this.progress.setValue(i);
@@ -220,7 +220,7 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
                 this.progress.setValue(0);
                 this.model.setQuiet(true);
                 while (this.scriptIndex > 0) {
-                    ScriptNode scriptNode = this.scriptVector.elementAt(--this.scriptIndex);
+                    ScriptNode scriptNode = this.scriptList.get(--this.scriptIndex);
                     scriptNode.applyInverseTo(this.model);
                 }
                 this.model.setQuiet(false);
@@ -230,21 +230,21 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
             while ((this.state == RUNNING && this.progress.getValue() != this.progress.getMaximum()) || this.scriptIndex != this.progress.getValue()) {
                 int iMin = Math.min(this.progress.getValue() + 1, this.progress.getMaximum());
                 if (this.scriptIndex == iMin - 1) {
-                    ScriptNode scriptNode = this.scriptVector.elementAt(this.scriptIndex++);
+                    ScriptNode scriptNode = this.scriptList.get(this.scriptIndex++);
                     scriptNode.applyTo(this.model);
                     this.progress.setValue(this.progress.getValue() + 1);
                 } else if (this.scriptIndex == iMin + 1) {
-                    ScriptNode scriptNode = this.scriptVector.elementAt(--this.scriptIndex);
+                    ScriptNode scriptNode = this.scriptList.get(--this.scriptIndex);
                     scriptNode.applyInverseTo(this.model);
                     this.progress.setValue(this.progress.getValue() + 1);
                 } else {
                     this.model.setQuiet(true);
                     while (this.scriptIndex < iMin - 1) {
-                        ScriptNode scriptNode = this.scriptVector.elementAt(this.scriptIndex++);
+                        ScriptNode scriptNode = this.scriptList.get(this.scriptIndex++);
                         scriptNode.applyTo(this.model);
                     }
                     while (this.scriptIndex > iMin - 1) {
-                        ScriptNode scriptNode = this.scriptVector.elementAt(--this.scriptIndex);
+                        ScriptNode scriptNode = this.scriptList.get(--this.scriptIndex);
                         scriptNode.applyInverseTo(this.model);
                     }
                     this.model.setQuiet(false);
@@ -339,9 +339,6 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
         List<ListenerNode> listenerList = this.listenerList.getListenerList();
         for (ListenerNode node : listenerList) {
             if (node.getClazz() == ChangeListener.class) {
-                if (this.changeEvent == null) {
-                    this.changeEvent = new ChangeEvent(this);
-                }
                 ((ChangeListener) node.getListener()).stateChanged(this.changeEvent);
             }
         }
@@ -349,8 +346,8 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
 
     public ScriptNode getCurrentSymbol() {
         int i = this.progress.getValue();
-        if (i < this.scriptVector.size()) {
-            return this.scriptVector.elementAt(i);
+        if (i < this.scriptList.size()) {
+            return this.scriptList.get(i);
         }
         return null;
     }
@@ -390,18 +387,18 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
         int value = this.progress.getValue();
         if (this.scriptIndex == value - 1) {
             fireStateChanged();
-            this.scriptVector.elementAt(this.scriptIndex++).applyTo(this.model);
+            this.scriptList.get(this.scriptIndex++).applyTo(this.model);
         } else if (this.scriptIndex == value + 1) {
             fireStateChanged();
-            ScriptNode scriptNode = this.scriptVector.elementAt(--this.scriptIndex);
+            ScriptNode scriptNode = this.scriptList.get(--this.scriptIndex);
             scriptNode.applyInverseTo(this.model);
         } else {
             this.model.setQuiet(true);
             while (this.scriptIndex < value) {
-                this.scriptVector.elementAt(this.scriptIndex++).applyTo(this.model);
+                this.scriptList.get(this.scriptIndex++).applyTo(this.model);
             }
             while (this.scriptIndex > value) {
-                this.scriptVector.elementAt(--this.scriptIndex).applyInverseTo(this.model);
+                this.scriptList.get(--this.scriptIndex).applyInverseTo(this.model);
             }
             this.model.setQuiet(false);
         }

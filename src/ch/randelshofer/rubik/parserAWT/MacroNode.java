@@ -2,7 +2,7 @@ package ch.randelshofer.rubik.parserAWT;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.Enumeration;
+import java.util.Iterator;
 
 import ch.randelshofer.gui.tree.DefaultMutableTreeNode;
 import ch.randelshofer.io.ParseException;
@@ -47,9 +47,9 @@ public class MacroNode extends ScriptNode {
                 int startPosition = getStartPosition();
                 int endPosition = getEndPosition();
                 scriptParser.parse(new StringReader(this.script), this);
-                Enumeration<DefaultMutableTreeNode> breadthNode = breadthFirstEnumeration();
-                while (breadthNode.hasMoreElements()) {
-                    ScriptNode scriptNode = (ScriptNode) breadthNode.nextElement();
+                Iterator<DefaultMutableTreeNode> breadthNode = breadthFirstEnumeration();
+                while (breadthNode.hasNext()) {
+                    ScriptNode scriptNode = (ScriptNode) breadthNode.next();
                     scriptNode.setStartPosition(startPosition);
                     scriptNode.setEndPosition(endPosition);
                 }

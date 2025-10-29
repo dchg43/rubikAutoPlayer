@@ -8,7 +8,7 @@ import ch.randelshofer.gui.event.EventListenerList;
 import ch.randelshofer.gui.event.EventListenerList.ListenerNode;
 
 public class DefaultBoundedRangeModel implements BoundedRangeModel {
-    private transient ChangeEvent changeEvent = null;
+    private transient ChangeEvent changeEvent = new ChangeEvent(this);
 
     private EventListenerList listenerList = new EventListenerList();
 
@@ -140,9 +140,6 @@ public class DefaultBoundedRangeModel implements BoundedRangeModel {
         List<ListenerNode> listenerList = this.listenerList.getListenerList();
         for (ListenerNode node : listenerList) {
             if (node.getClazz() == ChangeListener.class) {
-                if (this.changeEvent == null) {
-                    this.changeEvent = new ChangeEvent(this);
-                }
                 ((ChangeListener) node.getListener()).stateChanged(this.changeEvent);
             }
         }

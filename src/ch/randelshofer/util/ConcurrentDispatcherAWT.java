@@ -1,11 +1,12 @@
 package ch.randelshofer.util;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ConcurrentDispatcherAWT implements Runnable {
     private int priority;
 
-    private final Vector<Runnable> queue;
+    private final List<Runnable> queue;
 
     private int threadCount;
 
@@ -24,7 +25,7 @@ public class ConcurrentDispatcherAWT implements Runnable {
     }
 
     public ConcurrentDispatcherAWT(int priority, int threadMax) {
-        this.queue = new Vector<>();
+        this.queue = new ArrayList<>();
         this.blockingPolicy = ENQUEUE_WHEN_BLOCKED;
         this.priority = priority;
         this.threadMax = threadMax;
@@ -43,12 +44,12 @@ public class ConcurrentDispatcherAWT implements Runnable {
             if (this.blockingPolicy == RUN_WHEN_BLOCKED) {
                 runnable.run();
             } else { // else ==ENQUEUE_WHEN_BLOCKED时跳过这个动画显示
-                this.queue.addElement(runnable);
+                this.queue.add(runnable);
             }
             return;
         }
         synchronized (this.queue) {
-            this.queue.addElement(runnable);
+            this.queue.add(runnable);
             this.threadCount++;
         }
 

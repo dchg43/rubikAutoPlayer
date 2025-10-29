@@ -2,7 +2,7 @@ package ch.randelshofer.geom3d;
 
 import java.awt.Color;
 import java.awt.event.ActionListener;
-import java.util.Vector;
+import java.util.List;
 
 public class Shape3D implements SceneNode {
     private double[] coords;
@@ -81,7 +81,7 @@ public class Shape3D implements SceneNode {
     }
 
     @Override
-    public void addVisibleFaces(Vector<Face3D> visibleFaces, Transform3D transform, Point3D point3D) {
+    public void addVisibleFaces(List<Face3D> visibleFaces, Transform3D transform, Point3D point3D) {
         if (this.isVisible) {
             Transform3D transformClone = (Transform3D) this.transform.clone();
             transformClone.concatenate(transform);
@@ -92,7 +92,7 @@ public class Shape3D implements SceneNode {
             for (int i = 0; i < length; i++) {
                 this.faces3D[i].setCoords(coords);
                 if (this.faces3D[i].isVisible(point3D)) {
-                    visibleFaces.addElement(this.faces3D[i]);
+                    visibleFaces.add(this.faces3D[i]);
                 }
             }
         }

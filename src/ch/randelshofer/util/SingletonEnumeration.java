@@ -1,11 +1,11 @@
 package ch.randelshofer.util;
 
-import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import ch.randelshofer.gui.tree.DefaultMutableTreeNode;
 
-public class SingletonEnumeration implements Enumeration<DefaultMutableTreeNode> {
+public class SingletonEnumeration implements Iterator<DefaultMutableTreeNode> {
     private DefaultMutableTreeNode aloneNode;
 
     public SingletonEnumeration(DefaultMutableTreeNode defaultMutableTreeNode) {
@@ -13,12 +13,12 @@ public class SingletonEnumeration implements Enumeration<DefaultMutableTreeNode>
     }
 
     @Override
-    public boolean hasMoreElements() {
+    public boolean hasNext() {
         return this.aloneNode != null;
     }
 
     @Override
-    public synchronized DefaultMutableTreeNode nextElement() {
+    public synchronized DefaultMutableTreeNode next() {
         if (this.aloneNode == null) {
             throw new NoSuchElementException();
         }

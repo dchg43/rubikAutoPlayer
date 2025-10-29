@@ -1,27 +1,27 @@
 package ch.randelshofer.util;
 
-import java.util.Enumeration;
-import java.util.Vector;
+import java.util.Iterator;
+import java.util.List;
 
 import ch.randelshofer.gui.tree.DefaultMutableTreeNode;
 
-public class ReverseVectorEnumeration implements Enumeration<DefaultMutableTreeNode> {
-    private Vector<DefaultMutableTreeNode> vector;
+public class ReverseVectorEnumeration implements Iterator<DefaultMutableTreeNode> {
+    private List<DefaultMutableTreeNode> nodes;
 
     private int index;
 
-    public ReverseVectorEnumeration(Vector<DefaultMutableTreeNode> vector) {
-        this.vector = vector;
-        this.index = vector.size() - 1;
+    public ReverseVectorEnumeration(List<DefaultMutableTreeNode> nodes) {
+        this.nodes = nodes;
+        this.index = nodes.size() - 1;
     }
 
     @Override
-    public boolean hasMoreElements() {
+    public boolean hasNext() {
         return this.index >= 0;
     }
 
     @Override
-    public DefaultMutableTreeNode nextElement() {
-        return this.vector.elementAt(this.index--);
+    public DefaultMutableTreeNode next() {
+        return this.nodes.get(this.index--);
     }
 }

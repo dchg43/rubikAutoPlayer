@@ -1,6 +1,6 @@
 package ch.randelshofer.rubik.parserAWT;
 
-import java.util.Enumeration;
+import java.util.Iterator;
 
 import ch.randelshofer.gui.tree.DefaultMutableTreeNode;
 import ch.randelshofer.rubik.RubiksCubeCore;
@@ -71,7 +71,7 @@ public class TwistNode extends ScriptNode {
     }
 
     @Override
-    public Enumeration<DefaultMutableTreeNode> resolvedEnumeration(boolean inverse) {
+    public Iterator<DefaultMutableTreeNode> resolvedEnumeration(boolean inverse) {
         if (inverse) {
             TwistNode twistNode = (TwistNode) clone();
             twistNode.inverse();

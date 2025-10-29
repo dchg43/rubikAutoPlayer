@@ -1,6 +1,6 @@
 package ch.randelshofer.rubik.parserAWT;
 
-import java.util.Enumeration;
+import java.util.Iterator;
 
 import ch.randelshofer.gui.tree.DefaultMutableTreeNode;
 
@@ -20,7 +20,7 @@ public class InversionNode extends ScriptNode {
     }
 
     @Override
-    public Enumeration<DefaultMutableTreeNode> resolvedEnumeration(boolean inverse) {
+    public Iterator<DefaultMutableTreeNode> resolvedEnumeration(boolean inverse) {
         return super.resolvedEnumeration(!inverse);
     }
 }

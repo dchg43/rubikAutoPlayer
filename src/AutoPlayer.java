@@ -163,6 +163,7 @@ public class AutoPlayer extends Panel implements Runnable {
                 buffer.append(tokens[gen.nextInt(tokens.length)]).append(' ');
             }
             String result = buffer.toString();
+            buffer.setLength(0);
 
             ScriptNode script = null;
             try {
@@ -171,7 +172,6 @@ public class AutoPlayer extends Panel implements Runnable {
                 e.printStackTrace();
                 continue;
             }
-            buffer.setLength(0);
 
             this.player.setScript(script);
             // this.scriptTextArea.setText(result);

@@ -1,8 +1,9 @@
 package ch.randelshofer.rubik.parserAWT;
 
-import java.util.Enumeration;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.Vector;
 
 import ch.randelshofer.gui.tree.DefaultMutableTreeNode;
 import ch.randelshofer.util.ReverseVectorEnumeration;
@@ -13,14 +14,14 @@ public class RepetitionNode extends ScriptNode {
 
     int repeatCount = 1;
 
-    private static class ResolvedEnumeration implements Enumeration<DefaultMutableTreeNode> {
+    private static class ResolvedEnumeration implements Iterator<DefaultMutableTreeNode> {
         private RepetitionNode root;
 
-        private Enumeration<DefaultMutableTreeNode> children;
+        private Iterator<DefaultMutableTreeNode> children;
 
-        private Enumeration<DefaultMutableTreeNode> subtree;
+        private Iterator<DefaultMutableTreeNode> subtree;
 
-        private Vector<DefaultMutableTreeNode> cachedChildren = new Vector<>();
+        private List<DefaultMutableTreeNode> cachedChildren = new ArrayList<>();
 
         boolean inverse;
 
@@ -31,29 +32,29 @@ public class RepetitionNode extends ScriptNode {
             this.inverse = inverse;
             this.repeatCount = repeatCount;
             this.children = inverse ? this.root.enumerateChildrenReversed() : this.root.children();
-            while (this.children.hasMoreElements()) {
-                this.cachedChildren.addElement(this.children.nextElement());
+            while (this.children.hasNext()) {
+                this.cachedChildren.add(this.children.next());
             }
-            this.children = this.cachedChildren.elements();
+            this.children = this.cachedChildren.iterator();
             this.subtree = new SingletonEnumeration((DefaultMutableTreeNode) this.root.clone());
         }
 
         @Override
-        public boolean hasMoreElements() {
-            return this.subtree.hasMoreElements() || this.children.hasMoreElements() || this.repeatCount > 1;
+        public boolean hasNext() {
+            return this.subtree.hasNext() || this.children.hasNext() || this.repeatCount > 1;
         }
 
         @Override
-        public DefaultMutableTreeNode nextElement() {
+        public DefaultMutableTreeNode next() {
             DefaultMutableTreeNode nextElement;
-            if (this.subtree.hasMoreElements()) {
-                nextElement = this.subtree.nextElement();
-            } else if (this.children.hasMoreElements()) {
-                this.subtree = ((ScriptNode) this.children.nextElement()).resolvedEnumeration(this.inverse);
-                nextElement = this.subtree.nextElement();
-                if (!this.children.hasMoreElements() && this.repeatCount > 1) {
+            if (this.subtree.hasNext()) {
+                nextElement = this.subtree.next();
+            } else if (this.children.hasNext()) {
+                this.subtree = ((ScriptNode) this.children.next()).resolvedEnumeration(this.inverse);
+                nextElement = this.subtree.next();
+                if (!this.children.hasNext() && this.repeatCount > 1) {
                     this.repeatCount--;
-                    this.children = this.cachedChildren.elements();
+                    this.children = this.cachedChildren.iterator();
                 }
             } else {
                 throw new NoSuchElementException();
@@ -93,12 +94,12 @@ public class RepetitionNode extends ScriptNode {
     }
 
     @Override
-    public Enumeration<DefaultMutableTreeNode> resolvedEnumeration(boolean inverse) {
+    public Iterator<DefaultMutableTreeNode> resolvedEnumeration(boolean inverse) {
         return new ResolvedEnumeration(this, inverse, this.repeatCount);
     }
 
     @Override
-    public Enumeration<DefaultMutableTreeNode> enumerateChildrenReversed() {
+    public Iterator<DefaultMutableTreeNode> enumerateChildrenReversed() {
         return new ReverseVectorEnumeration(this.children);
     }
 }

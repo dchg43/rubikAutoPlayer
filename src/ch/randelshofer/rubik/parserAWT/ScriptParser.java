@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.util.Arrays;
-import java.util.Enumeration;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.StringTokenizer;
 
 import ch.randelshofer.gui.tree.DefaultMutableTreeNode;
@@ -1022,9 +1022,9 @@ public class ScriptParser {
                 this.macroMap.put(greedy, macroNode);
             } else {
                 macroNode = (MacroNode) ((MacroNode) obj).cloneSubtree();
-                Enumeration<DefaultMutableTreeNode> preorderNode = macroNode.preorderEnumeration();
-                while (preorderNode.hasMoreElements()) {
-                    ScriptNode scriptNode2 = (ScriptNode) preorderNode.nextElement();
+                Iterator<DefaultMutableTreeNode> preorderNode = macroNode.preorderEnumeration();
+                while (preorderNode.hasNext()) {
+                    ScriptNode scriptNode2 = (ScriptNode) preorderNode.next();
                     scriptNode2.setStartPosition(streamPosTokenizer.getStartPosition());
                     scriptNode2.setEndPosition((streamPosTokenizer.getStartPosition() + greedy.length()) - 1);
                 }

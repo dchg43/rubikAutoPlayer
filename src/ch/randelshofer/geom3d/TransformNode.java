@@ -1,21 +1,22 @@
 package ch.randelshofer.geom3d;
 
-import java.util.Enumeration;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class TransformNode implements SceneNode {
-    private Vector<SceneNode> children = new Vector<>();
+    private List<SceneNode> children = new ArrayList<>();
 
     private Transform3D transform = new Transform3D();
 
     private boolean isVisible = true;
 
     public void addChild(SceneNode sceneNode) {
-        this.children.addElement(sceneNode);
+        this.children.add(sceneNode);
     }
 
     public SceneNode getChild(int i) {
-        return this.children.elementAt(i);
+        return this.children.get(i);
     }
 
     public void setTransform(Transform3D transform) {
@@ -31,13 +32,13 @@ public class TransformNode implements SceneNode {
     }
 
     @Override
-    public void addVisibleFaces(Vector<Face3D> visibleFaces, Transform3D transform, Point3D point3D) {
+    public void addVisibleFaces(List<Face3D> visibleFaces, Transform3D transform, Point3D point3D) {
         if (this.isVisible) {
             Transform3D transformClone = (Transform3D) this.transform.clone();
             transformClone.concatenate(transform);
-            Enumeration<SceneNode> enumerationElements = this.children.elements();
-            while (enumerationElements.hasMoreElements()) {
-                enumerationElements.nextElement().addVisibleFaces(visibleFaces, transformClone, point3D);
+            Iterator<SceneNode> children = this.children.iterator();
+            while (children.hasNext()) {
+                children.next().addVisibleFaces(visibleFaces, transformClone, point3D);
             }
         }
     }

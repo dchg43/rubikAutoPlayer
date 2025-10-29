@@ -2,7 +2,8 @@ package ch.randelshofer.io;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 import ch.randelshofer.rubik.parserAWT.ScriptParser;
 
@@ -15,7 +16,7 @@ public class StreamPosTokenizer {
 
     private int endpos;
 
-    private Vector<Integer> unread;
+    private List<Integer> unread;
 
     private char[] buf;
 
@@ -76,7 +77,7 @@ public class StreamPosTokenizer {
         this.readpos = 0;
         this.startpos = -1;
         this.endpos = -1;
-        this.unread = new Vector<>();
+        this.unread = new ArrayList<>();
         this.buf = new char[20];
         this.peekc = NEED_CHAR;
         this.LINENO = 1;
@@ -206,7 +207,7 @@ public class StreamPosTokenizer {
     }
 
     private void unread(int i) {
-        this.unread.addElement(i);
+        this.unread.add(i);
         this.readpos--;
     }
 

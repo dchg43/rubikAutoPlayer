@@ -1,6 +1,7 @@
 package ch.randelshofer.util;
 
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PooledSequentialDispatcherAWT implements Runnable {
     private static ConcurrentDispatcherAWT threadPool = new ConcurrentDispatcherAWT();
@@ -15,7 +16,7 @@ public class PooledSequentialDispatcherAWT implements Runnable {
 
     private volatile int state = STOPPED;
 
-    private final Vector<Runnable> queue = new Vector<>();
+    private final List<Runnable> queue = new ArrayList<>();
 
     public static void dispatchConcurrently(Runnable runnable) {
         threadPool.dispatch(runnable);
@@ -27,7 +28,7 @@ public class PooledSequentialDispatcherAWT implements Runnable {
 
     public void dispatch(Runnable runnable, ConcurrentDispatcherAWT concurrentDispatcherAWT) {
         synchronized (this.queue) {
-            this.queue.addElement(runnable);
+            this.queue.add(runnable);
             if (this.state == STOPPED) {
                 this.state = STARTING;
                 concurrentDispatcherAWT.dispatch(this);

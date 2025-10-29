@@ -1,7 +1,8 @@
 package ch.randelshofer.rubik.parserAWT;
 
-import java.util.Enumeration;
-import java.util.Vector;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import ch.randelshofer.gui.tree.DefaultMutableTreeNode;
 import ch.randelshofer.rubik.RubiksCubeCore;
@@ -10,7 +11,7 @@ import ch.randelshofer.util.SingletonEnumeration;
 public class PermutationNode extends ScriptNode {
     private static final long serialVersionUID = -1979158632899871940L;
 
-    private Vector<PermutationItem> sequence = new Vector<>();
+    private List<PermutationItem> sequence = new ArrayList<>();
 
     private int sign = -1;
 
@@ -288,19 +289,19 @@ public class PermutationNode extends ScriptNode {
             }
             permutationItem.location = i4;
             permutationItem.orientation = i5;
-            for (int i13 = 0; i13 < this.sequence.size(); i13++) {
-                if (this.sequence.elementAt(i13).orientation / 3 != permutationItem.orientation / 3) {
+            for (PermutationItem element : this.sequence) {
+                if (element.orientation / 3 != permutationItem.orientation / 3) {
                     throw new IllegalArgumentException("Corner permutation cannot be clockwise and anticlockwise at the same time.");
                 }
             }
             break;
         }
-        for (int i14 = 0; i14 < this.sequence.size(); i14++) {
-            if (this.sequence.elementAt(i14).location == permutationItem.location) {
+        for (PermutationItem element : this.sequence) {
+            if (element.location == permutationItem.location) {
                 throw new IllegalArgumentException("Illegal multiple occurence of same part.");
             }
         }
-        this.sequence.addElement(permutationItem);
+        this.sequence.add(permutationItem);
     }
 
     public int getPermItemCount() {
@@ -321,7 +322,7 @@ public class PermutationNode extends ScriptNode {
         int[] edgeOrientations = null;
         PermutationItem[] permutationItemArr = new PermutationItem[this.sequence.size()];
         for (int i = 0; i < permutationItemArr.length; i++) {
-            permutationItemArr[i] = this.sequence.elementAt(i);
+            permutationItemArr[i] = this.sequence.get(i);
         }
         int i2 = 0;
         switch (this.type) {
@@ -379,7 +380,7 @@ public class PermutationNode extends ScriptNode {
         int[] edgeOrientations = null;
         PermutationItem[] permutationItemArr = new PermutationItem[this.sequence.size()];
         for (int i = 0; i < permutationItemArr.length; i++) {
-            permutationItemArr[i] = this.sequence.elementAt(i);
+            permutationItemArr[i] = this.sequence.get(i);
         }
         int i2 = 0;
         switch (this.type) {
@@ -436,28 +437,28 @@ public class PermutationNode extends ScriptNode {
 
     @Override
     public void inverse() {
-        Vector<PermutationItem> vector = this.sequence;
-        this.sequence = new Vector<>(vector.size());
-        if (vector.size() > 0) {
-            PermutationItem permutationItem = vector.elementAt(0);
+        List<PermutationItem> list = this.sequence;
+        this.sequence = new ArrayList<>(list.size());
+        if (list.size() > 0) {
+            PermutationItem permutationItem = list.get(0);
             PermutationItem permutationItem2 = new PermutationItem();
             permutationItem2.orientation = permutationItem.orientation;
             permutationItem2.location = permutationItem.location;
-            this.sequence.addElement(permutationItem2);
+            this.sequence.add(permutationItem2);
         }
-        for (int size = vector.size() - 1; size >= 1; size--) {
-            PermutationItem permutationItem3 = vector.elementAt(size);
+        for (int size = list.size() - 1; size >= 1; size--) {
+            PermutationItem permutationItem3 = list.get(size);
             PermutationItem permutationItem4 = new PermutationItem();
             permutationItem4.orientation = permutationItem3.orientation;
             permutationItem4.location = permutationItem3.location;
-            this.sequence.addElement(permutationItem4);
+            this.sequence.add(permutationItem4);
         }
         switch (this.type) {
         case 1:
             if (this.sign != 0) {
                 this.sign = 4 - this.sign;
                 for (int i = 1; i < this.sequence.size(); i++) {
-                    PermutationItem permutationItem5 = this.sequence.elementAt(i);
+                    PermutationItem permutationItem5 = this.sequence.get(i);
                     permutationItem5.orientation = (this.sign + permutationItem5.orientation) % 4;
                 }
             }
@@ -465,7 +466,7 @@ public class PermutationNode extends ScriptNode {
         case 2:
             if (this.sign != 0) {
                 for (int i2 = 1; i2 < this.sequence.size(); i2++) {
-                    PermutationItem permutationItem6 = this.sequence.elementAt(i2);
+                    PermutationItem permutationItem6 = this.sequence.get(i2);
                     permutationItem6.orientation = this.sign ^ permutationItem6.orientation;
                 }
             }
@@ -474,7 +475,7 @@ public class PermutationNode extends ScriptNode {
             if (this.sign != 0) {
                 this.sign = 3 - this.sign;
                 for (int i3 = 1; i3 < this.sequence.size(); i3++) {
-                    PermutationItem permutationItem7 = this.sequence.elementAt(i3);
+                    PermutationItem permutationItem7 = this.sequence.get(i3);
                     permutationItem7.orientation = (this.sign + permutationItem7.orientation) % 3;
                 }
             }
@@ -487,7 +488,7 @@ public class PermutationNode extends ScriptNode {
     }
 
     @Override
-    public Enumeration<DefaultMutableTreeNode> resolvedEnumeration(boolean inverse) {
+    public Iterator<DefaultMutableTreeNode> resolvedEnumeration(boolean inverse) {
         if (inverse) {
             PermutationNode permutationNode = (PermutationNode) clone();
             permutationNode.inverse();
@@ -530,7 +531,7 @@ public class PermutationNode extends ScriptNode {
         default:
             return; // never reach
         }
-        this.sequence.removeAllElements();
+        this.sequence.clear();
         boolean[] zArr = new boolean[sideLocations.length];
         int i3 = 0;
         while (i3 < sideLocations.length && sideLocations[i3] == i3 && sideOrientations[i3] == 0) {
@@ -539,7 +540,7 @@ public class PermutationNode extends ScriptNode {
         PermutationItem permutationItem = new PermutationItem();
         permutationItem.location = i3;
         permutationItem.orientation = 0;
-        this.sequence.addElement(permutationItem);
+        this.sequence.add(permutationItem);
         zArr[i3] = true;
         int i4 = 0;
         int i5 = 0;
@@ -552,7 +553,7 @@ public class PermutationNode extends ScriptNode {
             PermutationItem permutationItem2 = new PermutationItem();
             permutationItem2.location = i5;
             permutationItem2.orientation = i4;
-            this.sequence.addElement(permutationItem2);
+            this.sequence.add(permutationItem2);
             int i6 = 0;
             while (sideLocations[i6] != i5) {
                 i6++;
@@ -565,10 +566,10 @@ public class PermutationNode extends ScriptNode {
     @Override
     public Object clone() {
         PermutationNode permutationNode = (PermutationNode) super.clone();
-        permutationNode.sequence = new Vector<>();
-        Enumeration<PermutationItem> enumerationElements = this.sequence.elements();
-        while (enumerationElements.hasMoreElements()) {
-            permutationNode.sequence.addElement((PermutationItem) enumerationElements.nextElement().clone());
+        permutationNode.sequence = new ArrayList<>();
+        Iterator<PermutationItem> sequence = this.sequence.iterator();
+        while (sequence.hasNext()) {
+            permutationNode.sequence.add((PermutationItem) sequence.next().clone());
         }
         return permutationNode;
     }
