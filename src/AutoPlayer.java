@@ -733,8 +733,8 @@ public class AutoPlayer extends Panel implements Runnable {
     private void initGUI() {
         final JFrame frame = new JFrame("AutoPlayer"); // 初始化画布
         frame.setTitle("三阶魔方求解器 by Deng");
-        frame.setSize(600, 600); // 设置画布大小
-        frame.setPreferredSize(new java.awt.Dimension(600, 600));
+        frame.setSize(630, 600); // 设置画布大小
+        frame.setPreferredSize(new java.awt.Dimension(630, 600));
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.setIconImage(this.appIcon); // 设置窗口图标
@@ -843,13 +843,14 @@ public class AutoPlayer extends Panel implements Runnable {
             }
         });
 
+        int width = frame.getWidth();
         // 校验按钮
         // 有一种错误的魔方序列校验应该失败，但是却校验成功并给出解法，但是实际无法复原
         // 错误序列如一个对向中心块互换。
         // 所有这些错误序列给的复原解法执行后最终都会变成这个序列 DUDUUUDUDRRRRRRRRRFFFFFFFFFUDUDDDUDULLLLLLLLLBBBBBBBBB
         final JButton buttonCheck = new JButton("check");
         frame.add(buttonCheck);
-        buttonCheck.setBounds(420, 20, 65, 40);
+        buttonCheck.setBounds(width - 180, 20, 65, 40);
         buttonCheck.setFont(defaultFont);
         buttonCheck.setText("校验");
         buttonCheck.addActionListener(new ActionListener() {
@@ -875,7 +876,7 @@ public class AutoPlayer extends Panel implements Runnable {
         // 打乱按钮
         final JButton buttonRandom = new JButton("random");
         frame.add(buttonRandom);
-        buttonRandom.setBounds(495, 20, 65, 40);
+        buttonRandom.setBounds(width - 105, 20, 65, 40);
         buttonRandom.setFont(defaultFont);
         buttonRandom.setText("打乱");
         buttonRandom.addActionListener(new ActionListener() {
@@ -894,7 +895,7 @@ public class AutoPlayer extends Panel implements Runnable {
         // 反序按钮
         final JButton buttonSolver = new JButton("Solver");
         frame.add(buttonSolver);
-        buttonSolver.setBounds(420, 70, 65, 40);
+        buttonSolver.setBounds(width - 180, 70, 65, 40);
         buttonSolver.setFont(defaultFont);
         buttonSolver.setText("反序");
         buttonSolver.addActionListener(new ActionListener() {
@@ -967,7 +968,7 @@ public class AutoPlayer extends Panel implements Runnable {
         // 求解按钮
         final JButton buttonSolution = new JButton("solution");
         frame.add(buttonSolution);
-        buttonSolution.setBounds(495, 70, 65, 40);
+        buttonSolution.setBounds(width - 105, 70, 65, 40);
         buttonSolution.setFont(defaultFont);
         buttonSolution.setText("求解");
         buttonSolution.addActionListener(new ActionListener() {
