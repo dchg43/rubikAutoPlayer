@@ -167,7 +167,8 @@ public class CommandParser {
                         System.out.println(message); // 命令行输出帮助
                         // 修改字体，改成等宽字体
                         UIManager.put("OptionPane.messageFont", new FontUIResource(new Font(CommandParser.this.defaultFont, Font.BOLD, 13)));
-                        JOptionPane.showMessageDialog(null, message, "帮助", JOptionPane.INFORMATION_MESSAGE, CommandParser.this.helpIcon);
+                        JOptionPane.showOptionDialog(null, message, "帮助", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE,
+                                CommandParser.this.helpIcon, new String[]{"确定"}, null);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

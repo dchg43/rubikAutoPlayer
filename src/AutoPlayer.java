@@ -76,6 +76,8 @@ public class AutoPlayer extends Panel implements Runnable {
 
     private static final String completeCube = "UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB";
 
+    private static final String[] defaultOption = new String[]{"确定"};
+
     private static final char sevenChar = '0';
 
     private ScriptPlayer player;
@@ -214,7 +216,8 @@ public class AutoPlayer extends Panel implements Runnable {
                     if (displayMode) {
                         displayMode = false;
                         String message = "Auto test failed.\n  input: " + facelets + "\n script: " + result + "\n result: " + faceletsCur;
-                        JOptionPane.showMessageDialog(this, message, "失败", JOptionPane.ERROR_MESSAGE, this.errorIcon);
+                        JOptionPane.showOptionDialog(this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, AutoPlayer.this.errorIcon,
+                                defaultOption, null);
                         return;
                     } else {
                         break;
@@ -224,7 +227,8 @@ public class AutoPlayer extends Panel implements Runnable {
         } catch (Exception e) {
             displayMode = false;
             String message = "Auto test failed.";
-            JOptionPane.showMessageDialog(this, message, "失败", JOptionPane.ERROR_MESSAGE, this.errorIcon);
+            JOptionPane.showOptionDialog(this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, AutoPlayer.this.errorIcon, defaultOption,
+                    null);
             return;
         }
         displayMode = false;
@@ -238,7 +242,8 @@ public class AutoPlayer extends Panel implements Runnable {
             }
         }
         String message = String.format("测试通过，用时%.1fs", (System.nanoTime() - start) / 1000000000.0d);
-        JOptionPane.showMessageDialog(this, message, "成功", JOptionPane.INFORMATION_MESSAGE, this.infoIcon);
+        JOptionPane.showOptionDialog(this, message, "成功", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, AutoPlayer.this.infoIcon, defaultOption,
+                null);
     }
 
     public AutoPlayer() {
@@ -865,10 +870,12 @@ public class AutoPlayer extends Panel implements Runnable {
                 String result = searchSolution(cubeString);
                 if (result.contains("Error")) {
                     String message = "校验不通过：" + AutoPlayer.getErrMessage(result);
-                    JOptionPane.showMessageDialog(AutoPlayer.this, message, "失败", JOptionPane.ERROR_MESSAGE, AutoPlayer.this.errorIcon);
+                    JOptionPane.showOptionDialog(AutoPlayer.this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE,
+                            AutoPlayer.this.errorIcon, defaultOption, null);
                 } else {
                     String message = "校验通过，可求解。";
-                    JOptionPane.showMessageDialog(AutoPlayer.this, message, "成功", JOptionPane.INFORMATION_MESSAGE, AutoPlayer.this.infoIcon);
+                    JOptionPane.showOptionDialog(AutoPlayer.this, message, "成功", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE,
+                            AutoPlayer.this.infoIcon, defaultOption, null);
                 }
             }
         });
@@ -1003,7 +1010,8 @@ public class AutoPlayer extends Panel implements Runnable {
                 String result = searchSolution(facelets);
                 if (result.contains("Error")) {
                     String message = "校验不通过：" + AutoPlayer.getErrMessage(result);
-                    JOptionPane.showMessageDialog(AutoPlayer.this, message, "失败", JOptionPane.ERROR_MESSAGE, AutoPlayer.this.errorIcon);
+                    JOptionPane.showOptionDialog(AutoPlayer.this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE,
+                            AutoPlayer.this.errorIcon, defaultOption, null);
                     return;
                 }
 
