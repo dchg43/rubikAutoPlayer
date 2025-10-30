@@ -134,7 +134,7 @@ public class AutoPlayer extends Panel implements Runnable {
         // 解析命令行参数
         scriptPlayer.getCmd().parse(args);
         // 启动
-        scriptPlayer.init();
+        scriptPlayer.start();
 
         // 等待自动执行完成
         while (scriptPlayer.getPlayer().isActive()) {
@@ -153,7 +153,7 @@ public class AutoPlayer extends Panel implements Runnable {
     }
 
     // 演示：生成随机序列并执行
-    private void displayDemo() {
+    public void displayDemo() {
         if (!BandelowENGParser.class.isInstance(this.scriptParser)) {
             return;
         }
@@ -294,10 +294,8 @@ public class AutoPlayer extends Panel implements Runnable {
         keyMap.put("lightSourcePosition", 27);
     }
 
-    public void init() {
+    public void start() {
         initComponents();
-        initControlsPanel();
-        initGUI();
         PooledSequentialDispatcherAWT.dispatchConcurrently(this);
         while (!this.initialized) // 等待启动完成
         {
@@ -310,6 +308,8 @@ public class AutoPlayer extends Panel implements Runnable {
 
     private void initComponents() {
         setLayout(new BorderLayout());
+        initControlsPanel();
+        initGUI();
     }
 
     private void initDefaultFont() {
