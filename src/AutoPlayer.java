@@ -191,6 +191,7 @@ public class AutoPlayer extends Panel implements Runnable {
                 } catch (InterruptedException e) {
                 }
             }
+            this.player.makesureFinished();
         }
     }
 
