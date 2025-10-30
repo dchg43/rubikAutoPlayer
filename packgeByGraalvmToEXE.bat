@@ -61,7 +61,7 @@ if exist "%BASEDIR%\%APP_NAME%.jar" (
 )
 
 :: jar
-xcopy /e /q /y "%BASEDIR%\META-INF\native-image\" "%destDir%\META-INF\native-image\"
+xcopy /e /q /y "%nativeImageAgentDir%\" "%destDir%\META-INF\native-image\"
 copy "%BASEDIR%\resources\*" "%destDir%\"
 echo 打包jar：jar cfm %APP_NAME%.jar META-INF/MANIFEST.MF -C %destDir% com
 "%JAR%" cfm "%BASEDIR%\%APP_NAME%.jar" "%BASEDIR%\META-INF\MANIFEST.MF" -C "%destDir%" .
@@ -82,7 +82,7 @@ if not exist "%nativeImageAgentDir%" (
     mkdir "%nativeImageAgentDir%"
     set "createOrMerge=config-output-dir"
 )
-start %JAVA% -agentlib:native-image-agent=%createOrMerge%="%nativeImageAgentDir%" -Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 -Dconsole.encoding=UTF-8 -Duser.language=en -Duser.region=US -jar "%BASEDIR%\%APP_NAME%.jar" --display true -backgroundImage "%systemroot%\Web\Wallpaper\Windows\img0.jpg"
+start %JAVA% -agentlib:native-image-agent=%createOrMerge%="%nativeImageAgentDir%-new" -Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 -Dconsole.encoding=UTF-8 -Duser.language=en -Duser.region=US -jar "%BASEDIR%\%APP_NAME%.jar" --display true -backgroundImage "%systemroot%\Web\Wallpaper\Windows\img0.jpg"
 
 
 echo 等待一段时间并结束进程
@@ -95,9 +95,9 @@ taskkill /fi "IMAGENAME eq java.exe" >nul
 ::jpackage --input . --name %APP_NAME% --main-jar %APP_NAME%.jar --win-console --win-shortcut
 
 timeout /nobreak /T 1 >nul
-del /f /q "%BASEDIR%\META-INF\native-image\.lock" 2>nul
-for /f "delims=" %%I in ('dir /B "%BASEDIR%\META-INF\native-image\"^|findstr "agent-pid"') do (
-    rmdir /s /q "%BASEDIR%\META-INF\native-image\%%I"
+del /f /q "%nativeImageAgentDir%\.lock" 2>nul
+for /f "delims=" %%I in ('dir /B "%nativeImageAgentDir%\"^|findstr "agent-pid"') do (
+    rmdir /s /q "%nativeImageAgentDir%\%%I"
 )
 
 mkdir "%destDir%"
@@ -114,7 +114,7 @@ echo 使用VS打包成exe文件
 ::-H:+ReportExceptionStackTraces 构建原生应用时输出详细错误信息
 call "%MSVC_NATIVE_TOOLS%"
 call "%NATIVE_IMAGE%" "--no-fallback" ^
-    "-H:ConfigurationFileDirectories=%BASEDIR%\META-INF\native-image" ^
+    "-H:ConfigurationFileDirectories=%nativeImageAgentDir%" ^
     "-H:+ReportExceptionStackTraces" ^
     "-H:Name=%APP_NAME%" ^
     "-H:-CheckToolchain" ^

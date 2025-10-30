@@ -30,6 +30,8 @@ public class CommandParser {
 
     public static final String copyright = "© 2025-2030 Deng";
 
+    public static final String[] defaultOption = new String[]{"确定"};
+
     // 格式：长key，短key，类型(null表示没有value，比如h)，中文描述，英文描述
     private static final String[][] parameterInfo = {
             // 帮助
@@ -168,7 +170,7 @@ public class CommandParser {
                         // 修改字体，改成等宽字体
                         UIManager.put("OptionPane.messageFont", new FontUIResource(new Font(CommandParser.this.defaultFont, Font.BOLD, 13)));
                         JOptionPane.showOptionDialog(null, message, "帮助", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE,
-                                CommandParser.this.helpIcon, new String[]{"确定"}, null);
+                                CommandParser.this.helpIcon, defaultOption, defaultOption[0]);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

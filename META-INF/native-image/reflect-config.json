@@ -82,6 +82,10 @@
   "methods":[{"name":"createUI","parameterTypes":["javax.swing.JComponent"] }]
 },
 {
+  "name":"javax.swing.plaf.basic.BasicRootPaneUI",
+  "methods":[{"name":"loadActionMap","parameterTypes":["javax.swing.plaf.basic.LazyActionMap"] }]
+},
+{
   "name":"javax.swing.plaf.metal.MetalButtonUI",
   "methods":[{"name":"createUI","parameterTypes":["javax.swing.JComponent"] }]
 },

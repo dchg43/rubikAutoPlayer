@@ -15,6 +15,9 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.KeyAdapter;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
@@ -75,8 +78,6 @@ public class AutoPlayer extends Panel implements Runnable {
     private static final long serialVersionUID = -698774308591767978L;
 
     private static final String completeCube = "UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB";
-
-    private static final String[] defaultOption = new String[]{"确定"};
 
     private static final char sevenChar = '0';
 
@@ -218,7 +219,7 @@ public class AutoPlayer extends Panel implements Runnable {
                         displayMode = false;
                         String message = "Auto test failed.\n  input: " + facelets + "\n script: " + result + "\n result: " + faceletsCur;
                         JOptionPane.showOptionDialog(this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, AutoPlayer.this.errorIcon,
-                                defaultOption, null);
+                                CommandParser.defaultOption, CommandParser.defaultOption[0]);
                         return;
                     } else {
                         break;
@@ -228,8 +229,8 @@ public class AutoPlayer extends Panel implements Runnable {
         } catch (Exception e) {
             displayMode = false;
             String message = "Auto test failed.";
-            JOptionPane.showOptionDialog(this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, AutoPlayer.this.errorIcon, defaultOption,
-                    null);
+            JOptionPane.showOptionDialog(this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, AutoPlayer.this.errorIcon,
+                    CommandParser.defaultOption, CommandParser.defaultOption[0]);
             return;
         }
         displayMode = false;
@@ -243,8 +244,8 @@ public class AutoPlayer extends Panel implements Runnable {
             }
         }
         String message = String.format("测试通过，用时%.1fs", (System.nanoTime() - start) / 1000000000.0d);
-        JOptionPane.showOptionDialog(this, message, "成功", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, AutoPlayer.this.infoIcon, defaultOption,
-                null);
+        JOptionPane.showOptionDialog(this, message, "成功", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, AutoPlayer.this.infoIcon,
+                CommandParser.defaultOption, CommandParser.defaultOption[0]);
     }
 
     public AutoPlayer() {
@@ -745,13 +746,24 @@ public class AutoPlayer extends Panel implements Runnable {
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.setIconImage(this.appIcon); // 设置窗口图标
 
-        frame.addWindowListener(new WindowAdapter() // 添加退出事件
-        {
+        // 添加退出事件
+        frame.addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent windowEvent) {
                 System.exit(0);
             }
         });
+
+        // 添加键盘事件
+        KeyListener keyListener = new KeyAdapter() {
+            @Override
+            public void keyPressed(KeyEvent e) {
+                // 回车键
+                if (e.getKeyCode() == KeyEvent.VK_ENTER) {
+                    ((JButton) e.getComponent()).doClick();
+                }
+            }
+        };
 
         final JButton[] colorSel = new JButton[6];
         // 顺序：正面红色, 右面黄色, 底面绿色, 背面橙色, 左面白色, 顶面蓝色
@@ -769,6 +781,7 @@ public class AutoPlayer extends Panel implements Runnable {
             colorSel[i].setBorderPainted(true);
             colorSel[i].setBorder(defaultBorder);
             colorSel[i].setName(String.valueOf(i));
+            colorSel[i].addKeyListener(keyListener);
             final int value = i;
             colorSel[i].addActionListener(new ActionListener() {
                 @Override
@@ -793,6 +806,7 @@ public class AutoPlayer extends Panel implements Runnable {
         buttonEdit.setBounds(250, 20, 65, 40);
         buttonEdit.setFont(defaultFont);
         buttonEdit.setText("编辑");
+        buttonEdit.addKeyListener(keyListener);
         buttonEdit.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
@@ -829,6 +843,7 @@ public class AutoPlayer extends Panel implements Runnable {
         buttonClean.setBounds(325, 20, 65, 40);
         buttonClean.setFont(defaultFont);
         buttonClean.setText("清空");
+        buttonClean.addKeyListener(keyListener);
         buttonClean.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
@@ -859,6 +874,7 @@ public class AutoPlayer extends Panel implements Runnable {
         buttonCheck.setBounds(width - 180, 20, 65, 40);
         buttonCheck.setFont(defaultFont);
         buttonCheck.setText("校验");
+        buttonCheck.addKeyListener(keyListener);
         buttonCheck.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
@@ -872,11 +888,11 @@ public class AutoPlayer extends Panel implements Runnable {
                 if (result.contains("Error")) {
                     String message = "校验不通过：" + AutoPlayer.getErrMessage(result);
                     JOptionPane.showOptionDialog(AutoPlayer.this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE,
-                            AutoPlayer.this.errorIcon, defaultOption, null);
+                            AutoPlayer.this.errorIcon, CommandParser.defaultOption, CommandParser.defaultOption[0]);
                 } else {
                     String message = "校验通过，可求解。";
                     JOptionPane.showOptionDialog(AutoPlayer.this, message, "成功", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE,
-                            AutoPlayer.this.infoIcon, defaultOption, null);
+                            AutoPlayer.this.infoIcon, CommandParser.defaultOption, CommandParser.defaultOption[0]);
                 }
             }
         });
@@ -887,6 +903,7 @@ public class AutoPlayer extends Panel implements Runnable {
         buttonRandom.setBounds(width - 105, 20, 65, 40);
         buttonRandom.setFont(defaultFont);
         buttonRandom.setText("打乱");
+        buttonRandom.addKeyListener(keyListener);
         buttonRandom.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
@@ -906,6 +923,7 @@ public class AutoPlayer extends Panel implements Runnable {
         buttonSolver.setBounds(width - 180, 70, 65, 40);
         buttonSolver.setFont(defaultFont);
         buttonSolver.setText("反序");
+        buttonSolver.addKeyListener(keyListener);
         buttonSolver.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
@@ -979,6 +997,7 @@ public class AutoPlayer extends Panel implements Runnable {
         buttonSolution.setBounds(width - 105, 70, 65, 40);
         buttonSolution.setFont(defaultFont);
         buttonSolution.setText("求解");
+        buttonSolution.addKeyListener(keyListener);
         buttonSolution.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
@@ -1012,7 +1031,7 @@ public class AutoPlayer extends Panel implements Runnable {
                 if (result.contains("Error")) {
                     String message = "校验不通过：" + AutoPlayer.getErrMessage(result);
                     JOptionPane.showOptionDialog(AutoPlayer.this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE,
-                            AutoPlayer.this.errorIcon, defaultOption, null);
+                            AutoPlayer.this.errorIcon, CommandParser.defaultOption, CommandParser.defaultOption[0]);
                     return;
                 }
 
@@ -1064,6 +1083,7 @@ public class AutoPlayer extends Panel implements Runnable {
         // 显示
         frame.setVisible(true);
         buttonSolution.requestFocusInWindow(); // 设置默认焦点
+        // frame.getRootPane().setDefaultButton(buttonSolution); // 设置按下回车键默认操作(会跟keyListener重复执行)
         revalidate();
     }
 
@@ -1073,7 +1093,6 @@ public class AutoPlayer extends Panel implements Runnable {
         g.setFont(new Font(this.defaultFont, Font.PLAIN, 10));
         FontMetrics fontMetrics = g.getFontMetrics();
         g.drawString("Loading " + CommandParser.getAppInfo(), 12, fontMetrics.getHeight());
-        // graphics.drawString(CommandParser.copyright, 12, fontMetrics.getHeight() * 2);
     }
 
     @Override
