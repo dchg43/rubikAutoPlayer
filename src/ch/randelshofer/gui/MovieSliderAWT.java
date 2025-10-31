@@ -151,6 +151,7 @@ public class MovieSliderAWT extends Canvas implements ChangeListener {
 
     @Override
     public void update(Graphics g) {
+        g.clearRect(lastFill.top, lastFill.left, lastFill.bottom, lastFill.right);
         paint(g);
     }
 
@@ -162,7 +163,6 @@ public class MovieSliderAWT extends Canvas implements ChangeListener {
     }
 
     public void paint(Graphics g, int x, int y) {
-        g.clearRect(lastFill.top, lastFill.left, lastFill.bottom, lastFill.right);
         int width = getWidth();
         int height = getHeight();
         int xMin = Math.min(Math.max(x, 0), width);

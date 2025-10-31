@@ -179,13 +179,8 @@ public class MultilineLabel extends Canvas {
 
     @Override
     public void update(Graphics g) {
-        paint(g);
-    }
-
-    @Override
-    public void paint(Graphics g) {
         if (this.cleanGraphics) {
-            if (this.fontMetrics != null) {
+            if (this.fontMetrics == null) {
                 this.fontMetrics = g.getFontMetrics(g.getFont());
             }
             wrapText();
@@ -194,6 +189,11 @@ public class MultilineLabel extends Canvas {
         } else {
             g.clearRect(lastFill.top, lastFill.left, lastFill.bottom, lastFill.right);
         }
+        paint(g);
+    }
+
+    @Override
+    public void paint(Graphics g) {
         // 绘制选择图层
         Insets insets = getInsets();
         if (this.selectionEnd > this.selectionStart) {
