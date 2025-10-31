@@ -80,8 +80,8 @@ public class MultilineLabel extends Canvas {
             this.text = text;
         }
         this.cleanGraphics = true;
+        revalidate();
         repaint();
-        // revalidate(); // 替换repaint()可以提高效率，但是可能出现不刷新问题
     }
 
     private void wrapText() {
