@@ -39,6 +39,8 @@ public class MultilineLabel extends Canvas {
     // 选中的文本背景色。分为正在执行和未执行两种，分别由active和inactive设置
     private Color selectionBackground;
 
+    private Graphics graphics = null;
+
     public MultilineLabel() {
         setBackground(Color.white);
         setForeground(Color.black);
@@ -46,7 +48,7 @@ public class MultilineLabel extends Canvas {
     }
 
     public int viewToModel(int x, int y) {
-        FontMetrics fontMetrics = getFontMetrics(getFont());
+        FontMetrics fontMetrics = this.graphics.getFontMetrics(this.graphics.getFont());
         int row = (y - this.insets.top) / fontMetrics.getHeight();
         if (row < 0) {
             return 0;
@@ -77,10 +79,10 @@ public class MultilineLabel extends Canvas {
             this.text = text;
         }
 
+        this.graphics = getGraphics();
         wrapText();
-        Graphics g = getGraphics();
-        if (g != null) {
-            g.clearRect(0, 0, getWidth(), getHeight());
+        if (this.graphics != null) {
+            this.graphics.clearRect(0, 0, getWidth(), getHeight());
             revalidate();
         }
     }
@@ -94,7 +96,7 @@ public class MultilineLabel extends Canvas {
             return;
         }
 
-        FontMetrics fontMetrics = getFontMetrics(getFont());
+        FontMetrics fontMetrics = this.graphics.getFontMetrics(this.graphics.getFont());
         StringTokenizer stringTokenizer = new StringTokenizer(this.text, " \n", true);
         StringBuilder sb = new StringBuilder();
         while (stringTokenizer.hasMoreTokens()) {
@@ -161,7 +163,10 @@ public class MultilineLabel extends Canvas {
     public Dimension getPreferredSize() {
         Dimension size = new Dimension();
         Insets insets = getInsets();
-        FontMetrics fontMetrics = getFontMetrics(getFont());
+        if (this.graphics == null) {
+            this.graphics = getGraphics();
+        }
+        FontMetrics fontMetrics = this.graphics.getFontMetrics(this.graphics.getFont());
         for (String line : this.lines) {
             size.width = Math.max(size.width, fontMetrics.stringWidth(line));
         }
@@ -183,10 +188,11 @@ public class MultilineLabel extends Canvas {
 
     @Override
     public void paint(Graphics g) {
+        this.graphics = g;
         g.clearRect(lastFill.top, lastFill.left, lastFill.bottom, lastFill.right);
         // 绘制选择图层
         Insets insets = getInsets();
-        FontMetrics fontMetrics = getFontMetrics(getFont());
+        FontMetrics fontMetrics = g.getFontMetrics(g.getFont());
         if (this.selectionEnd > this.selectionStart) {
             g.setColor(this.selectionBackground);
             int cur = 0;
