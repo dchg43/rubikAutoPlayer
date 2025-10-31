@@ -810,7 +810,7 @@ public class AutoPlayer extends Panel implements Runnable {
         buttonEdit.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                if (AutoPlayer.this.displayMode || AutoPlayer.this.player.isActive()) {
+                if (AutoPlayer.this.player.isActive() || AutoPlayer.this.displayMode) {
                     return;
                 }
 
@@ -1001,13 +1001,13 @@ public class AutoPlayer extends Panel implements Runnable {
         buttonSolution.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                AbstractCube3DAWT cube = AutoPlayer.this.player.getCube3D();
                 if (AutoPlayer.this.displayMode) {
                     AutoPlayer.this.displayMode = false;
                     AutoPlayer.this.player.reset();
                     AutoPlayer.this.player.setScript(null);
                     AutoPlayer.this.scriptTextArea.setText(null);
                     // 初始化颜色
+                    AbstractCube3DAWT cube = AutoPlayer.this.player.getCube3D();
                     for (int i = 0; i < 6; i++) {
                         Color c = AutoPlayer.this.colors.get(i);
                         for (int j = 0; j < 9; j++) {
@@ -1036,6 +1036,7 @@ public class AutoPlayer extends Panel implements Runnable {
                 }
 
                 // 取消编辑
+                AbstractCube3DAWT cube = AutoPlayer.this.player.getCube3D();
                 if (cube.isEditMode()) {
                     buttonEdit.setBackground(deselectColor);
                     cube.setEditMode(false);
