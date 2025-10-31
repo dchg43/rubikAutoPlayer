@@ -80,7 +80,7 @@ public class MultilineLabel extends Canvas {
             this.text = text;
         }
         this.cleanGraphics = true;
-        revalidate();
+        revalidate(); // 这儿revalidate可以提升repaint的速度，原因未知
         repaint();
     }
 
@@ -185,6 +185,9 @@ public class MultilineLabel extends Canvas {
     @Override
     public void paint(Graphics g) {
         if (this.cleanGraphics) {
+            if (this.fontMetrics != null) {
+                this.fontMetrics = g.getFontMetrics(g.getFont());
+            }
             wrapText();
             g.clearRect(0, 0, getWidth(), getHeight());
             this.cleanGraphics = false;
@@ -230,6 +233,7 @@ public class MultilineLabel extends Canvas {
     }
 
     private void initComponents() {
+        // 重新获取fontMetrics，用于适配屏幕分辨率的修改
         Graphics graphics = getGraphics();
         if (graphics != null) {
             this.fontMetrics = graphics.getFontMetrics(graphics.getFont());
