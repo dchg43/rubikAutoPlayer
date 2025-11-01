@@ -57,8 +57,10 @@ public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener
 
     private Object lock = new Object();
 
+    // 魔方透视图远处焦点的位置
     protected Point3D observer = new Point3D(0.0d, 0.0d, 260.0d);
 
+    // 光源位置
     protected Point3D lightSource = new Point3D(-500.0d, 500.0d, 1000.0d);
 
     protected double ambientLightIntensity = 0.6d;
