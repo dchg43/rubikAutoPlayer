@@ -17,6 +17,8 @@ import java.beans.PropertyChangeSupport;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.PriorityQueue;
+import java.util.Queue;
 
 import ch.randelshofer.geom3d.DefaultTransform3DModel;
 import ch.randelshofer.geom3d.Face3D;
@@ -30,6 +32,8 @@ import ch.randelshofer.gui.event.ChangeListener;
 /** 控制魔方3D展示 */
 public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener, MouseMotionListener {
     private static final long serialVersionUID = -8917036824539916552L;
+
+    public static final int maxfaceItemNum = 290;
 
     protected SceneNode scene;
 
@@ -247,16 +251,17 @@ public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener
         int width = getWidth() / 2;
         int height = getHeight() / 2;
         double scale = this.scaleFactor * Math.min(width, height);
-        List<Face3D> visibleFaces = new ArrayList<>();
+        // PriorityQueue为有序队列，插入新数据时会自动插入到合适的位置以保证队列有序，不需要重新排序，所以使用该队列
+        Queue<Face3D> visibleFaces = new PriorityQueue<>(maxfaceItemNum, Face3DComparator.getInstance());
         this.activeFaces.clear();
         this.scene.addVisibleFaces(visibleFaces, transform, this.observer);
-        visibleFaces.sort(Face3DComparator.getInstance());
         int[] xpoints = new int[5];
         int[] ypoints = new int[5];
         double x = this.observer.x;
         double y = this.observer.y;
         double z = this.observer.z;
-        for (Face3D face3D : visibleFaces) {
+        while (!visibleFaces.isEmpty()) {
+            Face3D face3D = visibleFaces.poll();
             double[] coords = face3D.getCoords();
             int[] vertices = face3D.getVertices();
             if (xpoints.length < vertices.length + 1) {

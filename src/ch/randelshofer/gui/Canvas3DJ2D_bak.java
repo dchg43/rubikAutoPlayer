@@ -7,8 +7,8 @@ import java.awt.Insets;
 import java.awt.Shape;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.PriorityQueue;
+import java.util.Queue;
 
 import ch.randelshofer.geom3d.Face3D;
 import ch.randelshofer.geom3d.Transform3D;
@@ -127,16 +127,17 @@ public class Canvas3DJ2D_bak extends Canvas3DAWT {
             double scale = this.scaleFactor * Math.min(width, height);
             width += insets.left;
             height += insets.top;
-            List<Face3D> visibleFaces = new ArrayList<>();
+            // PriorityQueue为有序队列，插入新数据时会自动插入到合适的位置以保证队列有序，不需要重新排序，所以使用该队列
+            Queue<Face3D> visibleFaces = new PriorityQueue<>(Canvas3DAWT.maxfaceItemNum, Face3DComparator.getInstance());
             this.activeFaces.clear();
             this.scene.addVisibleFaces(visibleFaces, transform, this.observer);
-            visibleFaces.sort(Face3DComparator.getInstance());
             double pointx;
             double pointy;
             double x = this.observer.x;
             double y = this.observer.y;
             double z = this.observer.z;
-            for (Face3D face3D : visibleFaces) {
+            while (!visibleFaces.isEmpty()) {
+                Face3D face3D = visibleFaces.poll();
                 // face3D will never be null
                 double[] coords = face3D.getCoords();
                 int[] vertices = face3D.getVertices();
