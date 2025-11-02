@@ -1,9 +1,9 @@
 package ch.randelshofer.geom3d;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Queue;
 
 public class TransformNode implements SceneNode {
     private List<SceneNode> children = new ArrayList<>();
@@ -33,7 +33,7 @@ public class TransformNode implements SceneNode {
     }
 
     @Override
-    public void addVisibleFaces(Queue<Face3D> visibleFaces, Transform3D transform, Point3D point3D) {
+    public void addVisibleFaces(Collection<Face3D> visibleFaces, Transform3D transform, Point3D point3D) {
         if (this.isVisible) {
             Transform3D transformClone = (Transform3D) this.transform.clone();
             transformClone.concatenate(transform);

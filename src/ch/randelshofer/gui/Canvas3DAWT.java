@@ -253,13 +253,13 @@ public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener
         double scale = this.scaleFactor * Math.min(width, height);
         // PriorityQueue为有序队列，插入新数据时会自动插入到合适的位置以保证队列有序，不需要重新排序，所以使用该队列
         Queue<Face3D> visibleFaces = new PriorityQueue<>(maxfaceItemNum, Face3DComparator.getInstance());
-        this.activeFaces.clear();
         this.scene.addVisibleFaces(visibleFaces, transform, this.observer);
         int[] xpoints = new int[5];
         int[] ypoints = new int[5];
         double x = this.observer.x;
         double y = this.observer.y;
         double z = this.observer.z;
+        this.activeFaces.clear();
         while (!visibleFaces.isEmpty()) {
             Face3D face3D = visibleFaces.poll();
             double[] coords = face3D.getCoords();

@@ -19,6 +19,12 @@ import ch.randelshofer.gui.event.EventListenerList.ListenerNode;
 import ch.randelshofer.util.PooledSequentialDispatcherAWT;
 
 public abstract class AbstractCube3DAWT implements RubikListener {
+    // 设置魔方一次转动的时间，影响帧率（刷新率），默认50ms。帧率（刷新率）为：1000 / oneTwistTime
+    private static final long oneTwistTime = 33L;
+
+    // 设置魔方一次转动细分的次数，影响视觉精细度，默认10次。整个转动的时间为oneTwistTime * oneTwistCount，推荐乘积为500ms最佳
+    private static final int oneTwistCount = 15;
+
     protected Shape3D centerShape;
 
     private TransformNode sceneTransform;
@@ -480,13 +486,14 @@ public abstract class AbstractCube3DAWT implements RubikListener {
         }
     }
 
-    // 转动一次
+    // 转动一次: 处理转动过程的动画
     protected void animateTwist(RubikEvent rubikEvent) {
         List<TransformNode> transforms = new ArrayList<>();
         Transform3D transform3D = new Transform3D();
         int layerMask = rubikEvent.getLayerMask();
         double angle = rubikEvent.getAngle();
-        int i = (angle == 2.0d || angle == -2.0d) ? 20 : 10;
+        // 转动一次分为多少步骤，影响转动的精细度，太大会消耗更多CPU
+        int i = (angle == 2.0d || angle == -2.0d) ? oneTwistCount * 2 : oneTwistCount;
         double d = (Math.PI / 2 / i) * angle;
         switch (rubikEvent.getAxis()) {
         case 0:
@@ -615,7 +622,7 @@ public abstract class AbstractCube3DAWT implements RubikListener {
             }
             fireStateChanged();
             // 影响转动速度
-            jCurrentTimeMillis += 50L;
+            jCurrentTimeMillis += oneTwistTime;
             long jCurrentTimeMillis2 = jCurrentTimeMillis - System.currentTimeMillis();
             if (jCurrentTimeMillis2 > 0L) {
                 try {

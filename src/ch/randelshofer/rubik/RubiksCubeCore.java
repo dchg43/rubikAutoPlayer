@@ -179,6 +179,7 @@ public class RubiksCubeCore implements Cloneable {
             return;
         }
 
+        // 修改旋转后的数据
         synchronized (this) {
             int i4 = times == -2 ? 2 : times;
             if ((layerMask & 0x1) != 0) {
@@ -311,6 +312,7 @@ public class RubiksCubeCore implements Cloneable {
                 }
             }
         }
+        // 处理转动过程动画
         fireRubikTwisted(new RubikEvent(this, axis, layerMask, times));
     }
 

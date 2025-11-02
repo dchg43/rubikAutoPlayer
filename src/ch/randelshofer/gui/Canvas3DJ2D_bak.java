@@ -129,13 +129,13 @@ public class Canvas3DJ2D_bak extends Canvas3DAWT {
             height += insets.top;
             // PriorityQueue为有序队列，插入新数据时会自动插入到合适的位置以保证队列有序，不需要重新排序，所以使用该队列
             Queue<Face3D> visibleFaces = new PriorityQueue<>(Canvas3DAWT.maxfaceItemNum, Face3DComparator.getInstance());
-            this.activeFaces.clear();
             this.scene.addVisibleFaces(visibleFaces, transform, this.observer);
             double pointx;
             double pointy;
             double x = this.observer.x;
             double y = this.observer.y;
             double z = this.observer.z;
+            this.activeFaces.clear();
             while (!visibleFaces.isEmpty()) {
                 Face3D face3D = visibleFaces.poll();
                 // face3D will never be null
