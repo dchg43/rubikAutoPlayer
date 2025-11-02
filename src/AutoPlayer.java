@@ -122,7 +122,7 @@ public class AutoPlayer extends Panel implements Runnable {
     private Search search = new Search();
 
     // 用于记录最后一次结果，可用于快速重试
-    private String[] lastResult = new String[2];
+    private String[] lastResult = new String[]{"", null};
 
     public static void main(String[] args) throws IOException {
         // GraalVM-Native-Image 编译成的exe文件执行时需要这个配置
@@ -1218,11 +1218,11 @@ public class AutoPlayer extends Panel implements Runnable {
      * @return 输出类似 R2 F' L
      */
     public synchronized String searchSolution(String cubeString) {
-        if (lastResult[0] != null && lastResult[0].equals(cubeString)) {
+        if (lastResult[0].equals(cubeString)) {
             return lastResult[1];
         }
 
-        if (cubeString.contains("Error")) {
+        if (cubeString.startsWith("Error")) {
             return cubeString;
         }
         System.out.println("input: " + cubeString);
@@ -1231,11 +1231,11 @@ public class AutoPlayer extends Panel implements Runnable {
             this.search.init();
         }
 
-        int mask = 0;
+        final int mask = 0;
         int depth = 15; // 建议 Step: 15 ~ 18
         // 结果长度跟这个值相关，0, 0, 0, 0, 5, 300, 3000, 30000得到的几率大概是0.1,0.4,2,10,46,41(%)
-        int[] maxTries = {0, 0, 0, 0, 5, 300, 3000, 30000}; // 对应depth的15 16 17 18 19 20 21 22
-        int maxDepth = depth + maxTries.length - 1;
+        final int[] maxTries = {0, 0, 0, 0, 5, 300, 3000, 30000}; // 对应depth的15 16 17 18 19 20 21 22
+        final int maxDepth = depth + maxTries.length - 1;
         String result = "Error 8";
         char errkey = '8';
         int tries = 0;
