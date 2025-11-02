@@ -14,6 +14,7 @@ import java.util.Queue;
 import ch.randelshofer.geom3d.Face3D;
 import ch.randelshofer.geom3d.Transform3D;
 
+/** 控制魔方3D展示 */
 public class Canvas3DJ2D extends Canvas3DAWT {
     private static final long serialVersionUID = 8714836531087531311L;
 

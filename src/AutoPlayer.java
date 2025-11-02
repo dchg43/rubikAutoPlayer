@@ -209,7 +209,6 @@ public class AutoPlayer extends Panel implements Runnable {
                 ScriptNode scriptNode = this.scriptParser.parse(new StringReader(result));
                 this.player.setScript(scriptNode);
                 this.scriptTextArea.setText(result);
-                this.player.makesureFinished();
                 BoundedRangeModel progress = this.player.getBoundedRangeModel();
                 progress.setValue(progress.getMaximum());
                 this.player.makesureFinished();

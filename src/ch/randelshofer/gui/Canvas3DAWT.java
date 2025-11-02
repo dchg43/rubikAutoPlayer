@@ -33,7 +33,7 @@ import ch.randelshofer.gui.event.ChangeListener;
 public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener, MouseMotionListener {
     private static final long serialVersionUID = -8917036824539916552L;
 
-    public static final int maxfaceItemNum = 290;
+    protected static final int maxfaceItemNum = 290;
 
     protected SceneNode scene;
 

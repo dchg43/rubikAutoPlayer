@@ -18,6 +18,7 @@ import ch.randelshofer.gui.event.EventListenerList;
 import ch.randelshofer.gui.event.EventListenerList.ListenerNode;
 import ch.randelshofer.util.PooledSequentialDispatcherAWT;
 
+/** 控制魔方转动 */
 public abstract class AbstractCube3DAWT implements RubikListener {
     // 设置魔方一次转动的时间，影响帧率（刷新率），默认50ms。帧率（刷新率）为：1000 / oneTwistTime
     private static final long oneTwistTime = 33L;
