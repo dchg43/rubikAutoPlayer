@@ -166,15 +166,15 @@ public class Util {
     private static final byte[][] edgeFacelet = {{U6, R2}, {U8, F2}, {U4, L2}, {U2, B2}, {D6, R8}, {D2, F8}, {D4, L8}, {D8, B8}, {F6, R4}, {F4, L6}, {B6, L4},
             {B4, R6}};
 
-    private static int[][] Cnk = new int[13][13];
+    private static char[][] Cnk = new char[13][13];
 
     private static final String[] move2str = {"U ", "U2", "U'", "R ", "R2", "R'", "F ", "F2", "F'", "D ", "D2", "D'", "L ", "L2", "L'", "B ", "B2", "B'"};
 
-    public static final int[] ud2std = {Ux1, Ux2, Ux3, Rx2, Fx2, Dx1, Dx2, Dx3, Lx2, Bx2, Rx1, Rx3, Fx1, Fx3, Lx1, Lx3, Bx1, Bx3};
+    public static final byte[] ud2std = {Ux1, Ux2, Ux3, Rx2, Fx2, Dx1, Dx2, Dx3, Lx2, Bx2, Rx1, Rx3, Fx1, Fx3, Lx1, Lx3, Bx1, Bx3};
 
-    public static int[] std2ud = new int[18];
+    public static byte[] std2ud = new byte[18];
 
-    public static int[] ckmv2bit = new int[11];
+    public static char[] ckmv2bit = new char[11];
 
     public static final class Solution {
         private int length = 0;
@@ -339,7 +339,7 @@ public class Util {
             idx /= p;
         }
         for (int i = 0; i < n - 1; i++) {
-            int v = ((int) extract & 0xf) << 2;
+            int v = (int) (extract & 0xf) << 2;
             extract >>= 4;
             arr[i] = setVal(arr[i], (int) (val >> v & 0xf), isEdge);
             long m = (1L << v) - 1;
@@ -388,7 +388,7 @@ public class Util {
     }
 
     public synchronized static void init() {
-        for (int i = 0; i < 18; i++) {
+        for (byte i = 0; i < 18; i++) {
             std2ud[ud2std[i]] = i;
         }
         for (int i = 0; i < 10; i++) {
@@ -396,14 +396,14 @@ public class Util {
             ckmv2bit[i] = 0;
             for (int j = 0; j < 10; j++) {
                 int jx = ud2std[j] / 3;
-                ckmv2bit[i] |= ((ix == jx) || ((ix % 3 == jx % 3) && (ix >= jx)) ? 1 : 0) << j;
+                ckmv2bit[i] |= (ix == jx) || ((ix % 3 == jx % 3) && (ix >= jx)) ? (1 << j) : 0;
             }
         }
         ckmv2bit[10] = 0;
         for (int i = 0; i < 13; i++) {
             Cnk[i][0] = Cnk[i][i] = 1;
             for (int j = 1; j < i; j++) {
-                Cnk[i][j] = Cnk[i - 1][j - 1] + Cnk[i - 1][j];
+                Cnk[i][j] = (char) (Cnk[i - 1][j - 1] + Cnk[i - 1][j]);
             }
         }
     }

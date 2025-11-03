@@ -48,7 +48,7 @@ public class Search {
 
     private boolean inited = false;
 
-    private int[] move = new int[31];
+    private byte[] move = new byte[31];
 
     private CoordCube[] nodeUD = new CoordCube[21];
 
@@ -92,7 +92,7 @@ public class Search {
 
     private CubieCube[] preMoveCubes = new CubieCube[MAX_PRE_MOVES];
 
-    private int[] preMoves = new int[MAX_PRE_MOVES];
+    private byte[] preMoves = new byte[MAX_PRE_MOVES];
 
     private int preMoveLen = 0;
 
@@ -320,7 +320,7 @@ public class Search {
         return null;
     }
 
-    private int phase1PreMoves(int maxl, int lm, CubieCube cc, int ssym) {
+    private int phase1PreMoves(int maxl, int lm, CubieCube cc, long ssym) {
         preMoveLen = maxPreMoves - maxl;
         if (isRec ? depth == length - preMoveLen : (preMoveLen == 0 || (0x36FB7 >> lm & 1) == 0)) {
             depth = length - preMoveLen;
@@ -342,7 +342,7 @@ public class Search {
         }
 
         lm = lm / 3 * 3;
-        for (int m = 0; m < 18; m++) {
+        for (byte m = 0; m < 18; m++) {
             if (m == lm || m == lm - 9 || m == lm + 9) {
                 m += 2;
                 continue;
@@ -355,7 +355,7 @@ public class Search {
             CubieCube.CornMult(CubieCube.moveCube[m], cc, preMove);
             CubieCube.EdgeMult(CubieCube.moveCube[m], cc, preMove);
             preMoves[maxPreMoves - maxl] = m;
-            int ret = phase1PreMoves(maxl - 1, m, preMove, ssym & (int) CubieCube.moveCubeSym[m]);
+            int ret = phase1PreMoves(maxl - 1, m, preMove, ssym & CubieCube.moveCubeSym[m]);
             if (ret == 0) {
                 return 0;
             }
@@ -370,7 +370,7 @@ public class Search {
                 if ((conjMask & 1 << urfIdx) != 0) {
                     continue;
                 }
-                if (phase1PreMoves(maxPreMoves, -30, urfCubieCube[urfIdx], (int) (selfSym & 0xffff)) == 0) {
+                if (phase1PreMoves(maxPreMoves, -30, urfCubieCube[urfIdx], (selfSym & 0xffff)) == 0) {
                     return solution == null ? "Error 8" : solution.toString();
                 }
             }
@@ -405,8 +405,8 @@ public class Search {
         int edgei = CubieCube.getPermSymInv(p2edge, p2esym, false);
         int corni = CubieCube.getPermSymInv(p2corn, p2csym, true);
 
-        int lastMove = depth == 0 ? -1 : move[depth - 1];
-        int lastPre = preMoveLen == 0 ? -1 : preMoves[preMoveLen - 1];
+        byte lastMove = depth == 0 ? -1 : move[depth - 1];
+        byte lastPre = preMoveLen == 0 ? -1 : preMoves[preMoveLen - 1];
 
         int ret = 0;
         int p2switchMax = (preMoveLen == 0 ? 1 : 2) * (depth == 0 ? 1 : 2);
@@ -426,7 +426,7 @@ public class Search {
             }
             if ((p2switch & 1) == 0 && depth > 0) {
                 int m = Util.std2ud[lastMove / 3 * 3 + 1];
-                move[depth - 1] = Util.ud2std[m] * 2 - move[depth - 1];
+                move[depth - 1] = (byte) (Util.ud2std[m] * 2 - move[depth - 1]);
 
                 p2mid = CoordCube.MPermMove[p2mid][m];
                 p2corn = CoordCube.CPermMove[p2corn][CubieCube.SymMoveUD[p2csym][m]];
@@ -439,7 +439,7 @@ public class Search {
                 edgei = CubieCube.getPermSymInv(p2edge, p2esym, false);
             } else if (preMoveLen > 0) {
                 int m = Util.std2ud[lastPre / 3 * 3 + 1];
-                preMoves[preMoveLen - 1] = Util.ud2std[m] * 2 - preMoves[preMoveLen - 1];
+                preMoves[preMoveLen - 1] = (byte) (Util.ud2std[m] * 2 - preMoves[preMoveLen - 1]);
 
                 p2mid = CubieCube.MPermInv[CoordCube.MPermMove[CubieCube.MPermInv[p2mid]][m]];
                 p2corn = CoordCube.CPermMove[corni >> 4][CubieCube.SymMoveUD[corni & 0xf][m]];
@@ -504,7 +504,7 @@ public class Search {
     /**
      * @return 0: Found or Probe limit exceeded 1: Try Next Power 2: Try Next Axis
      */
-    private int phase1(CoordCube node, int ssym, int maxl, int lm) {
+    private int phase1(CoordCube node, long ssym, int maxl, int lm) {
         if (node.getPrun() == 0 && maxl < 5) {
             if (allowShorter || maxl == 0) {
                 depth -= maxl;
@@ -518,12 +518,12 @@ public class Search {
 
         int skipMoves = CubieCube.getSkipMoves(ssym);
 
-        for (int axis = 0; axis < 18; axis += 3) {
+        for (byte axis = 0; axis < 18; axis += 3) {
             if (axis == lm || axis == lm - 9) {
                 continue;
             }
-            for (int power = 0; power < 3; power++) {
-                int m = axis + power;
+            for (byte power = 0; power < 3; power++) {
+                byte m = (byte) (axis + power);
 
                 if (isRec && m != move[depth - maxl] || skipMoves != 0 && (skipMoves & 1 << m) != 0) {
                     continue;
@@ -547,7 +547,7 @@ public class Search {
 
                 move[depth - maxl] = m;
                 valid = Math.min(valid, depth - maxl);
-                int ret = phase1(nodeUD[maxl], ssym & (int) CubieCube.moveCubeSym[m], maxl - 1, axis);
+                int ret = phase1(nodeUD[maxl], ssym & CubieCube.moveCubeSym[m], maxl - 1, axis);
                 if (ret == 0) {
                     return 0;
                 } else if (ret >= 2) {
@@ -595,12 +595,12 @@ public class Search {
 
         int skipMoves = CubieCube.getSkipMoves(ssym);
 
-        for (int axis = 0; axis < 18; axis += 3) {
+        for (byte axis = 0; axis < 18; axis += 3) {
             if (axis == lm || axis == lm - 9) {
                 continue;
             }
-            for (int power = 0; power < 3; power++) {
-                int m = axis + power;
+            for (byte power = 0; power < 3; power++) {
+                byte m = (byte) (axis + power);
 
                 if (isRec && m != move[length - maxl] || skipMoves != 0 && (skipMoves & 1 << m) != 0) {
                     continue;

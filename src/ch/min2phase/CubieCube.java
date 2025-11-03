@@ -18,15 +18,15 @@ public class CubieCube {
 
     protected static int[] firstMoveSym = new int[48];
 
-    protected static int[][] SymMult = new int[16][16];
+    protected static byte[][] SymMult = new byte[16][16];
 
-    protected static int[][] SymMultInv = new int[16][16];
+    protected static byte[][] SymMultInv = new byte[16][16];
 
-    protected static int[][] SymMove = new int[16][18];
+    protected static byte[][] SymMove = new byte[16][18];
 
-    protected static int[] Sym8Move = new int[8 * 18];
+    protected static byte[] Sym8Move = new byte[8 * 18];
 
-    protected static int[][] SymMoveUD = new int[16][18];
+    protected static byte[][] SymMoveUD = new byte[16][18];
 
     /**
      * ClassIndexToRepresentantArrays
@@ -239,7 +239,7 @@ public class CubieCube {
         ea[11] = (byte) (ea[11] & ~1 | parity);
     }
 
-    public int getFlipSym() {
+    public char getFlipSym() {
         return FlipR2S[getFlip()];
     }
 
@@ -260,7 +260,7 @@ public class CubieCube {
         ca[7] = (byte) (ca[7] & 0x7 | (twst % 3) << 3);
     }
 
-    public int getTwistSym() {
+    public char getTwistSym() {
         return TwistR2S[getTwist()];
     }
 
@@ -297,7 +297,7 @@ public class CubieCube {
         Util.setNPerm(ea, idx, 8, true);
     }
 
-    public int getEPermSym() {
+    public char getEPermSym() {
         return EPermR2S[getEPerm()];
     }
 
@@ -449,10 +449,10 @@ public class CubieCube {
                 c = t;
             }
         }
-        for (int i = 0; i < 16; i++) {
+        for (byte i = 0; i < 16; i++) {
             for (int j = 0; j < 16; j++) {
                 CornMultFull(CubeSym[i], CubeSym[j], c);
-                for (int k = 0; k < 16; k++) {
+                for (byte k = 0; k < 16; k++) {
                     if (Arrays.equals(CubeSym[k].ca, c.ca)) {
                         SymMult[i][j] = k; // SymMult[i][j] = (k ^ i ^ j ^ (0x14ab4 >> j & i << 1 & 2)));
                         SymMultInv[k][j] = i; // i * j = k => k * j^-1 = i
@@ -464,7 +464,7 @@ public class CubieCube {
         for (int j = 0; j < 18; j++) {
             for (int s = 0; s < 16; s++) {
                 CornConjugate(moveCube[j], SymMultInv[0][s], c);
-                for (int m = 0; m < 18; m++) {
+                for (byte m = 0; m < 18; m++) {
                     if (Arrays.equals(moveCube[m].ca, c.ca)) {
                         SymMove[s][j] = m;
                         SymMoveUD[s][Util.std2ud[j]] = Util.std2ud[m];
@@ -491,14 +491,14 @@ public class CubieCube {
         }
     }
 
-    public static int initSym2Raw(final int N_RAW, char[] Sym2Raw, char[] Raw2Sym, char[] SymState, int coord) {
+    public static int initSym2Raw(final char N_RAW, char[] Sym2Raw, char[] Raw2Sym, char[] SymState, int coord) {
         CubieCube c = new CubieCube();
         CubieCube d = new CubieCube();
         int count = 0, idx = 0;
         int sym_inc = coord >= 2 ? 1 : 2;
         boolean isEdge = coord != 1;
 
-        for (int i = 0; i < N_RAW; i++) {
+        for (char i = 0; i < N_RAW; i++) {
             if (Raw2Sym[i] != 0) {
                 continue;
             }
@@ -536,10 +536,9 @@ public class CubieCube {
                 if (idx == i) {
                     SymState[count] |= 1 << (s / sym_inc);
                 }
-                int symIdx = (count << 4 | s) / sym_inc;
-                Raw2Sym[idx] = (char) symIdx;
+                Raw2Sym[idx] = (char) ((count << 4 | s) / sym_inc);
             }
-            Sym2Raw[count++] = (char) i;
+            Sym2Raw[count++] = i;
         }
         return count;
     }
@@ -559,7 +558,7 @@ public class CubieCube {
             cc.setEPerm(EPermS2R[i]);
             Perm2CombP[i] = (byte) (Util.getComb(cc.ea, 0, true) + (Search.USE_COMBP_PRUN ? Util.getNParity(EPermS2R[i], 8) * 70 : 0));
             cc.invCubieCube();
-            PermInvEdgeSym[i] = (char) cc.getEPermSym();
+            PermInvEdgeSym[i] = cc.getEPermSym();
         }
         for (int i = 0; i < CoordCube.N_MPERM; i++) {
             cc.setMPerm(i);

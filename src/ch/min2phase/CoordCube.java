@@ -7,15 +7,15 @@ public class CoordCube {
 
     public static final int N_SLICE = 495;
 
-    public static final int N_TWIST = 2187;
+    public static final char N_TWIST = 2187;
 
     public static final int N_TWIST_SYM = 324;
 
-    public static final int N_FLIP = 2048;
+    public static final char N_FLIP = 2048;
 
     public static final int N_FLIP_SYM = 336;
 
-    public static final int N_PERM = 40320;
+    public static final char N_PERM = 40320;
 
     public static final int N_PERM_SYM = 2768;
 
@@ -133,7 +133,7 @@ public class CoordCube {
             c.setFlip(CubieCube.FlipS2R[i]);
             for (int j = 0; j < N_MOVES; j++) {
                 CubieCube.EdgeMult(c, CubieCube.moveCube[j], d);
-                FlipMove[i][j] = (char) d.getFlipSym();
+                FlipMove[i][j] = d.getFlipSym();
             }
         }
     }
@@ -145,7 +145,7 @@ public class CoordCube {
             c.setTwist(CubieCube.TwistS2R[i]);
             for (int j = 0; j < N_MOVES; j++) {
                 CubieCube.CornMult(c, CubieCube.moveCube[j], d);
-                TwistMove[i][j] = (char) d.getTwistSym();
+                TwistMove[i][j] = d.getTwistSym();
             }
         }
     }
@@ -169,7 +169,7 @@ public class CoordCube {
             c.setEPerm(CubieCube.EPermS2R[i]);
             for (int j = 0; j < N_MOVES2; j++) {
                 CubieCube.EdgeMult(c, CubieCube.moveCube[Util.ud2std[j]], d);
-                EPermMove[i][j] = (char) d.getEPermSym();
+                EPermMove[i][j] = d.getEPermSym();
             }
         }
     }
