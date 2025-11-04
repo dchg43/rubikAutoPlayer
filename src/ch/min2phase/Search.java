@@ -355,8 +355,7 @@ public class Search {
             CubieCube.CornMult(CubieCube.moveCube[m], cc, preMove);
             CubieCube.EdgeMult(CubieCube.moveCube[m], cc, preMove);
             preMoves[maxPreMoves - maxl] = m;
-            int ret = phase1PreMoves(maxl - 1, m, preMove, ssym & CubieCube.moveCubeSym[m]);
-            if (ret == 0) {
+            if (phase1PreMoves(maxl - 1, m, preMove, ssym & CubieCube.moveCubeSym[m]) == 0) {
                 return 0;
             }
         }

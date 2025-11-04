@@ -75,7 +75,7 @@ import ch.randelshofer.rubik.parserAWT.SupersetENGParser;
 import ch.randelshofer.rubik.parserAWT.TouchardDeledicqFRAParser;
 import ch.randelshofer.util.PooledSequentialDispatcherAWT;
 
-public class AutoPlayer extends Panel implements Runnable {
+public final class AutoPlayer extends Panel implements Runnable {
     private static final long serialVersionUID = -698774308591767978L;
 
     private static final String completeCube = "UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB";
