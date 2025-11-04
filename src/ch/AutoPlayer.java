@@ -1,3 +1,4 @@
+package ch;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -124,7 +125,7 @@ public class AutoPlayer extends Panel implements Runnable {
     // 用于记录最后一次结果，可用于快速重试
     private String[] lastResult = new String[]{"", null};
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
         // GraalVM-Native-Image 编译成的exe文件执行时需要这个配置
         if (System.getProperty("java.home") == null) {
             System.setProperty("java.home", ".");
@@ -138,11 +139,11 @@ public class AutoPlayer extends Panel implements Runnable {
         scriptPlayer.start();
 
         // 等待自动执行完成
-        while (scriptPlayer.getPlayer().isActive()) {
-            try {
+        try {
+            while (scriptPlayer.getPlayer().isActive()) {
                 Thread.sleep(500L);
-            } catch (InterruptedException e) {
             }
+        } catch (InterruptedException e) {
         }
 
         if (scriptPlayer.getCmd().getParameter("autoTest", 0) > 0) {
@@ -186,11 +187,11 @@ public class AutoPlayer extends Panel implements Runnable {
             this.player.setScript(script);
             // this.scriptTextArea.setText(result);
             this.player.start();
-            while (displayMode && this.player.isActive()) {
-                try {
+            try {
+                while (displayMode && this.player.isActive()) {
                     Thread.sleep(50L);
-                } catch (InterruptedException e) {
                 }
+            } catch (InterruptedException e) {
             }
             this.player.makesureFinished();
         }
@@ -297,12 +298,12 @@ public class AutoPlayer extends Panel implements Runnable {
     public void start() {
         initComponents();
         PooledSequentialDispatcherAWT.dispatchConcurrently(this);
-        while (!this.initialized) // 等待启动完成
-        {
-            try {
+        try {
+            while (!this.initialized) // 等待启动完成
+            {
                 Thread.sleep(10L);
-            } catch (InterruptedException e) {
             }
+        } catch (InterruptedException e) {
         }
     }
 

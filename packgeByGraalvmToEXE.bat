@@ -63,7 +63,7 @@ if exist "%BASEDIR%\%APP_NAME%.jar" (
 :: jar
 xcopy /e /q /y "%nativeImageAgentDir%\" "%destDir%\META-INF\native-image\"
 copy "%BASEDIR%\resources\*" "%destDir%\"
-echo 打包jar：jar cfm %APP_NAME%.jar META-INF/MANIFEST.MF -C %destDir% com
+echo 打包jar：jar cfm %APP_NAME%.jar META-INF/MANIFEST.MF -C %destDir%
 "%JAR%" cfm "%BASEDIR%\%APP_NAME%.jar" "%BASEDIR%\META-INF\MANIFEST.MF" -C "%destDir%" .
 if not "%errorlevel%" == "0" (
     pause
@@ -82,7 +82,7 @@ if not exist "%nativeImageAgentDir%" (
     mkdir "%nativeImageAgentDir%"
     set "createOrMerge=config-output-dir"
 )
-start %JAVA% -agentlib:native-image-agent=%createOrMerge%="%nativeImageAgentDir%-new" -Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 -Dconsole.encoding=UTF-8 -Duser.language=en -Duser.region=US -jar "%BASEDIR%\%APP_NAME%.jar" --display true -backgroundImage "%systemroot%\Web\Wallpaper\Windows\img0.jpg"
+start %JAVA% -agentlib:native-image-agent=%createOrMerge%="%nativeImageAgentDir%-new" -Dfile.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8 -Dconsole.encoding=UTF-8 -Duser.language=en -Duser.region=US -classpath "%BASEDIR%\lib\commons-cli-1.10.0.jar;%BASEDIR%\%APP_NAME%.jar" ch.AutoPlayer --display true -backgroundImage "%systemroot%\Web\Wallpaper\Windows\img0.jpg"
 
 
 echo 等待一段时间并结束进程
@@ -124,9 +124,9 @@ call "%NATIVE_IMAGE%" "--no-fallback" ^
     "--link-at-build-time" ^
     "--enable-preview" ^
     "--verbose" ^
-    "--no-server" ^
     "-O1" ^
-    "-jar" "%BASEDIR%\%APP_NAME%.jar"
+    "--class-path" "%BASEDIR%\lib\commons-cli-1.10.0.jar;%BASEDIR%\%APP_NAME%.jar" ^
+    ch.AutoPlayer
 if not "%errorlevel%" == "0" (
     pause
     exit /b %errorlevel%
@@ -157,4 +157,3 @@ if not "%errorlevel%" == "0" (
     pause
     exit /b %errorlevel%
 )
-

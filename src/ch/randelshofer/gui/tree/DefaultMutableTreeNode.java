@@ -355,7 +355,7 @@ public class DefaultMutableTreeNode implements Cloneable, Serializable {
             tree.parent = null;
             return tree;
         } catch (CloneNotSupportedException e) {
-            throw new Error(e.toString());
+            throw new Error(e);
         }
     }
 }

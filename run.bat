@@ -1,8 +1,7 @@
-::set "bin=java -Dfile.encoding=utf-8 -jar rubikAutoPlayer.jar"
-set "bin=rubikAutoPlayer\rubikAutoPlayer.exe"
+set "bin=java -Dfile.encoding=utf-8 -classpath lib\commons-cli-1.10.0.jar;rubikAutoPlayer.jar ch.AutoPlayer"
+::set "bin=rubikAutoPlayer\rubikAutoPlayer.exe"
 
 ::%bin% -h
 ::%bin% --rearView false
-%bin% -backgroundImage E:\ÕÕÆ¬\pictures(1)\Æ¯ÁÁµÄÐ¡¹ÃÄï\00103.jpeg -rearViewBackgroundImage E:\ÕÕÆ¬\pictures(1)\Æ¯ÁÁµÄÐ¡¹ÃÄï\00106.jpeg --display true
+%bin% -backgroundImage %systemroot%\Web\Wallpaper\Windows\img0.jpg -rearViewBackgroundImage %systemroot%\Web\Wallpaper\Windows\img0.jpg --display true --autoTest 10 -h
 ::%bin% --script "B' R  F' D  L  B  R' B' U  L2 B  L2 D  R2 U' B2 R2 F2 R' R F2 R2 B2 U R2 D' L2 B' L2 U' B R B' L' D' F R' B  B' R  F' D  L  B  R' B' U  L2 B  L2 D  R2 U' B2 R2 F2 R' R F2 R2 B2 U R2 D' L2 B' L2 U' B R B' L' D' F R' B  B' R  F' D  L  B  R' B' U  L2 B  L2 D  R2 U' B2 R2 F2 R' R F2 R2 B2 U R2 D' L2 B' L2 U' B R B' L' D' F R' B  B' R  F' D  L  B  R' B' U  L2 B  L2 D  R2 U' B2 R2 F2 R' R F2 R2 B2 U R2 D' L2 B' L2 U' B R B' L' D' F R' B  B' R  F' D  L  B  R' B' U  L2 B  L2 D  R2 U' B2 R2 F2 R' R F2 R2 B2 U R2 D' L2 B' L2 U' B R B' L' D' F R' B  B' R  F' D  L  B  R' B' U  L2 B  L2 D  R2 U' B2 R2 F2 R' R F2 R2 B2 U R2 D' L2 B' L2 U' B R B' L' D' F R' B  "
-

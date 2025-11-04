@@ -48,7 +48,7 @@ public class PermutationNode extends ScriptNode {
             try {
                 return super.clone();
             } catch (CloneNotSupportedException e) {
-                throw new InternalError(e.getMessage());
+                throw new InternalError(e);
             }
         }
     }

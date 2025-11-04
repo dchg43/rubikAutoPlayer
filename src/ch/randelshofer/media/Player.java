@@ -13,8 +13,6 @@ public interface Player {
 
     boolean isActive();
 
-    boolean isInactive();
-
     BoundedRangeModel getBoundedRangeModel();
 
     ImageProducer getImageProducer();

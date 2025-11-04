@@ -1,13 +1,13 @@
 [
 {
-  "name":"AutoPlayer",
-  "methods":[{"name":"main","parameterTypes":["java.lang.String[]"] }]
-},
-{
   "name":"[Ljava.util.Locale;"
 },
 {
   "name":"[Lsun.java2d.loops.GraphicsPrimitive;"
+},
+{
+  "name":"ch.AutoPlayer",
+  "methods":[{"name":"main","parameterTypes":["java.lang.String[]"] }]
 },
 {
   "name":"java.awt.AWTEvent",

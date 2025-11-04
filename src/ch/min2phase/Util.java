@@ -185,7 +185,7 @@ public class Util {
 
         private int urfIdx = 0;
 
-        private int[] moves = new int[31];
+        private byte[] moves = new byte[31];
 
         public Solution() {
         }
@@ -200,7 +200,7 @@ public class Util {
             this.depth = depth;
         }
 
-        public void appendSolMove(int curMove) {
+        public void appendSolMove(byte curMove) {
             if (length == 0) {
                 moves[length++] = curMove;
                 return;
@@ -212,7 +212,7 @@ public class Util {
                 if (pow == 3) {
                     length--;
                 } else {
-                    moves[length - 1] = axisCur * 3 + pow;
+                    moves[length - 1] = (byte) (axisCur * 3 + pow);
                 }
                 return;
             }
@@ -222,7 +222,7 @@ public class Util {
                     moves[length - 2] = moves[length - 1];
                     length--;
                 } else {
-                    moves[length - 2] = axisCur * 3 + pow;
+                    moves[length - 2] = (byte) (axisCur * 3 + pow);
                 }
                 return;
             }

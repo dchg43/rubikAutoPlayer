@@ -75,21 +75,21 @@ public class PooledSequentialDispatcherAWT implements Runnable {
                 return;
             }
         }
-        Runnable objElementAt;
-        while (true) {
-            synchronized (this.queue) {
-                if (this.queue.isEmpty() || this.state != RUNNING) {
-                    this.state = STOPPED;
-                    this.queue.notifyAll(); // Interrupted this.queue.wait()
-                    break;
+        try {
+            Runnable objElementAt;
+            while (true) {
+                synchronized (this.queue) {
+                    if (this.queue.isEmpty() || this.state != RUNNING) {
+                        this.state = STOPPED;
+                        this.queue.notifyAll(); // Interrupted this.queue.wait()
+                        break;
+                    }
+                    objElementAt = this.queue.remove(0);
                 }
-                objElementAt = this.queue.remove(0);
-            }
-            try {
                 objElementAt.run();
-            } catch (Throwable th) {
-                th.printStackTrace();
             }
+        } catch (Throwable th) {
+            th.printStackTrace();
         }
     }
 }

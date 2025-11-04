@@ -272,11 +272,11 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
             } else {
                 this.state = STOPPED;
             }
-            while (this.state != STOPPED) {
-                try {
+            try {
+                while (this.state != STOPPED) {
                     wait();
-                } catch (InterruptedException e) {
                 }
+            } catch (InterruptedException e) {
             }
             this.cube3D.getDispatcher().reassign();
             makesureFinished();
@@ -295,12 +295,12 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
 
     public void makesureFinished() {
         if (!isActive()) {
-            while (this.cube3D.getDispatcher().isRunning()) {
-                try {
+            try {
+                while (this.cube3D.getDispatcher().isRunning()) {
                     Thread.sleep(10L);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
                 }
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -313,11 +313,6 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
     @Override
     public boolean isActive() {
         return this.state != STOPPED;
-    }
-
-    @Override
-    public boolean isInactive() {
-        return this.state != RUNNING;
     }
 
     @Override

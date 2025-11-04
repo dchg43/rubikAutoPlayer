@@ -56,32 +56,30 @@ public class ConcurrentDispatcherAWT implements Runnable {
         Thread thread = new Thread(this, this + " Processor");
         try {
             thread.setDaemon(false);
-        } catch (SecurityException e) {
-        }
-        try {
             thread.setPriority(this.priority);
-        } catch (SecurityException e2) {
+        } catch (SecurityException e) {
+            // 无需处理
         }
         thread.start();
     }
 
     @Override
     public void run() {
-        Runnable objElementAt;
-        while (true) {
-            synchronized (this.queue) {
-                if (this.queue.isEmpty()) {
-                    this.threadCount--;
-                    return;
-                } else {
-                    objElementAt = this.queue.remove(0);
+        try {
+            Runnable objElementAt;
+            while (true) {
+                synchronized (this.queue) {
+                    if (this.queue.isEmpty()) {
+                        this.threadCount--;
+                        return;
+                    } else {
+                        objElementAt = this.queue.remove(0);
+                    }
                 }
-            }
-            try {
                 objElementAt.run();
-            } catch (Throwable th) {
-                th.printStackTrace();
             }
+        } catch (Throwable th) {
+            th.printStackTrace();
         }
     }
 }

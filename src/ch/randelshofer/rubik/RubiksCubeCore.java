@@ -1059,7 +1059,7 @@ public class RubiksCubeCore implements Cloneable {
             rubiksCubeCore.listenerList = new EventListenerList();
             return rubiksCubeCore;
         } catch (CloneNotSupportedException e) {
-            throw new InternalError(e.getMessage());
+            throw new InternalError(e);
         }
     }
 
