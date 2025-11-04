@@ -44,7 +44,7 @@ public class MultilineLabel extends Canvas {
     private boolean cleanGraphics = false;
 
     public MultilineLabel() {
-        setBackground(Color.white);
+        // setBackground(Color.white);
         setForeground(Color.black);
         initComponents();
     }

@@ -391,7 +391,7 @@ public final class AutoPlayer extends Panel implements Runnable {
 
     private void initCube() throws IllegalArgumentException {
         AbstractCube3DAWT cube = this.player.getCube3D();
-        Color colorBack = new Color(this.cmd.getParameter("backgroundColor", 0xeeeeee));
+        Color colorBack = new Color(this.cmd.getParameter("backgroundColor", 0xf7f7f7));
         this.player.getControlPanelComponent().setBackground(colorBack);
         this.controlsPanel.setBackground(colorBack);
         Transform3D transform3D = new Transform3D();
@@ -673,7 +673,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         rearCanvas3D.setScaleFactor(visualComponent.getScaleFactor() * fMax);
         rearCanvas3D.setPreferredSize(visualComponent.getPreferredSize());
 
-        rearCanvas3D.setBackground(new Color(this.cmd.getParameter("rearViewBackgroundColor", this.cmd.getParameter("backgroundColor", 0xeeeeee))));
+        rearCanvas3D.setBackground(new Color(this.cmd.getParameter("rearViewBackgroundColor", this.cmd.getParameter("backgroundColor", 0xf7f7f7))));
         String rearImage = this.cmd.getParameter("rearViewBackgroundImage", this.cmd.getParameter("backgroundImage"));
         if (rearImage != null) {
             try {
