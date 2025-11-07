@@ -30,35 +30,50 @@ public class CoordCube {
     // XConj = Conjugate Table
 
     // phase1
+    // 值范围: [0, 494]
     protected static char[][] UDSliceMove = new char[N_SLICE][N_MOVES];
 
+    // 值范围: [0, 2591]
     protected static char[][] TwistMove = new char[N_TWIST_SYM][N_MOVES];
 
+    // 值范围: [0, 2687]
     protected static char[][] FlipMove = new char[N_FLIP_SYM][N_MOVES];
 
+    // 值范围: [0, 494]
     protected static char[][] UDSliceConj = new char[N_SLICE][8];
 
+    // 值范围: [Integer.MIN_VALUE, Integer.MAX_VALUE]
     protected static int[] UDSliceTwistPrun = new int[N_SLICE * N_TWIST_SYM / 8 + 1];
 
+    // 值范围: [Integer.MIN_VALUE, Integer.MAX_VALUE]
     protected static int[] UDSliceFlipPrun = new int[N_SLICE * N_FLIP_SYM / 8 + 1];
 
+    // 值范围: [Integer.MIN_VALUE, Integer.MAX_VALUE]
     protected static int[] TwistFlipPrun = Search.USE_TWIST_FLIP_PRUN ? new int[N_FLIP * N_TWIST_SYM / 8 + 1] : null;
 
     // phase2
+    // 值范围: [0, 44287]
     protected static char[][] CPermMove = new char[N_PERM_SYM][N_MOVES2];
 
+    // 值范围: [0, 44287]
     protected static char[][] EPermMove = new char[N_PERM_SYM][N_MOVES2];
 
+    // 值范围: [0, 23]
     protected static char[][] MPermMove = new char[N_MPERM][N_MOVES2];
 
+    // 值范围: [0, 23]
     protected static char[][] MPermConj = new char[N_MPERM][16];
 
+    // 值范围: [0, 139]
     protected static char[][] CCombPMove;// = new char[N_COMB][N_MOVES2];
 
+    // 值范围: [0, 139]
     protected static char[][] CCombPConj = new char[N_COMB][16];
 
+    // 值范围: [Integer.MIN_VALUE, Integer.MAX_VALUE]
     protected static int[] MCPermPrun = new int[N_MPERM * N_PERM_SYM / 8 + 1];
 
+    // 值范围: [Integer.MIN_VALUE, Integer.MAX_VALUE]
     protected static int[] EPermCCombPPrun = new int[N_COMB * N_PERM_SYM / 8 + 1];
 
     /**
@@ -71,14 +86,15 @@ public class CoordCube {
             return;
         }
         if (initLevel == 0) {
+            CubieCube.initFlipSym2Raw();
             CubieCube.initPermSym2Raw();
+            CubieCube.initTwistSym2Raw();
+
             initCPermMove();
             initEPermMove();
             initMPermMoveConj();
             initCombPMoveConj();
 
-            CubieCube.initFlipSym2Raw();
-            CubieCube.initTwistSym2Raw();
             initFlipMove();
             initTwistMove();
             initUDSliceMoveConj();

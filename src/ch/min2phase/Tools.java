@@ -12,8 +12,10 @@ public class Tools {
 
     private static Random gen = new Random();
 
+    // null数组
     private static final byte[] STATE_RANDOM = null;
 
+    // 空数组
     private static final byte[] STATE_SOLVED = new byte[0];
 
     private static void read(char[] arr, DataInput in) throws IOException {
@@ -89,7 +91,7 @@ public class Tools {
         read(CubieCube.FlipR2S, in);
         read(CubieCube.TwistR2S, in);
         read(CubieCube.EPermR2S, in);
-        in.readFully(CubieCube.Perm2CombP);
+        read(CubieCube.Perm2CombP, in);
         in.readFully(CubieCube.MPermInv);
         read(CubieCube.PermInvEdgeSym, in);
 
@@ -133,7 +135,7 @@ public class Tools {
         write(CubieCube.FlipR2S, out); // 3,072
         write(CubieCube.TwistR2S, out); // 3,281
         write(CubieCube.EPermR2S, out); // 20,160
-        out.write(CubieCube.Perm2CombP); // 2,768
+        write(CubieCube.Perm2CombP, out); // 2,768
         out.write(CubieCube.MPermInv);
         write(CubieCube.PermInvEdgeSym, out); // 5,536
 

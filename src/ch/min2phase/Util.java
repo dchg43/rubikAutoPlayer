@@ -160,21 +160,27 @@ public class Util {
 
     public static final byte B = 5;
 
+    // 值范围: [0, 53]
     private static final byte[][] cornerFacelet = {{U9, R1, F3}, {U7, F1, L3}, {U1, L1, B3}, {U3, B1, R3}, {D3, F9, R7}, {D1, L9, F7}, {D7, B9, L7},
             {D9, R9, B7}};
 
+    // 值范围: [0, 52]
     private static final byte[][] edgeFacelet = {{U6, R2}, {U8, F2}, {U4, L2}, {U2, B2}, {D6, R8}, {D2, F8}, {D4, L8}, {D8, B8}, {F6, R4}, {F4, L6}, {B6, L4},
             {B4, R6}};
 
-    private static char[][] Cnk = new char[13][13];
+    // 值范围: [0, 924]
+    private static final char[][] Cnk = new char[13][13];
 
     private static final String[] move2str = {"U ", "U2", "U'", "R ", "R2", "R'", "F ", "F2", "F'", "D ", "D2", "D'", "L ", "L2", "L'", "B ", "B2", "B'"};
 
+    // 值范围：[0, 17]
     public static final byte[] ud2std = {Ux1, Ux2, Ux3, Rx2, Fx2, Dx1, Dx2, Dx3, Lx2, Bx2, Rx1, Rx3, Fx1, Fx3, Lx1, Lx3, Bx1, Bx3};
 
-    public static byte[] std2ud = new byte[18];
+    // 值范围: [0, 17]
+    public static final byte[] std2ud = new byte[18];
 
-    public static char[] ckmv2bit = new char[11];
+    // 值范围: [0, 528]
+    public static final char[] ckmv2bit = new char[11];
 
     public static final class Solution {
         private int length = 0;
@@ -185,6 +191,7 @@ public class Util {
 
         private int urfIdx = 0;
 
+        // 值范围: [0, 17]
         private byte[] moves = new byte[31];
 
         public Solution() {

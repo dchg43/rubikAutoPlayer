@@ -14,33 +14,46 @@ public class CubieCube {
      */
     protected static CubieCube[] moveCube = new CubieCube[18];
 
+    // 值范围: [281474976710671, 431592673644817]
     protected static long[] moveCubeSym = new long[18];
 
+    // 值范围: [0, 262136]
     protected static int[] firstMoveSym = new int[48];
 
+    // 值范围: [0, 15]
     protected static byte[][] SymMult = new byte[16][16];
 
+    // 值范围: [0, 15]
     protected static byte[][] SymMultInv = new byte[16][16];
 
+    // 值范围: [0, 17]
     protected static byte[][] SymMove = new byte[16][18];
 
+    // 值范围: [0, 17]
     protected static byte[] Sym8Move = new byte[8 * 18];
 
+    // 值范围: [0, 17]
     protected static byte[][] SymMoveUD = new byte[16][18];
 
     /**
      * ClassIndexToRepresentantArrays
      */
+    // 值范围: [0, 2047]
     protected static char[] FlipS2R = new char[CoordCube.N_FLIP_SYM];
 
+    // 值范围: [0, 1906]
     protected static char[] TwistS2R = new char[CoordCube.N_TWIST_SYM];
 
+    // 值范围: [0, 35152]
     protected static char[] EPermS2R = new char[CoordCube.N_PERM_SYM];
 
-    protected static byte[] Perm2CombP = new byte[CoordCube.N_PERM_SYM];
+    // 值范围: [0, 139]
+    protected static int[] Perm2CombP = new int[CoordCube.N_PERM_SYM];
 
+    // 值范围: [0, 44287]
     protected static char[] PermInvEdgeSym = new char[CoordCube.N_PERM_SYM];
 
+    // 值范围: [0, 23]
     protected static byte[] MPermInv = new byte[CoordCube.N_MPERM];
 
     /**
@@ -54,31 +67,41 @@ public class CubieCube {
     /**
      * Raw-Coordnate to Sym-Coordnate, only for speeding up initializaion.
      */
+    // 值范围: [0, 2687]
     protected static char[] FlipR2S = new char[CoordCube.N_FLIP];
 
+    // 值范围: [0, 2591]
     protected static char[] TwistR2S = new char[CoordCube.N_TWIST];
 
+    // 值范围: [0, 44287]
     protected static char[] EPermR2S = new char[CoordCube.N_PERM];
 
+    // 值范围: [0, 2047]
     protected static char[] FlipS2RF = Search.USE_TWIST_FLIP_PRUN ? new char[CoordCube.N_FLIP_SYM * 8] : null;
 
+    // 值范围: [0, 255]
     protected static char[] SymStateTwist;// = new char[CoordCube.N_TWIST_SYM];
 
+    // 值范围: [0, 255]
     protected static char[] SymStateFlip;// = new char[CoordCube.N_FLIP_SYM];
 
+    // 值范围: [0, 65535]
     protected static char[] SymStatePerm;// = new char[CoordCube.N_PERM_SYM];
 
     private static CubieCube urf1 = new CubieCube(2531, 1373, 67026819, 1367);
 
     private static CubieCube urf2 = new CubieCube(2089, 1906, 322752913, 2040);
 
+    // 值范围: [0, 17]
     protected static byte[][] urfMove = new byte[][]{{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17},
             {6, 7, 8, 0, 1, 2, 3, 4, 5, 15, 16, 17, 9, 10, 11, 12, 13, 14}, {3, 4, 5, 6, 7, 8, 0, 1, 2, 12, 13, 14, 15, 16, 17, 9, 10, 11},
             {2, 1, 0, 5, 4, 3, 8, 7, 6, 11, 10, 9, 14, 13, 12, 17, 16, 15}, {8, 7, 6, 2, 1, 0, 5, 4, 3, 17, 16, 15, 11, 10, 9, 14, 13, 12},
             {5, 4, 3, 8, 7, 6, 2, 1, 0, 14, 13, 12, 17, 16, 15, 11, 10, 9}};
 
+    // 值范围: [0, 31]
     protected byte[] ca = {0, 1, 2, 3, 4, 5, 6, 7};
 
+    // 值范围: [0, 23]
     protected byte[] ea = {0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22};
 
     private CubieCube temps = null;
@@ -556,7 +579,7 @@ public class CubieCube {
         CubieCube cc = new CubieCube();
         for (int i = 0; i < CoordCube.N_PERM_SYM; i++) {
             cc.setEPerm(EPermS2R[i]);
-            Perm2CombP[i] = (byte) (Util.getComb(cc.ea, 0, true) + (Search.USE_COMBP_PRUN ? Util.getNParity(EPermS2R[i], 8) * 70 : 0));
+            Perm2CombP[i] = (Util.getComb(cc.ea, 0, true) + (Search.USE_COMBP_PRUN ? Util.getNParity(EPermS2R[i], 8) * 70 : 0)) & 0xff;
             cc.invCubieCube();
             PermInvEdgeSym[i] = cc.getEPermSym();
         }
