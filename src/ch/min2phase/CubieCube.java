@@ -48,7 +48,7 @@ public class CubieCube {
     protected static char[] EPermS2R = new char[CoordCube.N_PERM_SYM];
 
     // 值范围: [0, 139]
-    protected static int[] Perm2CombP = new int[CoordCube.N_PERM_SYM];
+    protected static char[] Perm2CombP = new char[CoordCube.N_PERM_SYM];
 
     // 值范围: [0, 44287]
     protected static char[] PermInvEdgeSym = new char[CoordCube.N_PERM_SYM];
@@ -579,7 +579,7 @@ public class CubieCube {
         CubieCube cc = new CubieCube();
         for (int i = 0; i < CoordCube.N_PERM_SYM; i++) {
             cc.setEPerm(EPermS2R[i]);
-            Perm2CombP[i] = (Util.getComb(cc.ea, 0, true) + (Search.USE_COMBP_PRUN ? Util.getNParity(EPermS2R[i], 8) * 70 : 0)) & 0xff;
+            Perm2CombP[i] = (char) ((Util.getComb(cc.ea, 0, true) + (Search.USE_COMBP_PRUN ? Util.getNParity(EPermS2R[i], 8) * 70 : 0)) & 0xff);
             cc.invCubieCube();
             PermInvEdgeSym[i] = cc.getEPermSym();
         }
