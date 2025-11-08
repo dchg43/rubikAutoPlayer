@@ -301,10 +301,8 @@ public class Util {
     public static String toFaceCube(CubieCube cc) {
         char[] f = new char[54];
         char[] ts = {'U', 'R', 'F', 'D', 'L', 'B'};
-        for (int i = 0, j = 0, k = 9; i < 6; i++, k += 9) {
-            for (; j < k; j++) {
-                f[j] = ts[i];
-            }
+        for (int i = 0; i < 54; i++) {
+            f[i] = ts[i / 9];
         }
         for (byte c = 0; c < 8; c++) {
             int j = cc.ca[c] & 0x7;

@@ -497,10 +497,9 @@ public class Search {
     private int phase1(CoordCube node, long ssym, int maxl, int lm) {
         if (node.getPrun() == 0 && maxl < 5) {
             if (allowShorter || maxl == 0) {
-                int oldDepth = depth;
                 depth -= maxl;
                 int ret = initPhase2Pre();
-                depth = oldDepth;
+                depth += maxl;
                 return ret;
             } else {
                 return 1;
