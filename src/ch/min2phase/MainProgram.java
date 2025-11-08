@@ -368,7 +368,7 @@ public class MainProgram extends JFrame {
         mask |= showLength ? Search.APPEND_LENGTH : 0;
         long t = System.nanoTime();
         String result = search.verify(cubeString);
-        long n_probe = 0L;
+        int n_probe = 0;
         if (result == null) {
             result = search.solution(cubeString, maxDepth, 100, 0, mask);
             n_probe = search.numberOfProbes();

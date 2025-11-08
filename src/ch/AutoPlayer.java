@@ -1246,11 +1246,11 @@ public final class AutoPlayer extends Panel implements Runnable {
         char errkey = '8';
         int tries = 0;
         while ((errkey == '8' && depth <= maxDepth) || errkey == '7') {
-            result = this.search.solution(cubeString, depth, 100, 0, mask);
+            result = this.search.solution(cubeString, depth, 1, 0, mask);
             errkey = result.length() > 0 ? result.charAt(result.length() - 1) : '0';
             tries = maxTries[depth - 15];
             while (errkey == '8' && tries > 0) {
-                result = this.search.next(100, 0, mask);
+                result = this.search.next(1, 0, mask);
                 errkey = result.charAt(result.length() - 1);
                 tries--;
             }

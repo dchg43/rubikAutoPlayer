@@ -346,7 +346,7 @@ public class Util {
             idx /= p;
         }
         for (int i = 0; i < n - 1; i++) {
-            int v = (int) (extract & 0xf) << 2;
+            int v = (((int) extract) & 0xf) << 2;
             extract >>= 4;
             arr[i] = setVal(arr[i], (int) (val >> v & 0xf), isEdge);
             long m = (1L << v) - 1;
