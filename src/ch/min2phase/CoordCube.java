@@ -132,12 +132,14 @@ public class CoordCube {
             }
         }
         for (int i = 0; i < N_SLICE; i++) {
-            for (int j = 0; j < N_MOVES; j += 3) {
+            for (int j = 0; j < N_MOVES;) {
                 int udslice = UDSliceMove[i][j];
-                for (int k = 1; k < 3; k++) {
+                int newj = j + 3;
+                for (int k = j + 1; k < newj; k++) {
                     udslice = UDSliceMove[udslice][j];
-                    UDSliceMove[i][j + k] = (char) udslice;
+                    UDSliceMove[i][k] = (char) udslice;
                 }
+                j = newj;
             }
         }
     }

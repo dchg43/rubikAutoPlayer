@@ -416,12 +416,13 @@ public class CubieCube {
         moveCube[9] = new CubieCube(9, 0, 5880, 0);
         moveCube[12] = new CubieCube(1230, 412, 2949660, 0);
         moveCube[15] = new CubieCube(224, 137, 328552, 137);
-        for (int a = 0; a < 18; a += 3) {
-            for (int p = 0; p < 2; p++) {
-                moveCube[a + p + 1] = new CubieCube();
-                EdgeMult(moveCube[a + p], moveCube[a], moveCube[a + p + 1]);
-                CornMult(moveCube[a + p], moveCube[a], moveCube[a + p + 1]);
-            }
+        for (int a = 0, a1 = 1, a2 = 2; a < 18; a += 3, a1 += 3, a2 += 3) {
+            moveCube[a1] = new CubieCube();
+            EdgeMult(moveCube[a], moveCube[a], moveCube[a1]);
+            CornMult(moveCube[a], moveCube[a], moveCube[a1]);
+            moveCube[a2] = new CubieCube();
+            EdgeMult(moveCube[a1], moveCube[a], moveCube[a2]);
+            CornMult(moveCube[a1], moveCube[a], moveCube[a2]);
         }
     }
 

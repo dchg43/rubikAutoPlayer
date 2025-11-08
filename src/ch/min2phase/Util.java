@@ -226,8 +226,8 @@ public class Util {
             if (length > 1 && axisCur % 3 == axisLast % 3 && axisCur == moves[length - 2] / 3) {
                 int pow = (curMove % 3 + moves[length - 2] % 3 + 1) % 4;
                 if (pow == 3) {
-                    moves[length - 2] = moves[length - 1];
                     length--;
+                    moves[length - 1] = moves[length];
                 } else {
                     moves[length - 2] = (byte) (axisCur * 3 + pow);
                 }
@@ -301,8 +301,10 @@ public class Util {
     public static String toFaceCube(CubieCube cc) {
         char[] f = new char[54];
         char[] ts = {'U', 'R', 'F', 'D', 'L', 'B'};
-        for (int i = 0; i < 54; i++) {
-            f[i] = ts[i / 9];
+        for (int i = 0, j = 0, k = 9; i < 6; i++, k += 9) {
+            for (; j < k; j++) {
+                f[j] = ts[i];
+            }
         }
         for (byte c = 0; c < 8; c++) {
             int j = cc.ca[c] & 0x7;
@@ -323,9 +325,9 @@ public class Util {
 
     public static int getNParity(int idx, int n) {
         int p = 0;
-        for (int i = n - 2; i >= 0; i--) {
-            p ^= idx % (n - i);
-            idx /= (n - i);
+        for (int i = 2; i <= n; i++) {
+            p ^= idx % i;
+            idx /= i;
         }
         return p & 1;
     }

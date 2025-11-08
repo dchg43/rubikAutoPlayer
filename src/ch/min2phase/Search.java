@@ -16,8 +16,6 @@
  */
 package ch.min2phase;
 
-import java.util.ArrayList;
-
 import ch.min2phase.Util.Solution;
 
 /**
@@ -127,6 +125,10 @@ public class Search {
     }
 
     public synchronized void init() {
+        Util.init();
+        CubieCube.init();
+        CoordCube.init(true);
+        // CoordCube.init(false);
         for (int i = 0; i < 21; i++) {
             nodeUD[i] = new CoordCube();
             nodeRL[i] = new CoordCube();
@@ -140,9 +142,6 @@ public class Search {
         for (int i = 0; i < MAX_PRE_MOVES; i++) {
             preMoveCubes[i] = new CubieCube();
         }
-        Util.init();
-        CubieCube.init();
-        CoordCube.init(true);
         inited = true;
     }
 
@@ -216,10 +215,6 @@ public class Search {
      *         Error 8: Probe limit exceeded, no solution within given probMax
      */
     public String solution(String facelets, int maxDepth, long probeMax, long probeMin, int verbose) {
-        String check = verify(facelets);
-        if (check != null) {
-            return check;
-        }
         this.solLen = maxDepth + 1;
         this.probe = 0;
         this.probeMax = probeMax;
@@ -227,7 +222,6 @@ public class Search {
         this.verbose = verbose;
         this.solution = null;
         this.isRec = false;
-
         // CoordCube.init(false);
         return (verbose & OPTIMAL_SOLUTION) == 0 ? search() : searchopt();
     }
@@ -295,13 +289,8 @@ public class Search {
     public String verify(String facelets) {
         int count = 0x000000;
         byte[] f = new byte[54];
-        ArrayList<Character> center = new ArrayList<>();
-        center.add(facelets.charAt(Util.U5));
-        center.add(facelets.charAt(Util.R5));
-        center.add(facelets.charAt(Util.F5));
-        center.add(facelets.charAt(Util.D5));
-        center.add(facelets.charAt(Util.L5));
-        center.add(facelets.charAt(Util.B5));
+        String center = new String(new char[]{facelets.charAt(Util.U5), facelets.charAt(Util.R5), facelets.charAt(Util.F5), facelets.charAt(Util.D5),
+                facelets.charAt(Util.L5), facelets.charAt(Util.B5)});
         for (int i = 0; i < 54; i++) {
             f[i] = (byte) center.indexOf(facelets.charAt(i));
             if (f[i] == -1) {
@@ -508,9 +497,10 @@ public class Search {
     private int phase1(CoordCube node, long ssym, int maxl, int lm) {
         if (node.getPrun() == 0 && maxl < 5) {
             if (allowShorter || maxl == 0) {
+                int oldDepth = depth;
                 depth -= maxl;
                 int ret = initPhase2Pre();
-                depth += maxl;
+                depth = oldDepth;
                 return ret;
             } else {
                 return 1;

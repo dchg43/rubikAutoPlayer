@@ -367,13 +367,17 @@ public class MainProgram extends JFrame {
         mask |= inverse ? Search.INVERSE_SOLUTION : 0;
         mask |= showLength ? Search.APPEND_LENGTH : 0;
         long t = System.nanoTime();
-        String result = search.solution(cubeString, maxDepth, 100, 0, mask);
-        long n_probe = search.numberOfProbes();
-        // ++++++++++++++++++++++++ Call Search.solution method from package org.kociemba.twophase
-        // ++++++++++++++++++++++++
-        while (result.startsWith("Error 8") && ((System.nanoTime() - t) < maxTime * 1.0e9)) {
-            result = search.next(100, 0, mask);
-            n_probe += search.numberOfProbes();
+        String result = search.verify(cubeString);
+        long n_probe = 0L;
+        if (result == null) {
+            result = search.solution(cubeString, maxDepth, 100, 0, mask);
+            n_probe = search.numberOfProbes();
+            // ++++++++++++++++++++++++ Call Search.solution method from package org.kociemba.twophase
+            // ++++++++++++++++++++++++
+            while (result.startsWith("Error 8") && ((System.nanoTime() - t) < maxTime * 1.0e9)) {
+                result = search.next(100, 0, mask);
+                n_probe += search.numberOfProbes();
+            }
         }
         t = System.nanoTime() - t;
 

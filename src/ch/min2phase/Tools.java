@@ -68,7 +68,7 @@ public class Tools {
         }
     }
 
-    protected Tools() {
+    private Tools() {
     }
 
     /**
@@ -251,8 +251,9 @@ public class Tools {
         }
         int p = Util.getNParity(getNPerm(arr, arr.length), arr.length);
         if (p == 1 - parity && last != -1) {
-            byte temp = arr[idx - 1];
-            arr[idx - 1] = arr[last];
+            idx--;
+            byte temp = arr[idx];
+            arr[idx] = arr[last];
             arr[last] = temp;
         }
         return p;
@@ -417,15 +418,12 @@ public class Tools {
             default:
                 continue;
             }
-
         }
         if (axis != -1) {
             arr[j++] = axis;
         }
         int[] ret = new int[j];
-        while (--j >= 0) {
-            ret[j] = arr[j];
-        }
+        System.arraycopy(arr, 0, ret, 0, j);
         return fromScramble(ret);
     }
 }

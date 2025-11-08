@@ -1232,6 +1232,11 @@ public final class AutoPlayer extends Panel implements Runnable {
             this.search.init();
         }
 
+        String verify = this.search.verify(cubeString);
+        if (verify != null) {
+            return verify;
+        }
+
         final int mask = 0;
         int depth = 15; // 建议 Step: 15 ~ 18
         // 结果长度跟这个值相关，0, 0, 0, 0, 5, 300, 3000, 30000得到的几率大概是0.1,0.4,2,10,46,41(%)
