@@ -1237,24 +1237,32 @@ public final class AutoPlayer extends Panel implements Runnable {
             return verify;
         }
 
-        final int mask = 0;
         int depth = 15; // 建议 Step: 15 ~ 18
-        // 结果长度跟这个值相关，0, 0, 0, 0, 5, 300, 3000, 30000得到的几率大概是0.1,0.4,2,10,46,41(%)
-        final int[] maxTries = {0, 0, 0, 0, 5, 300, 3000, 30000}; // 对应depth的15 16 17 18 19 20 21 22
+        // 结果长度跟这个值相关，0, 0, 0, 0, 5, 300, 3000, 300000得到的几率大概是0.1,0.4,1,3,20,70,6,0(%)
+        final int[] maxTries = {0, 0, 0, 0, 5, 300, 3000, 300000}; // 对应depth的15 16 17 18 19 20 21 22
         final int maxDepth = depth + maxTries.length - 1;
+        final int mask = 0;
+        int maxProbe = 1;
         String result = "Error 8";
         char errkey = '8';
         int tries = 0;
         while ((errkey == '8' && depth <= maxDepth) || errkey == '7') {
-            result = this.search.solution(cubeString, depth, 1, 0, mask);
+            result = this.search.solution(cubeString, depth, maxProbe, 1, mask);
             errkey = result.length() > 0 ? result.charAt(result.length() - 1) : '0';
             tries = maxTries[depth - 15];
             while (errkey == '8' && tries > 0) {
-                result = this.search.next(1, 0, mask);
+                result = this.search.next(maxProbe, 1, mask);
                 errkey = result.charAt(result.length() - 1);
                 tries--;
             }
             depth++;
+            if (depth >= maxDepth) {
+                if (depth == maxDepth) {
+                    maxProbe = 10000;
+                } else {
+                    break;
+                }
+            }
         }
         System.out.println("depth:" + (--depth) + ", tries: " + (maxTries[depth - 15] - tries) + ", result: " + result);
         lastResult = new String[]{cubeString, result};
