@@ -1246,7 +1246,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         String result = "Error 8";
         char errkey = '8';
         int tries = 0;
-        while ((errkey == '8' && depth <= maxDepth) || errkey == '7') {
+        while (errkey == '8' || errkey == '7') {
             result = this.search.solution(cubeString, depth, maxProbe, 1, mask);
             errkey = result.length() > 0 ? result.charAt(result.length() - 1) : '0';
             tries = maxTries[depth - 15];
