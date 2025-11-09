@@ -370,12 +370,12 @@ public class MainProgram extends JFrame {
         String result = search.verify(cubeString);
         int n_probe = 0;
         if (result == null) {
-            result = search.solution(cubeString, maxDepth, 100, 0, mask);
+            result = search.solution(cubeString, maxDepth, 100, 1, mask);
             n_probe = search.numberOfProbes();
             // ++++++++++++++++++++++++ Call Search.solution method from package org.kociemba.twophase
             // ++++++++++++++++++++++++
             while (result.startsWith("Error 8") && ((System.nanoTime() - t) < maxTime * 1.0e9)) {
-                result = search.next(100, 0, mask);
+                result = search.next(100, 1, mask);
                 n_probe += search.numberOfProbes();
             }
         }
