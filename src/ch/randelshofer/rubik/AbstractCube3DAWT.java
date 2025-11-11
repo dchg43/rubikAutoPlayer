@@ -26,6 +26,18 @@ public abstract class AbstractCube3DAWT implements RubikListener {
     // 设置魔方一次转动细分的次数，影响视觉精细度，默认10次。整个转动的时间为oneTwistTime * oneTwistCount，推荐乘积为500ms最佳
     private static final int oneTwistCount = 15;
 
+    // CORNER_MAP[CornerSide][cornerLoc % 4] （详见图片<块的命名>）
+    private static final int[][] CORNER_MAP = {{0, 6, 2, 8}, {2, 8, 0, 6}, {0, 2, 8, 6}, {0, 6, 2, 8}, {2, 8, 0, 6}, {6, 8, 2, 0}};
+
+    // EDGE_MAP[edgeSide][edgeLoc] （详见图片<块的命名>）
+    private static final int[][] EDGE_MAP = { //
+            {1, 3, 7, 0, 5, 0, 0, 0, 0, 0, 0, 0}, // 0
+            {0, 0, 0, 1, 3, 7, 0, 5, 0, 0, 0, 0}, // 1
+            {0, 0, 1, 0, 0, 5, 0, 0, 7, 0, 0, 3}, // 2
+            {0, 0, 0, 0, 0, 0, 1, 3, 7, 0, 5, 0}, // 3
+            {0, 5, 0, 0, 0, 0, 0, 0, 0, 1, 3, 7}, // 4
+            {7, 0, 0, 5, 0, 0, 1, 0, 0, 3, 0, 0}}; // 5
+
     protected Shape3D centerShape;
 
     private TransformNode sceneTransform;
@@ -106,19 +118,16 @@ public abstract class AbstractCube3DAWT implements RubikListener {
 
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
-            if (actionEvent.getSource() instanceof MouseEvent && ((MouseEvent) actionEvent.getSource()).getClickCount() <= 1) {
-                if (isEditMode()) {
-                    // CORNER_MAP[CornerSide][cornerLoc % 4] （详见图片<块的命名>）
-                    final int[][] CORNER_MAP = {{0, 6, 2, 8}, {2, 8, 0, 6}, {0, 2, 8, 6}, {0, 6, 2, 8}, {2, 8, 0, 6}, {6, 8, 2, 0}};
-                    int cornerSide = this.awtInstance.model.getCornerSide(this.corner, this.orientation);
-                    int mapindex = (cornerSide == 2 || cornerSide == 5) ? (this.corner / 2) : (this.corner % 4);
-                    int cornerIndex = CORNER_MAP[cornerSide][mapindex];
-                    this.awtInstance.setStickerColor(cornerSide, cornerIndex, getSelectColor());
-                    fireStateChanged();
-                } else {
-                    this.awtInstance.getDispatcher().dispatch(new SideEvent(this.awtInstance,
-                            this.awtInstance.model.getCornerSide(this.corner, this.orientation), (actionEvent.getModifiers() & 0x9) != 0));
-                }
+            if (isEditMode()) {
+                int cornerSide = this.awtInstance.model.getCornerSide(this.corner, this.orientation);
+                int mapindex = (cornerSide == 2 || cornerSide == 5) ? (this.corner / 2) : (this.corner % 4);
+                int cornerIndex = CORNER_MAP[cornerSide][mapindex];
+                this.awtInstance.setStickerColor(cornerSide, cornerIndex, getSelectColor());
+                fireStateChanged();
+            } else if (actionEvent.getSource() instanceof MouseEvent && ((MouseEvent) actionEvent.getSource()).getClickCount() <= 1) {
+                this.awtInstance.getDispatcher().dispatch(new SideEvent(this.awtInstance, //
+                        this.awtInstance.model.getCornerSide(this.corner, this.orientation), //
+                        (actionEvent.getModifiers() & 0x9) != 0));
             }
         }
     }
@@ -141,24 +150,15 @@ public abstract class AbstractCube3DAWT implements RubikListener {
 
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
-            if (actionEvent.getSource() instanceof MouseEvent && ((MouseEvent) actionEvent.getSource()).getClickCount() <= 1) {
-                if (isEditMode()) {
-                    // EDGE_MAP[edgeSide][edgeLoc] （详见图片<块的命名>）
-                    final int[][] EDGE_MAP = { //
-                            {1, 3, 7, 0, 5, 0, 0, 0, 0, 0, 0, 0}, // 0
-                            {0, 0, 0, 1, 3, 7, 0, 5, 0, 0, 0, 0}, // 1
-                            {0, 0, 1, 0, 0, 5, 0, 0, 7, 0, 0, 3}, // 2
-                            {0, 0, 0, 0, 0, 0, 1, 3, 7, 0, 5, 0}, // 3
-                            {0, 5, 0, 0, 0, 0, 0, 0, 0, 1, 3, 7}, // 4
-                            {7, 0, 0, 5, 0, 0, 1, 0, 0, 3, 0, 0}}; // 5
-                    int edgeSide = this.awtInstance.model.getEdgeSide(this.edge, this.orientation ^ 1);
-                    int edgeIndex = EDGE_MAP[edgeSide][this.edge];
-                    this.awtInstance.setStickerColor(edgeSide, edgeIndex, getSelectColor());
-                    fireStateChanged();
-                } else {
-                    this.awtInstance.getDispatcher().dispatch(new EdgeEvent(this.awtInstance,
-                            this.awtInstance.model.getEdgeLayerSide(this.edge, this.orientation), (actionEvent.getModifiers() & 0x9) != 0));
-                }
+            if (isEditMode()) {
+                int edgeSide = this.awtInstance.model.getEdgeSide(this.edge, this.orientation ^ 1);
+                int edgeIndex = EDGE_MAP[edgeSide][this.edge];
+                this.awtInstance.setStickerColor(edgeSide, edgeIndex, getSelectColor());
+                fireStateChanged();
+            } else if (actionEvent.getSource() instanceof MouseEvent && ((MouseEvent) actionEvent.getSource()).getClickCount() <= 1) {
+                this.awtInstance.getDispatcher().dispatch(new EdgeEvent(this.awtInstance, //
+                        this.awtInstance.model.getEdgeLayerSide(this.edge, this.orientation), //
+                        (actionEvent.getModifiers() & 0x9) != 0));
             }
         }
     }
@@ -178,14 +178,13 @@ public abstract class AbstractCube3DAWT implements RubikListener {
 
         @Override
         public void actionPerformed(ActionEvent actionEvent) {
-            if (actionEvent.getSource() instanceof MouseEvent && ((MouseEvent) actionEvent.getSource()).getClickCount() <= 1) {
-                if (isEditMode()) {
-                    this.awtInstance.setStickerColor(this.side, 4, getSelectColor());
-                    fireStateChanged();
-                } else {
-                    this.awtInstance.getDispatcher().dispatch(
-                            new SideEvent(this.awtInstance, this.awtInstance.model.getSideLocation(this.side), (actionEvent.getModifiers() & 0x9) == 0));
-                }
+            if (isEditMode()) {
+                this.awtInstance.setStickerColor(this.side, 4, getSelectColor());
+                fireStateChanged();
+            } else if (actionEvent.getSource() instanceof MouseEvent && ((MouseEvent) actionEvent.getSource()).getClickCount() <= 1) {
+                this.awtInstance.getDispatcher().dispatch(new SideEvent(this.awtInstance, //
+                        this.awtInstance.model.getSideLocation(this.side), //
+                        (actionEvent.getModifiers() & 0x9) == 0));
             }
         }
     }
