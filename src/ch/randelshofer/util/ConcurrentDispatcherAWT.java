@@ -3,7 +3,9 @@ package ch.randelshofer.util;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ConcurrentDispatcherAWT extends Thread {
+public class ConcurrentDispatcherAWT implements Runnable {
+
+    private int priority;
 
     private final List<Runnable> queue;
 
@@ -24,9 +26,8 @@ public class ConcurrentDispatcherAWT extends Thread {
     public ConcurrentDispatcherAWT(int priority, int threadMax) {
         this.queue = new ArrayList<>();
         this.blockingPolicy = ENQUEUE_WHEN_BLOCKED;
+        this.priority = priority;
         this.threadMax = threadMax;
-        setPriority(priority);
-        start();
     }
 
     public void setMaxThreads(int threadMax) {
@@ -46,10 +47,12 @@ public class ConcurrentDispatcherAWT extends Thread {
             }
             return;
         }
-        synchronized (this) {
+        synchronized (this.queue) {
             this.queue.add(runnable);
-            notify(); // Interrupted wait()
         }
+        Thread thread = new Thread(this, this + " Processor");
+        thread.setPriority(this.priority);
+        thread.start();
     }
 
     @Override
@@ -57,10 +60,9 @@ public class ConcurrentDispatcherAWT extends Thread {
         try {
             Runnable objElementAt = null;
             while (true) {
-                synchronized (this) {
+                synchronized (this.queue) {
                     if (this.queue.isEmpty()) {
-                        wait();
-                        continue;
+                        return;
                     } else {
                         objElementAt = this.queue.remove(0);
                     }
