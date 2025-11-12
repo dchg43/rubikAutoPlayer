@@ -740,8 +740,8 @@ public final class AutoPlayer extends Panel implements Runnable {
     private void initGUI() {
         final JFrame frame = new JFrame("AutoPlayer"); // 初始化画布
         frame.setTitle("三阶魔方求解器 by Deng");
-        frame.setSize(630, 600); // 设置画布大小
-        frame.setPreferredSize(new java.awt.Dimension(630, 600));
+        frame.setSize(650, 600); // 设置画布大小
+        frame.setPreferredSize(new java.awt.Dimension(650, 600));
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.setIconImage(this.appIcon); // 设置窗口图标
