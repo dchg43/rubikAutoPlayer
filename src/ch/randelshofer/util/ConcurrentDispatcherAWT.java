@@ -3,20 +3,17 @@ package ch.randelshofer.util;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ConcurrentDispatcherAWT implements Runnable {
-    private int priority;
+public class ConcurrentDispatcherAWT extends Thread {
 
     private final List<Runnable> queue;
-
-    private int threadCount;
 
     private int threadMax;
 
     // 待执行动画太多时丢弃动画。效果是界面流畅不卡顿，但是会多消耗CPU
-    public static int ENQUEUE_WHEN_BLOCKED = 0;
+    public static final int ENQUEUE_WHEN_BLOCKED = 0;
 
     // 待执行动画太多时以同步阻塞方式执行动画。频繁点击前进后退时（1秒很多次）界面会有卡顿
-    public static int RUN_WHEN_BLOCKED = 1;
+    public static final int RUN_WHEN_BLOCKED = 1;
 
     private int blockingPolicy;
 
@@ -27,8 +24,9 @@ public class ConcurrentDispatcherAWT implements Runnable {
     public ConcurrentDispatcherAWT(int priority, int threadMax) {
         this.queue = new ArrayList<>();
         this.blockingPolicy = ENQUEUE_WHEN_BLOCKED;
-        this.priority = priority;
         this.threadMax = threadMax;
+        setPriority(priority);
+        start();
     }
 
     public void setMaxThreads(int threadMax) {
@@ -36,11 +34,11 @@ public class ConcurrentDispatcherAWT implements Runnable {
     }
 
     public int getThreadCount() {
-        return threadCount;
+        return this.queue.size();
     }
 
     public void dispatch(Runnable runnable) {
-        if (this.threadCount >= this.threadMax) {
+        if (this.queue.size() >= this.threadMax) {
             if (this.blockingPolicy == RUN_WHEN_BLOCKED) {
                 runnable.run();
             } else { // else ==ENQUEUE_WHEN_BLOCKED时跳过这个动画显示
@@ -48,38 +46,29 @@ public class ConcurrentDispatcherAWT implements Runnable {
             }
             return;
         }
-        synchronized (this.queue) {
+        synchronized (this) {
             this.queue.add(runnable);
-            this.threadCount++;
+            notify(); // Interrupted wait()
         }
-
-        Thread thread = new Thread(this, this + " Processor");
-        try {
-            thread.setDaemon(false);
-            thread.setPriority(this.priority);
-        } catch (SecurityException e) {
-            // 无需处理
-        }
-        thread.start();
     }
 
     @Override
     public void run() {
         try {
-            Runnable objElementAt;
+            Runnable objElementAt = null;
             while (true) {
-                synchronized (this.queue) {
+                synchronized (this) {
                     if (this.queue.isEmpty()) {
-                        this.threadCount--;
-                        return;
+                        wait();
+                        continue;
                     } else {
                         objElementAt = this.queue.remove(0);
                     }
                 }
                 objElementAt.run();
             }
-        } catch (Throwable th) {
-            th.printStackTrace();
+        } catch (Throwable e) {
+            e.printStackTrace();
         }
     }
 }
