@@ -176,9 +176,13 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
 
     private void updateEnabled() {
         if (this.script != null) {
-            this.controls.setEnabled(true);
+            if (!this.controls.isEnabled()) {
+                this.controls.setEnabled(true);
+            }
         } else {
-            this.controls.setEnabled(false);
+            if (this.controls.isEnabled()) {
+                this.controls.setEnabled(false);
+            }
         }
     }
 
