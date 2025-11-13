@@ -233,8 +233,9 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
                 }
                 this.model.setQuiet(false);
             }
-            this.isProcessingCurrentSymbol = true;
             fireStateChanged();
+
+            this.isProcessingCurrentSymbol = true;
             while ((this.state == RUNNING && this.progress.getValue() != this.progress.getMaximum()) || this.scriptIndex != this.progress.getValue()) {
                 int iMin = Math.min(this.progress.getValue() + 1, this.progress.getMaximum());
                 if (this.scriptIndex == iMin - 1) {
@@ -286,9 +287,9 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
                 }
             } catch (InterruptedException e) {
             }
-            this.cube3D.getDispatcher().reassign();
-            makesureFinished();
         }
+        this.cube3D.getDispatcher().reassign();
+        makesureFinished();
         update();
     }
 
@@ -380,19 +381,17 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
         }
     }
 
-    // synchronized 防止update重复执行，重复执行时魔方动画会有重叠
-    private synchronized void update() {
+    private void update() {
+        // synchronized 防止update重复执行，重复执行时魔方动画会有重叠
+        // synchronized (this) {
         if (!this.isProcessingCurrentSymbol) {
             this.isProcessingCurrentSymbol = true;
         }
         int value = this.progress.getValue();
         if (this.scriptIndex == value - 1) {
-            fireStateChanged();
             this.scriptList.get(this.scriptIndex++).applyTo(this.model);
         } else if (this.scriptIndex == value + 1) {
-            fireStateChanged();
-            ScriptNode scriptNode = this.scriptList.get(--this.scriptIndex);
-            scriptNode.applyInverseTo(this.model);
+            this.scriptList.get(--this.scriptIndex).applyInverseTo(this.model);
         } else {
             this.model.setQuiet(true);
             while (this.scriptIndex < value) {
@@ -406,6 +405,7 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
         if (this.state != RUNNING) {
             this.isProcessingCurrentSymbol = false;
         }
+        // }
         fireStateChanged();
     }
 

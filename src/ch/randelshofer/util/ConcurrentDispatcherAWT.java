@@ -39,15 +39,15 @@ public class ConcurrentDispatcherAWT implements Runnable {
     }
 
     public void dispatch(Runnable runnable) {
-        if (this.queue.size() >= this.threadMax) {
-            if (this.blockingPolicy == RUN_WHEN_BLOCKED) {
-                runnable.run();
-            } else { // else ==ENQUEUE_WHEN_BLOCKED时跳过这个动画显示
-                this.queue.add(runnable);
-            }
-            return;
-        }
         synchronized (this.queue) {
+            if (this.queue.size() >= this.threadMax) {
+                if (this.blockingPolicy == RUN_WHEN_BLOCKED) {
+                    runnable.run();
+                } else { // else ==ENQUEUE_WHEN_BLOCKED时跳过这个动画显示
+                    this.queue.add(runnable);
+                }
+                return;
+            }
             this.queue.add(runnable);
         }
         Thread thread = new Thread(this, this + " Processor");

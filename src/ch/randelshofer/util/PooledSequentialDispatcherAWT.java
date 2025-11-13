@@ -63,7 +63,7 @@ public class PooledSequentialDispatcherAWT implements Runnable {
     }
 
     public boolean isRunning() {
-        return !(this.state == STOPPED && threadPool.getThreadCount() == 0);
+        return this.state != STOPPED || threadPool.getThreadCount() != 0;
     }
 
     @Override

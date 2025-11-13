@@ -18,7 +18,7 @@ public class SingletonEnumeration implements Iterator<DefaultMutableTreeNode> {
     }
 
     @Override
-    public synchronized DefaultMutableTreeNode next() {
+    public DefaultMutableTreeNode next() {
         if (this.aloneNode == null) {
             throw new NoSuchElementException();
         }
