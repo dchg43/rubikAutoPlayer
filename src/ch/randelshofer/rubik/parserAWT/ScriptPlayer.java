@@ -147,7 +147,6 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
     public synchronized void setScript(ScriptNode script) {
         stop();
         this.script = script;
-        this.progress.setRangeProperties(0, 0, 0, 0, false);
         this.scriptList.clear();
         this.scriptIndex = 0;
         if (script != null) {
@@ -158,8 +157,8 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
                     this.scriptList.add(scriptNode);
                 }
             }
-            this.progress.setRangeProperties(0, 0, 0, this.scriptList.size(), false);
         }
+        this.progress.setRangeProperties(0, 0, 0, this.scriptList.size(), false);
         updateEnabled();
     }
 

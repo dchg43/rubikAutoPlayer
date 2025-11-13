@@ -202,22 +202,24 @@ public final class AutoPlayer extends Panel implements Runnable {
         displayMode = true;
         long start = System.nanoTime();
         try {
+            String facelets;
+            ScriptNode scriptNode;
+            BoundedRangeModel progress = this.player.getBoundedRangeModel();
             for (int i = 0; i < testTimes && displayMode; i++) {
                 this.player.getCubeModel().reset();
-                String facelets = Tools.randomCube();
+                facelets = Tools.randomCube();
                 setCubeByString(facelets, this.colors);
-                String result = searchSolution(facelets);
-                ScriptNode scriptNode = this.scriptParser.parse(new StringReader(result));
+                facelets = searchSolution(facelets);
+                scriptNode = this.scriptParser.parse(facelets);
                 this.player.setScript(scriptNode);
-                this.scriptTextArea.setText(result);
-                BoundedRangeModel progress = this.player.getBoundedRangeModel();
+                this.scriptTextArea.setText(facelets);
                 progress.setValue(progress.getMaximum());
                 this.player.makesureFinished();
-                String faceletsCur = getCubeString(false);
-                if (!completeCube.equals(faceletsCur)) {
+                facelets = getCubeString(false);
+                if (!completeCube.equals(facelets)) {
                     if (displayMode) {
                         displayMode = false;
-                        String message = "Auto test failed.\n  input: " + facelets + "\n script: " + result + "\n result: " + faceletsCur;
+                        String message = "Auto test failed.\n script: " + this.scriptTextArea.getText() + "\n result: " + facelets;
                         JOptionPane.showOptionDialog(this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, AutoPlayer.this.errorIcon,
                                 CommandParser.defaultOption, CommandParser.defaultOption[0]);
                         return;
