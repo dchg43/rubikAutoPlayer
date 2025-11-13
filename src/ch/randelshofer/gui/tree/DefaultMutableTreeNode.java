@@ -342,7 +342,7 @@ public class DefaultMutableTreeNode implements Cloneable, Serializable {
     @Override
     public String toString() {
         if (this.userObject == null) {
-            return "null";
+            return super.toString();
         }
         return this.userObject.toString();
     }

@@ -152,9 +152,14 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
         if (script != null) {
             Iterator<DefaultMutableTreeNode> resolveNode = script.resolvedEnumeration(false);
             while (resolveNode.hasNext()) {
-                ScriptNode scriptNode = (ScriptNode) resolveNode.next();
-                if (((scriptNode instanceof TwistNode) && ((TwistNode) scriptNode).getSymbol() != 84) || (scriptNode instanceof PermutationNode)) {
-                    this.scriptList.add(scriptNode);
+                DefaultMutableTreeNode scriptNode = resolveNode.next();
+                if (scriptNode instanceof TwistNode) {
+                    TwistNode twistNode = (TwistNode) scriptNode;
+                    if (twistNode.getSymbol() != 84) {
+                        this.scriptList.add(twistNode);
+                    }
+                } else if (scriptNode instanceof PermutationNode) {
+                    this.scriptList.add((PermutationNode) scriptNode);
                 }
             }
         }
