@@ -367,11 +367,9 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
     public void stateChanged(ChangeEvent changeEvent) {
         if (changeEvent.getSource() == this.progress && !isActive()) {
             Runnable runnable = new Runnable() {
-                private final ScriptPlayer playerInstance = ScriptPlayer.this;
-
                 @Override
                 public void run() {
-                    playerInstance.update();
+                    ScriptPlayer.this.update();
                 }
             };
             if (this.cube3D.isAnimated()) {
