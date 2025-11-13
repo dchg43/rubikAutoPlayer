@@ -239,22 +239,18 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
             while ((this.state == RUNNING && this.progress.getValue() != this.progress.getMaximum()) || this.scriptIndex != this.progress.getValue()) {
                 int iMin = Math.min(this.progress.getValue() + 1, this.progress.getMaximum());
                 if (this.scriptIndex == iMin - 1) {
-                    ScriptNode scriptNode = this.scriptList.get(this.scriptIndex++);
-                    scriptNode.applyTo(this.model);
+                    this.scriptList.get(this.scriptIndex++).applyTo(this.model);
                     this.progress.setValue(this.progress.getValue() + 1);
                 } else if (this.scriptIndex == iMin + 1) {
-                    ScriptNode scriptNode = this.scriptList.get(--this.scriptIndex);
-                    scriptNode.applyInverseTo(this.model);
+                    this.scriptList.get(--this.scriptIndex).applyInverseTo(this.model);
                     this.progress.setValue(this.progress.getValue() + 1);
                 } else {
                     this.model.setQuiet(true);
                     while (this.scriptIndex < iMin - 1) {
-                        ScriptNode scriptNode = this.scriptList.get(this.scriptIndex++);
-                        scriptNode.applyTo(this.model);
+                        this.scriptList.get(this.scriptIndex++).applyTo(this.model);
                     }
                     while (this.scriptIndex > iMin - 1) {
-                        ScriptNode scriptNode = this.scriptList.get(--this.scriptIndex);
-                        scriptNode.applyInverseTo(this.model);
+                        this.scriptList.get(--this.scriptIndex).applyInverseTo(this.model);
                     }
                     this.model.setQuiet(false);
                 }
