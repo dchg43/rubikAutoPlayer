@@ -298,6 +298,7 @@ public final class AutoPlayer extends Panel implements Runnable {
     public void start() {
         initComponents();
         PooledSequentialDispatcherAWT.dispatchConcurrently(this);
+        this.search.init();
         try {
             while (!this.initialized) // 等待启动完成
             {
@@ -1228,10 +1229,6 @@ public final class AutoPlayer extends Panel implements Runnable {
         }
         System.out.println("input: " + cubeString);
 
-        if (!this.search.isInited()) {
-            this.search.init();
-        }
-
         String verify = this.search.verify(cubeString);
         if (verify != null) {
             return verify;
@@ -1264,6 +1261,7 @@ public final class AutoPlayer extends Panel implements Runnable {
                 }
             }
         }
+
         System.out.println("depth:" + (--depth) + ", tries: " + (maxTries[depth - 15] - tries) + ", result: " + result);
         lastResult = new String[]{cubeString, result};
         return result;
