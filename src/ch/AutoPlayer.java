@@ -864,7 +864,6 @@ public final class AutoPlayer extends Panel implements Runnable {
                 }
                 // 刷新魔方
                 cube.fireStateChanged();
-                AutoPlayer.this.player.makesureFinished();
             }
         });
 
