@@ -279,11 +279,11 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
                 this.cube3D.getDispatcher().reassign();
                 update();
             }
-            try {
-                while (this.state != STOPPED) {
+            while (this.state != STOPPED) {
+                try {
                     wait();
+                } catch (InterruptedException e) {
                 }
-            } catch (InterruptedException e) {
             }
         }
         makesureFinished();
@@ -299,11 +299,7 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
     }
 
     public void makesureFinished() {
-        if (!isActive()) {
-            while (this.cube3D.getDispatcher().isRunning()) {
-                // wait
-            }
-        }
+        this.cube3D.getDispatcher().waitFinish();
     }
 
     @Override
