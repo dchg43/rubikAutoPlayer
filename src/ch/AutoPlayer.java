@@ -201,11 +201,12 @@ public final class AutoPlayer extends Panel implements Runnable {
         // 测试自动求解算法
         displayMode = true;
         long start = System.nanoTime();
+        int times = 0;
         try {
             String facelets;
             ScriptNode scriptNode;
             BoundedRangeModel progress = this.player.getBoundedRangeModel();
-            for (int i = 0; i < testTimes && displayMode; i++) {
+            for (; times < testTimes && displayMode; times++) {
                 this.player.getCubeModel().reset();
                 facelets = Tools.randomCube();
                 setCubeByString(facelets, this.colors);
@@ -245,7 +246,7 @@ public final class AutoPlayer extends Panel implements Runnable {
                 this.player.getCube3D().setStickerColor(i, j, c);
             }
         }
-        String message = String.format("%d次执行完成，用时%.1fs", testTimes, (System.nanoTime() - start) / 1000000000.0d);
+        String message = String.format("%d次执行完成，用时%.1fs", times, (System.nanoTime() - start) / 1000000000.0d);
         JOptionPane.showOptionDialog(this, message, "成功", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, AutoPlayer.this.infoIcon,
                 CommandParser.defaultOption, CommandParser.defaultOption[0]);
     }
