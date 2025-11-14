@@ -276,6 +276,8 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
                 this.state = STOPPING;
             } else {
                 this.state = STOPPED;
+                this.cube3D.getDispatcher().reassign();
+                update();
             }
             try {
                 while (this.state != STOPPED) {
@@ -284,9 +286,7 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
             } catch (InterruptedException e) {
             }
         }
-        this.cube3D.getDispatcher().reassign();
         makesureFinished();
-        update();
     }
 
     public void reset() {
