@@ -88,8 +88,8 @@ public class PooledSequentialDispatcherAWT implements Runnable {
                 }
                 objElementAt.run();
             }
-        } catch (Throwable th) {
-            th.printStackTrace();
+        } catch (Throwable e) {
+            e.printStackTrace();
         }
     }
 }

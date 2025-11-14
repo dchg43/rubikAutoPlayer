@@ -48,7 +48,7 @@ public abstract class AbstractCube3DAWT implements RubikListener {
 
     private boolean isAnimated;
 
-    private PooledSequentialDispatcherAWT dispatcher;
+    private PooledSequentialDispatcherAWT dispatcher = new PooledSequentialDispatcherAWT();
 
     // private boolean isLazy;
 
@@ -678,9 +678,6 @@ public abstract class AbstractCube3DAWT implements RubikListener {
     }
 
     public PooledSequentialDispatcherAWT getDispatcher() {
-        if (this.dispatcher == null) {
-            this.dispatcher = new PooledSequentialDispatcherAWT();
-        }
         return this.dispatcher;
     }
 
