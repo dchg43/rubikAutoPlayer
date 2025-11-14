@@ -300,12 +300,8 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
 
     public void makesureFinished() {
         if (!isActive()) {
-            try {
-                while (this.cube3D.getDispatcher().isRunning()) {
-                    Thread.sleep(10L);
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            while (this.cube3D.getDispatcher().isRunning()) {
+                // wait
             }
         }
     }
