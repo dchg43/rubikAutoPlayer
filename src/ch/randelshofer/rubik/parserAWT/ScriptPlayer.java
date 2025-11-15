@@ -218,6 +218,7 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
         synchronized (this) {
             if (this.state != STARTING) {
                 this.state = STOPPED;
+                notifyAll(); // Interrupted wait()
                 return;
             }
             this.state = RUNNING;
@@ -274,6 +275,7 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
             }
             if (this.state == STOPPING) {
                 this.state = STOPPED;
+                notifyAll(); // Interrupted wait()
                 this.cube3D.getDispatcher().reassign();
                 update();
                 return;
