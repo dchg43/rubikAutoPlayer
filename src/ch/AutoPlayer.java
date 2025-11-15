@@ -16,6 +16,8 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -789,9 +791,10 @@ public final class AutoPlayer extends Panel implements Runnable {
             colorSel[i].setName(String.valueOf(i));
             colorSel[i].addKeyListener(keyListener);
             final int value = i;
-            colorSel[i].addActionListener(new ActionListener() {
+            colorSel[i].addFocusListener(new FocusAdapter() {
+                // ActionListener鼠标弹起时触发，FocusListener获取焦点或鼠标按下时触发，用于支持tab键切换
                 @Override
-                public void actionPerformed(ActionEvent evt) {
+                public void focusGained(FocusEvent evt) {
                     if (AutoPlayer.this.selectColor != value) {
                         if (AutoPlayer.this.selectColor != -1) {
                             colorSel[AutoPlayer.this.selectColor].setBorder(defaultBorder);
