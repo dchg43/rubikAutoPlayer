@@ -118,7 +118,15 @@ public final class AutoPlayer extends Panel implements Runnable {
 
     private boolean autoPlay = true;
 
-    private boolean displayMode = false;
+    private static final int STOPPED = 0;
+
+    private static final int STARTING = 1;
+
+    private static final int RUNNING = 2;
+
+    private static final int STOPPING = 3;
+
+    private int displayMode = STOPPED;
 
     private int selectColor = -1;
 
@@ -161,9 +169,13 @@ public final class AutoPlayer extends Panel implements Runnable {
     // 演示：生成随机序列并执行
     public void displayDemo(JButton jButton) {
         if (!BandelowENGParser.class.isInstance(this.scriptParser)) {
+            synchronized (this) {
+                this.displayMode = STOPPED;
+                notifyAll(); // Interrupted wait()
+            }
             return;
         }
-        displayMode = true;
+        this.displayMode = RUNNING;
         this.scriptTextArea.setText(null);
 
         String facelets = Tools.randomCube();
@@ -173,7 +185,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         String[] tokens = supportTokens.split(";");
         final Random gen = new Random();
         StringBuilder buffer = new StringBuilder();
-        while (displayMode) {
+        while (this.displayMode == RUNNING) {
             for (int i = 0; i < 20; i++) {
                 buffer.append(tokens[gen.nextInt(tokens.length)]).append(' ');
             }
@@ -192,21 +204,39 @@ public final class AutoPlayer extends Panel implements Runnable {
             // this.scriptTextArea.setText(result);
             this.player.start();
             try {
-                while (displayMode && this.player.isActive()) {
+                while (this.displayMode == RUNNING && this.player.isActive()) {
                     Thread.sleep(50L);
                 }
             } catch (InterruptedException e) {
             }
-            this.player.makesureFinished();
+            this.player.stop();
         }
+        AutoPlayer.this.player.reset();
+        AutoPlayer.this.player.setScript(null);
+        AutoPlayer.this.scriptTextArea.setText(null);
+        // 初始化颜色
+        AbstractCube3DAWT cube = AutoPlayer.this.player.getCube3D();
+        for (int i = 0; i < 6; i++) {
+            Color c = AutoPlayer.this.colors.get(i);
+            for (int j = 0; j < 9; j++) {
+                cube.setStickerColor(i, j, c);
+            }
+        }
+        // 刷新魔方
+        cube.fireStateChanged();
+        AutoPlayer.this.player.makesureFinished();
         if (jButton != null) {
             jButton.setBackground(new ColorUIResource(238, 238, 238));
+        }
+        synchronized (this) {
+            this.displayMode = STOPPED;
+            notifyAll(); // Interrupted wait()
         }
     }
 
     public void autoTest(long testTimes, JButton jButton) {
         // 测试自动求解算法
-        displayMode = true;
+        this.displayMode = RUNNING;
         String facelets;
         ScriptNode scriptNode;
         this.player.makesureFinished();
@@ -214,7 +244,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         long times = 0;
         long start = System.nanoTime();
         try {
-            for (; times < testTimes && displayMode; times++) {
+            for (; times < testTimes && this.displayMode == RUNNING; times++) {
                 this.player.getCubeModel().reset();
                 facelets = Tools.randomCube();
                 setCubeByString(facelets, this.colors);
@@ -226,10 +256,13 @@ public final class AutoPlayer extends Panel implements Runnable {
                 this.player.makesureFinished();
                 facelets = getCubeString(false);
                 if (!completeCube.equals(facelets)) {
-                    if (displayMode) {
-                        displayMode = false;
+                    if (this.displayMode == RUNNING) {
                         if (jButton != null) {
                             jButton.setBackground(new ColorUIResource(238, 238, 238));
+                        }
+                        synchronized (this) {
+                            this.displayMode = STOPPED;
+                            notifyAll(); // Interrupted wait()
                         }
                         String message = "Auto test failed.\n script: " + this.scriptTextArea.getText() + "\n result: " + facelets;
                         JOptionPane.showOptionDialog(this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, AutoPlayer.this.errorIcon,
@@ -241,9 +274,12 @@ public final class AutoPlayer extends Panel implements Runnable {
                 }
             }
         } catch (Exception e) {
-            displayMode = false;
             if (jButton != null) {
                 jButton.setBackground(new ColorUIResource(238, 238, 238));
+            }
+            synchronized (this) {
+                this.displayMode = STOPPED;
+                notifyAll(); // Interrupted wait()
             }
             String message = "Auto test failed.";
             JOptionPane.showOptionDialog(this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, AutoPlayer.this.errorIcon,
@@ -267,7 +303,10 @@ public final class AutoPlayer extends Panel implements Runnable {
         if (jButton != null) {
             jButton.setBackground(new ColorUIResource(238, 238, 238));
         }
-        displayMode = false;
+        synchronized (this) {
+            this.displayMode = STOPPED;
+            notifyAll(); // Interrupted wait()
+        }
         String message = String.format("完成%d次测试，用时%.2f秒。", times, timeInSecond);
         JOptionPane.showOptionDialog(this, message, "成功", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, AutoPlayer.this.infoIcon,
                 CommandParser.defaultOption, CommandParser.defaultOption[0]);
@@ -838,7 +877,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         buttonEdit.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                if (AutoPlayer.this.player.isActive() || AutoPlayer.this.displayMode) {
+                if (AutoPlayer.this.player.isActive() || AutoPlayer.this.displayMode == RUNNING) {
                     return;
                 }
 
@@ -875,7 +914,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         buttonClean.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                if (AutoPlayer.this.player.isActive() && !AutoPlayer.this.displayMode) {
+                if (AutoPlayer.this.player.isActive() && AutoPlayer.this.displayMode == STOPPED) {
                     return;
                 }
 
@@ -901,7 +940,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         buttonRandom.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                if (AutoPlayer.this.player.isActive() && !AutoPlayer.this.displayMode) {
+                if (AutoPlayer.this.player.isActive() && AutoPlayer.this.displayMode == STOPPED) {
                     return;
                 }
 
@@ -924,7 +963,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         buttonCheck.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                if (AutoPlayer.this.player.isActive() || AutoPlayer.this.displayMode) {
+                if (AutoPlayer.this.player.isActive() || AutoPlayer.this.displayMode == RUNNING) {
                     return;
                 }
 
@@ -953,7 +992,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         buttonSolver.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                if (AutoPlayer.this.player.isActive() || AutoPlayer.this.displayMode) {
+                if (AutoPlayer.this.player.isActive() || AutoPlayer.this.displayMode == RUNNING) {
                     return;
                 }
                 String script = AutoPlayer.this.scriptTextArea.getText();
@@ -1027,36 +1066,31 @@ public final class AutoPlayer extends Panel implements Runnable {
         buttonTest.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                if (AutoPlayer.this.player.isActive() && !AutoPlayer.this.displayMode) {
+                if (AutoPlayer.this.player.isActive() && AutoPlayer.this.displayMode == STOPPED) {
                     return;
                 }
 
-                if (AutoPlayer.this.displayMode) {
-                    AutoPlayer.this.displayMode = false;
-                    AutoPlayer.this.player.reset();
-                    AutoPlayer.this.player.setScript(null);
-                    AutoPlayer.this.scriptTextArea.setText(null);
-                    // 初始化颜色
-                    AbstractCube3DAWT cube = AutoPlayer.this.player.getCube3D();
-                    for (int i = 0; i < 6; i++) {
-                        Color c = AutoPlayer.this.colors.get(i);
-                        for (int j = 0; j < 9; j++) {
-                            cube.setStickerColor(i, j, c);
+                synchronized (AutoPlayer.this) {
+                    if (AutoPlayer.this.displayMode == RUNNING) {
+                        AutoPlayer.this.displayMode = STOPPING;
+                        AutoPlayer.this.player.reset();
+                        while (AutoPlayer.this.displayMode != STOPPED) {
+                            try {
+                                AutoPlayer.this.wait();
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
                         }
+                    } else if (AutoPlayer.this.displayMode == STOPPED) {
+                        AutoPlayer.this.displayMode = STARTING;
+                        ((JButton) evt.getSource()).setBackground(selectColor);
+                        new Thread() {
+                            @Override
+                            public void run() {
+                                autoTest(Long.MAX_VALUE, (JButton) evt.getSource());
+                            }
+                        }.start();
                     }
-                    // 刷新魔方
-                    cube.fireStateChanged();
-                    AutoPlayer.this.player.makesureFinished();
-                    ((JButton) evt.getSource()).setBackground(deselectColor);
-                } else {
-                    AutoPlayer.this.displayMode = true;
-                    ((JButton) evt.getSource()).setBackground(selectColor);
-                    new Thread() {
-                        @Override
-                        public void run() {
-                            autoTest(Long.MAX_VALUE, (JButton) evt.getSource());
-                        }
-                    }.start();
                 }
             }
         });
@@ -1071,36 +1105,31 @@ public final class AutoPlayer extends Panel implements Runnable {
         buttonDisplay.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                if (AutoPlayer.this.player.isActive() && !AutoPlayer.this.displayMode) {
+                if (AutoPlayer.this.player.isActive() && AutoPlayer.this.displayMode == STOPPED) {
                     return;
                 }
 
-                if (AutoPlayer.this.displayMode) {
-                    AutoPlayer.this.displayMode = false;
-                    AutoPlayer.this.player.reset();
-                    AutoPlayer.this.player.setScript(null);
-                    AutoPlayer.this.scriptTextArea.setText(null);
-                    // 初始化颜色
-                    AbstractCube3DAWT cube = AutoPlayer.this.player.getCube3D();
-                    for (int i = 0; i < 6; i++) {
-                        Color c = AutoPlayer.this.colors.get(i);
-                        for (int j = 0; j < 9; j++) {
-                            cube.setStickerColor(i, j, c);
+                synchronized (AutoPlayer.this) {
+                    if (AutoPlayer.this.displayMode == RUNNING) {
+                        AutoPlayer.this.displayMode = STOPPING;
+                        AutoPlayer.this.player.reset();
+                        while (AutoPlayer.this.displayMode != STOPPED) {
+                            try {
+                                AutoPlayer.this.wait();
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
                         }
+                    } else if (AutoPlayer.this.displayMode == STOPPED) {
+                        AutoPlayer.this.displayMode = STARTING;
+                        ((JButton) evt.getSource()).setBackground(selectColor);
+                        new Thread() {
+                            @Override
+                            public void run() {
+                                displayDemo((JButton) evt.getSource());
+                            }
+                        }.start();
                     }
-                    // 刷新魔方
-                    cube.fireStateChanged();
-                    AutoPlayer.this.player.makesureFinished();
-                    ((JButton) evt.getSource()).setBackground(deselectColor);
-                } else {
-                    AutoPlayer.this.displayMode = true;
-                    ((JButton) evt.getSource()).setBackground(selectColor);
-                    new Thread() {
-                        @Override
-                        public void run() {
-                            displayDemo((JButton) evt.getSource());
-                        }
-                    }.start();
                 }
             }
         });
@@ -1115,23 +1144,19 @@ public final class AutoPlayer extends Panel implements Runnable {
         buttonSolution.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                if (AutoPlayer.this.displayMode) {
-                    AutoPlayer.this.displayMode = false;
-                    AutoPlayer.this.player.reset();
-                    AutoPlayer.this.player.setScript(null);
-                    AutoPlayer.this.scriptTextArea.setText(null);
-                    // 初始化颜色
-                    AbstractCube3DAWT cube = AutoPlayer.this.player.getCube3D();
-                    for (int i = 0; i < 6; i++) {
-                        Color c = AutoPlayer.this.colors.get(i);
-                        for (int j = 0; j < 9; j++) {
-                            cube.setStickerColor(i, j, c);
+                synchronized (AutoPlayer.this) {
+                    if (AutoPlayer.this.displayMode == RUNNING) {
+                        AutoPlayer.this.displayMode = STOPPING;
+                        AutoPlayer.this.player.reset();
+                        while (AutoPlayer.this.displayMode != STOPPED) {
+                            try {
+                                AutoPlayer.this.wait();
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
                         }
+                        return;
                     }
-                    // 刷新魔方
-                    cube.fireStateChanged();
-                    AutoPlayer.this.player.makesureFinished();
-                    return;
                 }
                 if (AutoPlayer.this.player.isActive()) {
                     // 正在执行中

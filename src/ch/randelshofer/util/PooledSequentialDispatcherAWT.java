@@ -53,7 +53,6 @@ public class PooledSequentialDispatcherAWT implements Runnable {
             } else {
                 this.state = STOPPED;
             }
-            waitFinish();
         }
     }
 
