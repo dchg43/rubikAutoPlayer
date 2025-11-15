@@ -207,12 +207,13 @@ public final class AutoPlayer extends Panel implements Runnable {
     public void autoTest(long testTimes, JButton jButton) {
         // 测试自动求解算法
         displayMode = true;
-        long start = System.nanoTime();
+        String facelets;
+        ScriptNode scriptNode;
+        this.player.makesureFinished();
+        BoundedRangeModel progress = this.player.getBoundedRangeModel();
         long times = 0;
+        long start = System.nanoTime();
         try {
-            String facelets;
-            ScriptNode scriptNode;
-            BoundedRangeModel progress = this.player.getBoundedRangeModel();
             for (; times < testTimes && displayMode; times++) {
                 this.player.getCubeModel().reset();
                 facelets = Tools.randomCube();
@@ -249,10 +250,7 @@ public final class AutoPlayer extends Panel implements Runnable {
                     CommandParser.defaultOption, CommandParser.defaultOption[0]);
             return;
         }
-        displayMode = false;
-        if (jButton != null) {
-            jButton.setBackground(new ColorUIResource(238, 238, 238));
-        }
+        double timeInSecond = (System.nanoTime() - start) / 1000000000.0d;
         this.player.reset();
         this.player.setScript(null);
         this.scriptTextArea.setText(null);
@@ -266,7 +264,11 @@ public final class AutoPlayer extends Panel implements Runnable {
         // 刷新魔方
         cube.fireStateChanged();
         AutoPlayer.this.player.makesureFinished();
-        String message = String.format("完成%d次测试，用时%.2f秒。", times, (System.nanoTime() - start) / 1000000000.0d);
+        if (jButton != null) {
+            jButton.setBackground(new ColorUIResource(238, 238, 238));
+        }
+        displayMode = false;
+        String message = String.format("完成%d次测试，用时%.2f秒。", times, timeInSecond);
         JOptionPane.showOptionDialog(this, message, "成功", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, AutoPlayer.this.infoIcon,
                 CommandParser.defaultOption, CommandParser.defaultOption[0]);
     }
