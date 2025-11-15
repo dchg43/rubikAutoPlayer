@@ -154,12 +154,12 @@ public final class AutoPlayer extends Panel implements Runnable {
             scriptPlayer.autoTest(scriptPlayer.getCmd().getParameter("autoTest", 0), null);
         }
         if ("true".equalsIgnoreCase(scriptPlayer.getCmd().getParameter("display"))) {
-            scriptPlayer.displayDemo();
+            scriptPlayer.displayDemo(null);
         }
     }
 
     // 演示：生成随机序列并执行
-    public void displayDemo() {
+    public void displayDemo(JButton jButton) {
         if (!BandelowENGParser.class.isInstance(this.scriptParser)) {
             return;
         }
@@ -198,6 +198,9 @@ public final class AutoPlayer extends Panel implements Runnable {
             } catch (InterruptedException e) {
             }
             this.player.makesureFinished();
+        }
+        if (jButton != null) {
+            jButton.setBackground(new ColorUIResource(238, 238, 238));
         }
     }
 
@@ -886,84 +889,10 @@ public final class AutoPlayer extends Panel implements Runnable {
             }
         });
 
-        // 测试按钮
-        final JButton buttonTest = new JButton("test");
-        frame.add(buttonTest);
-        buttonTest.setBounds(width - 250, 20, 65, 40);
-        buttonTest.setFont(defaultFont);
-        buttonTest.setText("测试");
-        buttonTest.addKeyListener(keyListener);
-        buttonTest.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                if (AutoPlayer.this.player.isActive() && !AutoPlayer.this.displayMode) {
-                    return;
-                }
-
-                if (AutoPlayer.this.displayMode) {
-                    AutoPlayer.this.displayMode = false;
-                    ((JButton) evt.getSource()).setBackground(deselectColor);
-                } else {
-                    AutoPlayer.this.displayMode = true;
-                    ((JButton) evt.getSource()).setBackground(selectColor);
-                    new Thread() {
-                        @Override
-                        public void run() {
-                            autoTest(Long.MAX_VALUE, (JButton) evt.getSource());
-                        }
-                    }.start();
-                }
-            }
-        });
-
-        // 演示按钮
-        final JButton buttonDisplay = new JButton("display");
-        frame.add(buttonDisplay);
-        buttonDisplay.setBounds(width - 175, 20, 65, 40);
-        buttonDisplay.setFont(defaultFont);
-        buttonDisplay.setText("演示");
-        buttonDisplay.addKeyListener(keyListener);
-        buttonDisplay.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                if (AutoPlayer.this.player.isActive() && !AutoPlayer.this.displayMode) {
-                    return;
-                }
-
-                if (AutoPlayer.this.displayMode) {
-                    AutoPlayer.this.displayMode = false;
-                    AutoPlayer.this.player.reset();
-                    AutoPlayer.this.player.setScript(null);
-                    AutoPlayer.this.scriptTextArea.setText(null);
-                    // 初始化颜色
-                    AbstractCube3DAWT cube = AutoPlayer.this.player.getCube3D();
-                    for (int i = 0; i < 6; i++) {
-                        Color c = AutoPlayer.this.colors.get(i);
-                        for (int j = 0; j < 9; j++) {
-                            cube.setStickerColor(i, j, c);
-                        }
-                    }
-                    // 刷新魔方
-                    cube.fireStateChanged();
-                    AutoPlayer.this.player.makesureFinished();
-                    ((JButton) evt.getSource()).setBackground(deselectColor);
-                } else {
-                    AutoPlayer.this.displayMode = true;
-                    ((JButton) evt.getSource()).setBackground(selectColor);
-                    new Thread() {
-                        @Override
-                        public void run() {
-                            displayDemo();
-                        }
-                    }.start();
-                }
-            }
-        });
-
         // 打乱按钮
         final JButton buttonRandom = new JButton("random");
         frame.add(buttonRandom);
-        buttonRandom.setBounds(width - 100, 20, 65, 40);
+        buttonRandom.setBounds(width - 250, 20, 65, 40);
         buttonRandom.setFont(defaultFont);
         buttonRandom.setText("打乱");
         buttonRandom.addKeyListener(keyListener);
@@ -986,7 +915,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         // 所有这些错误序列给的复原解法执行后最终都会变成这个序列 DUDUUUDUDRRRRRRRRRFFFFFFFFFUDUDDDUDULLLLLLLLLBBBBBBBBB
         final JButton buttonCheck = new JButton("check");
         frame.add(buttonCheck);
-        buttonCheck.setBounds(width - 250, 70, 65, 40);
+        buttonCheck.setBounds(width - 175, 20, 65, 40);
         buttonCheck.setFont(defaultFont);
         buttonCheck.setText("校验");
         buttonCheck.addKeyListener(keyListener);
@@ -1015,7 +944,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         // 反序按钮
         final JButton buttonSolver = new JButton("Solver");
         frame.add(buttonSolver);
-        buttonSolver.setBounds(width - 175, 70, 65, 40);
+        buttonSolver.setBounds(width - 100, 20, 65, 40);
         buttonSolver.setFont(defaultFont);
         buttonSolver.setText("反序");
         buttonSolver.addKeyListener(keyListener);
@@ -1082,6 +1011,94 @@ public final class AutoPlayer extends Panel implements Runnable {
                     doParameter("script", newScript);
                 } catch (IOException e) {
                     e.printStackTrace();
+                }
+            }
+        });
+
+        // 测试按钮
+        final JButton buttonTest = new JButton("test");
+        frame.add(buttonTest);
+        buttonTest.setBounds(width - 250, 70, 65, 40);
+        buttonTest.setFont(defaultFont);
+        buttonTest.setText("测试");
+        buttonTest.addKeyListener(keyListener);
+        buttonTest.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                if (AutoPlayer.this.player.isActive() && !AutoPlayer.this.displayMode) {
+                    return;
+                }
+
+                if (AutoPlayer.this.displayMode) {
+                    AutoPlayer.this.displayMode = false;
+                    AutoPlayer.this.player.reset();
+                    AutoPlayer.this.player.setScript(null);
+                    AutoPlayer.this.scriptTextArea.setText(null);
+                    // 初始化颜色
+                    AbstractCube3DAWT cube = AutoPlayer.this.player.getCube3D();
+                    for (int i = 0; i < 6; i++) {
+                        Color c = AutoPlayer.this.colors.get(i);
+                        for (int j = 0; j < 9; j++) {
+                            cube.setStickerColor(i, j, c);
+                        }
+                    }
+                    // 刷新魔方
+                    cube.fireStateChanged();
+                    AutoPlayer.this.player.makesureFinished();
+                    ((JButton) evt.getSource()).setBackground(deselectColor);
+                } else {
+                    AutoPlayer.this.displayMode = true;
+                    ((JButton) evt.getSource()).setBackground(selectColor);
+                    new Thread() {
+                        @Override
+                        public void run() {
+                            autoTest(Long.MAX_VALUE, (JButton) evt.getSource());
+                        }
+                    }.start();
+                }
+            }
+        });
+
+        // 演示按钮
+        final JButton buttonDisplay = new JButton("display");
+        frame.add(buttonDisplay);
+        buttonDisplay.setBounds(width - 175, 70, 65, 40);
+        buttonDisplay.setFont(defaultFont);
+        buttonDisplay.setText("演示");
+        buttonDisplay.addKeyListener(keyListener);
+        buttonDisplay.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                if (AutoPlayer.this.player.isActive() && !AutoPlayer.this.displayMode) {
+                    return;
+                }
+
+                if (AutoPlayer.this.displayMode) {
+                    AutoPlayer.this.displayMode = false;
+                    AutoPlayer.this.player.reset();
+                    AutoPlayer.this.player.setScript(null);
+                    AutoPlayer.this.scriptTextArea.setText(null);
+                    // 初始化颜色
+                    AbstractCube3DAWT cube = AutoPlayer.this.player.getCube3D();
+                    for (int i = 0; i < 6; i++) {
+                        Color c = AutoPlayer.this.colors.get(i);
+                        for (int j = 0; j < 9; j++) {
+                            cube.setStickerColor(i, j, c);
+                        }
+                    }
+                    // 刷新魔方
+                    cube.fireStateChanged();
+                    AutoPlayer.this.player.makesureFinished();
+                    ((JButton) evt.getSource()).setBackground(deselectColor);
+                } else {
+                    AutoPlayer.this.displayMode = true;
+                    ((JButton) evt.getSource()).setBackground(selectColor);
+                    new Thread() {
+                        @Override
+                        public void run() {
+                            displayDemo((JButton) evt.getSource());
+                        }
+                    }.start();
                 }
             }
         });
@@ -1160,11 +1177,11 @@ public final class AutoPlayer extends Panel implements Runnable {
                 if (width < 650) {
                     width = 650;
                 }
-                buttonTest.setLocation(width - 250, 20); // 测试
-                buttonDisplay.setLocation(width - 175, 20); // 演示
-                buttonRandom.setLocation(width - 100, 20); // 打乱
-                buttonCheck.setLocation(width - 250, 70); // 校验
-                buttonSolver.setLocation(width - 175, 70); // 反序
+                buttonRandom.setLocation(width - 250, 20); // 打乱
+                buttonCheck.setLocation(width - 175, 20); // 校验
+                buttonSolver.setLocation(width - 100, 20); // 反序
+                buttonTest.setLocation(width - 250, 70); // 测试
+                buttonDisplay.setLocation(width - 175, 70); // 演示
                 buttonSolution.setLocation(width - 100, 70); // 求解
                 AutoPlayer.this.scriptTextArea.revalidate(); // 刷新
             }
