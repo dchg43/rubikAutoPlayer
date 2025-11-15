@@ -89,6 +89,7 @@ echo 等待一段时间并结束进程
 timeout /nobreak /T 5 >nul
 ::for /f "tokens=2" %%a in ('tasklist /fi "IMAGENAME eq java.exe"^|findstr /i "java.exe"') do taskkill /pid:%%a >nul
 taskkill /fi "IMAGENAME eq java.exe" >nul
+del /f /q "%nativeImageAgentDir%\.lock" 2>nul
 
 
 ::jpackage --type app-image --name spring --input target --main-jar spring-1.0.jar --win-console --dest dist
