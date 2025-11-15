@@ -53,12 +53,7 @@ public class PooledSequentialDispatcherAWT implements Runnable {
             } else {
                 this.state = STOPPED;
             }
-            while (this.state != STOPPED) {
-                try {
-                    this.queue.wait();
-                } catch (InterruptedException e) {
-                }
-            }
+            waitFinish();
         }
     }
 
