@@ -151,7 +151,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         }
 
         if (scriptPlayer.getCmd().getParameter("autoTest", 0) > 0) {
-            scriptPlayer.autoTest(scriptPlayer.getCmd().getParameter("autoTest", 0));
+            scriptPlayer.autoTest(scriptPlayer.getCmd().getParameter("autoTest", 0), null);
         }
         if ("true".equalsIgnoreCase(scriptPlayer.getCmd().getParameter("display"))) {
             scriptPlayer.displayDemo();
@@ -201,7 +201,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         }
     }
 
-    public void autoTest(long testTimes) {
+    public void autoTest(long testTimes, JButton jButton) {
         // 测试自动求解算法
         displayMode = true;
         long start = System.nanoTime();
@@ -224,6 +224,9 @@ public final class AutoPlayer extends Panel implements Runnable {
                 if (!completeCube.equals(facelets)) {
                     if (displayMode) {
                         displayMode = false;
+                        if (jButton != null) {
+                            jButton.setBackground(new ColorUIResource(238, 238, 238));
+                        }
                         String message = "Auto test failed.\n script: " + this.scriptTextArea.getText() + "\n result: " + facelets;
                         JOptionPane.showOptionDialog(this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, AutoPlayer.this.errorIcon,
                                 CommandParser.defaultOption, CommandParser.defaultOption[0]);
@@ -235,21 +238,31 @@ public final class AutoPlayer extends Panel implements Runnable {
             }
         } catch (Exception e) {
             displayMode = false;
+            if (jButton != null) {
+                jButton.setBackground(new ColorUIResource(238, 238, 238));
+            }
             String message = "Auto test failed.";
             JOptionPane.showOptionDialog(this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, AutoPlayer.this.errorIcon,
                     CommandParser.defaultOption, CommandParser.defaultOption[0]);
             return;
         }
         displayMode = false;
+        if (jButton != null) {
+            jButton.setBackground(new ColorUIResource(238, 238, 238));
+        }
         this.player.reset();
         this.player.setScript(null);
         this.scriptTextArea.setText(null);
+        AbstractCube3DAWT cube = this.player.getCube3D();
         for (int i = 0; i < 6; i++) {
             Color c = this.colors.get(i);
             for (int j = 0; j < 9; j++) {
-                this.player.getCube3D().setStickerColor(i, j, c);
+                cube.setStickerColor(i, j, c);
             }
         }
+        // 刷新魔方
+        cube.fireStateChanged();
+        AutoPlayer.this.player.makesureFinished();
         String message = String.format("完成%d次测试，用时%.2f秒。", times, (System.nanoTime() - start) / 1000000000.0d);
         JOptionPane.showOptionDialog(this, message, "成功", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, AutoPlayer.this.infoIcon,
                 CommandParser.defaultOption, CommandParser.defaultOption[0]);
@@ -889,20 +902,6 @@ public final class AutoPlayer extends Panel implements Runnable {
 
                 if (AutoPlayer.this.displayMode) {
                     AutoPlayer.this.displayMode = false;
-                    AutoPlayer.this.player.reset();
-                    AutoPlayer.this.player.setScript(null);
-                    AutoPlayer.this.scriptTextArea.setText(null);
-                    // 初始化颜色
-                    AbstractCube3DAWT cube = AutoPlayer.this.player.getCube3D();
-                    for (int i = 0; i < 6; i++) {
-                        Color c = AutoPlayer.this.colors.get(i);
-                        for (int j = 0; j < 9; j++) {
-                            cube.setStickerColor(i, j, c);
-                        }
-                    }
-                    // 刷新魔方
-                    cube.fireStateChanged();
-                    AutoPlayer.this.player.makesureFinished();
                     ((JButton) evt.getSource()).setBackground(deselectColor);
                 } else {
                     AutoPlayer.this.displayMode = true;
@@ -910,7 +909,7 @@ public final class AutoPlayer extends Panel implements Runnable {
                     new Thread() {
                         @Override
                         public void run() {
-                            autoTest(Long.MAX_VALUE);
+                            autoTest(Long.MAX_VALUE, (JButton) evt.getSource());
                         }
                     }.start();
                 }
