@@ -840,7 +840,7 @@ public final class AutoPlayer extends Panel implements Runnable {
                     cube.setEditMode(true);
                     ((JButton) evt.getSource()).setBackground(selectColor);
                     if (AutoPlayer.this.selectColor == -1) {
-                        colorSel[0].doClick();
+                        colorSel[0].requestFocus();
                     }
                 }
             }
