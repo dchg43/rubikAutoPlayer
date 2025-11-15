@@ -125,6 +125,8 @@ public final class AutoPlayer extends Panel implements Runnable {
     // 用于记录最后一次结果，可用于快速重试
     private String[] lastResult = new String[]{"", null};
 
+    private boolean DEBUG = false;
+
     public static void main(String[] args) {
         // GraalVM-Native-Image 编译成的exe文件执行时需要这个配置
         if (System.getProperty("java.home") == null) {
@@ -1229,7 +1231,9 @@ public final class AutoPlayer extends Panel implements Runnable {
         if (cubeString.startsWith("Error")) {
             return cubeString;
         }
-        System.out.println("input: " + cubeString);
+        if (this.DEBUG) {
+            System.out.println("input: " + cubeString);
+        }
 
         String verify = this.search.verify(cubeString);
         if (verify != null) {
@@ -1264,7 +1268,9 @@ public final class AutoPlayer extends Panel implements Runnable {
             }
         }
 
-        System.out.println("depth:" + (--depth) + ", tries: " + (maxTries[depth - 15] - tries) + ", result: " + result);
+        if (this.DEBUG) {
+            System.out.println("depth:" + (--depth) + ", tries: " + (maxTries[depth - 15] - tries) + ", result: " + result);
+        }
         lastResult = new String[]{cubeString, result};
         return result;
     }
