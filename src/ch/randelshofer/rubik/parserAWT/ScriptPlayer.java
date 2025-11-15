@@ -272,17 +272,18 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
             if (this.state == STOPPED) {
                 return;
             }
-            if (this.state != STOPPING) {
-                this.state = STOPPING;
-            } else {
+            if (this.state == STOPPING) {
                 this.state = STOPPED;
                 this.cube3D.getDispatcher().reassign();
                 update();
-            }
-            while (this.state != STOPPED) {
-                try {
-                    wait();
-                } catch (InterruptedException e) {
+                return;
+            } else {
+                this.state = STOPPING;
+                while (this.state != STOPPED) {
+                    try {
+                        wait();
+                    } catch (InterruptedException e) {
+                    }
                 }
             }
         }

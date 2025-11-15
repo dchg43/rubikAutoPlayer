@@ -37,8 +37,8 @@ public class PooledSequentialDispatcherAWT implements Runnable {
     }
 
     public void reassign() {
-        stop();
         synchronized (this.queue) {
+            stop();
             if (!this.queue.isEmpty()) {
                 this.state = STARTING;
                 threadPool.dispatch(this);
