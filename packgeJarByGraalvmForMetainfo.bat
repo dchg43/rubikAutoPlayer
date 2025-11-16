@@ -76,4 +76,3 @@ if not "%errorlevel%" == "0" (
     pause
     exit /b %errorlevel%
 )
-del /f /q "%nativeImageAgentDir%\.lock" 2>nul

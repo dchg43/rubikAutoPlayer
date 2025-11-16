@@ -59,7 +59,8 @@ public class PooledSequentialDispatcherAWT implements Runnable {
 
     public void waitFinish() {
         synchronized (this.queue) {
-            while (this.state != STOPPED && !this.queue.isEmpty()) {
+            // while (this.state != STOPPED && !this.queue.isEmpty()) {
+            while (this.state != STOPPED) {
                 try {
                     this.queue.wait();
                 } catch (InterruptedException e) {
