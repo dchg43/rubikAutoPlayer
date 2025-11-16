@@ -171,10 +171,7 @@ public final class AutoPlayer extends Panel implements Runnable {
     // 演示：生成随机序列并执行
     public void displayDemo(JButton jButton) {
         if (!BandelowENGParser.class.isInstance(this.scriptParser)) {
-            synchronized (this) {
-                this.displayMode = STOPPED;
-                notifyAll(); // Interrupted wait()
-            }
+            this.displayMode = STOPPED;
             return;
         }
         synchronized (this) {
@@ -183,9 +180,6 @@ public final class AutoPlayer extends Panel implements Runnable {
             }
         }
         this.scriptTextArea.setText(null);
-
-        String facelets = Tools.randomCube();
-        setCubeByString(facelets, this.colors);
 
         final String supportTokens = "R;U;F;L;D;B;R';U';F';L';D';B';R2;U2;F2;L2;D2;B2;R2';U2';F2';L2';D2';B2';MR;MU;MF;ML;MD;MB;MR';MU';MF';ML';MD';MB';MR2;MU2;MF2;ML2;MD2;MB2;MR2';MU2';MF2';ML2';MD2';MB2';CR;CU;CF;CL;CD;CB;CR';CU';CF';CL';CD';CB';CR2;CU2;CF2;CL2;CD2;CB2;CR2';CU2';CF2';CL2';CD2';CB2'";
         String[] tokens = supportTokens.split(";");
@@ -217,26 +211,13 @@ public final class AutoPlayer extends Panel implements Runnable {
             }
             this.player.stop();
         }
-        AutoPlayer.this.player.reset();
-        AutoPlayer.this.player.setScript(null);
-        AutoPlayer.this.scriptTextArea.setText(null);
-        // 初始化颜色
-        AbstractCube3DAWT cube = AutoPlayer.this.player.getCube3D();
-        for (int i = 0; i < 6; i++) {
-            Color c = AutoPlayer.this.colors.get(i);
-            for (int j = 0; j < 9; j++) {
-                cube.setStickerColor(i, j, c);
-            }
-        }
-        // 刷新魔方
-        cube.fireStateChanged();
-        AutoPlayer.this.player.makesureFinished();
+        this.player.setScript(null);
+        String facelets = getCubeString(false);
+        cleanAndResetCube(facelets);
+        this.player.makesureFinished();
+        this.displayMode = STOPPED;
         if (jButton != null) {
             jButton.setBackground(new ColorUIResource(238, 238, 238));
-        }
-        synchronized (this) {
-            this.displayMode = STOPPED;
-            notifyAll(); // Interrupted wait()
         }
     }
 
@@ -267,15 +248,12 @@ public final class AutoPlayer extends Panel implements Runnable {
                 facelets = getCubeString(false);
                 if (!completeCube.equals(facelets)) {
                     if (this.displayMode == RUNNING) {
+                        this.displayMode = STOPPED;
                         if (jButton != null) {
                             jButton.setBackground(new ColorUIResource(238, 238, 238));
                         }
-                        synchronized (this) {
-                            this.displayMode = STOPPED;
-                            notifyAll(); // Interrupted wait()
-                        }
                         String message = "Auto test failed.\n script: " + this.scriptTextArea.getText() + "\n result: " + facelets;
-                        JOptionPane.showOptionDialog(this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, AutoPlayer.this.errorIcon,
+                        JOptionPane.showOptionDialog(this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, this.errorIcon,
                                 CommandParser.defaultOption, CommandParser.defaultOption[0]);
                         return;
                     } else {
@@ -284,23 +262,20 @@ public final class AutoPlayer extends Panel implements Runnable {
                 }
             }
         } catch (Exception e) {
+            this.displayMode = STOPPED;
             if (jButton != null) {
                 jButton.setBackground(new ColorUIResource(238, 238, 238));
             }
-            synchronized (this) {
-                this.displayMode = STOPPED;
-                notifyAll(); // Interrupted wait()
-            }
             String message = "Auto test failed.";
-            JOptionPane.showOptionDialog(this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, AutoPlayer.this.errorIcon,
+            JOptionPane.showOptionDialog(this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, this.errorIcon,
                     CommandParser.defaultOption, CommandParser.defaultOption[0]);
             return;
         }
         double timeInSecond = (System.nanoTime() - start) / 1000000000.0d;
-        this.player.reset();
         this.player.setScript(null);
         this.scriptTextArea.setText(null);
         AbstractCube3DAWT cube = this.player.getCube3D();
+        cube.getModel().reset();
         for (int i = 0; i < 6; i++) {
             Color c = this.colors.get(i);
             for (int j = 0; j < 9; j++) {
@@ -309,16 +284,13 @@ public final class AutoPlayer extends Panel implements Runnable {
         }
         // 刷新魔方
         cube.fireStateChanged();
-        AutoPlayer.this.player.makesureFinished();
+        this.player.makesureFinished();
+        this.displayMode = STOPPED;
         if (jButton != null) {
             jButton.setBackground(new ColorUIResource(238, 238, 238));
         }
-        synchronized (this) {
-            this.displayMode = STOPPED;
-            notifyAll(); // Interrupted wait()
-        }
         String message = String.format("完成%d次测试，用时%.2f秒。", times, timeInSecond);
-        JOptionPane.showOptionDialog(this, message, "成功", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, AutoPlayer.this.infoIcon,
+        JOptionPane.showOptionDialog(this, message, "成功", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, this.infoIcon,
                 CommandParser.defaultOption, CommandParser.defaultOption[0]);
     }
 
@@ -458,7 +430,7 @@ public final class AutoPlayer extends Panel implements Runnable {
             TextArea textArea = new TextArea(30, 40);
             add("South", textArea);
 
-            String errString = AutoPlayer.getString(e);
+            String errString = getString(e);
             System.err.println(errString);
             textArea.setText(CommandParser.getAppInfo() + "\n\n" + errString);
         }
@@ -491,7 +463,7 @@ public final class AutoPlayer extends Panel implements Runnable {
                 }
             } catch (NumberFormatException e) {
                 showError(new StringBuilder().append("Invalid parameter 'colorTable', value ").append(Arrays.toString(colors_str)).append(
-                        " is illegal.\n").append(AutoPlayer.getString(e)).toString());
+                        " is illegal.\n").append(getString(e)).toString());
             }
             // 设置参数异常时使用默认值
             Color c = new Color(CommandParser.decode(dflt[colorIndex]));
@@ -561,7 +533,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         } catch (Exception e) {
             this.player.setScript(null);
             this.scriptTextArea.setText(null);
-            showError("Invalid parameter 'script'\n" + AutoPlayer.getString(e));
+            showError("Invalid parameter 'script'\n" + getString(e));
         }
 
         RubiksCubeCore initCube = new RubiksCubeCore();
@@ -571,7 +543,7 @@ public final class AutoPlayer extends Panel implements Runnable {
             try {
                 scriptParser.parse(new StringReader(initScript)).applySubtreeTo(initCube, false);
             } catch (Exception e) {
-                showError("Invalid parameter 'initScript'\n" + AutoPlayer.getString(e));
+                showError("Invalid parameter 'initScript'\n" + getString(e));
             }
         }
 
@@ -587,7 +559,7 @@ public final class AutoPlayer extends Panel implements Runnable {
             }
             this.player.getBoundedRangeModel().setValue(scriptProgress);
         } catch (IndexOutOfBoundsException e) {
-            showError("Invalid parameter 'scriptProgress'\n" + AutoPlayer.getString(e));
+            showError("Invalid parameter 'scriptProgress'\n" + getString(e));
         }
 
         String displayLines = this.cmd.getParameter("displayLines", "1");
@@ -595,7 +567,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         try {
             iCountTokens = Math.max(Integer.parseInt(displayLines), iCountTokens);
         } catch (NumberFormatException e) {
-            showError("Invalid parameter 'displayLines'\n" + AutoPlayer.getString(e));
+            showError("Invalid parameter 'displayLines'\n" + getString(e));
         }
         if (iCountTokens <= 0) {
             this.scriptTextArea.setVisible(false);
@@ -629,7 +601,7 @@ public final class AutoPlayer extends Panel implements Runnable {
                     visualComponent.setBackgroundImage(getImage(url));
                 }
             } catch (MalformedURLException e) {
-                showError("Invalid parameter 'backgroundImage' malformed URL: " + backgroundImage + "\n" + AutoPlayer.getString(e));
+                showError("Invalid parameter 'backgroundImage' malformed URL: " + backgroundImage + "\n" + getString(e));
             }
         }
 
@@ -761,7 +733,7 @@ public final class AutoPlayer extends Panel implements Runnable {
                     rearCanvas3D.setBackgroundImage(getImage(url));
                 }
             } catch (MalformedURLException e) {
-                showError("Invalid parameter 'backgroundImage' malformed URL: " + rearImage + "\n" + AutoPlayer.getString(e));
+                showError("Invalid parameter 'backgroundImage' malformed URL: " + rearImage + "\n" + getString(e));
             }
         }
         rearCanvas3D.setLightSourceIntensity(this.cmd.getParameter("lightSourceIntensity", 1.0d));
@@ -897,7 +869,7 @@ public final class AutoPlayer extends Panel implements Runnable {
                 if (!cube.getModel().isSolved()) {
                     // 重置魔方状态，保留块的颜色和顺序
                     String facelets = getCubeString(false);
-                    AutoPlayer.this.cleanAndResetCube(facelets);
+                    cleanAndResetCube(facelets);
                     AutoPlayer.this.player.makesureFinished();
                 }
 
@@ -981,7 +953,7 @@ public final class AutoPlayer extends Panel implements Runnable {
                 String cubeString = getCubeString(true);
                 String result = searchSolution(cubeString);
                 if (result.contains("Error")) {
-                    String message = "校验不通过：" + AutoPlayer.getErrMessage(result);
+                    String message = "校验不通过：" + getErrMessage(result);
                     JOptionPane.showOptionDialog(AutoPlayer.this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE,
                             AutoPlayer.this.errorIcon, CommandParser.defaultOption, CommandParser.defaultOption[0]);
                 } else {
@@ -1031,7 +1003,7 @@ public final class AutoPlayer extends Panel implements Runnable {
                 if (!cube.getModel().isSolved()) {
                     // 有旋转，重置为旋转前状态
                     String facelets = getCubeString(false);
-                    AutoPlayer.this.cleanAndResetCube(facelets);
+                    cleanAndResetCube(facelets);
                     AutoPlayer.this.player.makesureFinished();
                 }
 
@@ -1083,14 +1055,7 @@ public final class AutoPlayer extends Panel implements Runnable {
                 synchronized (AutoPlayer.this) {
                     if (AutoPlayer.this.displayMode == RUNNING) {
                         AutoPlayer.this.displayMode = STOPPING;
-                        AutoPlayer.this.player.reset();
-                        while (AutoPlayer.this.displayMode != STOPPED) {
-                            try {
-                                AutoPlayer.this.wait();
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
+                        AutoPlayer.this.player.stop();
                     } else if (AutoPlayer.this.displayMode == STOPPED) {
                         AutoPlayer.this.displayMode = STARTING;
                         ((JButton) evt.getSource()).setBackground(selectColor);
@@ -1122,14 +1087,7 @@ public final class AutoPlayer extends Panel implements Runnable {
                 synchronized (AutoPlayer.this) {
                     if (AutoPlayer.this.displayMode == RUNNING) {
                         AutoPlayer.this.displayMode = STOPPING;
-                        AutoPlayer.this.player.reset();
-                        while (AutoPlayer.this.displayMode != STOPPED) {
-                            try {
-                                AutoPlayer.this.wait();
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
+                        AutoPlayer.this.player.stop();
                     } else if (AutoPlayer.this.displayMode == STOPPED) {
                         AutoPlayer.this.displayMode = STARTING;
                         ((JButton) evt.getSource()).setBackground(selectColor);
@@ -1157,14 +1115,7 @@ public final class AutoPlayer extends Panel implements Runnable {
                 synchronized (AutoPlayer.this) {
                     if (AutoPlayer.this.displayMode == RUNNING || AutoPlayer.this.displayMode == STARTING) {
                         AutoPlayer.this.displayMode = STOPPING;
-                        AutoPlayer.this.player.reset();
-                        while (AutoPlayer.this.displayMode != STOPPED) {
-                            try {
-                                AutoPlayer.this.wait();
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                            }
-                        }
+                        AutoPlayer.this.player.stop();
                         return;
                     }
                 }
@@ -1178,7 +1129,7 @@ public final class AutoPlayer extends Panel implements Runnable {
                 String facelets = getCubeString(true);
                 String result = searchSolution(facelets);
                 if (result.contains("Error")) {
-                    String message = "校验不通过：" + AutoPlayer.getErrMessage(result);
+                    String message = "校验不通过：" + getErrMessage(result);
                     JOptionPane.showOptionDialog(AutoPlayer.this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE,
                             AutoPlayer.this.errorIcon, CommandParser.defaultOption, CommandParser.defaultOption[0]);
                     return;
@@ -1193,7 +1144,7 @@ public final class AutoPlayer extends Panel implements Runnable {
 
                 // 有旋转，重置为旋转前状态
                 if (!cube.getModel().isSolved()) {
-                    AutoPlayer.this.cleanAndResetCube(facelets);
+                    cleanAndResetCube(facelets);
                     AutoPlayer.this.player.makesureFinished();
                 }
 
@@ -1595,7 +1546,7 @@ public final class AutoPlayer extends Panel implements Runnable {
                 }
             }
             cube.fireStateChanged();
-            AutoPlayer.this.player.makesureFinished();
+            this.player.makesureFinished();
             break;
         case 15: // "rearView"
             // 默认true
