@@ -175,7 +175,11 @@ public final class AutoPlayer extends Panel implements Runnable {
             }
             return;
         }
-        this.displayMode = RUNNING;
+        synchronized (this) {
+            if (this.displayMode == STARTING) {
+                this.displayMode = RUNNING;
+            }
+        }
         this.scriptTextArea.setText(null);
 
         String facelets = Tools.randomCube();
@@ -236,7 +240,11 @@ public final class AutoPlayer extends Panel implements Runnable {
 
     public void autoTest(long testTimes, JButton jButton) {
         // 测试自动求解算法
-        this.displayMode = RUNNING;
+        synchronized (this) {
+            if (this.displayMode == STARTING) {
+                this.displayMode = RUNNING;
+            }
+        }
         String facelets;
         ScriptNode scriptNode;
         this.player.makesureFinished();
@@ -877,7 +885,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         buttonEdit.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                if (AutoPlayer.this.player.isActive() || AutoPlayer.this.displayMode == RUNNING) {
+                if (AutoPlayer.this.player.isActive() || AutoPlayer.this.displayMode != STOPPED) {
                     return;
                 }
 
@@ -914,7 +922,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         buttonClean.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                if (AutoPlayer.this.player.isActive() && AutoPlayer.this.displayMode == STOPPED) {
+                if (AutoPlayer.this.player.isActive() && AutoPlayer.this.displayMode != RUNNING) {
                     return;
                 }
 
@@ -940,7 +948,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         buttonRandom.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                if (AutoPlayer.this.player.isActive() && AutoPlayer.this.displayMode == STOPPED) {
+                if (AutoPlayer.this.player.isActive() && AutoPlayer.this.displayMode != RUNNING) {
                     return;
                 }
 
@@ -963,7 +971,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         buttonCheck.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                if (AutoPlayer.this.player.isActive() || AutoPlayer.this.displayMode == RUNNING) {
+                if (AutoPlayer.this.player.isActive() || AutoPlayer.this.displayMode != STOPPED) {
                     return;
                 }
 
@@ -992,7 +1000,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         buttonSolver.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                if (AutoPlayer.this.player.isActive() || AutoPlayer.this.displayMode == RUNNING) {
+                if (AutoPlayer.this.player.isActive() || AutoPlayer.this.displayMode != STOPPED) {
                     return;
                 }
                 String script = AutoPlayer.this.scriptTextArea.getText();
@@ -1066,7 +1074,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         buttonTest.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                if (AutoPlayer.this.player.isActive() && AutoPlayer.this.displayMode == STOPPED) {
+                if (AutoPlayer.this.player.isActive() && AutoPlayer.this.displayMode != RUNNING) {
                     return;
                 }
 
@@ -1105,7 +1113,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         buttonDisplay.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                if (AutoPlayer.this.player.isActive() && AutoPlayer.this.displayMode == STOPPED) {
+                if (AutoPlayer.this.player.isActive() && AutoPlayer.this.displayMode != RUNNING) {
                     return;
                 }
 
@@ -1145,7 +1153,7 @@ public final class AutoPlayer extends Panel implements Runnable {
             @Override
             public void actionPerformed(ActionEvent evt) {
                 synchronized (AutoPlayer.this) {
-                    if (AutoPlayer.this.displayMode == RUNNING) {
+                    if (AutoPlayer.this.displayMode == RUNNING || AutoPlayer.this.displayMode == STARTING) {
                         AutoPlayer.this.displayMode = STOPPING;
                         AutoPlayer.this.player.reset();
                         while (AutoPlayer.this.displayMode != STOPPED) {
