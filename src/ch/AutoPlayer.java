@@ -159,9 +159,11 @@ public final class AutoPlayer extends Panel implements Runnable {
         }
 
         if (scriptPlayer.getCmd().getParameter("autoTest", 0) > 0) {
+            scriptPlayer.setDisplayMode(STARTING);
             scriptPlayer.autoTest(scriptPlayer.getCmd().getParameter("autoTest", 0), null);
         }
         if ("true".equalsIgnoreCase(scriptPlayer.getCmd().getParameter("display"))) {
+            scriptPlayer.setDisplayMode(STARTING);
             scriptPlayer.displayDemo(null);
         }
     }
@@ -1639,6 +1641,10 @@ public final class AutoPlayer extends Panel implements Runnable {
             throw new IllegalArgumentException(
                     new StringBuilder().append("Invalid parameter ").append(key).append(", value ").append(value).append(" is illegal.").toString());
         }
+    }
+
+    public void setDisplayMode(int displayMode) {
+        this.displayMode = displayMode;
     }
 
     public ScriptPlayer getPlayer() {
