@@ -212,6 +212,12 @@ public final class AutoPlayer extends Panel implements Runnable {
             this.player.stop();
         }
         this.player.setScript(null);
+        try {
+            // 不增加sleep界面会闪一下，原因未知
+            Thread.sleep(100L);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         String facelets = getCubeString(false);
         cleanAndResetCube(facelets);
         this.player.makesureFinished();
@@ -890,10 +896,42 @@ public final class AutoPlayer extends Panel implements Runnable {
             }
         });
 
+        // 校验按钮
+        // 有一种错误的魔方序列校验应该失败，但是却校验成功并给出解法，但是实际无法复原
+        // 错误序列如一个对向中心块互换。
+        // 所有这些错误序列给的复原解法执行后最终都会变成这个序列 DUDUUUDUDRRRRRRRRRFFFFFFFFFUDUDDDUDULLLLLLLLLBBBBBBBBB
+        final JButton buttonCheck = new JButton("check");
+        frame.add(buttonCheck);
+        buttonCheck.setBounds(325, 20, 65, 40);
+        buttonCheck.setFont(defaultFont);
+        buttonCheck.setText("校验");
+        buttonCheck.addKeyListener(keyListener);
+        buttonCheck.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent evt) {
+                if (AutoPlayer.this.player.isActive() || AutoPlayer.this.displayMode != STOPPED) {
+                    return;
+                }
+
+                AutoPlayer.this.player.makesureFinished();
+                String cubeString = getCubeString(true);
+                String result = searchSolution(cubeString);
+                if (result.contains("Error")) {
+                    String message = "校验不通过：" + getErrMessage(result);
+                    JOptionPane.showOptionDialog(AutoPlayer.this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE,
+                            AutoPlayer.this.errorIcon, CommandParser.defaultOption, CommandParser.defaultOption[0]);
+                } else {
+                    String message = "校验通过，可求解。";
+                    JOptionPane.showOptionDialog(AutoPlayer.this, message, "成功", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE,
+                            AutoPlayer.this.infoIcon, CommandParser.defaultOption, CommandParser.defaultOption[0]);
+                }
+            }
+        });
+
         // 清空按钮
         final JButton buttonClean = new JButton("clean");
         frame.add(buttonClean);
-        buttonClean.setBounds(325, 20, 65, 40);
+        buttonClean.setBounds(width - 250, 20, 65, 40);
         buttonClean.setFont(defaultFont);
         buttonClean.setText("清空");
         buttonClean.addKeyListener(keyListener);
@@ -919,7 +957,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         // 打乱按钮
         final JButton buttonRandom = new JButton("random");
         frame.add(buttonRandom);
-        buttonRandom.setBounds(width - 250, 20, 65, 40);
+        buttonRandom.setBounds(width - 175, 20, 65, 40);
         buttonRandom.setFont(defaultFont);
         buttonRandom.setText("打乱");
         buttonRandom.addKeyListener(keyListener);
@@ -933,38 +971,6 @@ public final class AutoPlayer extends Panel implements Runnable {
                 // Random stick by Call Random function
                 String facelets = Tools.randomCube();
                 setCubeByString(facelets, AutoPlayer.this.colors);
-            }
-        });
-
-        // 校验按钮
-        // 有一种错误的魔方序列校验应该失败，但是却校验成功并给出解法，但是实际无法复原
-        // 错误序列如一个对向中心块互换。
-        // 所有这些错误序列给的复原解法执行后最终都会变成这个序列 DUDUUUDUDRRRRRRRRRFFFFFFFFFUDUDDDUDULLLLLLLLLBBBBBBBBB
-        final JButton buttonCheck = new JButton("check");
-        frame.add(buttonCheck);
-        buttonCheck.setBounds(width - 175, 20, 65, 40);
-        buttonCheck.setFont(defaultFont);
-        buttonCheck.setText("校验");
-        buttonCheck.addKeyListener(keyListener);
-        buttonCheck.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent evt) {
-                if (AutoPlayer.this.player.isActive() || AutoPlayer.this.displayMode != STOPPED) {
-                    return;
-                }
-
-                AutoPlayer.this.player.makesureFinished();
-                String cubeString = getCubeString(true);
-                String result = searchSolution(cubeString);
-                if (result.contains("Error")) {
-                    String message = "校验不通过：" + getErrMessage(result);
-                    JOptionPane.showOptionDialog(AutoPlayer.this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE,
-                            AutoPlayer.this.errorIcon, CommandParser.defaultOption, CommandParser.defaultOption[0]);
-                } else {
-                    String message = "校验通过，可求解。";
-                    JOptionPane.showOptionDialog(AutoPlayer.this, message, "成功", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE,
-                            AutoPlayer.this.infoIcon, CommandParser.defaultOption, CommandParser.defaultOption[0]);
-                }
             }
         });
 
@@ -1169,8 +1175,8 @@ public final class AutoPlayer extends Panel implements Runnable {
                 if (width < 650) {
                     width = 650;
                 }
-                buttonRandom.setLocation(width - 250, 20); // 打乱
-                buttonCheck.setLocation(width - 175, 20); // 校验
+                buttonClean.setLocation(width - 250, 20); // 清空
+                buttonRandom.setLocation(width - 175, 20); // 打乱
                 buttonSolver.setLocation(width - 100, 20); // 反序
                 buttonTest.setLocation(width - 250, 70); // 测试
                 buttonDisplay.setLocation(width - 175, 70); // 演示
@@ -1315,12 +1321,6 @@ public final class AutoPlayer extends Panel implements Runnable {
             colorCurrent.add(currentIndex++, colorList.remove(0));
         }
         // 重置魔方状态，保留块的颜色和顺序
-        try {
-            // 不增加sleep界面会闪一下，原因未知
-            Thread.sleep(100L);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
         cube.getModel().setQuiet(true);
         cube.getModel().reset();
         setCubeByString(facelets, colorCurrent);
