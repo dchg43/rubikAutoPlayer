@@ -18,7 +18,7 @@ public class DefaultBoundedRangeModel implements BoundedRangeModel {
 
     private int min = 0;
 
-    private int max = 100;
+    private int max = 0;
 
     private boolean isAdjusting = false;
 

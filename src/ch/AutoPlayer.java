@@ -232,6 +232,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         ScriptNode scriptNode;
         this.player.makesureFinished();
         BoundedRangeModel progress = this.player.getBoundedRangeModel();
+        this.player.getCubeModel().setQuiet(true);
         long times = 0;
         long start = System.nanoTime();
         try {
@@ -249,6 +250,7 @@ public final class AutoPlayer extends Panel implements Runnable {
                 if (!completeCube.equals(facelets)) {
                     if (this.displayMode == RUNNING) {
                         this.displayMode = STOPPED;
+                        this.player.getCubeModel().setQuiet(false);
                         if (jButton != null) {
                             jButton.setBackground(new ColorUIResource(238, 238, 238));
                         }
@@ -263,6 +265,7 @@ public final class AutoPlayer extends Panel implements Runnable {
             }
         } catch (Exception e) {
             this.displayMode = STOPPED;
+            this.player.getCubeModel().setQuiet(false);
             if (jButton != null) {
                 jButton.setBackground(new ColorUIResource(238, 238, 238));
             }
@@ -286,6 +289,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         cube.fireStateChanged();
         this.player.makesureFinished();
         this.displayMode = STOPPED;
+        this.player.getCubeModel().setQuiet(false);
         if (jButton != null) {
             jButton.setBackground(new ColorUIResource(238, 238, 238));
         }
@@ -1311,8 +1315,16 @@ public final class AutoPlayer extends Panel implements Runnable {
             colorCurrent.add(currentIndex++, colorList.remove(0));
         }
         // 重置魔方状态，保留块的颜色和顺序
+        try {
+            // 不增加sleep界面会闪一下，原因未知
+            Thread.sleep(100L);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        cube.getModel().setQuiet(true);
         cube.getModel().reset();
         setCubeByString(facelets, colorCurrent);
+        cube.getModel().setQuiet(false);
     }
 
     /**
