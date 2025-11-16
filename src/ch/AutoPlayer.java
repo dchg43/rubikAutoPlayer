@@ -221,10 +221,10 @@ public final class AutoPlayer extends Panel implements Runnable {
         String facelets = getCubeString(false);
         cleanAndResetCube(facelets);
         this.player.makesureFinished();
-        this.displayMode = STOPPED;
         if (jButton != null) {
             jButton.setBackground(new ColorUIResource(238, 238, 238));
         }
+        this.displayMode = STOPPED;
     }
 
     public void autoTest(long testTimes, JButton jButton) {
@@ -255,11 +255,11 @@ public final class AutoPlayer extends Panel implements Runnable {
                 facelets = getCubeString(false);
                 if (!completeCube.equals(facelets)) {
                     if (this.displayMode == RUNNING) {
-                        this.displayMode = STOPPED;
-                        this.player.getCubeModel().setQuiet(false);
                         if (jButton != null) {
                             jButton.setBackground(new ColorUIResource(238, 238, 238));
                         }
+                        this.player.getCubeModel().setQuiet(false);
+                        this.displayMode = STOPPED;
                         String message = "Auto test failed.\n script: " + this.scriptTextArea.getText() + "\n result: " + facelets;
                         JOptionPane.showOptionDialog(this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, this.errorIcon,
                                 CommandParser.defaultOption, CommandParser.defaultOption[0]);
@@ -270,11 +270,11 @@ public final class AutoPlayer extends Panel implements Runnable {
                 }
             }
         } catch (Exception e) {
-            this.displayMode = STOPPED;
-            this.player.getCubeModel().setQuiet(false);
             if (jButton != null) {
                 jButton.setBackground(new ColorUIResource(238, 238, 238));
             }
+            this.player.getCubeModel().setQuiet(false);
+            this.displayMode = STOPPED;
             String message = "Auto test failed.";
             JOptionPane.showOptionDialog(this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, this.errorIcon,
                     CommandParser.defaultOption, CommandParser.defaultOption[0]);
@@ -294,11 +294,11 @@ public final class AutoPlayer extends Panel implements Runnable {
         // 刷新魔方
         cube.fireStateChanged();
         this.player.makesureFinished();
-        this.displayMode = STOPPED;
-        this.player.getCubeModel().setQuiet(false);
         if (jButton != null) {
             jButton.setBackground(new ColorUIResource(238, 238, 238));
         }
+        this.player.getCubeModel().setQuiet(false);
+        this.displayMode = STOPPED;
         String message = String.format("完成%d次测试，用时%.2f秒。", times, timeInSecond);
         JOptionPane.showOptionDialog(this, message, "成功", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, this.infoIcon,
                 CommandParser.defaultOption, CommandParser.defaultOption[0]);
@@ -1123,7 +1123,7 @@ public final class AutoPlayer extends Panel implements Runnable {
             @Override
             public void actionPerformed(ActionEvent evt) {
                 synchronized (AutoPlayer.this) {
-                    if (AutoPlayer.this.displayMode == RUNNING || AutoPlayer.this.displayMode == STARTING) {
+                    if (AutoPlayer.this.displayMode != STOPPED) {
                         AutoPlayer.this.displayMode = STOPPING;
                         AutoPlayer.this.player.stop();
                         return;
