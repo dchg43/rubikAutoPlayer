@@ -37,6 +37,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.StringTokenizer;
@@ -100,6 +101,10 @@ public final class AutoPlayer extends Panel implements Runnable {
 
     private Map<String, Integer> keyMap = new HashMap<>();
 
+    private List<JButton> testDisableList = new ArrayList<>();
+
+    private List<JButton> displayDisableList = new ArrayList<>();
+
     private Image appIcon;
 
     private ImageIcon infoIcon;
@@ -160,16 +165,16 @@ public final class AutoPlayer extends Panel implements Runnable {
 
         if (scriptPlayer.getCmd().getParameter("autoTest", 0) > 0) {
             scriptPlayer.setDisplayMode(STARTING);
-            scriptPlayer.autoTest(scriptPlayer.getCmd().getParameter("autoTest", 0), null);
+            scriptPlayer.autoTest(scriptPlayer.getCmd().getParameter("autoTest", 0), null, scriptPlayer.testDisableList);
         }
         if ("true".equalsIgnoreCase(scriptPlayer.getCmd().getParameter("display"))) {
             scriptPlayer.setDisplayMode(STARTING);
-            scriptPlayer.displayDemo(null);
+            scriptPlayer.displayDemo(null, scriptPlayer.displayDisableList);
         }
     }
 
     // 演示：生成随机序列并执行
-    public void displayDemo(JButton jButton) {
+    public void displayDemo(JButton jButton, List<JButton> displayDisableList) {
         if (!BandelowENGParser.class.isInstance(this.scriptParser)) {
             this.displayMode = STOPPED;
             return;
@@ -180,6 +185,9 @@ public final class AutoPlayer extends Panel implements Runnable {
             }
         }
         this.scriptTextArea.setText(null);
+        for (JButton disButton : displayDisableList) {
+            disButton.setEnabled(false);
+        }
 
         final String supportTokens = "R;U;F;L;D;B;R';U';F';L';D';B';R2;U2;F2;L2;D2;B2;R2';U2';F2';L2';D2';B2';MR;MU;MF;ML;MD;MB;MR';MU';MF';ML';MD';MB';MR2;MU2;MF2;ML2;MD2;MB2;MR2';MU2';MF2';ML2';MD2';MB2';CR;CU;CF;CL;CD;CB;CR';CU';CF';CL';CD';CB';CR2;CU2;CF2;CL2;CD2;CB2;CR2';CU2';CF2';CL2';CD2';CB2'";
         String[] tokens = supportTokens.split(";");
@@ -212,6 +220,12 @@ public final class AutoPlayer extends Panel implements Runnable {
             this.player.stop();
         }
         this.player.setScript(null);
+        for (JButton disButton : displayDisableList) {
+            disButton.setEnabled(true);
+        }
+        if (jButton != null) {
+            jButton.setBackground(new ColorUIResource(238, 238, 238));
+        }
         try {
             // 不增加sleep界面会闪一下，原因未知
             Thread.sleep(100L);
@@ -221,13 +235,10 @@ public final class AutoPlayer extends Panel implements Runnable {
         String facelets = getCubeString(false);
         cleanAndResetCube(facelets);
         this.player.makesureFinished();
-        if (jButton != null) {
-            jButton.setBackground(new ColorUIResource(238, 238, 238));
-        }
         this.displayMode = STOPPED;
     }
 
-    public void autoTest(long testTimes, JButton jButton) {
+    public void autoTest(long testTimes, JButton jButton, List<JButton> testDisableList) {
         // 测试自动求解算法
         synchronized (this) {
             if (this.displayMode == STARTING) {
@@ -235,10 +246,14 @@ public final class AutoPlayer extends Panel implements Runnable {
             }
         }
 
-        this.player.makesureFinished();
+        for (JButton disButton : testDisableList) {
+            disButton.setEnabled(false);
+        }
         this.player.getCubeModel().setQuiet(true);
         this.controlsPanel.setEnabled(false);
         this.scriptTextArea.setEnabled(false);
+        this.player.makesureFinished();
+
         long times = 0;
         long start = System.nanoTime();
         try {
@@ -261,6 +276,9 @@ public final class AutoPlayer extends Panel implements Runnable {
                         if (jButton != null) {
                             jButton.setBackground(new ColorUIResource(238, 238, 238));
                         }
+                        for (JButton disButton : testDisableList) {
+                            disButton.setEnabled(true);
+                        }
                         this.player.getCubeModel().setQuiet(false);
                         this.scriptTextArea.setEnabled(true);
                         this.controlsPanel.setEnabled(true);
@@ -278,6 +296,9 @@ public final class AutoPlayer extends Panel implements Runnable {
             if (jButton != null) {
                 jButton.setBackground(new ColorUIResource(238, 238, 238));
             }
+            for (JButton disButton : testDisableList) {
+                disButton.setEnabled(true);
+            }
             this.player.getCubeModel().setQuiet(false);
             this.scriptTextArea.setEnabled(true);
             this.controlsPanel.setEnabled(true);
@@ -288,6 +309,12 @@ public final class AutoPlayer extends Panel implements Runnable {
             return;
         }
         double timeInSecond = (System.nanoTime() - start) / 1000000000.0d;
+        if (jButton != null) {
+            jButton.setBackground(new ColorUIResource(238, 238, 238));
+        }
+        for (JButton disButton : testDisableList) {
+            disButton.setEnabled(true);
+        }
         this.player.setScript(null);
         this.scriptTextArea.setText(null);
         AbstractCube3DAWT cube = this.player.getCube3D();
@@ -301,9 +328,6 @@ public final class AutoPlayer extends Panel implements Runnable {
         // 刷新魔方
         cube.fireStateChanged();
         this.player.makesureFinished();
-        if (jButton != null) {
-            jButton.setBackground(new ColorUIResource(238, 238, 238));
-        }
         this.player.getCubeModel().setQuiet(false);
         this.scriptTextArea.setEnabled(true);
         this.controlsPanel.setEnabled(true);
@@ -871,6 +895,8 @@ public final class AutoPlayer extends Panel implements Runnable {
         final Color selectColor = new Color(184, 207, 229);
         final Color deselectColor = new ColorUIResource(238, 238, 238);
         frame.add(buttonEdit);
+        this.testDisableList.add(buttonEdit);
+        this.displayDisableList.add(buttonEdit);
         buttonEdit.setBounds(250, 20, 65, 40);
         buttonEdit.setFont(defaultFont);
         buttonEdit.setText("编辑");
@@ -911,6 +937,8 @@ public final class AutoPlayer extends Panel implements Runnable {
         // 所有这些错误序列给的复原解法执行后最终都会变成这个序列 DUDUUUDUDRRRRRRRRRFFFFFFFFFUDUDDDUDULLLLLLLLLBBBBBBBBB
         final JButton buttonCheck = new JButton("check");
         frame.add(buttonCheck);
+        this.testDisableList.add(buttonCheck);
+        this.displayDisableList.add(buttonCheck);
         buttonCheck.setBounds(325, 20, 65, 40);
         buttonCheck.setFont(defaultFont);
         buttonCheck.setText("校验");
@@ -940,6 +968,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         // 清空按钮
         final JButton buttonClean = new JButton("clean");
         frame.add(buttonClean);
+        this.testDisableList.add(buttonClean);
         buttonClean.setBounds(width - 250, 20, 65, 40);
         buttonClean.setFont(defaultFont);
         buttonClean.setText("清空");
@@ -966,6 +995,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         // 打乱按钮
         final JButton buttonRandom = new JButton("random");
         frame.add(buttonRandom);
+        this.testDisableList.add(buttonRandom);
         buttonRandom.setBounds(width - 175, 20, 65, 40);
         buttonRandom.setFont(defaultFont);
         buttonRandom.setText("打乱");
@@ -986,6 +1016,8 @@ public final class AutoPlayer extends Panel implements Runnable {
         // 反序按钮
         final JButton buttonSolver = new JButton("Solver");
         frame.add(buttonSolver);
+        this.testDisableList.add(buttonSolver);
+        this.displayDisableList.add(buttonSolver);
         buttonSolver.setBounds(width - 100, 20, 65, 40);
         buttonSolver.setFont(defaultFont);
         buttonSolver.setText("反序");
@@ -1081,7 +1113,7 @@ public final class AutoPlayer extends Panel implements Runnable {
                         new Thread() {
                             @Override
                             public void run() {
-                                autoTest(Long.MAX_VALUE, (JButton) evt.getSource());
+                                autoTest(Long.MAX_VALUE, (JButton) evt.getSource(), AutoPlayer.this.testDisableList);
                             }
                         }.start();
                     }
@@ -1113,7 +1145,7 @@ public final class AutoPlayer extends Panel implements Runnable {
                         new Thread() {
                             @Override
                             public void run() {
-                                displayDemo((JButton) evt.getSource());
+                                displayDemo((JButton) evt.getSource(), AutoPlayer.this.displayDisableList);
                             }
                         }.start();
                     }
