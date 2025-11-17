@@ -1100,6 +1100,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         // 测试按钮
         final JButton buttonTest = new JButton("test");
         frame.add(buttonTest);
+        this.displayDisableList.add(buttonTest);
         this.allDisableList.add(buttonTest);
         buttonTest.setBounds(width - 250, 70, 65, 40);
         buttonTest.setFont(defaultFont);
@@ -1139,6 +1140,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         // 演示按钮
         final JButton buttonDisplay = new JButton("display");
         frame.add(buttonDisplay);
+        this.testDisableList.add(buttonDisplay);
         this.allDisableList.add(buttonDisplay);
         buttonDisplay.setBounds(width - 175, 70, 65, 40);
         buttonDisplay.setFont(defaultFont);
@@ -1178,6 +1180,8 @@ public final class AutoPlayer extends Panel implements Runnable {
         // 求解按钮
         final JButton buttonSolution = new JButton("solution");
         frame.add(buttonSolution);
+        this.testDisableList.add(buttonSolution);
+        this.displayDisableList.add(buttonSolution);
         this.allDisableList.add(buttonSolution);
         buttonSolution.setBounds(width - 100, 70, 65, 40);
         buttonSolution.setFont(defaultFont);
