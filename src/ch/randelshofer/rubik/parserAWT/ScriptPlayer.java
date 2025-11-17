@@ -144,26 +144,28 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
         return this.script;
     }
 
-    public synchronized void setScript(ScriptNode script) {
+    public void setScript(ScriptNode script) {
         stop();
-        this.script = script;
-        this.scriptList.clear();
-        this.scriptIndex = 0;
-        if (script != null) {
-            Iterator<DefaultMutableTreeNode> resolveNode = script.resolvedEnumeration(false);
-            while (resolveNode.hasNext()) {
-                DefaultMutableTreeNode scriptNode = resolveNode.next();
-                if (scriptNode instanceof TwistNode) {
-                    TwistNode twistNode = (TwistNode) scriptNode;
-                    if (twistNode.getSymbol() != 84) {
-                        this.scriptList.add(twistNode);
+        synchronized (this) {
+            this.script = script;
+            this.scriptList.clear();
+            this.scriptIndex = 0;
+            if (script != null) {
+                Iterator<DefaultMutableTreeNode> resolveNode = script.resolvedEnumeration(false);
+                while (resolveNode.hasNext()) {
+                    DefaultMutableTreeNode scriptNode = resolveNode.next();
+                    if (scriptNode instanceof TwistNode) {
+                        TwistNode twistNode = (TwistNode) scriptNode;
+                        if (twistNode.getSymbol() != 84) {
+                            this.scriptList.add(twistNode);
+                        }
+                    } else if (scriptNode instanceof PermutationNode) {
+                        this.scriptList.add((PermutationNode) scriptNode);
                     }
-                } else if (scriptNode instanceof PermutationNode) {
-                    this.scriptList.add((PermutationNode) scriptNode);
                 }
             }
+            this.progress.setRangeProperties(0, 0, 0, this.scriptList.size(), false);
         }
-        this.progress.setRangeProperties(0, 0, 0, this.scriptList.size(), false);
         updateEnabled();
     }
 
@@ -293,8 +295,8 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
     }
 
     public void reset() {
+        stop();
         synchronized (this) {
-            stop();
             this.scriptIndex = 0;
             this.progress.setValue(0);
             this.model.reset();
