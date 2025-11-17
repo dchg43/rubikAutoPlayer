@@ -928,7 +928,8 @@ public final class AutoPlayer extends Panel implements Runnable {
                     cube.setEditMode(true);
                     ((JButton) evt.getSource()).setBackground(selectColor);
                     if (AutoPlayer.this.selectColor == -1) {
-                        colorSel[0].requestFocus();
+                        // colorSel[0].requestFocus();
+                        colorSel[0].doClick();
                     }
                 }
             }
@@ -1258,7 +1259,7 @@ public final class AutoPlayer extends Panel implements Runnable {
 
         // 显示
         frame.setVisible(true);
-        buttonSolution.requestFocusInWindow(); // 设置默认焦点
+        // buttonSolution.requestFocusInWindow(); // 设置默认焦点
         // frame.getRootPane().setDefaultButton(buttonSolution); // 设置按下回车键默认操作(会跟keyListener重复执行)
         revalidate();
     }
