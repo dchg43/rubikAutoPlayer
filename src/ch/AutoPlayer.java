@@ -173,16 +173,16 @@ public final class AutoPlayer extends Panel implements Runnable {
 
         if (scriptPlayer.getCmd().getParameter("autoTest", 0) > 0) {
             scriptPlayer.setDisplayMode(STARTING);
-            scriptPlayer.autoTest(scriptPlayer.getCmd().getParameter("autoTest", 0), scriptPlayer.buttonTest);
+            scriptPlayer.autoTest(scriptPlayer.getCmd().getParameter("autoTest", 0));
         }
         if ("true".equalsIgnoreCase(scriptPlayer.getCmd().getParameter("display"))) {
             scriptPlayer.setDisplayMode(STARTING);
-            scriptPlayer.displayDemo(scriptPlayer.buttonDisplay);
+            scriptPlayer.displayDemo();
         }
     }
 
     // 演示：生成随机序列并执行
-    public void displayDemo(JButton jButton) {
+    public void displayDemo() {
         if (!BandelowENGParser.class.isInstance(this.scriptParser)) {
             this.displayMode = STOPPED;
             return;
@@ -194,8 +194,8 @@ public final class AutoPlayer extends Panel implements Runnable {
         }
         this.scriptTextArea.setText(null);
         this.player.setDisableButtonWhenRun(null);
-        if (jButton != null) {
-            jButton.setBackground(selectColor);
+        if (this.buttonDisplay != null) {
+            this.buttonDisplay.setBackground(selectColor);
         }
         for (JButton disButton : this.displayDisableList) {
             disButton.setEnabled(false);
@@ -236,8 +236,8 @@ public final class AutoPlayer extends Panel implements Runnable {
         for (JButton disButton : this.displayDisableList) {
             disButton.setEnabled(true);
         }
-        if (jButton != null) {
-            jButton.setBackground(deselectColor);
+        if (this.buttonDisplay != null) {
+            this.buttonDisplay.setBackground(deselectColor);
         }
         try {
             // 不增加sleep界面会闪一下，原因未知
@@ -251,7 +251,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         this.displayMode = STOPPED;
     }
 
-    public void autoTest(long testTimes, JButton jButton) {
+    public void autoTest(long testTimes) {
         // 测试自动求解算法
         synchronized (this) {
             if (this.displayMode == STARTING) {
@@ -259,8 +259,8 @@ public final class AutoPlayer extends Panel implements Runnable {
             }
         }
 
-        if (jButton != null) {
-            jButton.setBackground(selectColor);
+        if (this.buttonTest != null) {
+            this.buttonTest.setBackground(selectColor);
         }
         for (JButton disButton : this.testDisableList) {
             disButton.setEnabled(false);
@@ -289,8 +289,8 @@ public final class AutoPlayer extends Panel implements Runnable {
                 facelets = getCubeString(false);
                 if (!completeCube.equals(facelets)) {
                     if (this.displayMode == RUNNING) {
-                        if (jButton != null) {
-                            jButton.setBackground(deselectColor);
+                        if (this.buttonTest != null) {
+                            this.buttonTest.setBackground(deselectColor);
                         }
                         for (JButton disButton : this.testDisableList) {
                             disButton.setEnabled(true);
@@ -309,8 +309,8 @@ public final class AutoPlayer extends Panel implements Runnable {
                 }
             }
         } catch (Exception e) {
-            if (jButton != null) {
-                jButton.setBackground(deselectColor);
+            if (this.buttonTest != null) {
+                this.buttonTest.setBackground(deselectColor);
             }
             for (JButton disButton : this.testDisableList) {
                 disButton.setEnabled(true);
@@ -325,8 +325,8 @@ public final class AutoPlayer extends Panel implements Runnable {
             return;
         }
         double timeInSecond = (System.nanoTime() - start) / 1000000000.0d;
-        if (jButton != null) {
-            jButton.setBackground(deselectColor);
+        if (this.buttonTest != null) {
+            this.buttonTest.setBackground(deselectColor);
         }
         for (JButton disButton : this.testDisableList) {
             disButton.setEnabled(true);
@@ -1141,7 +1141,7 @@ public final class AutoPlayer extends Panel implements Runnable {
                         new Thread() {
                             @Override
                             public void run() {
-                                autoTest(Long.MAX_VALUE, (JButton) evt.getSource());
+                                autoTest(Long.MAX_VALUE);
                             }
                         }.start();
                     }
@@ -1181,7 +1181,7 @@ public final class AutoPlayer extends Panel implements Runnable {
                         new Thread() {
                             @Override
                             public void run() {
-                                displayDemo((JButton) evt.getSource());
+                                displayDemo();
                             }
                         }.start();
                     }
