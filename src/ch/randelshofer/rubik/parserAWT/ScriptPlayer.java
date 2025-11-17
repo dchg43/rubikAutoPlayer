@@ -212,6 +212,11 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
         synchronized (this) {
             if (this.state == STOPPED) {
                 this.state = STARTING;
+                if (this.disableButtonWhenRun != null) {
+                    for (JButton disButton : this.disableButtonWhenRun) {
+                        disButton.setEnabled(false);
+                    }
+                }
             }
         }
         this.cube3D.getDispatcher().dispatch(this, threadPool);
@@ -225,14 +230,14 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
             if (this.state != STARTING) {
                 this.state = STOPPED;
                 notifyAll(); // Interrupted wait()
+                if (this.disableButtonWhenRun != null) {
+                    for (JButton disButton : this.disableButtonWhenRun) {
+                        disButton.setEnabled(true);
+                    }
+                }
                 return;
             }
             this.state = RUNNING;
-            if (this.disableButtonWhenRun != null) {
-                for (JButton disButton : this.disableButtonWhenRun) {
-                    disButton.setEnabled(false);
-                }
-            }
         }
 
         if (this.progress.getMaximum() > 0) {
