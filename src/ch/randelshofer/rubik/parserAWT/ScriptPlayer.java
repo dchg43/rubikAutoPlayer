@@ -234,9 +234,9 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
                 }
                 this.model.setQuiet(false);
             }
-            fireStateChanged();
 
             this.isProcessingCurrentSymbol = true;
+            fireStateChanged();
             while ((this.state == RUNNING && this.progress.getValue() != this.progress.getMaximum()) || this.scriptIndex != this.progress.getValue()) {
                 int value = this.progress.getValue();
                 if (this.scriptIndex == value) {
@@ -288,6 +288,7 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
             }
         }
         this.cube3D.getDispatcher().reassign();
+        // update();
     }
 
     public void reset() {
@@ -371,16 +372,17 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
     }
 
     private void update() {
-        // synchronized 防止update重复执行，重复执行时魔方动画会有重叠
-        // synchronized (this) {
-        if (!this.isProcessingCurrentSymbol) {
-            this.isProcessingCurrentSymbol = true;
-        }
         int value = this.progress.getValue();
         if (this.scriptIndex == value - 1) {
+            this.isProcessingCurrentSymbol = true;
+            fireStateChanged();
             this.scriptList.get(this.scriptIndex++).applyTo(this.model);
+            this.isProcessingCurrentSymbol = false;
         } else if (this.scriptIndex == value + 1) {
+            this.isProcessingCurrentSymbol = true;
+            fireStateChanged();
             this.scriptList.get(--this.scriptIndex).applyInverseTo(this.model);
+            this.isProcessingCurrentSymbol = false;
         } else {
             this.model.setQuiet(true);
             while (this.scriptIndex < value) {
@@ -391,10 +393,6 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
             }
             this.model.setQuiet(false);
         }
-        if (this.state != RUNNING) {
-            this.isProcessingCurrentSymbol = false;
-        }
-        // }
         fireStateChanged();
     }
 
