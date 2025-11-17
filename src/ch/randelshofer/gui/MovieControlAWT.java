@@ -141,7 +141,13 @@ public class MovieControlAWT extends Panel implements ActionListener, ItemListen
         if (this.startButton.isSelected()) {
             this.player.start();
         } else {
-            this.player.stop();
+            // 在新线程中停止，解决正在转动的块出现跳动的问题
+            new Thread() {
+                @Override
+                public void run() {
+                    MovieControlAWT.this.player.stop();
+                }
+            }.start();
         }
     }
 

@@ -287,16 +287,19 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
                 notifyAll(); // Interrupted wait()
             }
         }
+        // if (this.state == STOPPING)
         this.cube3D.getDispatcher().reassign();
-        // update();
+        update();
     }
 
     public void reset() {
-        stop();
-        this.scriptIndex = 0;
-        this.progress.setValue(0);
-        this.model.reset();
-        this.canvas.setTransform(this.transform);
+        synchronized (this) {
+            stop();
+            this.scriptIndex = 0;
+            this.progress.setValue(0);
+            this.model.reset();
+            this.canvas.setTransform(this.transform);
+        }
         fireStateChanged();
     }
 
@@ -371,27 +374,30 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
         }
     }
 
-    private void update() {
-        int value = this.progress.getValue();
-        if (this.scriptIndex == value - 1) {
-            this.isProcessingCurrentSymbol = true;
-            fireStateChanged();
-            this.scriptList.get(this.scriptIndex++).applyTo(this.model);
-            this.isProcessingCurrentSymbol = false;
-        } else if (this.scriptIndex == value + 1) {
-            this.isProcessingCurrentSymbol = true;
-            fireStateChanged();
-            this.scriptList.get(--this.scriptIndex).applyInverseTo(this.model);
-            this.isProcessingCurrentSymbol = false;
-        } else {
-            this.model.setQuiet(true);
-            while (this.scriptIndex < value) {
+    private synchronized void update() {
+        // synchronized 防止update重复执行，重复执行时魔方动画会有重叠
+        synchronized (this) {
+            int value = this.progress.getValue();
+            if (this.scriptIndex == value - 1) {
+                this.isProcessingCurrentSymbol = true;
+                fireStateChanged();
                 this.scriptList.get(this.scriptIndex++).applyTo(this.model);
-            }
-            while (this.scriptIndex > value) {
+                this.isProcessingCurrentSymbol = false;
+            } else if (this.scriptIndex == value + 1) {
+                this.isProcessingCurrentSymbol = true;
+                fireStateChanged();
                 this.scriptList.get(--this.scriptIndex).applyInverseTo(this.model);
+                this.isProcessingCurrentSymbol = false;
+            } else {
+                this.model.setQuiet(true);
+                while (this.scriptIndex < value) {
+                    this.scriptList.get(this.scriptIndex++).applyTo(this.model);
+                }
+                while (this.scriptIndex > value) {
+                    this.scriptList.get(--this.scriptIndex).applyInverseTo(this.model);
+                }
+                this.model.setQuiet(false);
             }
-            this.model.setQuiet(false);
         }
         fireStateChanged();
     }
