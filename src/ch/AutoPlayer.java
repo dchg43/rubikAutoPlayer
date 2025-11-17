@@ -1102,6 +1102,12 @@ public final class AutoPlayer extends Panel implements Runnable {
                 if (AutoPlayer.this.player.isActive() && AutoPlayer.this.displayMode != RUNNING) {
                     return;
                 }
+                // 取消编辑
+                AbstractCube3DAWT cube = AutoPlayer.this.player.getCube3D();
+                if (cube.isEditMode()) {
+                    buttonEdit.setBackground(deselectColor);
+                    cube.setEditMode(false);
+                }
 
                 synchronized (AutoPlayer.this) {
                     if (AutoPlayer.this.displayMode == RUNNING) {
@@ -1133,6 +1139,12 @@ public final class AutoPlayer extends Panel implements Runnable {
             public void actionPerformed(ActionEvent evt) {
                 if (AutoPlayer.this.player.isActive() && AutoPlayer.this.displayMode != RUNNING) {
                     return;
+                }
+                // 取消编辑
+                AbstractCube3DAWT cube = AutoPlayer.this.player.getCube3D();
+                if (cube.isEditMode()) {
+                    buttonEdit.setBackground(deselectColor);
+                    cube.setEditMode(false);
                 }
 
                 synchronized (AutoPlayer.this) {
