@@ -13,6 +13,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.JButton;
+
 import ch.randelshofer.geom3d.Transform3D;
 import ch.randelshofer.gui.AbstractButton;
 import ch.randelshofer.gui.BoundedRangeModel;
@@ -78,6 +80,8 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
 
     // 魔方图像
     private Canvas3DAWT canvas = Canvas3DJ2D.createCanvas3D();
+
+    private List<JButton> disableButtonWhenRun;
 
     public ScriptPlayer() {
         this.cube3D.setAnimated(true);
@@ -224,6 +228,11 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
                 return;
             }
             this.state = RUNNING;
+            if (this.disableButtonWhenRun != null) {
+                for (JButton disButton : this.disableButtonWhenRun) {
+                    disButton.setEnabled(false);
+                }
+            }
         }
 
         if (this.progress.getMaximum() > 0) {
@@ -265,6 +274,11 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
         synchronized (this) {
             this.state = STOPPED;
             notifyAll(); // Interrupted wait()
+            if (this.disableButtonWhenRun != null) {
+                for (JButton disButton : this.disableButtonWhenRun) {
+                    disButton.setEnabled(true);
+                }
+            }
         }
         fireStateChanged();
     }
@@ -287,6 +301,11 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
             } else {
                 this.state = STOPPED;
                 notifyAll(); // Interrupted wait()
+                if (this.disableButtonWhenRun != null) {
+                    for (JButton disButton : this.disableButtonWhenRun) {
+                        disButton.setEnabled(true);
+                    }
+                }
             }
         }
         // if (this.state == STOPPING)
@@ -409,6 +428,10 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
         if (actionEvent.getSource() == this.resetButton) {
             reset();
         }
+    }
+
+    public void setDisableButtonWhenRun(List<JButton> disableButtonWhenRun) {
+        this.disableButtonWhenRun = disableButtonWhenRun;
     }
 
 }
