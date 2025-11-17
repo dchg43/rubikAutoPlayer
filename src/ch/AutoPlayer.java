@@ -105,6 +105,10 @@ public final class AutoPlayer extends Panel implements Runnable {
 
     private List<JButton> allDisableList = new ArrayList<>(8);
 
+    private JButton buttonTest;
+
+    private JButton buttonDisplay;
+
     private Image appIcon;
 
     private ImageIcon infoIcon;
@@ -133,7 +137,11 @@ public final class AutoPlayer extends Panel implements Runnable {
 
     private int displayMode = STOPPED;
 
-    private int selectColor = -1;
+    private int selectColorButtonIndex = -1;
+
+    private static final Color selectColor = new Color(184, 207, 229);
+
+    private static final Color deselectColor = new ColorUIResource(238, 238, 238);
 
     private Search search = new Search();
 
@@ -165,11 +173,11 @@ public final class AutoPlayer extends Panel implements Runnable {
 
         if (scriptPlayer.getCmd().getParameter("autoTest", 0) > 0) {
             scriptPlayer.setDisplayMode(STARTING);
-            scriptPlayer.autoTest(scriptPlayer.getCmd().getParameter("autoTest", 0), null);
+            scriptPlayer.autoTest(scriptPlayer.getCmd().getParameter("autoTest", 0), scriptPlayer.buttonTest);
         }
         if ("true".equalsIgnoreCase(scriptPlayer.getCmd().getParameter("display"))) {
             scriptPlayer.setDisplayMode(STARTING);
-            scriptPlayer.displayDemo(null);
+            scriptPlayer.displayDemo(scriptPlayer.buttonDisplay);
         }
     }
 
@@ -186,6 +194,9 @@ public final class AutoPlayer extends Panel implements Runnable {
         }
         this.scriptTextArea.setText(null);
         this.player.setDisableButtonWhenRun(null);
+        if (jButton != null) {
+            jButton.setBackground(selectColor);
+        }
         for (JButton disButton : this.displayDisableList) {
             disButton.setEnabled(false);
         }
@@ -226,7 +237,7 @@ public final class AutoPlayer extends Panel implements Runnable {
             disButton.setEnabled(true);
         }
         if (jButton != null) {
-            jButton.setBackground(new ColorUIResource(238, 238, 238));
+            jButton.setBackground(deselectColor);
         }
         try {
             // 不增加sleep界面会闪一下，原因未知
@@ -248,6 +259,9 @@ public final class AutoPlayer extends Panel implements Runnable {
             }
         }
 
+        if (jButton != null) {
+            jButton.setBackground(selectColor);
+        }
         for (JButton disButton : this.testDisableList) {
             disButton.setEnabled(false);
         }
@@ -276,7 +290,7 @@ public final class AutoPlayer extends Panel implements Runnable {
                 if (!completeCube.equals(facelets)) {
                     if (this.displayMode == RUNNING) {
                         if (jButton != null) {
-                            jButton.setBackground(new ColorUIResource(238, 238, 238));
+                            jButton.setBackground(deselectColor);
                         }
                         for (JButton disButton : this.testDisableList) {
                             disButton.setEnabled(true);
@@ -296,7 +310,7 @@ public final class AutoPlayer extends Panel implements Runnable {
             }
         } catch (Exception e) {
             if (jButton != null) {
-                jButton.setBackground(new ColorUIResource(238, 238, 238));
+                jButton.setBackground(deselectColor);
             }
             for (JButton disButton : this.testDisableList) {
                 disButton.setEnabled(true);
@@ -312,7 +326,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         }
         double timeInSecond = (System.nanoTime() - start) / 1000000000.0d;
         if (jButton != null) {
-            jButton.setBackground(new ColorUIResource(238, 238, 238));
+            jButton.setBackground(deselectColor);
         }
         for (JButton disButton : this.testDisableList) {
             disButton.setEnabled(true);
@@ -880,11 +894,11 @@ public final class AutoPlayer extends Panel implements Runnable {
             colorSel[i].addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
-                    if (AutoPlayer.this.selectColor != value) {
-                        if (AutoPlayer.this.selectColor != -1) {
-                            colorSel[AutoPlayer.this.selectColor].setBorder(defaultBorder);
+                    if (AutoPlayer.this.selectColorButtonIndex != value) {
+                        if (AutoPlayer.this.selectColorButtonIndex != -1) {
+                            colorSel[AutoPlayer.this.selectColorButtonIndex].setBorder(defaultBorder);
                         }
-                        AutoPlayer.this.selectColor = value;
+                        AutoPlayer.this.selectColorButtonIndex = value;
                         colorSel[value].setBorder(selectBorder);
                         AutoPlayer.this.player.getCube3D().setSelectColor(AutoPlayer.this.colors.get(value));
                     }
@@ -894,8 +908,6 @@ public final class AutoPlayer extends Panel implements Runnable {
 
         // 编辑按钮
         final JButton buttonEdit = new JButton("edit");
-        final Color selectColor = new Color(184, 207, 229);
-        final Color deselectColor = new ColorUIResource(238, 238, 238);
         frame.add(buttonEdit);
         this.testDisableList.add(buttonEdit);
         this.displayDisableList.add(buttonEdit);
@@ -927,7 +939,7 @@ public final class AutoPlayer extends Panel implements Runnable {
                 } else {
                     cube.setEditMode(true);
                     ((JButton) evt.getSource()).setBackground(selectColor);
-                    if (AutoPlayer.this.selectColor == -1) {
+                    if (AutoPlayer.this.selectColorButtonIndex == -1) {
                         // colorSel[0].requestFocus();
                         colorSel[0].doClick();
                     }
@@ -1102,6 +1114,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         frame.add(buttonTest);
         this.displayDisableList.add(buttonTest);
         this.allDisableList.add(buttonTest);
+        this.buttonTest = buttonTest;
         buttonTest.setBounds(width - 250, 70, 65, 40);
         buttonTest.setFont(defaultFont);
         buttonTest.setText("测试");
@@ -1125,7 +1138,6 @@ public final class AutoPlayer extends Panel implements Runnable {
                         AutoPlayer.this.player.stop();
                     } else if (AutoPlayer.this.displayMode == STOPPED) {
                         AutoPlayer.this.displayMode = STARTING;
-                        ((JButton) evt.getSource()).setBackground(selectColor);
                         new Thread() {
                             @Override
                             public void run() {
@@ -1142,6 +1154,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         frame.add(buttonDisplay);
         this.testDisableList.add(buttonDisplay);
         this.allDisableList.add(buttonDisplay);
+        this.buttonDisplay = buttonDisplay;
         buttonDisplay.setBounds(width - 175, 70, 65, 40);
         buttonDisplay.setFont(defaultFont);
         buttonDisplay.setText("演示");
@@ -1165,7 +1178,6 @@ public final class AutoPlayer extends Panel implements Runnable {
                         AutoPlayer.this.player.stop();
                     } else if (AutoPlayer.this.displayMode == STOPPED) {
                         AutoPlayer.this.displayMode = STARTING;
-                        ((JButton) evt.getSource()).setBackground(selectColor);
                         new Thread() {
                             @Override
                             public void run() {
