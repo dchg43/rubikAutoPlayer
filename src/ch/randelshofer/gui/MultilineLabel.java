@@ -20,6 +20,8 @@ public class MultilineLabel extends Canvas {
     // private static final Color activeSelectionBackground = new Color(0xFF, 0xFF, 0x40);
     public static final Color activeSelectionBackground = new Color(0x00, 0xFF, 0x40);
 
+    public static final String emptyString = "";
+
     private List<String> lines = new ArrayList<>();
 
     private int selectionStart = -1;
@@ -28,7 +30,7 @@ public class MultilineLabel extends Canvas {
 
     private int minRows;
 
-    private String text = "";
+    private String text = emptyString;
 
     // 文本框边距：上 左 下 右
     private Insets insets = new Insets(2, 6, 6, 3);
@@ -75,12 +77,12 @@ public class MultilineLabel extends Canvas {
 
     public void setText(String text) {
         if (text == null) {
-            this.text = "";
+            this.text = emptyString;
         } else {
             this.text = text;
         }
         this.cleanGraphics = true;
-        revalidate(); // 这儿revalidate可以提升repaint的速度，原因未知
+        // revalidate(); // 这儿revalidate可以提升repaint的速度?
         repaint();
     }
 

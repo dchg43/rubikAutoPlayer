@@ -94,7 +94,7 @@ public class MainProgram extends JFrame {
 
     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
     public static void main(String[] args) {
-        //        String fileName = "m2p" + (Search.USE_TWIST_FLIP_PRUN ? "T" : "") + ".data";
+        //        String fileName = Search.USE_TWIST_FLIP_PRUN ? "m2pT.data" : "m2p.data";
         //        try
         //        {
         //            DataInputStream dis = new DataInputStream(new BufferedInputStream(new FileInputStream(fileName)));
@@ -324,7 +324,7 @@ public class MainProgram extends JFrame {
             colorSel[i].setBackground(COLORS[i]);
             colorSel[i].setOpaque(true);
             colorSel[i].setBounds(FSIZE * (XOFF[1] + 1) + FSIZE / 4 * 3 * i, FSIZE * (YOFF[3] + 1), FSIZE / 4 * 3, FSIZE / 4 * 3);
-            colorSel[i].setName("" + i);
+            colorSel[i].setName(Integer.toString(i));
             colorSel[i].addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {

@@ -37,85 +37,85 @@ public class CommandParser {
             // 帮助
             {"help", "h", null, "显示帮助信息", "show help"},
             // 演示模式
-            {"display", "", "boolean", "是否进入演示模式，取值true或false", "show display mode"},
+            {"display", null, "boolean", "是否进入演示模式，取值true或false", "show display mode"},
             // 测试模式
-            {"autoTest", "", "int", "测试模式，反复打乱并自动求解，0或不填不测试", "Test mode"},
+            {"autoTest", null, "int", "测试模式，反复打乱并自动求解，0或不填不测试", "Test mode"},
 
             // 垂直方向倾斜角度
-            {"alpha", "", "int", "垂直方向倾斜角度 -90 ~ 90，默认值-25", "Vertical orientation of the cube, -90..+90. Default: -25"},
+            {"alpha", null, "int", "垂直方向倾斜角度 -90 ~ 90，默认值-25", "Vertical orientation of the cube, -90..+90. Default: -25"},
             // 水平方向倾斜角度
-            {"beta", "", "int", "水平方向倾斜角度 -90 ~ 90，默认值45", "Horizontal orientation of the cube, -90..+90. Default: 45"},
+            {"beta", null, "int", "水平方向倾斜角度 -90 ~ 90，默认值45", "Horizontal orientation of the cube, -90..+90. Default: 45"},
             // 背景色，默认白色
-            {"backgroundColor", "", "int", "背景色，默认值0xffffff", "Background color. Default: 0xffffff"},
+            {"backgroundColor", null, "int", "背景色，默认值0xffffff", "Background color. Default: 0xffffff"},
             // 背景图
-            {"backgroundImage", "", "URL", "背景图，例如D:/照片/001.jpg", "Background image. Default: none"},
+            {"backgroundImage", null, "URL", "背景图，例如D:/照片/001.jpg", "Background image. Default: none"},
             // 设置颜色，编号分别为0~5，十六进制RGB格式
-            {"colorTable", "", "[name=]int, ...", "每面颜色，顺序为前右下后左上，例如 \n0x8c001f, ... ,0x0033a3",
+            {"colorTable", null, "[name=]int, ...", "每面颜色，顺序为前右下后左上，例如 \n0x8c001f, ... ,0x0033a3",
                     "RGB color look up table, 6..n entries. Each entry consists of an optional name and a hex value. Default: 0x003373,0xff4600,0xf8f8f8,0x00732f,0x8c000f,0xffd200"},
 
             // 用标准记号法按块自定义颜色
-            {"facelets", "", "name, ...", "标准记号法定义颜色：上U右R前F下D左L后B，例如 \nUUUUUUUUURRRRRRRRRFFFFFFFFF \nDDDDDDDDDLLLLLLLLLBBBBBBBBB",
+            {"facelets", null, "name, ...", "标准记号法定义颜色：上U右R前F下D左L后B，例如 \nUUUUUUUUURRRRRRRRRFFFFFFFFF \nDDDDDDDDDLLLLLLLLLBBBBBBBBB",
                     "up, right, front, down, left, back, example: UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB"},
             // 按块自定义颜色
-            {"stickers", "", "name, ...", "每块的颜色，顺序为前右下后左上，共54个数字，\n0~5各需出现9次，例如0,0,0,...5,5,5",
+            {"stickers", null, "name, ...", "每块的颜色，顺序为前右下后左上，共54个数字，\n0~5各需出现9次，例如0,0,0,...5,5,5",
                     "Maps colors from the color table to the stickers of the cube; 54 integer values; front, right, down, back, left, up. Default: 0,0,0,0,0,0,0,0,0, 1,1,1,1,1,1,1,1,1, 2,2,2,2,2,2,2,2,2, 3,3,3,3,3,3,3,3,3, 4,4,4,4,4,4,4,4,4, 5,5,5,5,5,5,5,5,5"},
             //        // 按面自定义颜色，顺序为正面 右面 底面 背面 左面 顶面
-            //      {"faces", "", "name, ...",
+            //      {"faces", null, "name, ...",
             //          "Maps colors from the color table to the faces of the cube; 6 integer values; front, right, down, back, left, up. Default: 0,1,2,3,4,5"},
             //        // 自定义正面每块颜色
-            //        {"stickersFront", "", "(name|int), ...",
+            //        {"stickersFront", null, "(name|int), ...",
             //            "Maps colors from the color table to the stickers on the side of the cube; 9 integer values. Default: 0,0,0,0,0,0,0,0,0"},
             //        // 自定义右面每块颜色
-            //        {"stickersRight", "", "(name|int), ...",
+            //        {"stickersRight", null, "(name|int), ...",
             //            "Maps colors from the color table to the stickers on the side of the cube; 9 integer values. Default: 1,1,1,1,1,1,1,1,1"},
             //        // 自定义下面每块颜色
-            //        {"stickersDown", "", "(name|int), ...",
+            //        {"stickersDown", null, "(name|int), ...",
             //            "Maps colors from the color table to the stickers on the side of the cube; 9 integer values. Default: 2,2,2,2,2,2,2,2,2"},
             //        // 自定义后面每块颜色
-            //        {"stickersBack", "", "(name|int), ...",
+            //        {"stickersBack", null, "(name|int), ...",
             //            "Maps colors from the color table to the stickers on the side of the cube; 9 integer values. Default: 3,3,3,3,3,3,3,3,3"},
             //        // 自定义左面每块颜色
-            //        {"stickersLeft", "", "(name|int), ...",
+            //        {"stickersLeft", null, "(name|int), ...",
             //            "Maps colors from the color table to the stickers on the side of the cube; 9 integer values. Default: 4,4,4,4,4,4,4,4,4"},
             //        // 自定义上面每块颜色
-            //        {"stickersUp", "", "(name|int), ...",
+            //        {"stickersUp", null, "(name|int), ...",
             //            "Maps colors from the color table to the stickers on the side of the cube; 9 integer values. Default: 5,5,5,5,5,5,5,5,5"},
 
             // 是否自动播放
             {"autoPlay", "a", "boolean", "是否自动播放，true/false", "Set this value to true, to start playing the script automatically. Default: false"},
             // 设置自动播放脚本
-            {"script", "", "string", "设置自动播放脚本，例如\"R F' D2\"", "Script. Default: no script."},
+            {"script", null, "string", "设置自动播放脚本，例如\"R F' D2\"", "Script. Default: no script."},
             // 初始化脚本。需要注意，每次点击reset按钮都会执行一次这个脚本
-            {"initScript", "", "string", "设置每次reset时预执行的脚本，例如\"L B' U2\"",
+            {"initScript", null, "string", "设置每次reset时预执行的脚本，例如\"L B' U2\"",
                     "This script is used to initialize the cube, and when the reset button is pressed. Default: no script."},
             // 语言
-            {"scriptLanguage", "", "string", "设置脚本的语法",
+            {"scriptLanguage", null, "string", "设置脚本的语法",
                     "Language of the Script: 'ScriptFRA','BandelowENG','RandelshoferGER','SupersetENG','TouchardDeledicqFRA','Castella'. Default: BandelowENG"},
             // 类型
-            {"scriptType", "", "string", "设置脚本的类型：Solver、Generator（默认）", "The type of the script: 'Solver' or 'Generator'. Default: 'Generator'."},
+            {"scriptType", null, "string", "设置脚本的类型：Solver、Generator（默认）", "The type of the script: 'Solver' or 'Generator'. Default: 'Generator'."},
             // 步数
-            {"scriptProgress", "", "int", "设置初始处于的步骤",
+            {"scriptProgress", null, "int", "设置初始处于的步骤",
                     "Position of the progress bar. Default: end of script if scriptType is 'Generator', 0 if script type is 'Solver'."},
             //            // 是否显示步骤脚本
-            //            {"displayLines", "", "int", "Number of lines of the Script display: set to 0 to switch the display off. Default: 1"},
+            //            {"displayLines", null, "int", "Number of lines of the Script display: set to 0 to switch the display off. Default: 1"},
 
             //            // 模拟光线强度
-            //            {"ambientLightIntensity", "", "double", "Intensity of ambient light. Default: 0.6"},
+            //            {"ambientLightIntensity", null, "double", "Intensity of ambient light. Default: 0.6"},
             //            // 模拟光线光源
-            //            {"lightSourceIntensity", "", "double", "Intensity of the light source: set to 0 to switch the light source off. Default: 1.0"},
+            //            {"lightSourceIntensity", null, "double", "Intensity of the light source: set to 0 to switch the light source off. Default: 1.0"},
             //            // 模拟光线位置
-            //            {"lightSourcePosition", "", "int,int,int", "X, Y and Z coordinate of the light source. Default: -500, 500, 1000"},
+            //            {"lightSourcePosition", null, "int,int,int", "X, Y and Z coordinate of the light source. Default: -500, 500, 1000"},
 
             // 是否展示后视图
-            {"rearView", "", "boolean", "是否展示后视图，true/false", "Set this value to true, to turn the rear view on. Default: false"},
+            {"rearView", null, "boolean", "是否展示后视图，true/false", "Set this value to true, to turn the rear view on. Default: false"},
             // 后视图背景色
-            {"rearViewBackgroundColor", "", "int", "后视图背景色，默认值0xffffff", "Background color. Default: use value of parameter 'backgroundColor'"},
+            {"rearViewBackgroundColor", null, "int", "后视图背景色，默认值0xffffff", "Background color. Default: use value of parameter 'backgroundColor'"},
             // 后视图背景图
-            {"rearViewBackgroundImage", "", "URL", "后视图背景图，默认正视图背景图", "Background image. Default: use value of parameter 'backgroundImage'"},
+            {"rearViewBackgroundImage", null, "URL", "后视图背景图，默认正视图背景图", "Background image. Default: use value of parameter 'backgroundImage'"},
             // 后视图缩放
-            {"rearViewScaleFactor", "", "double", "后视图缩放比 0.1 ~ 1.0，默认0.75", "Scale factor of the rear view. Value between 0.1 and 1.0. Default: 0.75"},
+            {"rearViewScaleFactor", null, "double", "后视图缩放比 0.1 ~ 1.0，默认0.75", "Scale factor of the rear view. Value between 0.1 and 1.0. Default: 0.75"},
             //            // 后视图旋转角度
-            //            {"rearViewRotation", "", "int,int,int", "Rotation of the rear view on the X, Y and Z axis in degrees. Default: 180,0,0"}
+            //            {"rearViewRotation", null, "int,int,int", "Rotation of the rear view on the X, Y and Z axis in degrees. Default: 180,0,0"}
     };
 
     private Map<String, String> atts;
