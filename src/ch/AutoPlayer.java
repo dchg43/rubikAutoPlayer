@@ -847,7 +847,7 @@ public final class AutoPlayer extends Panel implements Runnable {
     private void initGUI() {
         final int width = 650; // 窗口宽度
         final int height = 600; // 窗口高度
-        final int buttonWidth = 65; // 按钮宽度
+        final int buttonWidth = 66; // 按钮宽度
         final int buttonHeight = 40; // 按钮高度
         final int windowBorder = 20; // 按钮距窗口边框距离
         final int colorBorder = 4; // 颜色选择框边框宽度
