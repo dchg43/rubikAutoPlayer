@@ -845,11 +845,23 @@ public final class AutoPlayer extends Panel implements Runnable {
     }
 
     private void initGUI() {
-        final int width = 650;
+        final int width = 650; // 窗口宽度
+        final int height = 600; // 窗口高度
+        final int buttonWidth = 65; // 按钮宽度
+        final int buttonHeight = 40; // 按钮高度
+        final int windowBorder = 20; // 按钮距窗口边框距离
+        final int colorBorder = 4; // 颜色选择框边框宽度
+        final int buttonSpace = 10; // 按钮间距
+        final int buttonStep = buttonWidth + buttonSpace;
+        final int buttonLeft = windowBorder + (buttonHeight - colorBorder) * 6 + colorBorder;
+        final int buttonRight = buttonLeft + (buttonStep) * 5 - buttonWidth;
+        final int minWidth = buttonRight + windowBorder + buttonWidth;
+        final int buttonLine2 = windowBorder + buttonSpace + buttonHeight;
+
         final JFrame frame = new JFrame("AutoPlayer"); // 初始化画布
         frame.setTitle("三阶魔方求解器 by Deng");
-        frame.setSize(width, 600); // 设置画布大小
-        frame.setPreferredSize(new java.awt.Dimension(width, 600));
+        frame.setSize(width, height); // 设置画布大小
+        frame.setPreferredSize(new java.awt.Dimension(width, height));
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.setIconImage(this.appIcon); // 设置窗口图标
@@ -877,15 +889,18 @@ public final class AutoPlayer extends Panel implements Runnable {
         // 顺序：正面红色, 右面黄色, 底面绿色, 背面橙色, 左面白色, 顶面蓝色
         final Color[] initColors = {new Color(230, 0, 0), new Color(240, 220, 0), // 红 黄
                 new Color(0, 170, 0), new Color(255, 118, 0), Color.white, Color.blue}; // 绿 橙
-        final Border defaultBorder = new LineBorder(new Color(240, 240, 240), 4);
-        final Border selectBorder = new LineBorder(new Color(118, 188, 245), 4);
+        final Border defaultBorder = new LineBorder(new Color(240, 240, 240), colorBorder);
+        final Border selectBorder = new LineBorder(new Color(118, 188, 245), colorBorder);
         Font defaultFont = new Font(this.defaultFont, Font.BOLD, 14);
+        int colory = windowBorder + colorBorder;
+        int colorStep = buttonHeight - colorBorder;
+        int colorWidth = colorStep - colorBorder;
         for (int i = 0; i < 6; i++) {
             colorSel[i] = new JButton();
             frame.add(colorSel[i]);
             colorSel[i].setBackground(initColors[i]);
             colorSel[i].setOpaque(true);
-            colorSel[i].setBounds(24 + 36 * i, 24, 32, 32);
+            colorSel[i].setBounds(colory + colorStep * i, colory, colorWidth, colorWidth);
             colorSel[i].setBorderPainted(true);
             colorSel[i].setBorder(defaultBorder);
             colorSel[i].setName(String.valueOf(i));
@@ -905,6 +920,10 @@ public final class AutoPlayer extends Panel implements Runnable {
                 }
             });
         }
+        Panel panelback = new Panel();
+        frame.add(panelback);
+        panelback.setBackground(Color.lightGray);
+        panelback.setBounds(windowBorder, windowBorder, colorStep * 6 + colorBorder, buttonHeight);
 
         // 编辑按钮
         final JButton buttonEdit = new JButton("edit");
@@ -912,7 +931,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         this.testDisableList.add(buttonEdit);
         this.displayDisableList.add(buttonEdit);
         this.allDisableList.add(buttonEdit);
-        buttonEdit.setBounds(250, 20, 65, 40);
+        buttonEdit.setBounds(buttonLeft + buttonSpace, windowBorder, buttonWidth, buttonHeight);
         buttonEdit.setFont(defaultFont);
         buttonEdit.setText("编辑");
         buttonEdit.addKeyListener(keyListener);
@@ -956,7 +975,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         this.testDisableList.add(buttonCheck);
         this.displayDisableList.add(buttonCheck);
         this.allDisableList.add(buttonCheck);
-        buttonCheck.setBounds(325, 20, 65, 40);
+        buttonCheck.setBounds(buttonLeft + buttonSpace * 2 + buttonWidth, windowBorder, buttonWidth, buttonHeight);
         buttonCheck.setFont(defaultFont);
         buttonCheck.setText("校验");
         buttonCheck.addKeyListener(keyListener);
@@ -987,7 +1006,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         frame.add(buttonClean);
         this.testDisableList.add(buttonClean);
         this.allDisableList.add(buttonClean);
-        buttonClean.setBounds(width - 250, 20, 65, 40);
+        buttonClean.setBounds(buttonRight - buttonStep * 2, windowBorder, buttonWidth, buttonHeight);
         buttonClean.setFont(defaultFont);
         buttonClean.setText("清空");
         buttonClean.addKeyListener(keyListener);
@@ -1015,7 +1034,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         frame.add(buttonRandom);
         this.testDisableList.add(buttonRandom);
         this.allDisableList.add(buttonRandom);
-        buttonRandom.setBounds(width - 175, 20, 65, 40);
+        buttonRandom.setBounds(buttonRight - buttonStep, windowBorder, buttonWidth, buttonHeight);
         buttonRandom.setFont(defaultFont);
         buttonRandom.setText("打乱");
         buttonRandom.addKeyListener(keyListener);
@@ -1038,7 +1057,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         this.testDisableList.add(buttonSolver);
         this.displayDisableList.add(buttonSolver);
         this.allDisableList.add(buttonSolver);
-        buttonSolver.setBounds(width - 100, 20, 65, 40);
+        buttonSolver.setBounds(buttonRight, windowBorder, buttonWidth, buttonHeight);
         buttonSolver.setFont(defaultFont);
         buttonSolver.setText("反序");
         buttonSolver.addKeyListener(keyListener);
@@ -1115,7 +1134,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         this.displayDisableList.add(buttonTest);
         this.allDisableList.add(buttonTest);
         this.buttonTest = buttonTest;
-        buttonTest.setBounds(width - 250, 70, 65, 40);
+        buttonTest.setBounds(buttonRight - buttonStep * 2, buttonLine2, buttonWidth, buttonHeight);
         buttonTest.setFont(defaultFont);
         buttonTest.setText("测试");
         buttonTest.addKeyListener(keyListener);
@@ -1155,7 +1174,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         this.testDisableList.add(buttonDisplay);
         this.allDisableList.add(buttonDisplay);
         this.buttonDisplay = buttonDisplay;
-        buttonDisplay.setBounds(width - 175, 70, 65, 40);
+        buttonDisplay.setBounds(buttonRight - buttonStep, buttonLine2, buttonWidth, buttonHeight);
         buttonDisplay.setFont(defaultFont);
         buttonDisplay.setText("演示");
         buttonDisplay.addKeyListener(keyListener);
@@ -1195,7 +1214,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         this.testDisableList.add(buttonSolution);
         this.displayDisableList.add(buttonSolution);
         this.allDisableList.add(buttonSolution);
-        buttonSolution.setBounds(width - 100, 70, 65, 40);
+        buttonSolution.setBounds(buttonRight, buttonLine2, buttonWidth, buttonHeight);
         buttonSolution.setFont(defaultFont);
         buttonSolution.setText("求解");
         buttonSolution.addKeyListener(keyListener);
@@ -1251,24 +1270,22 @@ public final class AutoPlayer extends Panel implements Runnable {
         frame.addComponentListener(new ComponentAdapter() {
             @Override
             public void componentResized(ComponentEvent e) {
-                int width = frame.getWidth();
-                if (width < 650) {
-                    width = 650;
+                int column3 = buttonRight;
+                int frameWidth = getWidth();
+                if (frameWidth > minWidth) {
+                    column3 = frameWidth - windowBorder - buttonWidth;
                 }
-                buttonClean.setLocation(width - 250, 20); // 清空
-                buttonRandom.setLocation(width - 175, 20); // 打乱
-                buttonSolver.setLocation(width - 100, 20); // 反序
-                buttonTest.setLocation(width - 250, 70); // 测试
-                buttonDisplay.setLocation(width - 175, 70); // 演示
-                buttonSolution.setLocation(width - 100, 70); // 求解
+                int column2 = column3 - buttonStep;
+                int column1 = column2 - buttonStep;
+                buttonClean.setBounds(column1, windowBorder, buttonWidth, buttonHeight); // 清空
+                buttonRandom.setBounds(column2, windowBorder, buttonWidth, buttonHeight); // 打乱
+                buttonSolver.setBounds(column3, windowBorder, buttonWidth, buttonHeight); // 反序
+                buttonTest.setBounds(column1, buttonLine2, buttonWidth, buttonHeight); // 测试
+                buttonDisplay.setBounds(column2, buttonLine2, buttonWidth, buttonHeight); // 演示
+                buttonSolution.setBounds(column3, buttonLine2, buttonWidth, buttonHeight); // 求解
                 AutoPlayer.this.scriptTextArea.revalidate(); // 刷新
             }
         });
-
-        Panel panelback = new Panel();
-        frame.add(panelback);
-        panelback.setBackground(Color.lightGray);
-        panelback.setBounds(20, 20, 220, 40);
 
         // 添加魔方
         frame.add(this, "Center");
