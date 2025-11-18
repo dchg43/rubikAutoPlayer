@@ -81,7 +81,8 @@ public final class AutoPlayer extends Panel implements Runnable {
 
     private static final String completeCube = "UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB";
 
-    private static final char sevenChar = '0';
+    /** 初始化颜色对应表，顺序：front, right, down, back, left, up */
+    private static final char[] chars = {'F', 'R', 'D', 'B', 'L', 'U', '0'};
 
     private ScriptPlayer player;
 
@@ -145,9 +146,6 @@ public final class AutoPlayer extends Panel implements Runnable {
 
     private Search search = new Search();
 
-    // 用于记录最后一次结果，可用于快速重试
-    private String[] lastResult = new String[]{"", null};
-
     private boolean DEBUG = false;
 
     public static void main(String[] args) {
@@ -181,7 +179,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         }
     }
 
-    // 演示：生成随机序列并执行
+    /** 演示：生成随机序列并执行 */
     public void displayDemo() {
         if (!BandelowENGParser.class.isInstance(this.scriptParser)) {
             this.displayMode = STOPPED;
@@ -251,6 +249,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         this.displayMode = STOPPED;
     }
 
+    /** 反复打乱并自动复原 */
     public void autoTest(long testTimes) {
         // 测试自动求解算法
         synchronized (this) {
@@ -265,7 +264,8 @@ public final class AutoPlayer extends Panel implements Runnable {
         for (JButton disButton : this.testDisableList) {
             disButton.setEnabled(false);
         }
-        this.player.getCubeModel().setQuiet(true);
+        RubiksCubeCore model = this.player.getCubeModel();
+        model.setQuiet(true);
         this.controlsPanel.setEnabled(false);
         this.scriptTextArea.setEnabled(false);
         this.player.makesureFinished();
@@ -277,7 +277,7 @@ public final class AutoPlayer extends Panel implements Runnable {
             ScriptNode scriptNode;
             BoundedRangeModel progress = this.player.getBoundedRangeModel();
             for (; times < testTimes && this.displayMode == RUNNING; times++) {
-                this.player.getCubeModel().reset();
+                model.reset();
                 facelets = Tools.randomCube();
                 setCubeByString(facelets, this.colors);
                 facelets = searchSolution(facelets);
@@ -295,7 +295,7 @@ public final class AutoPlayer extends Panel implements Runnable {
                         for (JButton disButton : this.testDisableList) {
                             disButton.setEnabled(true);
                         }
-                        this.player.getCubeModel().setQuiet(false);
+                        model.setQuiet(false);
                         this.scriptTextArea.setEnabled(true);
                         this.controlsPanel.setEnabled(true);
                         this.displayMode = STOPPED;
@@ -315,7 +315,7 @@ public final class AutoPlayer extends Panel implements Runnable {
             for (JButton disButton : this.testDisableList) {
                 disButton.setEnabled(true);
             }
-            this.player.getCubeModel().setQuiet(false);
+            model.setQuiet(false);
             this.scriptTextArea.setEnabled(true);
             this.controlsPanel.setEnabled(true);
             this.displayMode = STOPPED;
@@ -344,7 +344,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         // 刷新魔方
         cube.fireStateChanged();
         this.player.makesureFinished();
-        this.player.getCubeModel().setQuiet(false);
+        model.setQuiet(false);
         this.scriptTextArea.setEnabled(true);
         this.controlsPanel.setEnabled(true);
         this.displayMode = STOPPED;
@@ -1430,11 +1430,7 @@ public final class AutoPlayer extends Panel implements Runnable {
      * @return 输出类似 R2 F' L
      */
     public synchronized String searchSolution(String cubeString) {
-        if (lastResult[0].equals(cubeString)) {
-            return lastResult[1];
-        }
-
-        if (cubeString.startsWith("Error")) {
+        if (cubeString.length() < 54) {
             return cubeString;
         }
         if (this.DEBUG) {
@@ -1456,7 +1452,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         char errkey = '8';
         int tries = 0;
         while (errkey == '8' || errkey == '7') {
-            result = this.search.solution(cubeString, depth, maxProbe, 1, mask);
+            result = this.search.solution(depth, maxProbe, 1, mask);
             errkey = result.length() > 0 ? result.charAt(result.length() - 1) : '0';
             tries = maxTries[depth - 15];
             while (errkey == '8' && tries > 0) {
@@ -1477,7 +1473,6 @@ public final class AutoPlayer extends Panel implements Runnable {
         if (this.DEBUG) {
             System.out.println("depth:" + (--depth) + ", tries: " + (maxTries[depth - 15] - tries) + ", result: " + result);
         }
-        lastResult = new String[]{cubeString, result};
         return result;
     }
 
@@ -1487,8 +1482,6 @@ public final class AutoPlayer extends Panel implements Runnable {
     */
     public String getCubeString(boolean check) {
         AbstractCube3DAWT cube = this.player.getCube3D();
-        // 初始化颜色对应表，顺序：front, right, down, back, left, up
-        final char[] chars = {'F', 'R', 'D', 'B', 'L', 'U', sevenChar};
         // 复制一份字符表，已经添加到colorMap的从该表去除，用于去重
         ArrayList<Character> charList = new ArrayList<>();
         ArrayList<Color> tmp = new ArrayList<>();
@@ -1498,7 +1491,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         }
 
         Map<Color, Character> colorMap = new HashMap<>();
-        colorMap.put(this.colors.get(6), sevenChar);
+        colorMap.put(this.colors.get(6), chars[6]);
         for (int i = 0; i < 6; i++) {
             // 以中心块的颜色为基准
             Color centerColor = cube.getStickerColor(i, 4);
@@ -1571,8 +1564,6 @@ public final class AutoPlayer extends Panel implements Runnable {
      * @param curColors 对应颜色序列，长度需要7，顺序为U R F D L B
      */
     public void setCubeByString(String cubeString, ArrayList<Color> curColors) {
-        // 初始化颜色对应表，顺序：front, right, down, back, left, up
-        final char[] chars = {'F', 'R', 'D', 'B', 'L', 'U', sevenChar};
         Map<Character, Color> colorMap = new HashMap<>();
         for (int i = 0; i < chars.length; i++) {
             colorMap.put(chars[i], curColors.get(i));

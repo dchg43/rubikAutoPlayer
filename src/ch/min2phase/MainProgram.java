@@ -370,7 +370,7 @@ public class MainProgram extends JFrame {
         String result = search.verify(cubeString);
         int n_probe = 0;
         if (result == null) {
-            result = search.solution(cubeString, maxDepth, 100, 1, mask);
+            result = search.solution(maxDepth, 100, 1, mask);
             n_probe = search.numberOfProbes();
             // ++++++++++++++++++++++++ Call Search.solution method from package org.kociemba.twophase
             // ++++++++++++++++++++++++

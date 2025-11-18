@@ -214,7 +214,7 @@ public class Search {
      *         Error 7: No solution exists for the given maxDepth<br>
      *         Error 8: Probe limit exceeded, no solution within given probMax
      */
-    public String solution(String facelets, int maxDepth, int probeMax, int probeMin, int verbose) {
+    public String solution(int maxDepth, int probeMax, int probeMin, int verbose) {
         this.solLen = maxDepth + 1;
         this.probe = 0;
         this.probeMax = probeMax;

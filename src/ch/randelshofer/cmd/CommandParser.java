@@ -37,9 +37,9 @@ public class CommandParser {
             // 帮助
             {"help", "h", null, "显示帮助信息", "show help"},
             // 演示模式
-            {"display", "", "boolean", "进入演示模式，点击求解结束true/false", "show display mode"},
+            {"display", "", "boolean", "是否进入演示模式，取值true或false", "show display mode"},
             // 测试模式
-            {"autoTest", "", "int", "测试模式，输入测试次数，0或不填不测试", "Test mode"},
+            {"autoTest", "", "int", "测试模式，反复打乱并自动求解，0或不填不测试", "Test mode"},
 
             // 垂直方向倾斜角度
             {"alpha", "", "int", "垂直方向倾斜角度 -90 ~ 90，默认值-25", "Vertical orientation of the cube, -90..+90. Default: -25"},
