@@ -124,7 +124,7 @@ public class Search {
     public Search() {
     }
 
-    public void init() {
+    public synchronized void init() {
         Util.init();
         CubieCube.init();
         CoordCube.init(true);
