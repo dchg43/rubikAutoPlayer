@@ -1376,14 +1376,14 @@ public final class AutoPlayer extends Panel implements Runnable {
             break;
         case '7':
             // "No solution exists for the given maximum move number!"
-            result = "没有低于25次移动的方案。";
+            result = "没有低于21次移动的方案。";
             break;
         case '8':
             // "Timeout, no solution found within given maximum time!"
             result = "计算超时。";
             break;
         case '9':
-            result = "6个面的中心块需要各有一个颜色且不相同。";
+            result = "6个面的中心块需要各有一个不同的颜色。";
             break;
         }
         return result;

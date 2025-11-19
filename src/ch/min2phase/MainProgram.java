@@ -80,7 +80,9 @@ public class MainProgram extends JFrame {
 
     private Color curCol = COLORS[0];
 
-    private int maxDepth = 21, maxTime = 5;
+    private int maxDepth = 21;
+
+    private int maxTime = 5;
 
     private boolean useSeparator = true;
 
