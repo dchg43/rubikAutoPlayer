@@ -124,7 +124,7 @@ public class Search {
     public Search() {
     }
 
-    public synchronized void init() {
+    public void init() {
         Util.init();
         CubieCube.init();
         CoordCube.init(true);
@@ -226,7 +226,7 @@ public class Search {
         return (verbose & OPTIMAL_SOLUTION) == 0 ? search() : searchopt();
     }
 
-    private synchronized void prepareSearch(CubieCube cc) {
+    private void prepareSearch(CubieCube cc) {
         conjMask = (TRY_INVERSE ? 0 : 0x38) | (TRY_THREE_AXES ? 0 : 0x36);
         selfSym = cc.selfSymmetry();
         conjMask |= (selfSym >> 16 & 0xffff) != 0 ? 0x12 : 0;

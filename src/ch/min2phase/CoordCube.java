@@ -81,7 +81,7 @@ public class CoordCube {
      */
     protected static int initLevel = 0;
 
-    public static synchronized void init(boolean fullInit) {
+    public static void init(boolean fullInit) {
         if (initLevel == 2 || (initLevel == 1 && !fullInit)) {
             return;
         }

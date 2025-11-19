@@ -266,7 +266,7 @@ public class Util {
         byte ori;
         byte col1, col2;
         CubieCube ccRet = new CubieCube();
-        for (byte i = 0; i < 8; i++) {
+        for (int i = 0; i < 8; i++) {
             // get the colors of the cubie at corner i, starting with U/D
             for (ori = 0; ori < 3; ori++) {
                 if (f[cornerFacelet[i][ori]] == U || f[cornerFacelet[i][ori]] == D) {
@@ -275,7 +275,7 @@ public class Util {
             }
             col1 = f[cornerFacelet[i][(ori + 1) % 3]];
             col2 = f[cornerFacelet[i][(ori + 2) % 3]];
-            for (byte j = 0; j < 8; j++) {
+            for (int j = 0; j < 8; j++) {
                 if (col1 == cornerFacelet[j][1] / 9 && col2 == cornerFacelet[j][2] / 9) {
                     // in cornerposition i we have cornercubie j
                     ccRet.ca[i] = (byte) (ori % 3 << 3 | j);
@@ -283,8 +283,8 @@ public class Util {
                 }
             }
         }
-        for (byte i = 0; i < 12; i++) {
-            for (byte j = 0; j < 12; j++) {
+        for (int i = 0; i < 12; i++) {
+            for (int j = 0; j < 12; j++) {
                 if (f[edgeFacelet[i][0]] == edgeFacelet[j][0] / 9 && f[edgeFacelet[i][1]] == edgeFacelet[j][1] / 9) {
                     ccRet.ea[i] = (byte) (j << 1);
                     break;
@@ -394,7 +394,7 @@ public class Util {
         }
     }
 
-    public synchronized static void init() {
+    public static void init() {
         for (byte i = 0; i < 18; i++) {
             std2ud[ud2std[i]] = i;
         }

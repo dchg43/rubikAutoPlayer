@@ -1429,7 +1429,7 @@ public final class AutoPlayer extends Panel implements Runnable {
      * @param cubeString 类似 UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB
      * @return 输出类似 R2 F' L
      */
-    public synchronized String searchSolution(String cubeString) {
+    public String searchSolution(String cubeString) {
         if (cubeString.length() < 54) {
             return cubeString;
         }
@@ -1437,35 +1437,37 @@ public final class AutoPlayer extends Panel implements Runnable {
             System.out.println("input: " + cubeString);
         }
 
-        String verify = this.search.verify(cubeString);
-        if (verify != null) {
-            return verify;
-        }
-
         int depth = 15; // 建议 Step: 15 ~ 18
         // 结果长度跟这个值相关，0, 0, 0, 0, 5, 300, 3000, 300000得到的几率大概是0.1,0.4,1,3,20,70,6,0(%)
         final int[] maxTries = {0, 0, 0, 0, 5, 300, 3000, 300000}; // 对应depth的15 16 17 18 19 20 21 22
         final int maxDepth = depth + maxTries.length - 1;
-        final int mask = 0;
-        int maxProbe = 1;
         String result = "Error 8";
-        char errkey = '8';
         int tries = 0;
-        while (errkey == '8' || errkey == '7') {
-            result = this.search.solution(depth, maxProbe, 1, mask);
-            errkey = result.length() > 0 ? result.charAt(result.length() - 1) : '0';
-            tries = maxTries[depth - 15];
-            while (errkey == '8' && tries > 0) {
-                result = this.search.next(maxProbe, 1, mask);
-                errkey = result.charAt(result.length() - 1);
-                tries--;
+        synchronized (this.search) {
+            String verify = this.search.verify(cubeString);
+            if (verify != null) {
+                return verify;
             }
-            depth++;
-            if (depth >= maxDepth) {
-                if (depth == maxDepth) {
-                    maxProbe = 10000;
-                } else {
-                    break;
+
+            int mask = 0;
+            int maxProbe = 1;
+            char errkey = '8';
+            while (errkey == '8' || errkey == '7') {
+                result = this.search.solution(depth, maxProbe, 1, mask);
+                errkey = result.length() > 0 ? result.charAt(result.length() - 1) : '0';
+                tries = maxTries[depth - 15];
+                while (errkey == '8' && tries > 0) {
+                    result = this.search.next(maxProbe, 1, mask);
+                    errkey = result.charAt(result.length() - 1);
+                    tries--;
+                }
+                depth++;
+                if (depth >= maxDepth) {
+                    if (depth == maxDepth) {
+                        maxProbe = 10000;
+                    } else {
+                        break;
+                    }
                 }
             }
         }
