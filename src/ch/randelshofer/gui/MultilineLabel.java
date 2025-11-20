@@ -22,6 +22,10 @@ public class MultilineLabel extends Canvas {
 
     public static final String emptyString = "";
 
+    private static final String space = " ";
+
+    private static final String enter = "\n";
+
     private List<String> lines = new ArrayList<>();
 
     private int selectionStart = -1;
@@ -96,22 +100,23 @@ public class MultilineLabel extends Canvas {
 
         StringTokenizer stringTokenizer = new StringTokenizer(this.text, " \n", true);
         StringBuilder sb = new StringBuilder();
+        int sbWidth = 0;
+        int tokenWidth;
         while (stringTokenizer.hasMoreTokens()) {
             String strNextToken = stringTokenizer.nextToken();
-            if (strNextToken.equals("\n")) {
-                sb.append(strNextToken);
+            tokenWidth = this.fontMetrics.stringWidth(strNextToken);
+            if (enter.equals(strNextToken)) {
                 lines.add(sb.toString());
                 sb.setLength(0);
-            } else if (this.fontMetrics.stringWidth(sb + strNextToken) <= width) {
+                sbWidth = 0;
+            } else if (sbWidth + tokenWidth <= width) {
                 sb.append(strNextToken);
-            } else if (strNextToken.equals(" ")) {
-                sb.append(strNextToken);
+                sbWidth += tokenWidth;
+            } else if (!space.equals(strNextToken)) {
                 lines.add(sb.toString());
                 sb.setLength(0);
-            } else {
-                lines.add(sb.toString());
-                sb.setLength(0);
                 sb.append(strNextToken);
+                sbWidth = tokenWidth;
             }
         }
         if (sb.length() > 0) {
@@ -185,6 +190,7 @@ public class MultilineLabel extends Canvas {
             if (this.fontMetrics == null) {
                 this.fontMetrics = g.getFontMetrics(g.getFont());
             }
+            // 这里不需要调用wrapText，因为revalidate会调用invalidate，invalidate调用wrapText
             revalidate();
             g.clearRect(0, 0, getWidth(), getHeight());
         } else {
