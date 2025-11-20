@@ -82,7 +82,6 @@ public class MultilineLabel extends Canvas {
             this.text = text;
         }
         this.cleanGraphics = true;
-        // revalidate(); // 这儿revalidate可以提升repaint的速度?
         repaint();
     }
 
@@ -182,12 +181,12 @@ public class MultilineLabel extends Canvas {
     @Override
     public void update(Graphics g) {
         if (this.cleanGraphics) {
+            this.cleanGraphics = false;
             if (this.fontMetrics == null) {
                 this.fontMetrics = g.getFontMetrics(g.getFont());
             }
-            wrapText();
+            revalidate();
             g.clearRect(0, 0, getWidth(), getHeight());
-            this.cleanGraphics = false;
         } else {
             g.clearRect(lastFill.top, lastFill.left, lastFill.bottom, lastFill.right);
         }
