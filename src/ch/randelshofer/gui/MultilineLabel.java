@@ -37,7 +37,7 @@ public class MultilineLabel extends Canvas {
     private String text = emptyString;
 
     // 文本框边距：上 左 下 右
-    private Insets insets = new Insets(2, 6, 6, 3);
+    private Insets insets = new Insets(2, 6, 6, 6);
 
     // 上一次绘制覆盖图层位置
     private Insets lastFill = new Insets(0, 0, 0, 0);
@@ -191,7 +191,7 @@ public class MultilineLabel extends Canvas {
             revalidate();
             g.clearRect(0, 0, getWidth(), getHeight());
         } else {
-            g.clearRect(lastFill.top, lastFill.left, lastFill.bottom, lastFill.right);
+            g.clearRect(this.lastFill.top, this.lastFill.left, this.lastFill.bottom, this.lastFill.right);
         }
         paint(g);
     }
@@ -211,8 +211,8 @@ public class MultilineLabel extends Canvas {
                     int iMax = Math.max(0, this.selectionStart - cur);
                     int x = insets.left + this.fontMetrics.stringWidth(line.substring(0, iMax));
                     int weight = this.fontMetrics.stringWidth(line.substring(iMax, Math.max(0, Math.min(line.length(), this.selectionEnd - cur))));
-                    lastFill.set(x, y, weight, height);
-                    g.fillRect(lastFill.top, lastFill.left, lastFill.bottom, lastFill.right); // 绘制选择覆盖图层
+                    this.lastFill.set(x, y, weight, height);
+                    g.fillRect(this.lastFill.top, this.lastFill.left, this.lastFill.bottom, this.lastFill.right); // 绘制选择覆盖图层
                     break;
                 }
                 cur = length;
