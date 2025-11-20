@@ -831,11 +831,9 @@ public final class AutoPlayer extends Panel implements Runnable {
             img = this.createImage((ImageProducer) o);
             imageCache.put(url, img);
             return img;
-
         } catch (Exception ex) {
             return null;
         }
-
     }
 
     public ImageIcon reSizeIcon(URL imagePath, int newWidth, int newHeight) {

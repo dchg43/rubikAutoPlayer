@@ -224,9 +224,11 @@ public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener
     }
 
     private void paintBackground(Graphics graphics) {
-        graphics.setColor(getBackground());
-        graphics.fillRect(0, 0, this.backSize.width, this.backSize.height);
-        if (this.backgroundImage != null) {
+        if (this.backgroundImage == null) {
+            // 使用背景颜色填充
+            graphics.setColor(getBackground());
+            graphics.fillRect(0, 0, this.backSize.width, this.backSize.height);
+        } else {
             // 填充方式：保持图片比例，且居中
             int imgWidth = this.backgroundImage.getWidth(this);
             int imgHeight = this.backgroundImage.getHeight(this);
