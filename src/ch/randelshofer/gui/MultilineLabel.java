@@ -100,23 +100,20 @@ public class MultilineLabel extends Canvas {
 
         StringTokenizer stringTokenizer = new StringTokenizer(this.text, " \n", true);
         StringBuilder sb = new StringBuilder();
-        int sbWidth = 0;
-        int tokenWidth;
         while (stringTokenizer.hasMoreTokens()) {
             String strNextToken = stringTokenizer.nextToken();
-            tokenWidth = this.fontMetrics.stringWidth(strNextToken);
             if (enter.equals(strNextToken)) {
+                sb.append(strNextToken);
                 lines.add(sb.toString());
                 sb.setLength(0);
-                sbWidth = 0;
-            } else if (sbWidth + tokenWidth <= width) {
+            } else if (this.fontMetrics.stringWidth(sb + strNextToken) <= width) {
                 sb.append(strNextToken);
-                sbWidth += tokenWidth;
-            } else if (!space.equals(strNextToken)) {
+            } else if (space.equals(strNextToken)) {
+                sb.append(strNextToken);
+            } else {
                 lines.add(sb.toString());
                 sb.setLength(0);
                 sb.append(strNextToken);
-                sbWidth = tokenWidth;
             }
         }
         if (sb.length() > 0) {
