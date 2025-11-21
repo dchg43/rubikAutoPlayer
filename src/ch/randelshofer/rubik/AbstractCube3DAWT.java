@@ -20,11 +20,11 @@ import ch.randelshofer.util.PooledSequentialDispatcherAWT;
 
 /** 控制魔方转动 */
 public abstract class AbstractCube3DAWT implements RubikListener {
-    // 设置魔方一次转动的时间，影响帧率（刷新率），默认50ms。帧率（刷新率）为：1000 / oneTwistTime
-    private static final long oneTwistTime = 33L;
-
     // 设置魔方一次转动细分的次数，影响视觉精细度，默认10次。整个转动的时间为oneTwistTime * oneTwistCount，推荐乘积为500ms最佳
     private static final int oneTwistCount = 15;
+
+    // 设置魔方一次转动的时间，影响帧率（刷新率），默认50ms。帧率（刷新率）为：1000 / oneTwistTime。500ms为完成整个转动的时间
+    private static final long oneTwistTime = 500L / oneTwistCount;
 
     // CORNER_MAP[CornerSide][cornerLoc % 4] （详见图片<块的命名>）
     private static final int[][] CORNER_MAP = {{0, 6, 2, 8}, {2, 8, 0, 6}, {0, 2, 8, 6}, {0, 6, 2, 8}, {2, 8, 0, 6}, {6, 8, 2, 0}};
