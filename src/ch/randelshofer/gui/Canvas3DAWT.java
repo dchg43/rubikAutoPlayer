@@ -55,7 +55,7 @@ public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener
 
     private PropertyChangeSupport changeSupport;
 
-    private Dimension preferredSize = new Dimension(200, 200);
+    private Dimension preferredSize;
 
     private Dimension backSize = new Dimension(0, 0);
 
@@ -386,7 +386,10 @@ public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener
 
     @Override
     public Dimension getPreferredSize() {
-        return this.preferredSize != null ? this.preferredSize : super.getPreferredSize();
+        if (this.preferredSize == null) {
+            this.preferredSize = super.getPreferredSize();
+        }
+        return this.preferredSize;
     }
 
     @Override
@@ -410,11 +413,10 @@ public class Canvas3DAWT extends Canvas implements ChangeListener, MouseListener
 
     @Override
     protected void firePropertyChange(String propertyName, Object oldValue, Object newValue) {
-        PropertyChangeSupport propertyChangeSupport = this.changeSupport;
-        if (propertyChangeSupport == null) {
+        if (this.changeSupport == null) {
             return;
         }
-        propertyChangeSupport.firePropertyChange(propertyName, oldValue, newValue);
+        this.changeSupport.firePropertyChange(propertyName, oldValue, newValue);
     }
 
     public static final class FaceElement {
