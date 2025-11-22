@@ -12,7 +12,7 @@ import ch.randelshofer.util.SingletonEnumeration;
 public class RepetitionNode extends ScriptNode {
     private static final long serialVersionUID = 1767020157765390066L;
 
-    int repeatCount = 1;
+    private int repeatCount = 1;
 
     private static class ResolvedEnumeration implements Iterator<DefaultMutableTreeNode> {
         private RepetitionNode root;
@@ -23,9 +23,9 @@ public class RepetitionNode extends ScriptNode {
 
         private List<DefaultMutableTreeNode> cachedChildren = new ArrayList<>();
 
-        boolean inverse;
+        private boolean inverse;
 
-        int repeatCount;
+        private int repeatCount;
 
         public ResolvedEnumeration(RepetitionNode root, boolean inverse, int repeatCount) {
             this.root = root;

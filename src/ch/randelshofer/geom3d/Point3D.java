@@ -20,16 +20,4 @@ public class Point3D {
     public String toString() {
         return new StringBuilder().append("Point3D[").append(this.x).append(", ").append(this.y).append(", ").append(this.z).append("]").toString();
     }
-
-    public double getX() {
-        return this.x;
-    }
-
-    public double getY() {
-        return this.y;
-    }
-
-    public double getZ() {
-        return this.z;
-    }
 }

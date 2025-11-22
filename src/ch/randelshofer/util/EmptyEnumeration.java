@@ -6,7 +6,7 @@ import java.util.NoSuchElementException;
 import ch.randelshofer.gui.tree.DefaultMutableTreeNode;
 
 public class EmptyEnumeration implements Iterator<DefaultMutableTreeNode> {
-    public static final EmptyEnumeration EMPTY_ENUMERATION = new EmptyEnumeration();
+    private static final EmptyEnumeration EMPTY_ENUMERATION = new EmptyEnumeration();
 
     private EmptyEnumeration() {
     }

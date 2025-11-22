@@ -1,13 +1,13 @@
 package ch.randelshofer.geom3d;
 
 public class Polygon3D {
-    public int npoints;
+    protected int npoints;
 
-    public double[] xpoints;
+    protected double[] xpoints;
 
-    public double[] ypoints;
+    protected double[] ypoints;
 
-    public double[] zpoints;
+    protected double[] zpoints;
 
     public Polygon3D() {
         setCapacity(4);

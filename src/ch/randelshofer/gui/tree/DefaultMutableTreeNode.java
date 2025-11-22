@@ -224,7 +224,7 @@ public class DefaultMutableTreeNode implements Cloneable, Serializable {
     }
 
     public Iterator<DefaultMutableTreeNode> children() {
-        return this.children == null ? EmptyEnumeration.EMPTY_ENUMERATION : this.children.iterator();
+        return this.children == null ? EmptyEnumeration.getInstance() : this.children.iterator();
     }
 
     public void setAllowsChildren(boolean allowsChildren) {

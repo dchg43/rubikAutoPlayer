@@ -26,7 +26,7 @@ public class RubiksCubeCore implements Cloneable {
 
     private int[] sideOrient = new int[6];
 
-    EventListenerList listenerList = new EventListenerList();
+    private EventListenerList listenerList = new EventListenerList();
 
     private boolean quiet;
 

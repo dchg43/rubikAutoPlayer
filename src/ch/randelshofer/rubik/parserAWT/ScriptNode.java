@@ -26,7 +26,7 @@ public class ScriptNode extends DefaultMutableTreeNode {
 
         private Iterator<DefaultMutableTreeNode> subtree;
 
-        boolean inverse;
+        private boolean inverse;
 
         public ResolvedEnumeration(ScriptNode root, boolean inverse) {
             this.root = root;

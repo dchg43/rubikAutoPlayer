@@ -50,26 +50,20 @@ public abstract class AbstractCube3DAWT implements RubikListener {
 
     private PooledSequentialDispatcherAWT dispatcher = new PooledSequentialDispatcherAWT();
 
-    // private boolean isLazy;
+    protected static final Color PART_FILL_COLOR = new Color(20, 20, 20);
 
-    public static final int TWIST_MODE = 0;
+    // protected static final Color CENTER_FILL_COLOR = Color.white;
 
-    public static final int PARTS_MODE = 1;
+    protected static final Color PART_BORDER_COLOR = Color.black;
 
-    public static final Color PART_FILL_COLOR = new Color(20, 20, 20);
-
-    public static final Color CENTER_FILL_COLOR = Color.white;
-
-    public static final Color PART_BORDER_COLOR = Color.black;
-
-    public static final double[][] CORNER_EXPLODE_TRANSLATION = {{-1.0d, 1.0d, 1.0d}, {-1.0d, -1.0d, 1.0d}, {1.0d, 1.0d, 1.0d}, {1.0d, -1.0d, 1.0d},
+    private static final double[][] CORNER_EXPLODE_TRANSLATION = {{-1.0d, 1.0d, 1.0d}, {-1.0d, -1.0d, 1.0d}, {1.0d, 1.0d, 1.0d}, {1.0d, -1.0d, 1.0d},
             {1.0d, 1.0d, -1.0d}, {1.0d, -1.0d, -1.0d}, {-1.0d, 1.0d, -1.0d}, {-1.0d, -1.0d, -1.0d}};
 
-    public static final double[][] EDGE_EXPLODE_TRANSLATION = {{0.0d, 1.0d, 1.0d}, {-1.0d, 0.0d, 1.0d}, {0.0d, -1.0d, 1.0d}, {1.0d, 1.0d, 0.0d},
+    private static final double[][] EDGE_EXPLODE_TRANSLATION = {{0.0d, 1.0d, 1.0d}, {-1.0d, 0.0d, 1.0d}, {0.0d, -1.0d, 1.0d}, {1.0d, 1.0d, 0.0d},
             {1.0d, 0.0d, 1.0d}, {1.0d, -1.0d, 0.0d}, {0.0d, 1.0d, -1.0d}, {1.0d, 0.0d, -1.0d}, {0.0d, -1.0d, -1.0d}, {-1.0d, 1.0d, 0.0d}, {-1.0d, 0.0d, -1.0d},
             {-1.0d, -1.0d, 0.0d}};
 
-    public static final double[][] SIDE_EXPLODE_TRANSLATION = {{0.0d, 0.0d, 1.0d}, {1.0d, 0.0d, 0.0d}, {0.0d, -1.0d, 0.0d}, {0.0d, 0.0d, -1.0d},
+    private static final double[][] SIDE_EXPLODE_TRANSLATION = {{0.0d, 0.0d, 1.0d}, {1.0d, 0.0d, 0.0d}, {0.0d, -1.0d, 0.0d}, {0.0d, 0.0d, -1.0d},
             {-1.0d, 0.0d, 0.0d}, {0.0d, 1.0d, 0.0d}};
 
     protected Shape3D[] cornerShapes = new Shape3D[8];
@@ -84,11 +78,11 @@ public abstract class AbstractCube3DAWT implements RubikListener {
 
     private Transform3D[] sideIdentityTransforms = new Transform3D[6];
 
-    protected TransformNode[] cornerTransforms = new TransformNode[8];
+    private TransformNode[] cornerTransforms = new TransformNode[8];
 
-    protected TransformNode[] edgeTransforms = new TransformNode[12];
+    private TransformNode[] edgeTransforms = new TransformNode[12];
 
-    protected TransformNode[] sideTransforms = new TransformNode[6];
+    private TransformNode[] sideTransforms = new TransformNode[6];
 
     private RubiksCubeCore model = new RubiksCubeCore();
 

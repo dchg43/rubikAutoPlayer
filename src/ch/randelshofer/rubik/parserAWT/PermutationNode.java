@@ -17,13 +17,10 @@ public class PermutationNode extends ScriptNode {
 
     private int type = -1;
 
-    public static final int SIDE_PERMUTATION = 1;
-
-    public static final int EDGE_PERMUTATION = 2;
-
-    public static final int CORNER_PERMUTATION = 3;
-
-    public static final int UNDEFINED = -1;
+    // public static final int SIDE_PERMUTATION = 1;
+    // public static final int EDGE_PERMUTATION = 2;
+    // public static final int CORNER_PERMUTATION = 3;
+    // public static final int UNDEFINED = -1;
 
     // private static final int[][] SIDE_SYMBOLS = {{87}, {85}, {89}, {90}, {88}, {86}};
 

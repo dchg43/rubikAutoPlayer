@@ -16,12 +16,9 @@ import ch.randelshofer.rubik.RubiksCubeCore;
 
 public class ScriptParser {
     public static final int POSITION_UNSUPPORTED = -1;
-
-    public static final int POSITION_PREFIX = 0;
-
-    public static final int POSITION_SUFFIX = 1;
-
-    public static final int POSITION_HEADER = 2;
+    // public static final int POSITION_PREFIX = 0;
+    // public static final int POSITION_SUFFIX = 1;
+    // public static final int POSITION_HEADER = 2;
 
     private boolean DEBUG;
 

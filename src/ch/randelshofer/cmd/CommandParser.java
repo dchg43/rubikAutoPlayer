@@ -26,14 +26,14 @@ import org.apache.commons.cli.help.HelpFormatter.Builder;
 import org.apache.commons.cli.help.TextHelpAppendable;
 
 public class CommandParser {
-    public static final String version = "1.0";
+    public static final String VERSION = "1.0";
 
-    public static final String copyright = "© 2025-2030 Deng";
+    public static final String COPYRIGHT = "© 2025-2030 Deng";
 
-    public static final String[] defaultOption = new String[]{"确定"};
+    public static final String[] DEFAULTOPTION = new String[]{"确定"};
 
     // 格式：长key，短key，类型(null表示没有value，比如h)，中文描述，英文描述
-    private static final String[][] parameterInfo = {
+    private static final String[][] PARAMETERINFO = {
             // 帮助
             {"help", "h", null, "显示帮助信息", "show help"},
             // 演示模式
@@ -130,7 +130,7 @@ public class CommandParser {
 
     public void parse(String[] args) {
         final Options options = new Options();
-        for (String[] param : parameterInfo) {
+        for (String[] param : PARAMETERINFO) {
             options.addOption(param[1] == null || param[1].length() == 0 ? null : param[1], param[0], param[2] == null ? false : true, param[3]);
         }
         CommandLine cmds = null;
@@ -170,7 +170,7 @@ public class CommandParser {
                         // 修改字体，改成等宽字体
                         UIManager.put("OptionPane.messageFont", new FontUIResource(new Font(CommandParser.this.defaultFont, Font.BOLD, 13)));
                         JOptionPane.showOptionDialog(null, message, "帮助", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE,
-                                CommandParser.this.helpIcon, defaultOption, defaultOption[0]);
+                                CommandParser.this.helpIcon, DEFAULTOPTION, DEFAULTOPTION[0]);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -320,6 +320,6 @@ public class CommandParser {
     }
 
     public static String getAppInfo() {
-        return "Rubik Player " + version + ", " + copyright;
+        return "Rubik Player " + VERSION + ", " + COPYRIGHT;
     }
 }

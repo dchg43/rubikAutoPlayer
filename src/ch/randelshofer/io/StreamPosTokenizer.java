@@ -56,11 +56,11 @@ public class StreamPosTokenizer {
 
     private static final byte CT_COMMENT = 16;
 
-    public int ttype;
+    private int ttype;
 
     public static final int TT_EOF = -1;
 
-    public static final int TT_EOL = 10;
+    // public static final int TT_EOL = 10;
 
     public static final int TT_NUMBER = -2;
 
@@ -70,7 +70,7 @@ public class StreamPosTokenizer {
 
     public String sval;
 
-    public double nval;
+    private double nval;
 
     private StreamPosTokenizer() {
         this.reader = null;
