@@ -398,13 +398,11 @@ public class ScriptParser {
         this.isAmbiguousSeqEndCmtrEnd = isAmbiguous(98, COMMUTATOR_END);
         this.isAmbiguousSeqEndCngrEnd = isAmbiguous(98, CONJUGATOR_END);
         this.isAmbiguousCngrEndCmtrEnd = isAmbiguous(COMMUTATOR_END, CONJUGATOR_END);
-        if (!(this.tokens[110].length == 0 && this.tokens[111].length == 0)
-            && (this.tokens[110].length == 0 || this.tokens[111].length == 0 || this.tokens[110].length != 1 || this.tokens[111].length != 1
-                || this.tokens[110][0].length() < 1 || this.tokens[110][0].length() > 2 || this.tokens[111][0].length() < 1
-                || this.tokens[111][0].length() > 2)) {
-            throw new IllegalArgumentException(
-                    new StringBuilder().append("Illegal Comment Tokens ").append(Arrays.toString(this.tokens[110])).append(" ").append(
-                            Arrays.toString(this.tokens[111])).toString());
+        if (!(this.tokens[110].length == 0 && this.tokens[111].length == 0) && (this.tokens[110].length == 0 || this.tokens[111].length == 0
+                || this.tokens[110].length != 1 || this.tokens[111].length != 1 || this.tokens[110][0].length() < 1 || this.tokens[110][0].length() > 2
+                || this.tokens[111][0].length() < 1 || this.tokens[111][0].length() > 2)) {
+            throw new IllegalArgumentException(new StringBuilder().append("Illegal Comment Tokens ").append(Arrays.toString(this.tokens[110])).append(" ")
+                    .append(Arrays.toString(this.tokens[111])).toString());
         }
         if (this.tokens[112].length != 0 && (this.tokens[112].length != 1 || this.tokens[112][0].length() < 1 || this.tokens[112][0].length() > 2)) {
             StringBuilder sb = new StringBuilder();
@@ -721,7 +719,7 @@ public class ScriptParser {
             int startPosition = streamPosTokenizer.getStartPosition();
             consumeGreedy(streamPosTokenizer, greedy);
             return parseSequence(streamPosTokenizer, scriptNode, startPosition, 0x1 | ((this.conjugatorPos == 2 && this.isAmbiguousSeqBeginCngrBegin) ? 2 : 0)
-                                                                                | ((this.commutatorPos == 2 && this.isAmbiguousSeqBeginCmtrBegin) ? 4 : 0));
+                    | ((this.commutatorPos == 2 && this.isAmbiguousSeqBeginCmtrBegin) ? 4 : 0));
         }
         if (iIntValue == 100 && !this.isAmbiguousSeqBeginPermBegin) {
             int startPosition2 = streamPosTokenizer.getStartPosition();
@@ -741,7 +739,7 @@ public class ScriptParser {
         streamPosTokenizer.pushBack();
         if (num2 == null || 85 > num2.intValue() || num2.intValue() > 93) {
             return parseSequence(streamPosTokenizer, scriptNode, startPosition3, 1 | ((this.conjugatorPos == 2 && this.isAmbiguousSeqBeginCngrBegin) ? 2 : 0)
-                                                                                 | ((this.commutatorPos == 2 && this.isAmbiguousSeqBeginCmtrBegin) ? 4 : 0));
+                    | ((this.commutatorPos == 2 && this.isAmbiguousSeqBeginCmtrBegin) ? 4 : 0));
         }
         return parsePermutation(streamPosTokenizer, scriptNode, startPosition3);
     }
@@ -1038,8 +1036,8 @@ public class ScriptParser {
                 }
                 ParseException parseException = (ParseException) e;
                 throw new ParseException(
-                        new StringBuilder().append("Macro '").append(greedy).append("': ").append(e.getMessage()).append(" @").append(
-                                parseException.getStartPosition()).append("..").append(parseException.getEndPosition()).toString(),
+                        new StringBuilder().append("Macro '").append(greedy).append("': ").append(e.getMessage()).append(" @")
+                                .append(parseException.getStartPosition()).append("..").append(parseException.getEndPosition()).toString(),
                         streamPosTokenizer.getStartPosition(), (streamPosTokenizer.getStartPosition() + greedy.length()) - 1);
             }
         case StreamPosTokenizer.TT_EOF: /* -1 */
@@ -1113,7 +1111,7 @@ public class ScriptParser {
             i2 = (symbol / 6) % 2 == 0 ? i2 : -i2;
         }
         if ((12 <= symbol && symbol <= 23)
-            || ((36 <= symbol && symbol <= 47) || ((54 <= symbol && symbol <= 59) || ((66 <= symbol && symbol <= 71) || (78 <= symbol && symbol <= 83))))) {
+                || ((36 <= symbol && symbol <= 47) || ((54 <= symbol && symbol <= 59) || ((66 <= symbol && symbol <= 71) || (78 <= symbol && symbol <= 83))))) {
             i2 *= 2;
         }
         return i2;

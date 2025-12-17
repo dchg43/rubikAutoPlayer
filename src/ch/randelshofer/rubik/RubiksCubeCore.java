@@ -51,8 +51,8 @@ public class RubiksCubeCore implements Cloneable {
         }
         RubiksCubeCore rubiksCubeCore = (RubiksCubeCore) obj;
         return Arrays.equals(rubiksCubeCore.cornerLoc, this.cornerLoc) && Arrays.equals(rubiksCubeCore.cornerOrient, this.cornerOrient) // corner
-               && Arrays.equals(rubiksCubeCore.edgeLoc, this.edgeLoc) && Arrays.equals(rubiksCubeCore.edgeOrient, this.edgeOrient) // edge
-               && Arrays.equals(rubiksCubeCore.sideLoc, this.sideLoc) && Arrays.equals(rubiksCubeCore.sideOrient, this.sideOrient); // side
+                && Arrays.equals(rubiksCubeCore.edgeLoc, this.edgeLoc) && Arrays.equals(rubiksCubeCore.edgeOrient, this.edgeOrient) // edge
+                && Arrays.equals(rubiksCubeCore.sideLoc, this.sideLoc) && Arrays.equals(rubiksCubeCore.sideOrient, this.sideOrient); // side
     }
 
     @Override

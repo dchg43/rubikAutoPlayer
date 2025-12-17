@@ -182,11 +182,11 @@ public class Transform3D implements Cloneable {
         }
         Transform3D other = (Transform3D) obj;
         return Double.doubleToLongBits(m00) == Double.doubleToLongBits(other.m00) && Double.doubleToLongBits(m01) == Double.doubleToLongBits(other.m01)
-               && Double.doubleToLongBits(m02) == Double.doubleToLongBits(other.m02) && Double.doubleToLongBits(m10) == Double.doubleToLongBits(other.m10)
-               && Double.doubleToLongBits(m11) == Double.doubleToLongBits(other.m11) && Double.doubleToLongBits(m12) == Double.doubleToLongBits(other.m12)
-               && Double.doubleToLongBits(m20) == Double.doubleToLongBits(other.m20) && Double.doubleToLongBits(m21) == Double.doubleToLongBits(other.m21)
-               && Double.doubleToLongBits(m22) == Double.doubleToLongBits(other.m22) && Double.doubleToLongBits(m30) == Double.doubleToLongBits(other.m30)
-               && Double.doubleToLongBits(m31) == Double.doubleToLongBits(other.m31) && Double.doubleToLongBits(m32) == Double.doubleToLongBits(other.m32);
+                && Double.doubleToLongBits(m02) == Double.doubleToLongBits(other.m02) && Double.doubleToLongBits(m10) == Double.doubleToLongBits(other.m10)
+                && Double.doubleToLongBits(m11) == Double.doubleToLongBits(other.m11) && Double.doubleToLongBits(m12) == Double.doubleToLongBits(other.m12)
+                && Double.doubleToLongBits(m20) == Double.doubleToLongBits(other.m20) && Double.doubleToLongBits(m21) == Double.doubleToLongBits(other.m21)
+                && Double.doubleToLongBits(m22) == Double.doubleToLongBits(other.m22) && Double.doubleToLongBits(m30) == Double.doubleToLongBits(other.m30)
+                && Double.doubleToLongBits(m31) == Double.doubleToLongBits(other.m31) && Double.doubleToLongBits(m32) == Double.doubleToLongBits(other.m32);
     }
 
     public void transform(Point3D point3D) {
@@ -245,15 +245,15 @@ public class Transform3D implements Cloneable {
 
     @Override
     public String toString() {
-        return new StringBuilder().append("{").append(this.m00).append(",").append(this.m10).append(",").append(this.m20).append(",").append(this.m30).append(
-                "\n").append(this.m01).append(",").append(this.m11).append(",").append(this.m21).append(",").append(this.m31).append("\n").append(
-                        this.m02).append(",").append(this.m12).append(",").append(this.m22).append(",").append(this.m32).append("}").toString();
+        return new StringBuilder().append("{").append(this.m00).append(",").append(this.m10).append(",").append(this.m20).append(",").append(this.m30)
+                .append("\n").append(this.m01).append(",").append(this.m11).append(",").append(this.m21).append(",").append(this.m31).append("\n")
+                .append(this.m02).append(",").append(this.m12).append(",").append(this.m22).append(",").append(this.m32).append("}").toString();
     }
 
     public boolean isNaN() {
         return Double.isNaN(this.m00) || Double.isNaN(this.m10) || Double.isNaN(this.m20) || Double.isNaN(this.m30) || Double.isNaN(this.m01)
-               || Double.isNaN(this.m11) || Double.isNaN(this.m21) || Double.isNaN(this.m31) || Double.isNaN(this.m02) || Double.isNaN(this.m12)
-               || Double.isNaN(this.m22) || Double.isNaN(this.m32);
+                || Double.isNaN(this.m11) || Double.isNaN(this.m21) || Double.isNaN(this.m31) || Double.isNaN(this.m02) || Double.isNaN(this.m12)
+                || Double.isNaN(this.m22) || Double.isNaN(this.m32);
     }
 
     public void setTransform(Transform3D transform) {

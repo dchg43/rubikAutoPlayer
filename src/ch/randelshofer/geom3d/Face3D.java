@@ -69,7 +69,7 @@ public class Face3D implements Comparable<Face3D> {
 
     public boolean isVisible(Point3D point3D) {
         return ((((this.coords[this.vertices[0] * 3]) - point3D.x) * this.normal.x) + (((this.coords[(this.vertices[0] * 3) + 1]) - point3D.y) * this.normal.y))
-               + (((this.coords[(this.vertices[0] * 3) + 2]) - point3D.z) * this.normal.z) > 0.0d;
+                + (((this.coords[(this.vertices[0] * 3) + 2]) - point3D.z) * this.normal.z) > 0.0d;
     }
 
     public int[] getVertices() {

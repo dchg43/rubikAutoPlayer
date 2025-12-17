@@ -129,7 +129,7 @@ public class MultilineLabel extends Canvas {
     public synchronized void select(int startPosition, int endPosition, Color background) {
         boolean repaint = false;
         if (endPosition <= this.text.length() && endPosition >= startPosition && startPosition >= 0
-            && (this.selectionStart != startPosition || this.selectionEnd != endPosition)) {
+                && (this.selectionStart != startPosition || this.selectionEnd != endPosition)) {
             this.selectionStart = startPosition;
             this.selectionEnd = endPosition;
             repaint = true;

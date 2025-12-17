@@ -545,14 +545,12 @@ public class StreamPosTokenizer {
 
     public void setSlashStarTokens(String slashStar, String starSlash) {
         if (slashStar.length() != starSlash.length()) {
-            throw new IllegalArgumentException(
-                    new StringBuilder().append("SlashStar and StarSlash tokens must be of same length: '").append(slashStar).append("' '").append(
-                            starSlash).append("'").toString());
+            throw new IllegalArgumentException(new StringBuilder().append("SlashStar and StarSlash tokens must be of same length: '").append(slashStar)
+                    .append("' '").append(starSlash).append("'").toString());
         }
         if (slashStar.length() < 1 || slashStar.length() > 2) {
-            throw new IllegalArgumentException(
-                    new StringBuilder().append("SlashStar and StarSlash tokens must be of length 1 or 2: '").append(slashStar).append("' '").append(
-                            starSlash).append("'").toString());
+            throw new IllegalArgumentException(new StringBuilder().append("SlashStar and StarSlash tokens must be of length 1 or 2: '").append(slashStar)
+                    .append("' '").append(starSlash).append("'").toString());
         }
         this.slashStar = slashStar.toCharArray();
         this.starSlash = starSlash.toCharArray();

@@ -522,15 +522,14 @@ public final class AutoPlayer extends Panel implements Runnable {
                     continue;
                 }
             } catch (NumberFormatException e) {
-                showError(new StringBuilder().append("Invalid parameter 'colorTable', value ").append(Arrays.toString(colors_str)).append(
-                        " is illegal.\n").append(getString(e)).toString());
+                showError(new StringBuilder().append("Invalid parameter 'colorTable', value ").append(Arrays.toString(colors_str)).append(" is illegal.\n")
+                        .append(getString(e)).toString());
             }
             // 设置参数异常时使用默认值
             Color c = new Color(CommandParser.decode(dflt[colorIndex]));
             if (this.colors.contains(c)) {
-                throw new IllegalArgumentException(
-                        new StringBuilder().append("Invalid parameter 'colorTable' value ").append(Arrays.toString(colors_str)).append(
-                                " is illegal.").toString());
+                throw new IllegalArgumentException(new StringBuilder().append("Invalid parameter 'colorTable' value ").append(Arrays.toString(colors_str))
+                        .append(" is illegal.").toString());
             }
             this.colors.add(colorIndex, c);
         }
@@ -538,9 +537,8 @@ public final class AutoPlayer extends Panel implements Runnable {
         for (; colorIndex < dflt.length; colorIndex++) {
             Color c = new Color(CommandParser.decode(dflt[colorIndex]));
             if (this.colors.contains(c)) {
-                throw new IllegalArgumentException(
-                        new StringBuilder().append("Invalid parameter 'colorTable' value ").append(Arrays.toString(colors_str)).append(
-                                " is illegal.").toString());
+                throw new IllegalArgumentException(new StringBuilder().append("Invalid parameter 'colorTable' value ").append(Arrays.toString(colors_str))
+                        .append(" is illegal.").toString());
             }
             this.colors.add(colorIndex, c);
         }
@@ -744,16 +742,16 @@ public final class AutoPlayer extends Panel implements Runnable {
                     for (int j = 0; j < 9; j++) {
                         int entry = Integer.parseInt(colorLists[j]);
                         if (this.colors.size() <= entry) {
-                            showError(new StringBuilder().append("Invalid parameter '").append(strArr[i]).append("', unknown entry '").append(
-                                    colorLists[j]).append("'.").toString());
+                            showError(new StringBuilder().append("Invalid parameter '").append(strArr[i]).append("', unknown entry '").append(colorLists[j])
+                                    .append("'.").toString());
                             break;
                         } else {
                             cube.setStickerColor(i, j, this.colors.get(entry));
                         }
                     }
                 } else {
-                    showError(new StringBuilder().append("Invalid parameter '").append(strArr[i]).append("' provides ").append(colorLists.length).append(
-                            " instead of 9 entries.").toString());
+                    showError(new StringBuilder().append("Invalid parameter '").append(strArr[i]).append("' provides ").append(colorLists.length)
+                            .append(" instead of 9 entries.").toString());
                 }
             }
         }
@@ -1269,7 +1267,7 @@ public final class AutoPlayer extends Panel implements Runnable {
             @Override
             public void componentResized(ComponentEvent e) {
                 int column3 = buttonRight;
-                int frameWidth = getWidth();
+                int frameWidth = getWidth() & (~1); // 将最后一位改为0, 防止按钮左边框显示不完整
                 if (frameWidth > minWidth) {
                     column3 = frameWidth - windowBorder - buttonWidth;
                 }
@@ -1631,8 +1629,8 @@ public final class AutoPlayer extends Panel implements Runnable {
                 break;
             }
             if (parameters2.length != 54) {
-                throw new IllegalArgumentException(new StringBuilder().append("Invalid parameter 'stickers' provides ").append(parameters2.length).append(
-                        " instead of 54 entries.").toString());
+                throw new IllegalArgumentException(new StringBuilder().append("Invalid parameter 'stickers' provides ").append(parameters2.length)
+                        .append(" instead of 54 entries.").toString());
             }
             int i = 0;
             for (int i5 = 0; i5 < 6; i5++) {
