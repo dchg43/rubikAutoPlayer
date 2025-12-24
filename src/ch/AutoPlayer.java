@@ -188,6 +188,8 @@ public final class AutoPlayer extends Panel implements Runnable {
         synchronized (this) {
             if (this.displayMode == STARTING) {
                 this.displayMode = RUNNING;
+            } else {
+                return;
             }
         }
         this.scriptTextArea.setText(null);
@@ -255,6 +257,8 @@ public final class AutoPlayer extends Panel implements Runnable {
         synchronized (this) {
             if (this.displayMode == STARTING) {
                 this.displayMode = RUNNING;
+            } else {
+                return;
             }
         }
 
