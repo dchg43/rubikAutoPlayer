@@ -2,7 +2,6 @@ package ch;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -92,7 +91,9 @@ public final class AutoPlayer extends Panel implements Runnable {
 
     private ArrayList<Color> colors;
 
-    private Panel rearComponent = null;
+    private Canvas3DAWT rearComponent = null;
+
+    private Panel panelComponent = null;
 
     private CommandParser cmd;
 
@@ -173,7 +174,7 @@ public final class AutoPlayer extends Panel implements Runnable {
             scriptPlayer.setDisplayMode(STARTING);
             scriptPlayer.autoTest(scriptPlayer.getCmd().getParameter("autoTest", 0));
         }
-        if ("true".equalsIgnoreCase(scriptPlayer.getCmd().getParameter("display"))) {
+        if (scriptPlayer.getCmd().getParameter("display", false)) {
             scriptPlayer.setDisplayMode(STARTING);
             scriptPlayer.displayDemo();
         }
@@ -271,7 +272,6 @@ public final class AutoPlayer extends Panel implements Runnable {
         RubiksCubeCore model = this.player.getCubeModel();
         model.setQuiet(true);
         this.controlsPanel.setEnabled(false);
-        this.scriptTextArea.setEnabled(false);
         this.player.makesureFinished();
 
         long times = 0;
@@ -300,7 +300,6 @@ public final class AutoPlayer extends Panel implements Runnable {
                             disButton.setEnabled(true);
                         }
                         model.setQuiet(false);
-                        this.scriptTextArea.setEnabled(true);
                         this.controlsPanel.setEnabled(true);
                         this.displayMode = STOPPED;
                         String message = "Auto test failed.\n script: " + this.scriptTextArea.getText() + "\n result: " + facelets;
@@ -320,7 +319,6 @@ public final class AutoPlayer extends Panel implements Runnable {
                 disButton.setEnabled(true);
             }
             model.setQuiet(false);
-            this.scriptTextArea.setEnabled(true);
             this.controlsPanel.setEnabled(true);
             this.displayMode = STOPPED;
             String message = "Auto test failed.";
@@ -349,7 +347,6 @@ public final class AutoPlayer extends Panel implements Runnable {
         cube.fireStateChanged();
         this.player.makesureFinished();
         model.setQuiet(false);
-        this.scriptTextArea.setEnabled(true);
         this.controlsPanel.setEnabled(true);
         this.displayMode = STOPPED;
         String message = String.format("完成%d次测试，用时%.2f秒。", times, timeInSecond);
@@ -485,6 +482,15 @@ public final class AutoPlayer extends Panel implements Runnable {
             };
             this.player.getBoundedRangeModel().addChangeListener(changeListener);
             this.player.addChangeListener(changeListener);
+            this.player.getjToggle().addActionListener(new ActionListener() {
+                private boolean openRear = AutoPlayer.this.cmd.getParameter("rearView", true);
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    openRear = !openRear;
+                    initPanelComponent(openRear);
+                }
+            });
             synchronized (getTreeLock()) {
                 add("South", this.controlsPanel);
             }
@@ -667,15 +673,26 @@ public final class AutoPlayer extends Panel implements Runnable {
             }
         }
 
-        // 配置魔方后视图
-        Component panelComponent;
-        if ("false".equalsIgnoreCase(this.cmd.getParameter("rearView", "true"))) {
-            panelComponent = visualComponent; // 不包含后视图
+        // 初始化魔方后视图
+        initRearComponent();
+        initPanelComponent(this.cmd.getParameter("rearView", true));
+    }
+
+    private void initPanelComponent(boolean openRear) {
+        if (openRear) {
+            double fMax = Math.max(0.1d, Math.min(1.0d, this.cmd.getParameter("rearViewScaleFactor", 0.75d)));
+            Panel panel = new Panel();
+            panel.setLayout(new RatioLayout(1.0d - (0.5d * fMax)));
+            panel.add(this.player.getVisualComponent());
+            panel.add(this.rearComponent);
+            this.panelComponent = panel;
+            remove(this.player.getVisualComponent());
+            add("Center", this.panelComponent);
         } else {
-            initRearComponent();
-            panelComponent = this.rearComponent;
+            remove(this.panelComponent);
+            add("Center", this.player.getVisualComponent());
         }
-        add("Center", panelComponent);
+        revalidate();
     }
 
     // 设置用户自定义颜色
@@ -762,12 +779,6 @@ public final class AutoPlayer extends Panel implements Runnable {
     }
 
     private void initRearComponent() {
-        if (this.rearComponent != null) {
-            double fMax = Math.max(0.1d, Math.min(1.0d, this.cmd.getParameter("rearViewScaleFactor", 0.75d)));
-            this.rearComponent.setLayout(new RatioLayout(1.0d - (0.5d * fMax)));
-            return;
-        }
-
         Canvas3DAWT visualComponent = (Canvas3DAWT) this.player.getVisualComponent();
         Canvas3DAWT rearCanvas3D = Canvas3DJ2D.createCanvas3D(); // 创建后视图
         rearCanvas3D.setScene(this.player.getCube3D().getScene());
@@ -807,11 +818,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         rearCanvas3D.setLightSource(new Point3D(lightSource[0], lightSource[1], lightSource[2]));
 
         this.player.getCube3D().addChangeListener(rearCanvas3D);
-        Panel panel = new Panel();
-        panel.setLayout(new RatioLayout(1.0d - (0.5d * fMax)));
-        panel.add(visualComponent);
-        panel.add(rearCanvas3D);
-        this.rearComponent = panel;
+        this.rearComponent = rearCanvas3D;
     }
 
     public Image getImage(URL url) {
@@ -1651,19 +1658,7 @@ public final class AutoPlayer extends Panel implements Runnable {
             this.player.makesureFinished();
             break;
         case 15: // "rearView"
-            // 默认true
-            if ("false".equalsIgnoreCase(value)) {
-                Canvas3DAWT component = (Canvas3DAWT) this.player.getVisualComponent();
-                component.setScaleFactor(component.getScaleFactor());
-                add("Center", component);
-                if (this.rearComponent != null) {
-                    remove(this.rearComponent);
-                }
-            } else {
-                initRearComponent();
-                add("Center", this.rearComponent);
-                remove(this.player.getVisualComponent());
-            }
+            initPanelComponent("true".equalsIgnoreCase(value));
             break;
 
         /** 以下不支持运行过程中修改 */

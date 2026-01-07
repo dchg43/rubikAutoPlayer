@@ -7,6 +7,7 @@ import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import ch.randelshofer.geom3d.SceneNode;
 import ch.randelshofer.geom3d.Shape3D;
@@ -24,7 +25,7 @@ public abstract class AbstractCube3DAWT implements RubikListener {
     private static final int oneTwistCount = 15;
 
     // 设置魔方一次转动的时间，影响帧率（刷新率），默认50ms。帧率（刷新率）为：1000 / oneTwistTime。500ms为完成整个转动的时间
-    private static final long oneTwistTime = 500L / oneTwistCount;
+    private static final long oneTwistTime = 500L * 1000000L / oneTwistCount;
 
     // CORNER_MAP[CornerSide][cornerLoc % 4] （详见图片<块的命名>）
     private static final int[][] CORNER_MAP = {{0, 6, 2, 8}, {2, 8, 0, 6}, {0, 2, 8, 6}, {0, 6, 2, 8}, {2, 8, 0, 6}, {6, 8, 2, 0}};
@@ -606,7 +607,7 @@ public abstract class AbstractCube3DAWT implements RubikListener {
             Thread.sleep(50L);
         } catch (InterruptedException e) {
         }
-        long jCurrentTimeMillis = System.currentTimeMillis();
+        long jCurrentTimeMillis = System.nanoTime();
         for (int j = 1; j < i; j++) {
             synchronized (this.model) {
                 Iterator<TransformNode> iterators = transforms.iterator();
@@ -617,10 +618,10 @@ public abstract class AbstractCube3DAWT implements RubikListener {
             fireStateChanged();
             // 影响转动速度
             jCurrentTimeMillis += oneTwistTime;
-            long jCurrentTimeMillis2 = jCurrentTimeMillis - System.currentTimeMillis();
-            if (jCurrentTimeMillis2 > 0L) {
+            long jCurrentTimeMillis2 = jCurrentTimeMillis - System.nanoTime();
+            if (jCurrentTimeMillis2 > 2000000L) {
                 try {
-                    Thread.sleep(jCurrentTimeMillis2);
+                    Thread.sleep(TimeUnit.NANOSECONDS.toMillis(jCurrentTimeMillis2));
                 } catch (InterruptedException e2) {
                 }
             } else {

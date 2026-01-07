@@ -47,6 +47,7 @@ public class MovieControlAWT extends Panel implements ActionListener, ItemListen
                 new Polygon[]{new Polygon(new int[]{3, 4, 4, 3}, new int[]{2, 2, 9, 9}, 4), new Polygon(new int[]{7, 8, 8, 7}, new int[]{2, 2, 9, 9}, 4)},
                 initSize));
         this.startButton.addItemListener(this);
+        this.startButton.setName("启动/停止");
         this.startButton.setPreferredSize(preferredSize);
         this.startButton.setMinimumSize(preferredSize);
         gridBagLayout.setConstraints(this.startButton, new GridBagConstraints());
@@ -69,6 +70,7 @@ public class MovieControlAWT extends Panel implements ActionListener, ItemListen
         this.rewindButton.setPreferredSize(preferredSize);
         this.rewindButton.setMinimumSize(preferredSize);
         this.rewindButton.addActionListener(this);
+        this.rewindButton.setName("后退");
         GridBagConstraints rewindConstraints = new GridBagConstraints();
         rewindConstraints.gridx = 2;
         gridBagLayout.setConstraints(this.rewindButton, rewindConstraints);
@@ -82,6 +84,7 @@ public class MovieControlAWT extends Panel implements ActionListener, ItemListen
         this.forwardButton.setPreferredSize(preferredSize);
         this.forwardButton.setMinimumSize(preferredSize);
         this.forwardButton.addActionListener(this);
+        this.forwardButton.setName("前进");
         GridBagConstraints forwardConstraints = new GridBagConstraints();
         forwardConstraints.gridx = 3;
         gridBagLayout.setConstraints(this.forwardButton, forwardConstraints);

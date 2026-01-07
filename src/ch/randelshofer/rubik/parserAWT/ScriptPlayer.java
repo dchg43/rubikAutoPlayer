@@ -78,6 +78,9 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
     // 重置按钮
     private AbstractButton resetButton;
 
+    // 后视图开关按钮
+    private AbstractButton jToggleButton;
+
     // 魔方图像
     private Canvas3DAWT canvas = Canvas3DJ2D.createCanvas3D();
 
@@ -99,6 +102,7 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
         this.controls.setVisible(true);
         this.controls.setPlayer(this);
         this.controlPanel.add("Center", this.controls);
+
         this.resetButton = new AbstractButton(); // reset重置按钮
         this.resetButton.setIcon(new PolygonIcon(new Polygon[]{ // 设置重置按钮大小
                 new Polygon(new int[]{2 * scaling, 3 * scaling, 3 * scaling, 2 * scaling}, //
@@ -108,7 +112,17 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
                 new Dimension(12 * scaling, 12 * scaling))); // 宽高
         this.resetButton.setPreferredSize(new Dimension(15 * scaling, 15 * scaling));
         this.resetButton.addActionListener(this);
+        this.resetButton.setName("重置");
         this.controlPanel.add("West", this.resetButton);
+
+        // 后视图开关按钮
+        this.jToggleButton = new AbstractButton();
+        this.jToggleButton.setIcon(new PolygonIcon(
+                new Polygon[]{new Polygon(new int[]{1, 7, 7, 1}, new int[]{1, 1, 7, 7}, 4), new Polygon(new int[]{6, 10, 10, 6}, new int[]{6, 6, 10, 10}, 4)},
+                new Dimension(12 * scaling, 12 * scaling)));
+        this.jToggleButton.setPreferredSize(new Dimension(15 * scaling, 15 * scaling));
+        this.jToggleButton.setName("后视图开关");
+        this.controlPanel.add("East", this.jToggleButton);
     }
 
     public RubiksCubeCore getCubeModel() {
@@ -205,6 +219,10 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
     @Override
     public BoundedRangeModel getBoundedRangeModel() {
         return this.progress;
+    }
+
+    public AbstractButton getjToggle() {
+        return this.jToggleButton;
     }
 
     @Override
