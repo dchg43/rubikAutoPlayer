@@ -685,12 +685,10 @@ public final class AutoPlayer extends Panel implements Runnable {
 
     private void initPanelComponent(boolean openRear) {
         if (openRear) {
-            double fMax = Math.max(0.1d, Math.min(1.0d, this.cmd.getParameter("rearViewScaleFactor", 0.75d)));
-            Panel panel = new Panel();
-            panel.setLayout(new RatioLayout(1.0d - (0.5d * fMax)));
-            panel.add(this.player.getVisualComponent());
-            panel.add(this.rearComponent);
-            this.panelComponent = panel;
+            this.panelComponent.remove(this.player.getVisualComponent());
+            this.panelComponent.remove(this.rearComponent);
+            this.panelComponent.add(this.player.getVisualComponent());
+            this.panelComponent.add(this.rearComponent);
             remove(this.player.getVisualComponent());
             add("Center", this.panelComponent);
         } else {
@@ -824,6 +822,12 @@ public final class AutoPlayer extends Panel implements Runnable {
 
         this.player.getCube3D().addChangeListener(rearCanvas3D);
         this.rearComponent = rearCanvas3D;
+
+        Panel panel = new Panel();
+        panel.setLayout(new RatioLayout(1.0d - (0.5d * fMax)));
+        panel.add(this.player.getVisualComponent());
+        panel.add(this.rearComponent);
+        this.panelComponent = panel;
     }
 
     public Image getImage(URL url) {
