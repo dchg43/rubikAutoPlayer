@@ -240,6 +240,9 @@ public final class AutoPlayer extends Panel implements Runnable {
         if (this.buttonDisplay != null) {
             this.buttonDisplay.setBackground(deselectColor);
         }
+        this.displayMode = STOPPED;
+        this.player.makesureFinished();
+
         try {
             // 不增加sleep界面会闪一下，原因未知
             Thread.sleep(100L);
@@ -248,8 +251,6 @@ public final class AutoPlayer extends Panel implements Runnable {
         }
         String facelets = getCubeString(false);
         cleanAndResetCube(facelets);
-        this.player.makesureFinished();
-        this.displayMode = STOPPED;
     }
 
     /** 反复打乱并自动复原 */
@@ -294,19 +295,19 @@ public final class AutoPlayer extends Panel implements Runnable {
                 facelets = getCubeString(false);
                 if (!completeCube.equals(facelets)) {
                     if (this.displayMode == RUNNING) {
+                        model.setQuiet(false);
+                        this.displayMode = STOPPED;
+                        String message = "Auto test failed.\n script: " + this.scriptTextArea.getText() + "\n result: " + facelets;
+                        JOptionPane.showOptionDialog(this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, this.errorIcon,
+                                CommandParser.DEFAULTOPTION, CommandParser.DEFAULTOPTION[0]);
                         if (this.buttonTest != null) {
                             this.buttonTest.setBackground(deselectColor);
                         }
                         for (JButton disButton : this.testDisableList) {
                             disButton.setEnabled(true);
                         }
-                        model.setQuiet(false);
                         this.player.setEnabled(true);
                         this.scriptTextArea.setEnabled(true);
-                        this.displayMode = STOPPED;
-                        String message = "Auto test failed.\n script: " + this.scriptTextArea.getText() + "\n result: " + facelets;
-                        JOptionPane.showOptionDialog(this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, this.errorIcon,
-                                CommandParser.DEFAULTOPTION, CommandParser.DEFAULTOPTION[0]);
                         return;
                     } else {
                         break;
@@ -314,28 +315,22 @@ public final class AutoPlayer extends Panel implements Runnable {
                 }
             }
         } catch (Exception e) {
+            model.setQuiet(false);
+            this.displayMode = STOPPED;
+            String message = "Auto test failed.";
+            JOptionPane.showOptionDialog(this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, this.errorIcon,
+                    CommandParser.DEFAULTOPTION, CommandParser.DEFAULTOPTION[0]);
             if (this.buttonTest != null) {
                 this.buttonTest.setBackground(deselectColor);
             }
             for (JButton disButton : this.testDisableList) {
                 disButton.setEnabled(true);
             }
-            model.setQuiet(false);
             this.player.setEnabled(true);
             this.scriptTextArea.setEnabled(true);
-            this.displayMode = STOPPED;
-            String message = "Auto test failed.";
-            JOptionPane.showOptionDialog(this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, this.errorIcon,
-                    CommandParser.DEFAULTOPTION, CommandParser.DEFAULTOPTION[0]);
             return;
         }
         double timeInSecond = (System.nanoTime() - start) / 1000000000.0d;
-        if (this.buttonTest != null) {
-            this.buttonTest.setBackground(deselectColor);
-        }
-        for (JButton disButton : this.testDisableList) {
-            disButton.setEnabled(true);
-        }
         this.player.setScript(null);
         this.scriptTextArea.setText(null);
         AbstractCube3DAWT cube = this.player.getCube3D();
@@ -347,15 +342,21 @@ public final class AutoPlayer extends Panel implements Runnable {
             }
         }
         // 刷新魔方
-        cube.fireStateChanged();
         this.player.makesureFinished();
+        cube.fireStateChanged();
         model.setQuiet(false);
-        this.player.setEnabled(true);
-        this.scriptTextArea.setEnabled(true);
         this.displayMode = STOPPED;
         String message = String.format("完成%d次测试，用时%.2f秒。", times, timeInSecond);
         JOptionPane.showOptionDialog(this, message, "成功", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, this.infoIcon,
                 CommandParser.DEFAULTOPTION, CommandParser.DEFAULTOPTION[0]);
+        if (this.buttonTest != null) {
+            this.buttonTest.setBackground(deselectColor);
+        }
+        for (JButton disButton : this.testDisableList) {
+            disButton.setEnabled(true);
+        }
+        this.player.setEnabled(true);
+        this.scriptTextArea.setEnabled(true);
     }
 
     public AutoPlayer() {
