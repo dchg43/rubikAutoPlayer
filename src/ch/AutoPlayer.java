@@ -296,7 +296,6 @@ public final class AutoPlayer extends Panel implements Runnable {
                 if (!completeCube.equals(facelets)) {
                     if (this.displayMode == RUNNING) {
                         model.setQuiet(false);
-                        this.displayMode = STOPPED;
                         String message = "Auto test failed.\n script: " + this.scriptTextArea.getText() + "\n result: " + facelets;
                         JOptionPane.showOptionDialog(this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, this.errorIcon,
                                 CommandParser.DEFAULTOPTION, CommandParser.DEFAULTOPTION[0]);
@@ -308,6 +307,7 @@ public final class AutoPlayer extends Panel implements Runnable {
                         }
                         this.player.setEnabled(true);
                         this.scriptTextArea.setEnabled(true);
+                        this.displayMode = STOPPED;
                         return;
                     } else {
                         break;
@@ -316,7 +316,6 @@ public final class AutoPlayer extends Panel implements Runnable {
             }
         } catch (Exception e) {
             model.setQuiet(false);
-            this.displayMode = STOPPED;
             String message = "Auto test failed.";
             JOptionPane.showOptionDialog(this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, this.errorIcon,
                     CommandParser.DEFAULTOPTION, CommandParser.DEFAULTOPTION[0]);
@@ -328,6 +327,7 @@ public final class AutoPlayer extends Panel implements Runnable {
             }
             this.player.setEnabled(true);
             this.scriptTextArea.setEnabled(true);
+            this.displayMode = STOPPED;
             return;
         }
         double timeInSecond = (System.nanoTime() - start) / 1000000000.0d;
@@ -345,7 +345,6 @@ public final class AutoPlayer extends Panel implements Runnable {
         this.player.makesureFinished();
         cube.fireStateChanged();
         model.setQuiet(false);
-        this.displayMode = STOPPED;
         String message = String.format("完成%d次测试，用时%.2f秒。", times, timeInSecond);
         JOptionPane.showOptionDialog(this, message, "成功", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, this.infoIcon,
                 CommandParser.DEFAULTOPTION, CommandParser.DEFAULTOPTION[0]);
@@ -357,6 +356,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         }
         this.player.setEnabled(true);
         this.scriptTextArea.setEnabled(true);
+        this.displayMode = STOPPED;
     }
 
     public AutoPlayer() {
