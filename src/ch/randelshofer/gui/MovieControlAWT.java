@@ -135,11 +135,13 @@ public class MovieControlAWT extends Panel implements ActionListener, ItemListen
     public void actionPerformed(ActionEvent actionEvent) {
         if (this.boundedRangeModel != null) {
             int value = this.boundedRangeModel.getValue();
+            int min = this.boundedRangeModel.getMinimum();
+            int max = this.boundedRangeModel.getMaximum();
             Object source = actionEvent.getSource();
             if (source == this.forwardButton) {
-                this.boundedRangeModel.setValue(value == this.boundedRangeModel.getMaximum() ? this.boundedRangeModel.getMinimum() : value + 1);
+                this.boundedRangeModel.setValue(value == max ? min : value + 1);
             } else if (source == this.rewindButton) {
-                this.boundedRangeModel.setValue(value == this.boundedRangeModel.getMinimum() ? this.boundedRangeModel.getMaximum() : value - 1);
+                this.boundedRangeModel.setValue(value == min ? max : value - 1);
             }
         }
     }
