@@ -91,6 +91,14 @@ public class MovieControlAWT extends Panel implements ActionListener, ItemListen
         add(this.forwardButton);
     }
 
+    @Override
+    public void setEnabled(boolean enable) {
+        this.startButton.setEnabled(enable);
+        this.slider.setEnabled(enable);
+        this.rewindButton.setEnabled(enable);
+        this.forwardButton.setEnabled(enable);
+    }
+
     public synchronized void setPlayer(Player player) {
         if (this.player != null) {
             this.player.removeChangeListener(this);

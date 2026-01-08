@@ -125,6 +125,11 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
         this.controlPanel.add("East", this.jToggleButton);
     }
 
+    public void setEnabled(boolean enable) {
+        this.resetButton.setEnabled(enable);
+        this.controls.setEnabled(enable);
+    }
+
     public RubiksCubeCore getCubeModel() {
         return this.model;
     }
@@ -184,7 +189,6 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
             }
             this.progress.setRangeProperties(0, 0, 0, this.scriptList.size(), false);
         }
-        updateEnabled();
     }
 
     public void moveToCaret(int cursor) {
@@ -195,18 +199,6 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
                 this.progress.setValue(i);
                 // start();
                 return;
-            }
-        }
-    }
-
-    private void updateEnabled() {
-        if (this.script != null) {
-            if (!this.controls.isEnabled()) {
-                this.controls.setEnabled(true);
-            }
-        } else {
-            if (this.controls.isEnabled()) {
-                this.controls.setEnabled(false);
             }
         }
     }

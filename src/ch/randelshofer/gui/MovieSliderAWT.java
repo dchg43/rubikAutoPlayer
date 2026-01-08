@@ -166,27 +166,33 @@ public class MovieSliderAWT extends Canvas implements ChangeListener {
         int width = getWidth();
         int height = getHeight();
         int xMin = Math.min(Math.max(x, 0), width);
+
         if (!isEnabled()) {
             g.setColor(Color.gray);
         }
         g.drawRect(0, 0, width - 1, height - 1);
         g.drawRect(4, 4, (width - 8) - 1, height - 9);
+
+        g.setColor(Color.white);
+        g.drawLine(1, 1, width - 2, 1);
+        g.drawLine(1, 2, 1, height - 2);
+        g.drawLine(5, 5, (width - 4) - 3, 5);
+        g.drawLine(5, 6, 5, height - 6);
+        if (y > 0) {
+            g.setColor(Color.gray);
+            g.fillRect(6, 6, y - 4, height - 11);
+            g.setColor(Color.white);
+        }
+        g.drawRect((xMin - 4) + 1, 1, 6, height - 3);
+
         if (isEnabled()) {
-            g.setColor(Color.white);
-            g.drawLine(1, 1, width - 2, 1);
-            g.drawLine(1, 2, 1, height - 2);
-            g.drawLine(5, 5, (width - 4) - 3, 5);
-            g.drawLine(5, 6, 5, height - 6);
-            if (y > 0) {
-                g.setColor(Color.gray);
-                g.fillRect(6, 6, y - 4, height - 11);
-            }
-            g.setColor(Color.white);
-            g.drawRect((xMin - 4) + 1, 1, 6, height - 3);
             g.setColor(getForeground());
+        } else {
+            g.setColor(Color.gray);
         }
         g.drawRect(xMin - 4, 0, 8, height - 1);
         g.drawRect((xMin - 4) + 2, 2, 4, height - 5);
+
         lastFill.set(xMin - 5, 0, 10, height);
     }
 

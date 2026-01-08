@@ -271,7 +271,8 @@ public final class AutoPlayer extends Panel implements Runnable {
         }
         RubiksCubeCore model = this.player.getCubeModel();
         model.setQuiet(true);
-        this.controlsPanel.setEnabled(false);
+        this.player.setEnabled(false);
+        this.scriptTextArea.setEnabled(false);
         this.player.makesureFinished();
 
         long times = 0;
@@ -300,7 +301,8 @@ public final class AutoPlayer extends Panel implements Runnable {
                             disButton.setEnabled(true);
                         }
                         model.setQuiet(false);
-                        this.controlsPanel.setEnabled(true);
+                        this.player.setEnabled(true);
+                        this.scriptTextArea.setEnabled(true);
                         this.displayMode = STOPPED;
                         String message = "Auto test failed.\n script: " + this.scriptTextArea.getText() + "\n result: " + facelets;
                         JOptionPane.showOptionDialog(this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, this.errorIcon,
@@ -319,7 +321,8 @@ public final class AutoPlayer extends Panel implements Runnable {
                 disButton.setEnabled(true);
             }
             model.setQuiet(false);
-            this.controlsPanel.setEnabled(true);
+            this.player.setEnabled(true);
+            this.scriptTextArea.setEnabled(true);
             this.displayMode = STOPPED;
             String message = "Auto test failed.";
             JOptionPane.showOptionDialog(this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, this.errorIcon,
@@ -347,7 +350,8 @@ public final class AutoPlayer extends Panel implements Runnable {
         cube.fireStateChanged();
         this.player.makesureFinished();
         model.setQuiet(false);
-        this.controlsPanel.setEnabled(true);
+        this.player.setEnabled(true);
+        this.scriptTextArea.setEnabled(true);
         this.displayMode = STOPPED;
         String message = String.format("完成%d次测试，用时%.2f秒。", times, timeInSecond);
         JOptionPane.showOptionDialog(this, message, "成功", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, this.infoIcon,
