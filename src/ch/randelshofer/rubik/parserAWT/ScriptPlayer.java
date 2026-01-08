@@ -23,6 +23,7 @@ import ch.randelshofer.gui.Canvas3DJ2D;
 import ch.randelshofer.gui.DefaultBoundedRangeModel;
 import ch.randelshofer.gui.MovieControlAWT;
 import ch.randelshofer.gui.PolygonIcon;
+import ch.randelshofer.gui.ToggleButton;
 import ch.randelshofer.gui.event.ChangeEvent;
 import ch.randelshofer.gui.event.ChangeListener;
 import ch.randelshofer.gui.event.EventListenerList;
@@ -116,9 +117,11 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
         this.controlPanel.add("West", this.resetButton);
 
         // 后视图开关按钮
-        this.jToggleButton = new AbstractButton();
-        this.jToggleButton.setIcon(new PolygonIcon(
-                new Polygon[]{new Polygon(new int[]{1, 7, 7, 1}, new int[]{1, 1, 7, 7}, 4), new Polygon(new int[]{6, 10, 10, 6}, new int[]{6, 6, 10, 10}, 4)},
+        this.jToggleButton = new ToggleButton();
+        this.jToggleButton
+                .setUnselectedIcon(new PolygonIcon(new Polygon(new int[]{3, 9, 9, 3}, new int[]{3, 3, 9, 9}, 4), new Dimension(12 * scaling, 12 * scaling)));
+        this.jToggleButton.setSelectedIcon(new PolygonIcon(
+                new Polygon[]{new Polygon(new int[]{2, 8, 8, 2}, new int[]{2, 2, 8, 8}, 4), new Polygon(new int[]{7, 11, 11, 7}, new int[]{7, 7, 11, 11}, 4)},
                 new Dimension(12 * scaling, 12 * scaling)));
         this.jToggleButton.setPreferredSize(new Dimension(15 * scaling, 15 * scaling));
         this.jToggleButton.setName("后视图开关");
