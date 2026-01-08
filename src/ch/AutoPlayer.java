@@ -1153,17 +1153,17 @@ public final class AutoPlayer extends Panel implements Runnable {
         buttonTest.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                if (AutoPlayer.this.player.isActive() && AutoPlayer.this.displayMode != RUNNING) {
-                    return;
-                }
-                // 取消编辑
-                AbstractCube3DAWT cube = AutoPlayer.this.player.getCube3D();
-                if (cube.isEditMode()) {
-                    buttonEdit.setBackground(deselectColor);
-                    cube.setEditMode(false);
-                }
-
                 synchronized (AutoPlayer.this) {
+                    if (AutoPlayer.this.player.isActive() && AutoPlayer.this.displayMode != RUNNING) {
+                        return;
+                    }
+                    // 取消编辑
+                    AbstractCube3DAWT cube = AutoPlayer.this.player.getCube3D();
+                    if (cube.isEditMode()) {
+                        buttonEdit.setBackground(deselectColor);
+                        cube.setEditMode(false);
+                    }
+
                     if (AutoPlayer.this.displayMode == RUNNING) {
                         AutoPlayer.this.displayMode = STOPPING;
                         AutoPlayer.this.player.stop();
@@ -1193,17 +1193,17 @@ public final class AutoPlayer extends Panel implements Runnable {
         buttonDisplay.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent evt) {
-                if (AutoPlayer.this.player.isActive() && AutoPlayer.this.displayMode != RUNNING) {
-                    return;
-                }
-                // 取消编辑
-                AbstractCube3DAWT cube = AutoPlayer.this.player.getCube3D();
-                if (cube.isEditMode()) {
-                    buttonEdit.setBackground(deselectColor);
-                    cube.setEditMode(false);
-                }
-
                 synchronized (AutoPlayer.this) {
+                    if (AutoPlayer.this.player.isActive() && AutoPlayer.this.displayMode != RUNNING) {
+                        return;
+                    }
+                    // 取消编辑
+                    AbstractCube3DAWT cube = AutoPlayer.this.player.getCube3D();
+                    if (cube.isEditMode()) {
+                        buttonEdit.setBackground(deselectColor);
+                        cube.setEditMode(false);
+                    }
+
                     if (AutoPlayer.this.displayMode == RUNNING) {
                         AutoPlayer.this.displayMode = STOPPING;
                         AutoPlayer.this.player.stop();
