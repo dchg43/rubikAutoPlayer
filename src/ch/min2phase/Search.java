@@ -239,7 +239,7 @@ public class Search {
             urfCubieCube[i].copy(cc);
             urfCoordCube[i].setWithPrun(urfCubieCube[i], 20);
             cc.URFConjugate();
-            if (i % 3 == 2) {
+            if (i == 2 || i == 5) {
                 cc.invCubieCube();
             }
         }
@@ -466,16 +466,19 @@ public class Search {
         }
 
         int depth2;
+        boolean hasSolution = false;
         for (depth2 = maxDep; depth2 >= prun; depth2--) {
             int ret = phase2(p2edge, p2esym, p2corn, p2csym, p2mid, depth2, depth, 10);
             if (ret < 0) {
                 break;
             }
             depth2 -= ret;
-            solLen = 0;
+            hasSolution = true;
+        }
+        if (hasSolution) {
             solution = new Solution();
             solution.setArgs(verbose, urfIdx, depth);
-            for (int i = 0; i < depth + depth2; i++) {
+            for (int i = 0; i <= depth + depth2; i++) {
                 solution.appendSolMove(move[i]);
             }
             for (int i = preMoveLen - 1; i >= 0; i--) {
