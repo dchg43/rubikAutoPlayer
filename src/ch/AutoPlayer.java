@@ -321,7 +321,6 @@ public final class AutoPlayer extends Panel implements Runnable {
                 this.player.makesureFinished();
                 if (!completeCube.equals(getCubeString(false))) {
                     if (this.displayMode == RUNNING) {
-                        this.displayMode = STOPPED;
                         model.setQuiet(false);
                         String message = "Auto test failed.\n script: " + this.scriptTextArea.getText() + "\n result: " + getCubeString(false);
                         JOptionPane.showOptionDialog(this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, this.errorIcon,
@@ -334,6 +333,7 @@ public final class AutoPlayer extends Panel implements Runnable {
                         }
                         this.player.setEnabled(true);
                         this.scriptTextArea.setEnabled(true);
+                        this.displayMode = STOPPED;
                         return;
                     } else {
                         break;
@@ -341,7 +341,6 @@ public final class AutoPlayer extends Panel implements Runnable {
                 }
             }
         } catch (Exception e) {
-            this.displayMode = STOPPED;
             model.setQuiet(false);
             String message = "Auto test failed.";
             JOptionPane.showOptionDialog(this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, this.errorIcon,
@@ -354,9 +353,9 @@ public final class AutoPlayer extends Panel implements Runnable {
             }
             this.player.setEnabled(true);
             this.scriptTextArea.setEnabled(true);
+            this.displayMode = STOPPED;
             return;
         }
-        this.displayMode = STOPPED;
         double timeInSecond = (System.nanoTime() - start) / 1000000000.0d;
         this.player.setScript(null);
         this.scriptTextArea.setText(null);
@@ -383,6 +382,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         }
         this.player.setEnabled(true);
         this.scriptTextArea.setEnabled(true);
+        this.displayMode = STOPPED;
     }
 
     public AutoPlayer() {
