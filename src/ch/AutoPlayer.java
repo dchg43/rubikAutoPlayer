@@ -1459,31 +1459,29 @@ public final class AutoPlayer extends Panel implements Runnable {
         final int maxDepth = depth + maxTries.length - 1;
         String result = "Error 8";
         int tries = 0;
-        synchronized (this.search) {
-            String verify = this.search.verify(cubeString);
-            if (verify != null) {
-                return verify;
-            }
+        String verify = this.search.verify(cubeString);
+        if (verify != null) {
+            return verify;
+        }
 
-            int mask = 0;
-            int maxProbe = 1;
-            char errkey = '8';
-            while (errkey == '8' || errkey == '7') {
-                result = this.search.solution(depth, maxProbe, 1, mask);
-                errkey = result.length() > 0 ? result.charAt(result.length() - 1) : '0';
-                tries = maxTries[depth - 15];
-                while (errkey == '8' && tries > 0) {
-                    result = this.search.next(maxProbe, 1, mask);
-                    errkey = result.charAt(result.length() - 1);
-                    tries--;
-                }
-                depth++;
-                if (depth >= maxDepth) {
-                    if (depth == maxDepth) {
-                        maxProbe = 10000;
-                    } else {
-                        break;
-                    }
+        int mask = 0;
+        int maxProbe = 1;
+        char errkey = '8';
+        while (errkey == '8' || errkey == '7') {
+            result = this.search.solution(depth, maxProbe, 1, mask);
+            errkey = result.length() > 0 ? result.charAt(result.length() - 1) : '0';
+            tries = maxTries[depth - 15];
+            while (errkey == '8' && tries > 0) {
+                result = this.search.next(maxProbe, 1, mask);
+                errkey = result.charAt(result.length() - 1);
+                tries--;
+            }
+            depth++;
+            if (depth >= maxDepth) {
+                if (depth == maxDepth) {
+                    maxProbe = 10000;
+                } else {
+                    break;
                 }
             }
         }

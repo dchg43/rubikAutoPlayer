@@ -171,7 +171,7 @@ public class Util {
     // 值范围: [0, 924]
     private static final char[][] Cnk = new char[13][13];
 
-    private static final String[] move2str = {"U ", "U2", "U'", "R ", "R2", "R'", "F ", "F2", "F'", "D ", "D2", "D'", "L ", "L2", "L'", "B ", "B2", "B'"};
+    public static final String[] move2str = {"U ", "U2", "U'", "R ", "R2", "R'", "F ", "F2", "F'", "D ", "D2", "D'", "L ", "L2", "L'", "B ", "B2", "B'"};
 
     // 值范围：[0, 17]
     public static final byte[] ud2std = {Ux1, Ux2, Ux3, Rx2, Fx2, Dx1, Dx2, Dx3, Lx2, Bx2, Rx1, Rx3, Fx1, Fx3, Lx1, Lx3, Bx1, Bx3};
@@ -181,86 +181,6 @@ public class Util {
 
     // 值范围: [0, 528]
     public static final char[] ckmv2bit = new char[11];
-
-    public static final class Solution {
-        private int length = 0;
-
-        private int depth = 0;
-
-        private int verbose = 0;
-
-        private int urfIdx = 0;
-
-        // 值范围: [0, 17]
-        private byte[] moves = new byte[31];
-
-        public Solution() {
-        }
-
-        public int getLength() {
-            return length;
-        }
-
-        public void setArgs(int verbose, int urfIdx, int depth) {
-            this.verbose = verbose;
-            this.urfIdx = urfIdx;
-            this.depth = depth;
-        }
-
-        public void appendSolMove(byte curMove) {
-            if (length == 0) {
-                moves[length++] = curMove;
-                return;
-            }
-            int axisCur = curMove / 3;
-            int axisLast = moves[length - 1] / 3;
-            if (axisCur == axisLast) {
-                int pow = (curMove % 3 + moves[length - 1] % 3 + 1) % 4;
-                if (pow == 3) {
-                    length--;
-                } else {
-                    moves[length - 1] = (byte) (axisCur * 3 + pow);
-                }
-                return;
-            }
-            if (length > 1 && axisCur % 3 == axisLast % 3 && axisCur == moves[length - 2] / 3) {
-                int pow = (curMove % 3 + moves[length - 2] % 3 + 1) % 4;
-                if (pow == 3) {
-                    length--;
-                    moves[length - 1] = moves[length];
-                } else {
-                    moves[length - 2] = (byte) (axisCur * 3 + pow);
-                }
-                return;
-            }
-            moves[length++] = curMove;
-        }
-
-        @Override
-        public String toString() {
-            StringBuilder sb = new StringBuilder();
-            int urf = (verbose & Search.INVERSE_SOLUTION) != 0 ? (urfIdx + 3) % 6 : urfIdx;
-            if (urf < 3) {
-                for (int s = 0; s < length; s++) {
-                    if ((verbose & Search.USE_SEPARATOR) != 0 && s == depth) {
-                        sb.append(".  ");
-                    }
-                    sb.append(move2str[CubieCube.urfMove[urf][moves[s]]]).append(' ');
-                }
-            } else {
-                for (int s = length - 1; s >= 0; s--) {
-                    sb.append(move2str[CubieCube.urfMove[urf][moves[s]]]).append(' ');
-                    if ((verbose & Search.USE_SEPARATOR) != 0 && s == depth) {
-                        sb.append(".  ");
-                    }
-                }
-            }
-            if ((verbose & Search.APPEND_LENGTH) != 0) {
-                sb.append("(").append(length).append("f)");
-            }
-            return sb.toString();
-        }
-    }
 
     public static CubieCube toCubieCube(int[] f) {
         int ori;

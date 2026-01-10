@@ -16,8 +16,6 @@
  */
 package ch.min2phase;
 
-import ch.min2phase.Util.Solution;
-
 /**
  * Rubik's Cube Solver.<br>
  * A much faster and smaller implemention of Two-Phase Algorithm. (二阶段算法，又叫Kociemba's Algorithm)<br>
@@ -49,11 +47,11 @@ public class Search {
     // 值范围: [0, 17]
     private byte[] move = new byte[31];
 
-    private CoordCube[] nodeUD = new CoordCube[21];
+    private static CoordCube[] nodeUD = new CoordCube[MAX_PRE_MOVES];
 
-    private CoordCube[] nodeRL = new CoordCube[21];
+    private static CoordCube[] nodeRL = new CoordCube[MAX_PRE_MOVES];
 
-    private CoordCube[] nodeFB = new CoordCube[21];
+    private static CoordCube[] nodeFB = new CoordCube[MAX_PRE_MOVES];
 
     private long selfSym;
 
@@ -85,9 +83,9 @@ public class Search {
 
     private CubieCube[] urfCubieCube = new CubieCube[6];
 
-    private CoordCube[] urfCoordCube = new CoordCube[6];
+    private static CoordCube[] urfCoordCube = new CoordCube[6];
 
-    private CubieCube[] phase1Cubie = new CubieCube[21];
+    private CubieCube[] phase1Cubie = new CubieCube[MAX_PRE_MOVES];
 
     private CubieCube[] preMoveCubes = new CubieCube[MAX_PRE_MOVES];
 
@@ -126,21 +124,19 @@ public class Search {
 
     public synchronized void init() {
         Util.init();
-        CubieCube.init();
+        CubieCube.initMove();
+        CubieCube.initSym();
         CoordCube.init(true);
-        // CoordCube.init(false);
-        for (int i = 0; i < 21; i++) {
+        for (int i = 0; i < MAX_PRE_MOVES; i++) {
             nodeUD[i] = new CoordCube();
             nodeRL[i] = new CoordCube();
             nodeFB[i] = new CoordCube();
             phase1Cubie[i] = new CubieCube();
+            preMoveCubes[i] = new CubieCube();
         }
         for (int i = 0; i < 6; i++) {
-            urfCubieCube[i] = new CubieCube();
             urfCoordCube[i] = new CoordCube();
-        }
-        for (int i = 0; i < MAX_PRE_MOVES; i++) {
-            preMoveCubes[i] = new CubieCube();
+            urfCubieCube[i] = new CubieCube();
         }
         inited = true;
     }
@@ -222,7 +218,6 @@ public class Search {
         this.verbose = verbose;
         this.solution = null;
         this.isRec = false;
-        // CoordCube.init(false);
         return (verbose & OPTIMAL_SOLUTION) == 0 ? search() : searchopt();
     }
 
@@ -237,7 +232,7 @@ public class Search {
 
         for (int i = 0; i < 6; i++) {
             urfCubieCube[i].copy(cc);
-            urfCoordCube[i].setWithPrun(urfCubieCube[i], 20);
+            urfCoordCube[i].setWithPrun(urfCubieCube[i], MAX_PRE_MOVES);
             cc.URFConjugate();
             if (i == 2 || i == 5) {
                 cc.invCubieCube();
@@ -361,9 +356,15 @@ public class Search {
     }
 
     private String search() {
-        for (length = (isRec ? length : 0); length < solLen; length++) {
+        if (!isRec) {
+            length = 0;
+        }
+        for (; length < solLen; length++) {
             maxDep = Math.min(MAX_DEPTH, solLen - length - 1);
-            for (urfIdx = (isRec ? urfIdx : 0); urfIdx < 6; urfIdx++) {
+            if (!isRec) {
+                urfIdx = 0;
+            }
+            for (; urfIdx < 6; urfIdx++) {
                 // if ((conjMask & (1 << urfIdx)) != 0) { //  没有作用？
                 //     continue;
                 // }
@@ -571,7 +572,10 @@ public class Search {
         }
         urfIdx = maxprun2 > maxprun1 ? 3 : 0;
         phase1Cubie[0] = urfCubieCube[urfIdx];
-        for (length = isRec ? length : 0; length < solLen; length++) {
+        if (!isRec) {
+            length = 0;
+        }
+        for (; length < solLen; length++) {
             CoordCube ud = urfCoordCube[0 + urfIdx];
             CoordCube rl = urfCoordCube[1 + urfIdx];
             CoordCube fb = urfCoordCube[2 + urfIdx];
@@ -704,4 +708,85 @@ public class Search {
         }
         return -1;
     }
+
+    public static final class Solution {
+        private int length = 0;
+
+        private int depth = 0;
+
+        private int verbose = 0;
+
+        private int urfIdx = 0;
+
+        // 值范围: [0, 17]
+        private byte[] moves = new byte[31];
+
+        public Solution() {
+        }
+
+        public int getLength() {
+            return length;
+        }
+
+        public void setArgs(int verbose, int urfIdx, int depth) {
+            this.verbose = verbose;
+            this.urfIdx = urfIdx;
+            this.depth = depth;
+        }
+
+        public void appendSolMove(byte curMove) {
+            if (length == 0) {
+                moves[length++] = curMove;
+                return;
+            }
+            int axisCur = curMove / 3;
+            int axisLast = moves[length - 1] / 3;
+            if (axisCur == axisLast) {
+                int pow = (curMove % 3 + moves[length - 1] % 3 + 1) % 4;
+                if (pow == 3) {
+                    length--;
+                } else {
+                    moves[length - 1] = (byte) (axisCur * 3 + pow);
+                }
+                return;
+            }
+            if (length > 1 && axisCur % 3 == axisLast % 3 && axisCur == moves[length - 2] / 3) {
+                int pow = (curMove % 3 + moves[length - 2] % 3 + 1) % 4;
+                if (pow == 3) {
+                    length--;
+                    moves[length - 1] = moves[length];
+                } else {
+                    moves[length - 2] = (byte) (axisCur * 3 + pow);
+                }
+                return;
+            }
+            moves[length++] = curMove;
+        }
+
+        @Override
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            int urf = (verbose & Search.INVERSE_SOLUTION) != 0 ? (urfIdx + 3) % 6 : urfIdx;
+            if (urf < 3) {
+                for (int s = 0; s < length; s++) {
+                    if ((verbose & Search.USE_SEPARATOR) != 0 && s == depth) {
+                        sb.append(".  ");
+                    }
+                    sb.append(Util.move2str[CubieCube.urfMove[urf][moves[s]]]).append(' ');
+                }
+            } else {
+                for (int s = length - 1; s >= 0; s--) {
+                    sb.append(Util.move2str[CubieCube.urfMove[urf][moves[s]]]).append(' ');
+                    if ((verbose & Search.USE_SEPARATOR) != 0 && s == depth) {
+                        sb.append(".  ");
+                    }
+                }
+            }
+            if ((verbose & Search.APPEND_LENGTH) != 0) {
+                sb.append("(").append(length).append("f)");
+            }
+            return sb.toString();
+        }
+    }
+
 }

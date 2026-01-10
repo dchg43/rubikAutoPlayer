@@ -99,19 +99,19 @@ public class CubieCube {
             {5, 4, 3, 8, 7, 6, 2, 1, 0, 14, 13, 12, 17, 16, 15, 11, 10, 9}};
 
     // 值范围: [0, 31]
-    protected byte[] ca = {0, 1, 2, 3, 4, 5, 6, 7};
+    protected byte[] ca = new byte[8];
 
     // 值范围: [0, 23]
-    protected byte[] ea = {0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22};
+    protected byte[] ea = new byte[12];
 
     private CubieCube temps = null;
 
-    public static void init() {
-        CubieCube.initMove();
-        CubieCube.initSym();
+    public CubieCube() {
     }
 
-    public CubieCube() {
+    public CubieCube(boolean init) {
+        this.ca = new byte[]{0, 1, 2, 3, 4, 5, 6, 7};
+        this.ea = new byte[]{0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22};
     }
 
     public CubieCube(int cperm, int twist, int eperm, int flip) {
@@ -135,16 +135,17 @@ public class CubieCube {
     }
 
     public void invCubieCube() {
-        if (temps == null) {
-            temps = new CubieCube();
-        }
+        byte[] ea = new byte[12];
         for (byte edge = 0; edge < 12; edge++) {
-            temps.ea[ea[edge] >> 1] = (byte) (edge << 1 | ea[edge] & 1);
+            ea[this.ea[edge] >> 1] = (byte) (edge << 1 | this.ea[edge] & 1);
         }
+        this.ea = ea;
+
+        byte[] ca = new byte[8];
         for (byte corn = 0; corn < 8; corn++) {
-            temps.ca[ca[corn] & 0x7] = (byte) (corn | 0x20 >> (ca[corn] >> 3) & 0x18);
+            ca[this.ca[corn] & 0x7] = (byte) (corn | 0x20 >> (this.ca[corn] >> 3) & 0x18);
         }
-        copy(temps);
+        this.ca = ca;
     }
 
     /**
@@ -447,7 +448,7 @@ public class CubieCube {
             lr2.ca[i] |= 3 << 3;
         }
 
-        CubieCube c = new CubieCube();
+        CubieCube c = new CubieCube(true);
         CubieCube d = new CubieCube();
         CubieCube t;
         CubeSym[0] = c;
@@ -577,7 +578,7 @@ public class CubieCube {
 
     public static void initPermSym2Raw() {
         initSym2Raw(CoordCube.N_PERM, EPermS2R, EPermR2S, SymStatePerm = new char[CoordCube.N_PERM_SYM], 2);
-        CubieCube cc = new CubieCube();
+        CubieCube cc = new CubieCube(true);
         for (int i = 0; i < CoordCube.N_PERM_SYM; i++) {
             cc.setEPerm(EPermS2R[i]);
             Perm2CombP[i] = (char) ((Util.getComb(cc.ea, 0, true) + (Search.USE_COMBP_PRUN ? Util.getNParity(EPermS2R[i], 8) * 70 : 0)) & 0xff);

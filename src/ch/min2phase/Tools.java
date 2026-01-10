@@ -359,7 +359,7 @@ public class Tools {
     }
 
     public static String fromScramble(int[] scramble, int size) {
-        CubieCube c1 = new CubieCube();
+        CubieCube c1 = new CubieCube(true);
         CubieCube c2 = new CubieCube();
         CubieCube tmp;
         for (int i = 0; i < size; i++) {
