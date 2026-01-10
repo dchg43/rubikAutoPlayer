@@ -47,11 +47,11 @@ public class Search {
     // 值范围: [0, 17]
     private byte[] move = new byte[31];
 
-    private static CoordCube[] nodeUD = new CoordCube[MAX_PRE_MOVES];
+    private CoordCube[] nodeUD = new CoordCube[MAX_PRE_MOVES];
 
-    private static CoordCube[] nodeRL = new CoordCube[MAX_PRE_MOVES];
+    private CoordCube[] nodeRL = new CoordCube[MAX_PRE_MOVES];
 
-    private static CoordCube[] nodeFB = new CoordCube[MAX_PRE_MOVES];
+    private CoordCube[] nodeFB = new CoordCube[MAX_PRE_MOVES];
 
     private long selfSym;
 
@@ -83,7 +83,7 @@ public class Search {
 
     private CubieCube[] urfCubieCube = new CubieCube[6];
 
-    private static CoordCube[] urfCoordCube = new CoordCube[6];
+    private CoordCube[] urfCoordCube = new CoordCube[6];
 
     private CubieCube[] phase1Cubie = new CubieCube[MAX_PRE_MOVES];
 
