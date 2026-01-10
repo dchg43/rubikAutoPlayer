@@ -358,13 +358,13 @@ public class Tools {
         return Util.toFaceCube(new CubieCube(0, 0, 0, 2047));
     }
 
-    public static String fromScramble(int[] scramble) {
+    public static String fromScramble(int[] scramble, int size) {
         CubieCube c1 = new CubieCube();
         CubieCube c2 = new CubieCube();
         CubieCube tmp;
-        for (int element : scramble) {
-            CubieCube.CornMult(c1, CubieCube.moveCube[element], c2);
-            CubieCube.EdgeMult(c1, CubieCube.moveCube[element], c2);
+        for (int i = 0; i < size; i++) {
+            CubieCube.CornMult(c1, CubieCube.moveCube[scramble[i]], c2);
+            CubieCube.EdgeMult(c1, CubieCube.moveCube[scramble[i]], c2);
             tmp = c1;
             c1 = c2;
             c2 = tmp;
@@ -422,8 +422,6 @@ public class Tools {
         if (axis != -1) {
             arr[j++] = axis;
         }
-        int[] ret = new int[j];
-        System.arraycopy(arr, 0, ret, 0, j);
-        return fromScramble(ret);
+        return fromScramble(arr, j);
     }
 }

@@ -440,10 +440,6 @@ public class CubieCube {
     }
 
     public static void initSym() {
-        CubieCube c = new CubieCube();
-        CubieCube d = new CubieCube();
-        CubieCube t;
-
         CubieCube f2 = new CubieCube(28783, 0, 259268407, 0);
         CubieCube u4 = new CubieCube(15138, 0, 119765538, 7);
         CubieCube lr2 = new CubieCube(5167, 0, 83473207, 0);
@@ -451,13 +447,15 @@ public class CubieCube {
             lr2.ca[i] |= 3 << 3;
         }
 
-        for (int i = 0; i < 16; i++) {
-            CubeSym[i] = new CubieCube(c);
+        CubieCube c = new CubieCube();
+        CubieCube d = new CubieCube();
+        CubieCube t;
+        CubeSym[0] = c;
+        for (int i = 0; i < 16 - 1; i++) {
             CornMultFull(c, u4, d);
             EdgeMult(c, u4, d);
-            t = d;
-            d = c;
-            c = t;
+            c = d;
+            d = new CubieCube();
             if (i % 4 == 3) {
                 CornMultFull(c, lr2, d);
                 EdgeMult(c, lr2, d);
@@ -472,12 +470,14 @@ public class CubieCube {
                 d = c;
                 c = t;
             }
+            CubeSym[i + 1] = c;
         }
+
         for (byte i = 0; i < 16; i++) {
             for (int j = 0; j < 16; j++) {
-                CornMultFull(CubeSym[i], CubeSym[j], c);
+                CornMultFull(CubeSym[i], CubeSym[j], d);
                 for (byte k = 0; k < 16; k++) {
-                    if (Arrays.equals(CubeSym[k].ca, c.ca)) {
+                    if (Arrays.equals(CubeSym[k].ca, d.ca)) {
                         SymMult[i][j] = k; // SymMult[i][j] = (k ^ i ^ j ^ (0x14ab4 >> j & i << 1 & 2)));
                         SymMultInv[k][j] = i; // i * j = k => k * j^-1 = i
                         break;
@@ -487,9 +487,9 @@ public class CubieCube {
         }
         for (int j = 0; j < 18; j++) {
             for (int s = 0; s < 16; s++) {
-                CornConjugate(moveCube[j], SymMultInv[0][s], c);
+                CornConjugate(moveCube[j], SymMultInv[0][s], d);
                 for (byte m = 0; m < 18; m++) {
-                    if (Arrays.equals(moveCube[m].ca, c.ca)) {
+                    if (Arrays.equals(moveCube[m].ca, d.ca)) {
                         SymMove[s][j] = m;
                         SymMoveUD[s][Util.std2ud[j]] = Util.std2ud[m];
                         break;

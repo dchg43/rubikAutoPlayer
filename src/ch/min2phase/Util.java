@@ -148,17 +148,17 @@ public class Util {
     public static final byte B9 = 53;
 
     // Colors
-    public static final byte U = 0;
+    public static final int U = 0;
 
-    public static final byte R = 1;
+    public static final int R = 1;
 
-    public static final byte F = 2;
+    public static final int F = 2;
 
-    public static final byte D = 3;
+    public static final int D = 3;
 
-    public static final byte L = 4;
+    public static final int L = 4;
 
-    public static final byte B = 5;
+    public static final int B = 5;
 
     // 值范围: [0, 53]
     private static final byte[][] cornerFacelet = {{U9, R1, F3}, {U7, F1, L3}, {U1, L1, B3}, {U3, B1, R3}, {D3, F9, R7}, {D1, L9, F7}, {D7, B9, L7},
@@ -262,9 +262,9 @@ public class Util {
         }
     }
 
-    public static CubieCube toCubieCube(byte[] f) {
-        byte ori;
-        byte col1, col2;
+    public static CubieCube toCubieCube(int[] f) {
+        int ori;
+        int col1, col2;
         CubieCube ccRet = new CubieCube();
         for (int i = 0; i < 8; i++) {
             // get the colors of the cubie at corner i, starting with U/D
@@ -331,7 +331,7 @@ public class Util {
     }
 
     public static byte setVal(int val0, int val, boolean isEdge) {
-        return (byte) (isEdge ? (val << 1 | val0 & 1) : (val | val0 & ~7));
+        return (byte) (isEdge ? ((val << 1) | (val0 & 1)) : (val | (val0 & ~7)));
     }
 
     public static int getVal(int val0, boolean isEdge) {
@@ -341,16 +341,18 @@ public class Util {
     public static void setNPerm(byte[] arr, int idx, int n, boolean isEdge) {
         long val = 0xFEDCBA9876543210L;
         long extract = 0;
+        long m;
+        int v;
         for (int p = 2; p <= n; p++) {
-            extract = extract << 4 | idx % p;
+            extract = (extract << 4) | (idx % p);
             idx /= p;
         }
         for (int i = 0; i < n - 1; i++) {
-            int v = (((int) extract) & 0xf) << 2;
+            v = ((int) (extract & 0xf)) << 2;
             extract >>= 4;
-            arr[i] = setVal(arr[i], (int) (val >> v & 0xf), isEdge);
-            long m = (1L << v) - 1;
-            val = val & m | val >> 4 & ~m;
+            arr[i] = setVal(arr[i], (int) ((val >> v) & 0xf), isEdge);
+            m = (1L << v) - 1;
+            val = (val & m) | ((val >> 4) & ~m);
         }
         arr[n - 1] = setVal(arr[n - 1], (int) (val & 0xf), isEdge);
     }
@@ -360,7 +362,7 @@ public class Util {
         long val = 0xFEDCBA9876543210L;
         for (int i = 0; i < n - 1; i++) {
             int v = getVal(arr[i], isEdge) << 2;
-            idx = (n - i) * idx + (int) (val >> v & 0xf);
+            idx = (n - i) * idx + (int) ((val >> v) & 0xf);
             val -= 0x1111111111111110L << v;
         }
         return idx;
@@ -379,8 +381,8 @@ public class Util {
     }
 
     public static void setComb(byte[] arr, int idxC, int mask, boolean isEdge) {
-        int end = arr.length - 1;
-        int r = 4, fill = end;
+        int r = 4, fill, end;
+        fill = end = arr.length - 1;
         for (int i = end; i >= 0; i--) {
             if (idxC >= Cnk[i][r]) {
                 idxC -= Cnk[i][r--];

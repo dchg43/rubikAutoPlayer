@@ -114,7 +114,7 @@ public class CoordCube {
     }
 
     public static int getPruning(int[] table, int index) {
-        return table[index >> 3] >> (index << 2) & 0xf; // index << 2 <=> (index & 7) << 2
+        return (table[index >> 3] >> (index << 2)) & 0xf; // index << 2 <=> (index & 7) << 2
     }
 
     private static void initUDSliceMoveConj() {
@@ -233,7 +233,6 @@ public class CoordCube {
     // PrunFlag: | MIN_DEPTH | MAX_DEPTH | INV_DEPTH | Padding | P2 | E2C | SYM_SHIFT |
     private static void initRawSymPrun(int[] PrunTable, final char[][] RawMove, final char[][] RawConj, final char[][] SymMove, final char[] SymState,
             final int PrunFlag, final boolean fullInit) {
-
         final int SYM_SHIFT = PrunFlag & 0xf;
         final int SYM_E2C_MAGIC = ((PrunFlag >> 4) & 1) == 1 ? CubieCube.SYM_E2C_MAGIC : 0x00000000;
         final boolean IS_PHASE2 = ((PrunFlag >> 5) & 1) == 1;
@@ -264,7 +263,7 @@ public class CoordCube {
         }
 
         while (depth < SEARCH_DEPTH) {
-            int mask = (depth + 1) * 0x11111111 ^ 0xffffffff;
+            int mask = ((depth + 1) * 0x11111111) ^ 0xffffffff;
             for (int i = 0; i < PrunTable.length; i++) {
                 int val = PrunTable[i] ^ mask;
                 val &= val >> 1;

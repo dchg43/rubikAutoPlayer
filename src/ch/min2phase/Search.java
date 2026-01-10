@@ -288,12 +288,19 @@ public class Search {
      */
     public String verify(String facelets) {
         int count = 0x000000;
-        byte[] f = new byte[54];
-        String center = new String(new char[]{facelets.charAt(Util.U5), facelets.charAt(Util.R5), facelets.charAt(Util.F5), facelets.charAt(Util.D5),
-                facelets.charAt(Util.L5), facelets.charAt(Util.B5)});
+        int[] f = new int[54];
+        char[] center = new char[]{facelets.charAt(Util.U5), facelets.charAt(Util.R5), facelets.charAt(Util.F5), facelets.charAt(Util.D5),
+                facelets.charAt(Util.L5), facelets.charAt(Util.B5)};
         for (int i = 0; i < 54; i++) {
-            f[i] = (byte) center.indexOf(facelets.charAt(i));
-            if (f[i] == -1) {
+            char a = facelets.charAt(i);
+            int j;
+            for (j = 0; j < 6; j++) {
+                if (a == center[j]) {
+                    f[i] = j;
+                    break;
+                }
+            }
+            if (j == 6) {
                 return "Error 1";
             }
             count += 1 << (f[i] << 2);
@@ -313,10 +320,10 @@ public class Search {
 
     private int phase1PreMoves(int maxl, int lm, CubieCube cc, long ssym) {
         preMoveLen = maxPreMoves - maxl;
-        if (isRec ? depth == length - preMoveLen : (preMoveLen == 0 || (0x36FB7 >> lm & 1) == 0)) {
+        if (isRec ? (depth == length - preMoveLen) : (preMoveLen == 0 || (0x36FB7 >> lm & 1) == 0)) {
             depth = length - preMoveLen;
             phase1Cubie[0] = cc;
-            allowShorter = depth == MIN_P1LENGTH_PRE && preMoveLen != 0;
+            allowShorter = (depth == MIN_P1LENGTH_PRE && preMoveLen != 0);
 
             if (nodeUD[depth + 1].setWithPrun(cc, depth) && phase1(nodeUD[depth + 1], ssym, depth, -1) == 0) {
                 return 0;
@@ -354,12 +361,12 @@ public class Search {
     }
 
     private String search() {
-        for (length = isRec ? length : 0; length < solLen; length++) {
+        for (length = (isRec ? length : 0); length < solLen; length++) {
             maxDep = Math.min(MAX_DEPTH, solLen - length - 1);
-            for (urfIdx = isRec ? urfIdx : 0; urfIdx < 6; urfIdx++) {
-                if ((conjMask & 1 << urfIdx) != 0) {
-                    continue;
-                }
+            for (urfIdx = (isRec ? urfIdx : 0); urfIdx < 6; urfIdx++) {
+                // if ((conjMask & (1 << urfIdx)) != 0) { //  没有作用？
+                //     continue;
+                // }
                 if (phase1PreMoves(maxPreMoves, -30, urfCubieCube[urfIdx], (selfSym & 0xffff)) == 0) {
                     return solution == null ? "Error 8" : solution.toString();
                 }
@@ -402,7 +409,7 @@ public class Search {
         int p2switchMax = (preMoveLen == 0 ? 1 : 2) * (depth == 0 ? 1 : 2);
         for (int p2switch = 0, p2switchMask = (1 << p2switchMax) - 1; p2switch < p2switchMax; p2switch++) {
             // 0 normal; 1 lastmove; 2 lastmove + premove; 3 premove
-            if ((p2switchMask >> p2switch & 1) != 0) {
+            if (((p2switchMask >> p2switch) & 1) != 0) {
                 p2switchMask &= ~(1 << p2switch);
                 ret = initPhase2(p2corn, p2csym, p2edge, p2esym, p2mid, edgei, corni);
                 if (ret == 0 || ret > 2) {
