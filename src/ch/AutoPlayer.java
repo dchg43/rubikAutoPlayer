@@ -150,6 +150,14 @@ public final class AutoPlayer extends Panel implements Runnable {
 
     private Search search = new Search();
 
+    // 建议 Step: 15 ~ 18
+    private static final int defaultDepth = 15;
+
+    // 结果长度跟这个值相关，0, 0, 0, 0, 5, 300, 3000, 300000得到的几率大概是0.1,0.4,1,3,20,70,6,0(%)
+    private static final int[] maxTries = {0, 0, 0, 0, 5, 300, 3000, 300000}; // 对应depth的15 16 17 18 19 20 21 22
+
+    private static final int maxDepth = defaultDepth + maxTries.length - 1;
+
     private boolean DEBUG = false;
 
     public static void main(String[] args) {
@@ -1167,6 +1175,7 @@ public final class AutoPlayer extends Panel implements Runnable {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                buttonSolver.requestFocus();
             }
         });
 
@@ -1305,6 +1314,7 @@ public final class AutoPlayer extends Panel implements Runnable {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                buttonSolution.requestFocus();
             }
         });
 
@@ -1479,26 +1489,22 @@ public final class AutoPlayer extends Panel implements Runnable {
             System.out.println("input: " + cubeString);
         }
 
-        int depth = 15; // 建议 Step: 15 ~ 18
-        // 结果长度跟这个值相关，0, 0, 0, 0, 5, 300, 3000, 300000得到的几率大概是0.1,0.4,1,3,20,70,6,0(%)
-        final int[] maxTries = {0, 0, 0, 0, 5, 300, 3000, 300000}; // 对应depth的15 16 17 18 19 20 21 22
-        final int maxDepth = depth + maxTries.length - 1;
-        String result = "Error 8";
-        int tries = 0;
         String verify = search.verify(cubeString);
         if (verify != null) {
             return verify;
         }
 
-        int mask = 0;
+        int depth = defaultDepth;
+        String result = null;
+        int tries = 0;
         int maxProbe = 1;
         char errkey = '8';
         while (errkey == '8' || errkey == '7') {
-            result = search.solution(depth, maxProbe, 1, mask);
+            result = search.solution(depth, maxProbe, 1, 0);
             errkey = result.length() > 0 ? result.charAt(result.length() - 1) : '0';
             tries = maxTries[depth - 15];
             while (errkey == '8' && tries > 0) {
-                result = search.next(maxProbe, 1, mask);
+                result = search.next(maxProbe, 1, 0);
                 errkey = result.charAt(result.length() - 1);
                 tries--;
             }
