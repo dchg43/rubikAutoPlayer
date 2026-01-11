@@ -292,25 +292,24 @@ public final class AutoPlayer extends Panel implements Runnable {
         if (process < 1) {
             process = 1;
         } else if (process > 8) {
-            process = 8;
+            process = 8; // 最大线程数
         }
         for (int j = 0; j < process; j++) {
-            Thread t = new Thread() {
+            new Thread() {
                 @Override
                 public void run() {
-                    Search search = new Search();
-                    search.init();
-                    while (AutoPlayer.this.displayMode == RUNNING) {
-                        String random = Tools.randomCube();
-                        String solution = searchSolution(search, random);
-                        try {
+                    try {
+                        Search search = new Search();
+                        search.init();
+                        while (AutoPlayer.this.displayMode == RUNNING) {
+                            String random = Tools.randomCube();
+                            String solution = searchSolution(search, random);
                             queue.put(new String[]{random, solution});
-                        } catch (InterruptedException e) {
                         }
+                    } catch (InterruptedException e) {
                     }
                 }
-            };
-            t.start();
+            }.start();
         }
 
         long times = 0;
