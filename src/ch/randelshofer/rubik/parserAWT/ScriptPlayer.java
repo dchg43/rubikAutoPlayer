@@ -266,8 +266,8 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
 
             this.isProcessingCurrentSymbol = true;
             fireStateChanged();
-            while ((this.state == RUNNING && this.progress.getValue() != this.progress.getMaximum()) || this.scriptIndex != this.progress.getValue()) {
-                int value = this.progress.getValue();
+            int value = this.progress.getValue();
+            while ((this.state == RUNNING && value != this.progress.getMaximum()) || value != this.scriptIndex) {
                 if (this.scriptIndex == value) {
                     this.scriptList.get(this.scriptIndex++).applyTo(this.model);
                     this.progress.setValue(this.progress.getValue() + 1);
@@ -286,6 +286,7 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
                     }
                     this.model.setQuiet(false);
                 }
+                value = this.progress.getValue();
             }
             this.isProcessingCurrentSymbol = false;
         }
