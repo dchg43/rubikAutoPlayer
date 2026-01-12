@@ -65,10 +65,11 @@ public class MovieSliderAWT extends Canvas implements ChangeListener {
         int id = e.getID();
         switch (id) {
         case MouseEvent.MOUSE_PRESSED: // 按下
-        case MouseEvent.MOUSE_RELEASED: // 弹起
             if (isEnabled()) {
                 moveThumb(e.getX());
             }
+            break;
+        case MouseEvent.MOUSE_RELEASED: // 弹起
             break;
         }
     }
@@ -103,9 +104,9 @@ public class MovieSliderAWT extends Canvas implements ChangeListener {
 
     @Override
     public boolean mouseUp(Event event, int x, int y) {
-        if (isEnabled()) {
-            moveThumb(x);
-        }
+        // if (isEnabled()) {
+        //     moveThumb(x);
+        // }
         return true;
     }
 
