@@ -459,18 +459,28 @@ public final class AutoPlayer extends Panel implements Runnable {
     }
 
     private void initDefaultFont() {
+        Font font = new Font("DialogInput", Font.PLAIN, 15);
+        if (font.canDisplayUpTo("编辑©") == -1) {
+            this.defaultFont = font.getName();
+            return;
+        }
+
         FontRenderContext frc = new FontRenderContext(null, RenderingHints.VALUE_TEXT_ANTIALIAS_DEFAULT, RenderingHints.VALUE_FRACTIONALMETRICS_DEFAULT);
         GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
         String[] fontNames = ge.getAvailableFontFamilyNames();
         for (String fontName : fontNames) {
-            Font font = new Font(fontName, Font.PLAIN, 15);
+            font = new Font(fontName, Font.PLAIN, 15);
             // 判断是否支持中文
-            if (font.canDisplayUpTo("编辑©") == -1) {
-                // 判断是否等宽字体
-                if (font.getStringBounds("il ", frc).getWidth() == font.getStringBounds("WMG", frc).getWidth()) {
-                    this.defaultFont = fontName;
-                    if ("DialogInput".equals(fontName)) { // 优先
+            if (font.canDisplayUpTo("编辑") == -1) {
+                // 判断是否支持特殊字符
+                if (font.canDisplayUpTo("©") == -1) {
+                    // 判断是否等宽字体
+                    if (font.getStringBounds("il ", frc).getWidth() == font.getStringBounds("WMG", frc).getWidth()) {
+                        this.defaultFont = fontName;
                         return;
+                    }
+                    if (this.defaultFont == null) {
+                        this.defaultFont = fontName;
                     }
                 }
                 if (this.defaultFont == null) {
