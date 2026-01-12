@@ -28,7 +28,7 @@ public class Search {
     public static final boolean USE_TWIST_FLIP_PRUN = true;
 
     // Options for research purpose.
-    public static final int MAX_PRE_MOVES = 20;
+    public static final int MAX_PRE_MOVES = 21;
 
     public static final boolean TRY_INVERSE = true;
 
@@ -41,6 +41,8 @@ public class Search {
     public static final int MIN_P1LENGTH_PRE = 7;
 
     public static final int MAX_DEPTH = 12;
+
+    private static boolean staticInited = false;
 
     private boolean inited = false;
 
@@ -122,11 +124,18 @@ public class Search {
     public Search() {
     }
 
+    public static synchronized void staticInit() {
+        if (!staticInited) {
+            Util.init();
+            CubieCube.initMove();
+            CubieCube.initSym();
+            CoordCube.init(true);
+            staticInited = true;
+        }
+    }
+
     public synchronized void init() {
-        Util.init();
-        CubieCube.initMove();
-        CubieCube.initSym();
-        CoordCube.init(true);
+        staticInit();
         for (int i = 0; i < MAX_PRE_MOVES; i++) {
             nodeUD[i] = new CoordCube();
             nodeRL[i] = new CoordCube();
@@ -228,11 +237,11 @@ public class Search {
         conjMask |= (selfSym >> 32 & 0xffff) != 0 ? 0x24 : 0;
         conjMask |= (selfSym >> 48 & 0xffff) != 0 ? 0x38 : 0;
         selfSym &= 0xffffffffffffL;
-        maxPreMoves = conjMask > 7 ? 0 : MAX_PRE_MOVES;
+        maxPreMoves = conjMask > 7 ? 0 : MAX_PRE_MOVES - 1;
 
         for (int i = 0; i < 6; i++) {
             urfCubieCube[i].copy(cc);
-            urfCoordCube[i].setWithPrun(urfCubieCube[i], MAX_PRE_MOVES);
+            urfCoordCube[i].setWithPrun(urfCubieCube[i], MAX_PRE_MOVES - 1);
             cc.URFConjugate();
             if (i == 2 || i == 5) {
                 cc.invCubieCube();
@@ -474,16 +483,15 @@ public class Search {
         }
 
         int depth2;
-        boolean hasSolution = false;
         for (depth2 = maxDep; depth2 >= prun; depth2--) {
             int ret = phase2(p2edge, p2esym, p2corn, p2csym, p2mid, depth2, depth, 10);
             if (ret < 0) {
                 break;
             }
             depth2 -= ret;
-            hasSolution = true;
         }
-        if (hasSolution) {
+
+        if (depth2 != maxDep) { // At least one solution has been found.
             solution = new Solution();
             solution.setArgs(verbose, urfIdx, depth);
             for (int i = 0; i <= depth + depth2; i++) {
@@ -493,9 +501,7 @@ public class Search {
                 solution.appendSolMove(preMoves[i]);
             }
             solLen = solution.getLength();
-        }
 
-        if (depth2 != maxDep) { // At least one solution has been found.
             maxDep = Math.min(MAX_DEPTH, solLen - length - 1);
             return probe >= probeMin ? 0 : 1;
         }
