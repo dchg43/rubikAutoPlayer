@@ -30,13 +30,13 @@ public class Tools {
         }
     }
 
-    @SuppressWarnings("unused")
     private static void read(char[][] arr, DataInput in) throws IOException {
         for (char[] element : arr) {
             read(element, in);
         }
     }
 
+    @SuppressWarnings("unused")
     private static void read(int[][] arr, DataInput in) throws IOException {
         for (int[] element : arr) {
             read(element, in);
@@ -55,13 +55,13 @@ public class Tools {
         }
     }
 
-    @SuppressWarnings("unused")
     private static void write(final char[][] arr, DataOutput out) throws IOException {
         for (char[] element : arr) {
             write(element, out);
         }
     }
 
+    @SuppressWarnings("unused")
     private static void write(final int[][] arr, DataOutput out) throws IOException {
         for (int[] element : arr) {
             write(element, out);
@@ -92,7 +92,7 @@ public class Tools {
         read(CubieCube.TwistR2S, in);
         read(CubieCube.EPermR2S, in);
         read(CubieCube.Perm2CombP, in);
-        read(CubieCube.MPermInv, in);
+        in.readFully(CubieCube.MPermInv);
         read(CubieCube.PermInvEdgeSym, in);
 
         read(CoordCube.UDSliceMove, in);
@@ -136,7 +136,7 @@ public class Tools {
         write(CubieCube.TwistR2S, out); // 3,281
         write(CubieCube.EPermR2S, out); // 20,160
         write(CubieCube.Perm2CombP, out); // 2,768
-        write(CubieCube.MPermInv, out);
+        out.write(CubieCube.MPermInv);
         write(CubieCube.PermInvEdgeSym, out); // 5,536
 
         write(CoordCube.UDSliceMove, out); // 17,820

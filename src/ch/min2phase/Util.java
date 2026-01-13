@@ -2,150 +2,150 @@ package ch.min2phase;
 
 public class Util {
     // Moves
-    public static final int Ux1 = 0;
+    public static final byte Ux1 = 0;
 
-    public static final int Ux2 = 1;
+    public static final byte Ux2 = 1;
 
-    public static final int Ux3 = 2;
+    public static final byte Ux3 = 2;
 
-    public static final int Rx1 = 3;
+    public static final byte Rx1 = 3;
 
-    public static final int Rx2 = 4;
+    public static final byte Rx2 = 4;
 
-    public static final int Rx3 = 5;
+    public static final byte Rx3 = 5;
 
-    public static final int Fx1 = 6;
+    public static final byte Fx1 = 6;
 
-    public static final int Fx2 = 7;
+    public static final byte Fx2 = 7;
 
-    public static final int Fx3 = 8;
+    public static final byte Fx3 = 8;
 
-    public static final int Dx1 = 9;
+    public static final byte Dx1 = 9;
 
-    public static final int Dx2 = 10;
+    public static final byte Dx2 = 10;
 
-    public static final int Dx3 = 11;
+    public static final byte Dx3 = 11;
 
-    public static final int Lx1 = 12;
+    public static final byte Lx1 = 12;
 
-    public static final int Lx2 = 13;
+    public static final byte Lx2 = 13;
 
-    public static final int Lx3 = 14;
+    public static final byte Lx3 = 14;
 
-    public static final int Bx1 = 15;
+    public static final byte Bx1 = 15;
 
-    public static final int Bx2 = 16;
+    public static final byte Bx2 = 16;
 
-    public static final int Bx3 = 17;
+    public static final byte Bx3 = 17;
 
     // Facelets
-    public static final int U1 = 0;
+    public static final byte U1 = 0;
 
-    public static final int U2 = 1;
+    public static final byte U2 = 1;
 
-    public static final int U3 = 2;
+    public static final byte U3 = 2;
 
-    public static final int U4 = 3;
+    public static final byte U4 = 3;
 
-    public static final int U5 = 4;
+    public static final byte U5 = 4;
 
-    public static final int U6 = 5;
+    public static final byte U6 = 5;
 
-    public static final int U7 = 6;
+    public static final byte U7 = 6;
 
-    public static final int U8 = 7;
+    public static final byte U8 = 7;
 
-    public static final int U9 = 8;
+    public static final byte U9 = 8;
 
-    public static final int R1 = 9;
+    public static final byte R1 = 9;
 
-    public static final int R2 = 10;
+    public static final byte R2 = 10;
 
-    public static final int R3 = 11;
+    public static final byte R3 = 11;
 
-    public static final int R4 = 12;
+    public static final byte R4 = 12;
 
-    public static final int R5 = 13;
+    public static final byte R5 = 13;
 
-    public static final int R6 = 14;
+    public static final byte R6 = 14;
 
-    public static final int R7 = 15;
+    public static final byte R7 = 15;
 
-    public static final int R8 = 16;
+    public static final byte R8 = 16;
 
-    public static final int R9 = 17;
+    public static final byte R9 = 17;
 
-    public static final int F1 = 18;
+    public static final byte F1 = 18;
 
-    public static final int F2 = 19;
+    public static final byte F2 = 19;
 
-    public static final int F3 = 20;
+    public static final byte F3 = 20;
 
-    public static final int F4 = 21;
+    public static final byte F4 = 21;
 
-    public static final int F5 = 22;
+    public static final byte F5 = 22;
 
-    public static final int F6 = 23;
+    public static final byte F6 = 23;
 
-    public static final int F7 = 24;
+    public static final byte F7 = 24;
 
-    public static final int F8 = 25;
+    public static final byte F8 = 25;
 
-    public static final int F9 = 26;
+    public static final byte F9 = 26;
 
-    public static final int D1 = 27;
+    public static final byte D1 = 27;
 
-    public static final int D2 = 28;
+    public static final byte D2 = 28;
 
-    public static final int D3 = 29;
+    public static final byte D3 = 29;
 
-    public static final int D4 = 30;
+    public static final byte D4 = 30;
 
-    public static final int D5 = 31;
+    public static final byte D5 = 31;
 
-    public static final int D6 = 32;
+    public static final byte D6 = 32;
 
-    public static final int D7 = 33;
+    public static final byte D7 = 33;
 
-    public static final int D8 = 34;
+    public static final byte D8 = 34;
 
-    public static final int D9 = 35;
+    public static final byte D9 = 35;
 
-    public static final int L1 = 36;
+    public static final byte L1 = 36;
 
-    public static final int L2 = 37;
+    public static final byte L2 = 37;
 
-    public static final int L3 = 38;
+    public static final byte L3 = 38;
 
-    public static final int L4 = 39;
+    public static final byte L4 = 39;
 
-    public static final int L5 = 40;
+    public static final byte L5 = 40;
 
-    public static final int L6 = 41;
+    public static final byte L6 = 41;
 
-    public static final int L7 = 42;
+    public static final byte L7 = 42;
 
-    public static final int L8 = 43;
+    public static final byte L8 = 43;
 
-    public static final int L9 = 44;
+    public static final byte L9 = 44;
 
-    public static final int B1 = 45;
+    public static final byte B1 = 45;
 
-    public static final int B2 = 46;
+    public static final byte B2 = 46;
 
-    public static final int B3 = 47;
+    public static final byte B3 = 47;
 
-    public static final int B4 = 48;
+    public static final byte B4 = 48;
 
-    public static final int B5 = 49;
+    public static final byte B5 = 49;
 
-    public static final int B6 = 50;
+    public static final byte B6 = 50;
 
-    public static final int B7 = 51;
+    public static final byte B7 = 51;
 
-    public static final int B8 = 52;
+    public static final byte B8 = 52;
 
-    public static final int B9 = 53;
+    public static final byte B9 = 53;
 
     // Colors
     public static final int U = 0;
@@ -161,26 +161,26 @@ public class Util {
     public static final int B = 5;
 
     // 值范围: [0, 53]
-    private static final int[][] cornerFacelet = {{U9, R1, F3}, {U7, F1, L3}, {U1, L1, B3}, {U3, B1, R3}, {D3, F9, R7}, {D1, L9, F7}, {D7, B9, L7},
+    private static final byte[][] cornerFacelet = {{U9, R1, F3}, {U7, F1, L3}, {U1, L1, B3}, {U3, B1, R3}, {D3, F9, R7}, {D1, L9, F7}, {D7, B9, L7},
             {D9, R9, B7}};
 
     // 值范围: [0, 52]
-    private static final int[][] edgeFacelet = {{U6, R2}, {U8, F2}, {U4, L2}, {U2, B2}, {D6, R8}, {D2, F8}, {D4, L8}, {D8, B8}, {F6, R4}, {F4, L6}, {B6, L4},
+    private static final byte[][] edgeFacelet = {{U6, R2}, {U8, F2}, {U4, L2}, {U2, B2}, {D6, R8}, {D2, F8}, {D4, L8}, {D8, B8}, {F6, R4}, {F4, L6}, {B6, L4},
             {B4, R6}};
 
     // 值范围: [0, 924]
-    private static final int[][] Cnk = new int[13][13];
+    private static final char[][] Cnk = new char[13][13];
 
     public static final String[] move2str = {"U ", "U2", "U'", "R ", "R2", "R'", "F ", "F2", "F'", "D ", "D2", "D'", "L ", "L2", "L'", "B ", "B2", "B'"};
 
     // 值范围：[0, 17]
-    public static final int[] ud2std = {Ux1, Ux2, Ux3, Rx2, Fx2, Dx1, Dx2, Dx3, Lx2, Bx2, Rx1, Rx3, Fx1, Fx3, Lx1, Lx3, Bx1, Bx3};
+    public static final byte[] ud2std = {Ux1, Ux2, Ux3, Rx2, Fx2, Dx1, Dx2, Dx3, Lx2, Bx2, Rx1, Rx3, Fx1, Fx3, Lx1, Lx3, Bx1, Bx3};
 
     // 值范围: [0, 17]
-    public static final int[] std2ud = new int[18];
+    public static final byte[] std2ud = new byte[18];
 
     // 值范围: [0, 528]
-    public static final int[] ckmv2bit = new int[11];
+    public static final char[] ckmv2bit = new char[11];
 
     public static CubieCube toCubieCube(final int[] f) {
         int ori;
@@ -198,7 +198,7 @@ public class Util {
             for (int j = 0; j < 8; j++) {
                 if (col1 == cornerFacelet[j][1] / 9 && col2 == cornerFacelet[j][2] / 9) {
                     // in cornerposition i we have cornercubie j
-                    ccRet.ca[i] = ori % 3 << 3 | j;
+                    ccRet.ca[i] = (byte) (ori % 3 << 3 | j);
                     break;
                 }
             }
@@ -206,11 +206,11 @@ public class Util {
         for (int i = 0; i < 12; i++) {
             for (int j = 0; j < 12; j++) {
                 if (f[edgeFacelet[i][0]] == edgeFacelet[j][0] / 9 && f[edgeFacelet[i][1]] == edgeFacelet[j][1] / 9) {
-                    ccRet.ea[i] = j << 1;
+                    ccRet.ea[i] = (byte) (j << 1);
                     break;
                 }
                 if (f[edgeFacelet[i][0]] == edgeFacelet[j][1] / 9 && f[edgeFacelet[i][1]] == edgeFacelet[j][0] / 9) {
-                    ccRet.ea[i] = j << 1 | 1;
+                    ccRet.ea[i] = (byte) (j << 1 | 1);
                     break;
                 }
             }
@@ -224,17 +224,17 @@ public class Util {
         for (int i = 0; i < 54; i++) {
             f[i] = ts[i / 9];
         }
-        for (int c = 0; c < 8; c++) {
+        for (byte c = 0; c < 8; c++) {
             int j = cc.ca[c] & 0x7;
             int ori = cc.ca[c] >> 3;
-            for (int n = 0; n < 3; n++) {
+            for (byte n = 0; n < 3; n++) {
                 f[cornerFacelet[c][(n + ori) % 3]] = ts[cornerFacelet[j][n] / 9];
             }
         }
-        for (int e = 0; e < 12; e++) {
+        for (byte e = 0; e < 12; e++) {
             int j = cc.ea[e] >> 1;
             int ori = cc.ea[e] & 1;
-            for (int n = 0; n < 2; n++) {
+            for (byte n = 0; n < 2; n++) {
                 f[edgeFacelet[e][(n + ori) % 2]] = ts[edgeFacelet[j][n] / 9];
             }
         }
@@ -250,15 +250,15 @@ public class Util {
         return p & 1;
     }
 
-    public static int setVal(int val0, int val, boolean isEdge) {
-        return isEdge ? ((val << 1) | (val0 & 1)) : (val | (val0 & ~7));
+    public static byte setVal(int val0, int val, boolean isEdge) {
+        return (byte) (isEdge ? ((val << 1) | (val0 & 1)) : (val | (val0 & ~7)));
     }
 
     public static int getVal(int val0, boolean isEdge) {
         return isEdge ? val0 >> 1 : val0 & 7;
     }
 
-    public static void setNPerm(int[] arr, int idx, int n, boolean isEdge) {
+    public static void setNPerm(byte[] arr, int idx, int n, boolean isEdge) {
         long val = 0xFEDCBA9876543210L;
         long extract = 0;
         long m;
@@ -277,7 +277,7 @@ public class Util {
         arr[n - 1] = setVal(arr[n - 1], (int) (val & 0xf), isEdge);
     }
 
-    public static int getNPerm(final int[] arr, int n, boolean isEdge) {
+    public static int getNPerm(final byte[] arr, int n, boolean isEdge) {
         int idx = 0;
         long val = 0xFEDCBA9876543210L;
         for (int i = 0; i < n - 1; i++) {
@@ -288,7 +288,7 @@ public class Util {
         return idx;
     }
 
-    public static int getComb(final int[] arr, int mask, boolean isEdge) {
+    public static int getComb(final byte[] arr, int mask, boolean isEdge) {
         int end = arr.length - 1;
         int idxC = 0, r = 4;
         for (int i = end; i >= 0; i--) {
@@ -300,7 +300,7 @@ public class Util {
         return idxC;
     }
 
-    public static void setComb(int[] arr, int idxC, int mask, boolean isEdge) {
+    public static void setComb(byte[] arr, int idxC, int mask, boolean isEdge) {
         int r = 4, fill, end;
         fill = end = arr.length - 1;
         for (int i = end; i >= 0; i--) {
@@ -317,7 +317,7 @@ public class Util {
     }
 
     public static void init() {
-        for (int i = 0; i < 18; i++) {
+        for (byte i = 0; i < 18; i++) {
             std2ud[ud2std[i]] = i;
         }
         for (int i = 0; i < 10; i++) {
@@ -332,7 +332,7 @@ public class Util {
         for (int i = 0; i < 13; i++) {
             Cnk[i][0] = Cnk[i][i] = 1;
             for (int j = 1; j < i; j++) {
-                Cnk[i][j] = Cnk[i - 1][j - 1] + Cnk[i - 1][j];
+                Cnk[i][j] = (char) (Cnk[i - 1][j - 1] + Cnk[i - 1][j]);
             }
         }
     }
