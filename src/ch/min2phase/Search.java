@@ -233,9 +233,9 @@ public class Search {
     private void prepareSearch(CubieCube cc) {
         conjMask = (TRY_INVERSE ? 0 : 0x38) | (TRY_THREE_AXES ? 0 : 0x36);
         selfSym = cc.selfSymmetry();
-        conjMask |= (selfSym >> 16 & 0xffff) != 0 ? 0x12 : 0;
-        conjMask |= (selfSym >> 32 & 0xffff) != 0 ? 0x24 : 0;
-        conjMask |= (selfSym >> 48 & 0xffff) != 0 ? 0x38 : 0;
+        conjMask |= ((selfSym >> 16) & 0xffff) != 0 ? 0x12 : 0;
+        conjMask |= ((selfSym >> 32) & 0xffff) != 0 ? 0x24 : 0;
+        conjMask |= ((selfSym >> 48) & 0xffff) != 0 ? 0x38 : 0;
         selfSym &= 0xffffffffffffL;
         maxPreMoves = conjMask > 7 ? 0 : MAX_PRE_MOVES - 1;
 
@@ -324,7 +324,7 @@ public class Search {
 
     private int phase1PreMoves(int maxl, int lm, final CubieCube cc, long ssym) {
         preMoveLen = maxPreMoves - maxl;
-        if (isRec ? (depth == length - preMoveLen) : (preMoveLen == 0 || (0x36FB7 >> lm & 1) == 0)) {
+        if (isRec ? (depth == length - preMoveLen) : (preMoveLen == 0 || ((0x36FB7 >> lm) & 1) == 0)) {
             depth = length - preMoveLen;
             phase1Cubie[0] = cc;
             allowShorter = (depth == MIN_P1LENGTH_PRE && preMoveLen != 0);
@@ -343,13 +343,13 @@ public class Search {
             skipMoves |= 0x36FB7; // 11 0110 1111 1011 0111
         }
 
-        lm = lm / 3 * 3;
+        lm = (lm / 3) * 3;
         for (byte m = 0; m < 18; m++) {
             if (m == lm || m == lm - 9 || m == lm + 9) {
                 m += 2;
                 continue;
             }
-            if ((!isRec || m == preMoves[maxPreMoves - maxl]) && (skipMoves & 1 << m) == 0) {
+            if ((!isRec || m == preMoves[maxPreMoves - maxl]) && (skipMoves & (1 << m)) == 0) {
                 CubieCube preMove = preMoveCubes[maxl - 1];
                 CubieCube.CornMult(CubieCube.moveCube[m], cc, preMove);
                 CubieCube.EdgeMult(CubieCube.moveCube[m], cc, preMove);
@@ -427,7 +427,7 @@ public class Search {
                 break;
             }
             if ((p2switch & 1) == 0 && depth > 0) {
-                int m = Util.std2ud[lastMove / 3 * 3 + 1];
+                int m = Util.std2ud[(lastMove / 3) * 3 + 1];
                 move[depth - 1] = (byte) (Util.ud2std[m] * 2 - move[depth - 1]);
 
                 p2mid = CoordCube.MPermMove[p2mid][m];
@@ -440,17 +440,17 @@ public class Search {
                 corni = CubieCube.getPermSymInv(p2corn, p2csym, true);
                 edgei = CubieCube.getPermSymInv(p2edge, p2esym, false);
             } else if (preMoveLen > 0) {
-                int m = Util.std2ud[lastPre / 3 * 3 + 1];
+                int m = Util.std2ud[(lastPre / 3) * 3 + 1];
                 preMoves[preMoveLen - 1] = (byte) (Util.ud2std[m] * 2 - preMoves[preMoveLen - 1]);
 
                 p2mid = CubieCube.MPermInv[CoordCube.MPermMove[CubieCube.MPermInv[p2mid]][m]];
                 p2corn = CoordCube.CPermMove[corni >> 4][CubieCube.SymMoveUD[corni & 0xf][m]];
-                corni = p2corn & ~0xf | CubieCube.SymMult[p2corn & 0xf][corni & 0xf];
+                corni = (p2corn & ~0xf) | CubieCube.SymMult[p2corn & 0xf][corni & 0xf];
                 p2corn = CubieCube.getPermSymInv(corni >> 4, corni & 0xf, true);
                 p2csym = p2corn & 0xf;
                 p2corn >>= 4;
                 p2edge = CoordCube.EPermMove[edgei >> 4][CubieCube.SymMoveUD[edgei & 0xf][m]];
-                edgei = p2edge & ~0xf | CubieCube.SymMult[p2edge & 0xf][edgei & 0xf];
+                edgei = (p2edge & ~0xf) | CubieCube.SymMult[p2edge & 0xf][edgei & 0xf];
                 p2edge = CubieCube.getPermSymInv(edgei >> 4, edgei & 0xf, false);
                 p2esym = p2edge & 0xf;
                 p2edge >>= 4;
@@ -527,7 +527,7 @@ public class Search {
             for (byte power = 0; power < 3; power++) {
                 byte m = (byte) (axis + power);
 
-                if (isRec && m != move[depth - maxl] || skipMoves != 0 && (skipMoves & 1 << m) != 0) {
+                if ((isRec && m != move[depth - maxl]) || (skipMoves != 0 && (skipMoves & (1 << m)) != 0)) {
                     continue;
                 }
 
@@ -607,7 +607,7 @@ public class Search {
             for (byte power = 0; power < 3; power++) {
                 byte m = (byte) (axis + power);
 
-                if (isRec && m != move[length - maxl] || skipMoves != 0 && (skipMoves & 1 << m) != 0) {
+                if (isRec && m != move[length - maxl] || skipMoves != 0 && (skipMoves & (1 << m)) != 0) {
                     continue;
                 }
 
@@ -664,8 +664,8 @@ public class Search {
         }
         int moveMask = Util.ckmv2bit[lm];
         for (int m = 0; m < 10; m++) {
-            if ((moveMask >> m & 1) != 0) {
-                m += 0x42 >> m & 3;
+            if (((moveMask >> m) & 1) != 0) {
+                m += (0x42 >> m) & 3;
                 continue;
             }
             int midx = CoordCube.MPermMove[mid][m];
@@ -683,7 +683,7 @@ public class Search {
             if (prun > maxl + 1) {
                 return maxl - prun + 1;
             } else if (prun >= maxl) {
-                m += 0x42 >> m & 3 & (maxl - prun);
+                m += (0x42 >> m) & 3 & (maxl - prun);
                 continue;
             }
 
@@ -692,7 +692,7 @@ public class Search {
             int prunc = CoordCube.getPruning(CoordCube.MCPermPrun, cornx * CoordCube.N_MPERM + CoordCube.MPermConj[midx][csymx]);
             prun = Math.max(prunb, prunc);
             if (prun >= maxl) {
-                m += 0x42 >> m & 3 & (maxl - prun);
+                m += (0x42 >> m) & 3 & (maxl - prun);
                 continue;
             }
             int ret = phase2(edgex, esymx, cornx, csymx, midx, maxl - 1, depth + 1, m);
@@ -704,7 +704,7 @@ public class Search {
                 break;
             }
             if (ret < -1) {
-                m += 0x42 >> m & 3;
+                m += (0x42 >> m) & 3;
             }
         }
         return -1;

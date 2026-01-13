@@ -131,19 +131,19 @@ public class CubieCube {
     }
 
     private static int ESym2CSym(int idx) {
-        return idx ^ (SYM_E2C_MAGIC >> ((idx & 0xf) << 1) & 3);
+        return idx ^ ((SYM_E2C_MAGIC >> ((idx & 0xf) << 1)) & 3);
     }
 
     public void invCubieCube() {
         byte[] ea = new byte[12];
         for (byte edge = 0; edge < 12; edge++) {
-            ea[this.ea[edge] >> 1] = (byte) (edge << 1 | this.ea[edge] & 1);
+            ea[this.ea[edge] >> 1] = (byte) ((edge << 1) | (this.ea[edge] & 1));
         }
         this.ea = ea;
 
         byte[] ca = new byte[8];
         for (byte corn = 0; corn < 8; corn++) {
-            ca[this.ca[corn] & 0x7] = (byte) (corn | 0x20 >> (this.ca[corn] >> 3) & 0x18);
+            ca[this.ca[corn] & 0x7] = (byte) (corn | ((0x20 >> (this.ca[corn] >> 3)) & 0x18));
         }
         this.ca = ca;
     }
@@ -155,7 +155,7 @@ public class CubieCube {
         for (int corn = 0; corn < 8; corn++) {
             int oriA = a.ca[b.ca[corn] & 7] >> 3;
             int oriB = b.ca[corn] >> 3;
-            prod.ca[corn] = (byte) (a.ca[b.ca[corn] & 7] & 7 | (oriA + oriB) % 3 << 3);
+            prod.ca[corn] = (byte) ((a.ca[b.ca[corn] & 7] & 7) | (((oriA + oriB) % 3) << 3));
         }
     }
 
@@ -167,8 +167,8 @@ public class CubieCube {
             int oriA = a.ca[b.ca[corn] & 7] >> 3;
             int oriB = b.ca[corn] >> 3;
             int ori = oriA + ((oriA < 3) ? oriB : 6 - oriB);
-            ori = ori % 3 + ((oriA < 3) == (oriB < 3) ? 0 : 3);
-            prod.ca[corn] = (byte) (a.ca[b.ca[corn] & 7] & 7 | ori << 3);
+            ori = (ori % 3) + ((oriA < 3) == (oriB < 3) ? 0 : 3);
+            prod.ca[corn] = (byte) ((a.ca[b.ca[corn] & 7] & 7) | (ori << 3));
         }
     }
 
@@ -190,8 +190,8 @@ public class CubieCube {
         for (int corn = 0; corn < 8; corn++) {
             int oriA = sinv.ca[a.ca[s.ca[corn] & 7] & 7] >> 3;
             int oriB = a.ca[s.ca[corn] & 7] >> 3;
-            int ori = (oriA < 3) ? oriB : (3 - oriB) % 3;
-            b.ca[corn] = (byte) (sinv.ca[a.ca[s.ca[corn] & 7] & 7] & 7 | ori << 3);
+            int ori = (oriA < 3) ? oriB : ((3 - oriB) % 3);
+            b.ca[corn] = (byte) ((sinv.ca[a.ca[s.ca[corn] & 7] & 7] & 7) | (ori << 3));
         }
     }
 
@@ -211,7 +211,7 @@ public class CubieCube {
         if (isCorner) {
             idxi = ESym2CSym(idxi);
         }
-        return idxi & 0xfff0 | SymMult[idxi & 0xf][sym];
+        return (idxi & 0xfff0) | SymMult[idxi & 0xf][sym];
     }
 
     public static int getSkipMoves(long ssym) {
@@ -249,7 +249,7 @@ public class CubieCube {
     public int getFlip() {
         int idx = 0;
         for (int i = 0; i < 11; i++) {
-            idx = idx << 1 | ea[i] & 1;
+            idx = (idx << 1) | (ea[i] & 1);
         }
         return idx;
     }
@@ -257,10 +257,11 @@ public class CubieCube {
     public void setFlip(int idx) {
         int parity = 0, val;
         for (int i = 10; i >= 0; i--, idx >>= 1) {
-            parity ^= (val = idx & 1);
-            ea[i] = (byte) (ea[i] & ~1 | val);
+            val = idx & 1;
+            parity ^= val;
+            ea[i] = (byte) ((ea[i] & ~1) | val);
         }
-        ea[11] = (byte) (ea[11] & ~1 | parity);
+        ea[11] = (byte) ((ea[11] & ~1) | parity);
     }
 
     public char getFlipSym() {
@@ -278,10 +279,11 @@ public class CubieCube {
     public void setTwist(int idx) {
         int twst = 15, val;
         for (int i = 6; i >= 0; i--, idx /= 3) {
-            twst -= (val = idx % 3);
-            ca[i] = (byte) (ca[i] & 0x7 | val << 3);
+            val = idx % 3;
+            twst -= val;
+            ca[i] = (byte) ((ca[i] & 0x7) | (val << 3));
         }
-        ca[7] = (byte) (ca[7] & 0x7 | (twst % 3) << 3);
+        ca[7] = (byte) ((ca[7] & 0x7) | ((twst % 3) << 3));
     }
 
     public char getTwistSym() {
@@ -394,7 +396,7 @@ public class CubieCube {
                     if (Arrays.equals(d.ca, ca)) {
                         EdgeConjugate(c, SymMultInv[0][i], d);
                         if (Arrays.equals(d.ea, ea)) {
-                            sym |= 1L << Math.min(urfInv << 4 | i, 48);
+                            sym |= 1L << Math.min((urfInv << 4) | i, 48);
                         }
                     }
                 }
@@ -497,7 +499,7 @@ public class CubieCube {
                     }
                 }
                 if (s % 2 == 0) {
-                    Sym8Move[j << 3 | s >> 1] = SymMove[s][j];
+                    Sym8Move[(j << 3) | (s >> 1)] = SymMove[s][j];
                 }
             }
         }
@@ -520,8 +522,8 @@ public class CubieCube {
         CubieCube c = new CubieCube();
         CubieCube d = new CubieCube();
         int count = 0, idx = 0;
-        int sym_inc = coord >= 2 ? 1 : 2;
-        boolean isEdge = coord != 1;
+        int sym_inc = (coord >= 2 ? 1 : 2);
+        boolean isEdge = (coord != 1);
 
         for (char i = 0; i < nRAW; i++) {
             if (raw2Sym[i] != 0) {
@@ -556,12 +558,12 @@ public class CubieCube {
                     break;
                 }
                 if (coord == 0 && Search.USE_TWIST_FLIP_PRUN) {
-                    FlipS2RF[count << 3 | s >> 1] = (char) idx;
+                    FlipS2RF[(count << 3) | (s >> 1)] = (char) idx;
                 }
                 if (idx == i) {
                     symState[count] |= 1 << (s / sym_inc);
                 }
-                raw2Sym[idx] = (char) ((count << 4 | s) / sym_inc);
+                raw2Sym[idx] = (char) (((count << 4) | s) / sym_inc);
             }
             sym2Raw[count++] = i;
         }

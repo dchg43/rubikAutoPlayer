@@ -198,7 +198,7 @@ public class Util {
             for (int j = 0; j < 8; j++) {
                 if (col1 == cornerFacelet[j][1] / 9 && col2 == cornerFacelet[j][2] / 9) {
                     // in cornerposition i we have cornercubie j
-                    ccRet.ca[i] = (byte) (ori % 3 << 3 | j);
+                    ccRet.ca[i] = (byte) (((ori % 3) << 3) | j);
                     break;
                 }
             }
@@ -210,7 +210,7 @@ public class Util {
                     break;
                 }
                 if (f[edgeFacelet[i][0]] == edgeFacelet[j][1] / 9 && f[edgeFacelet[i][1]] == edgeFacelet[j][0] / 9) {
-                    ccRet.ea[i] = (byte) (j << 1 | 1);
+                    ccRet.ea[i] = (byte) ((j << 1) | 1);
                     break;
                 }
             }
@@ -255,7 +255,7 @@ public class Util {
     }
 
     public static int getVal(int val0, boolean isEdge) {
-        return isEdge ? val0 >> 1 : val0 & 7;
+        return isEdge ? (val0 >> 1) : (val0 & 7);
     }
 
     public static void setNPerm(byte[] arr, int idx, int n, boolean isEdge) {
@@ -325,7 +325,7 @@ public class Util {
             ckmv2bit[i] = 0;
             for (int j = 0; j < 10; j++) {
                 int jx = ud2std[j] / 3;
-                ckmv2bit[i] |= (ix == jx) || ((ix % 3 == jx % 3) && (ix >= jx)) ? (1 << j) : 0;
+                ckmv2bit[i] |= ((ix == jx) || ((ix % 3 == jx % 3) && (ix >= jx))) ? (1 << j) : 0;
             }
         }
         ckmv2bit[10] = 0;

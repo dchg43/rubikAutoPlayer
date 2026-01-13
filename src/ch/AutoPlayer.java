@@ -132,17 +132,17 @@ public final class AutoPlayer extends Panel implements Runnable {
 
     private boolean autoPlay = true;
 
-    private static final int STOPPED = 0;
+    private static final byte STOPPED = 0;
 
-    private static final int STARTING = 1;
+    private static final byte STARTING = 1;
 
-    private static final int RUNNING = 2;
+    private static final byte RUNNING = 2;
 
-    private static final int STOPPING = 3;
+    private static final byte STOPPING = 3;
 
-    private int displayMode = STOPPED;
+    private byte displayMode = STOPPED;
 
-    private int selectColorButtonIndex = -1;
+    private byte selectColorButtonIndex = -1;
 
     private static final Color selectColor = new Color(184, 207, 229);
 
@@ -151,12 +151,12 @@ public final class AutoPlayer extends Panel implements Runnable {
     private Search search = new Search();
 
     // 建议 Step: 15 ~ 18
-    private static final int defaultDepth = 15;
+    private static final byte defaultDepth = 15;
 
     // 结果长度跟这个值相关，0, 0, 0, 0, 5, 300, 3000, 300000得到的几率大概是0.1,0.4,1,3,20,70,6,0(%)
-    private static final int[] maxTries = {0, 0, 0, 0, 5, 300, 3000, 300000}; // 对应depth的15 16 17 18 19 20 21 22
+    private static final short[] maxTries = {0, 0, 0, 0, 5, 300, 3000, Short.MAX_VALUE}; // 对应depth的15 16 17 18 19 20 21 22
 
-    private static final int maxDepth = defaultDepth + maxTries.length - 1;
+    private static final byte maxDepth = (byte) (defaultDepth + maxTries.length - 1);
 
     private boolean DEBUG = false;
 
@@ -954,7 +954,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         int colory = windowBorder + colorBorder;
         int colorStep = buttonHeight - colorBorder;
         int colorWidth = colorStep - colorBorder;
-        for (int i = 0; i < 6; i++) {
+        for (byte i = 0; i < 6; i++) {
             colorSel[i] = new JButton();
             frame.add(colorSel[i]);
             colorSel[i].setBackground(initColors[i]);
@@ -964,7 +964,7 @@ public final class AutoPlayer extends Panel implements Runnable {
             colorSel[i].setBorder(defaultBorder);
             colorSel[i].setName(String.valueOf(i));
             colorSel[i].addKeyListener(keyListener);
-            final int value = i;
+            final byte value = i;
             colorSel[i].addActionListener(new ActionListener() {
                 @Override
                 public void actionPerformed(ActionEvent evt) {
@@ -1505,7 +1505,7 @@ public final class AutoPlayer extends Panel implements Runnable {
 
         int depth = defaultDepth;
         String result = null;
-        int tries = 0;
+        short tries = 0;
         int maxProbe = 1;
         char errkey = '8';
         while (errkey == '8' || errkey == '7') {
@@ -1739,7 +1739,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         }
     }
 
-    public void setDisplayMode(int displayMode) {
+    public void setDisplayMode(byte displayMode) {
         this.displayMode = displayMode;
     }
 
