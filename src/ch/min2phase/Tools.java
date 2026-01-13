@@ -10,7 +10,7 @@ import java.util.Random;
  */
 public class Tools {
 
-    private static Random gen = new Random();
+    private static final Random gen = new Random();
 
     // null数组
     private static final byte[] STATE_RANDOM = null;
@@ -30,39 +30,39 @@ public class Tools {
         }
     }
 
+    @SuppressWarnings("unused")
     private static void read(char[][] arr, DataInput in) throws IOException {
         for (char[] element : arr) {
             read(element, in);
         }
     }
 
-    @SuppressWarnings("unused")
     private static void read(int[][] arr, DataInput in) throws IOException {
         for (int[] element : arr) {
             read(element, in);
         }
     }
 
-    private static void write(char[] arr, DataOutput out) throws IOException {
+    private static void write(final char[] arr, DataOutput out) throws IOException {
         for (char element : arr) {
             out.writeChar(element);
         }
     }
 
-    private static void write(int[] arr, DataOutput out) throws IOException {
+    private static void write(final int[] arr, DataOutput out) throws IOException {
         for (int element : arr) {
             out.writeInt(element);
         }
     }
 
-    private static void write(char[][] arr, DataOutput out) throws IOException {
+    @SuppressWarnings("unused")
+    private static void write(final char[][] arr, DataOutput out) throws IOException {
         for (char[] element : arr) {
             write(element, out);
         }
     }
 
-    @SuppressWarnings("unused")
-    private static void write(int[][] arr, DataOutput out) throws IOException {
+    private static void write(final int[][] arr, DataOutput out) throws IOException {
         for (int[] element : arr) {
             write(element, out);
         }
@@ -92,7 +92,7 @@ public class Tools {
         read(CubieCube.TwistR2S, in);
         read(CubieCube.EPermR2S, in);
         read(CubieCube.Perm2CombP, in);
-        in.readFully(CubieCube.MPermInv);
+        read(CubieCube.MPermInv, in);
         read(CubieCube.PermInvEdgeSym, in);
 
         read(CoordCube.UDSliceMove, in);
@@ -136,7 +136,7 @@ public class Tools {
         write(CubieCube.TwistR2S, out); // 3,281
         write(CubieCube.EPermR2S, out); // 20,160
         write(CubieCube.Perm2CombP, out); // 2,768
-        out.write(CubieCube.MPermInv);
+        write(CubieCube.MPermInv, out);
         write(CubieCube.PermInvEdgeSym, out); // 5,536
 
         write(CoordCube.UDSliceMove, out); // 17,820
@@ -157,16 +157,6 @@ public class Tools {
             write(CubieCube.FlipS2RF, out); // + 5,376
             write(CoordCube.TwistFlipPrun, out); // + 331,780
         } // = 498,841 + 436,276 = 935,117
-    }
-
-    /**
-     * Set Random Source.
-     *
-     * @param gen
-     *            new random source.
-     */
-    public static void setRandomSource(Random gen) {
-        Tools.gen = gen;
     }
 
     /**
@@ -206,7 +196,7 @@ public class Tools {
         return idx;
     }
 
-    private static int countUnknown(byte[] arr) {
+    private static int countUnknown(final byte[] arr) {
         if (arr == STATE_SOLVED) {
             return 0;
         }
@@ -232,10 +222,11 @@ public class Tools {
             }
         }
         int idx = 0;
+        byte temp;
         for (int i = 0; i < arr.length; i++) {
             if (val[i] != -1) {
                 int j = gen.nextInt(idx + 1);
-                byte temp = val[i];
+                temp = val[i];
                 val[idx++] = val[j];
                 val[j] = temp;
             }
@@ -252,14 +243,14 @@ public class Tools {
         int p = Util.getNParity(getNPerm(arr, arr.length), arr.length);
         if (p == 1 - parity && last != -1) {
             idx--;
-            byte temp = arr[idx];
+            temp = arr[idx];
             arr[idx] = arr[last];
             arr[last] = temp;
         }
         return p;
     }
 
-    private static int getNPerm(byte[] arr, int n) {
+    private static int getNPerm(final byte[] arr, int n) {
         int idx = 0;
         for (int i = 0; i < n; i++) {
             idx *= (n - i);
@@ -358,7 +349,7 @@ public class Tools {
         return Util.toFaceCube(new CubieCube(0, 0, 0, 2047));
     }
 
-    public static String fromScramble(int[] scramble, int size) {
+    public static String fromScramble(final int[] scramble, int size) {
         CubieCube c1 = new CubieCube(true);
         CubieCube c2 = new CubieCube();
         CubieCube tmp;
