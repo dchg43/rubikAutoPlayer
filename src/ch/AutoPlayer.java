@@ -314,12 +314,13 @@ public final class AutoPlayer extends Panel implements Runnable {
 
         long times = 0;
         long start = System.nanoTime();
+        String[] item = null;
         try {
             ScriptNode scriptNode;
             BoundedRangeModel progress = this.player.getBoundedRangeModel();
             for (; times < testTimes && this.displayMode == RUNNING; times++) {
                 model.reset();
-                String[] item = queue.take();
+                item = queue.take();
                 setCubeByString(item[0], this.colors);
                 scriptNode = this.scriptParser.parse(item[1]);
                 this.player.setScript(scriptNode);
@@ -329,7 +330,7 @@ public final class AutoPlayer extends Panel implements Runnable {
                 if (!completeCube.equals(getCubeString(false))) {
                     if (this.displayMode == RUNNING) {
                         model.setQuiet(false);
-                        String message = "Auto test failed.\n script: " + this.scriptTextArea.getText() + "\n result: " + getCubeString(false);
+                        String message = "Auto test failed.\n  input: " + item[0] + "\n script: " + item[1] + "\n result: " + getCubeString(false);
                         JOptionPane.showOptionDialog(this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, this.errorIcon,
                                 CommandParser.DEFAULTOPTION, CommandParser.DEFAULTOPTION[0]);
                         if (this.buttonTest != null) {
@@ -349,7 +350,7 @@ public final class AutoPlayer extends Panel implements Runnable {
             }
         } catch (Exception e) {
             model.setQuiet(false);
-            String message = "Auto test failed.";
+            String message = "Auto test failed.\n item: " + Arrays.toString(item);
             JOptionPane.showOptionDialog(this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, this.errorIcon,
                     CommandParser.DEFAULTOPTION, CommandParser.DEFAULTOPTION[0]);
             if (this.buttonTest != null) {
