@@ -283,9 +283,11 @@ public final class AutoPlayer extends Panel implements Runnable {
         }
         RubiksCubeCore model = this.player.getCubeModel();
         model.setQuiet(true);
-        this.player.setEnabled(false);
-        this.scriptTextArea.setEnabled(false);
         this.player.makesureFinished();
+
+        // 禁用控制按钮和控制文本。如果想在测试中模拟失败，可以不禁用，这样测试过程中操作就有几率会失败
+        // this.player.setEnabled(false);
+        // this.scriptTextArea.setEnabled(false);
 
         // 启动多个线程来查找执行方案
         int process = Runtime.getRuntime().availableProcessors() - 2; // 查找线程数
