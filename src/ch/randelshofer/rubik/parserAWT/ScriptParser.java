@@ -20,7 +20,7 @@ public class ScriptParser {
     // public static final int POSITION_SUFFIX = 1;
     // public static final int POSITION_HEADER = 2;
 
-    private boolean DEBUG;
+    private boolean DEBUG = false;
 
     private String[][] tokens;
 
@@ -356,7 +356,6 @@ public class ScriptParser {
 
     public ScriptParser(String[] tokens, Map<String, Object> macroMap, int repetitorPos, int invertorPos, int reflectorPos, int conjugatorPos,
             int commutatorPos, boolean isSequenceSupported) {
-        this.DEBUG = false;
         this.transformationMap = new HashMap<>();
         this.permutationMap = new HashMap<>();
         if (macroMap != null) {

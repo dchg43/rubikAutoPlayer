@@ -9,6 +9,7 @@ import java.awt.Graphics;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Panel;
+import java.awt.Polygon;
 import java.awt.RenderingHints;
 import java.awt.TextArea;
 import java.awt.event.ActionEvent;
@@ -59,6 +60,7 @@ import ch.randelshofer.gui.BoundedRangeModel;
 import ch.randelshofer.gui.Canvas3DAWT;
 import ch.randelshofer.gui.Canvas3DJ2D;
 import ch.randelshofer.gui.MultilineLabel;
+import ch.randelshofer.gui.PolygonIcon;
 import ch.randelshofer.gui.RatioLayout;
 import ch.randelshofer.gui.event.ChangeEvent;
 import ch.randelshofer.gui.event.ChangeListener;
@@ -78,6 +80,23 @@ import ch.randelshofer.util.PooledSequentialDispatcherAWT;
 
 public final class AutoPlayer extends Panel implements Runnable {
     private static final long serialVersionUID = -698774308591767978L;
+
+    private boolean DEBUG = false;
+
+    // 越小速度越快，越大步骤越短，建议取值：极速0,速度100,较优2000,最优30000
+    private int defaultMaxProbe = 0;
+
+    // 结果长度跟这个值相关，0, 0, 0, 0, 5, 300, 3000, 300000得到的几率大概是0.1,0.4,1,3,20,70,6,0(%)
+    private static final short[] maxTries = {0, 0, 0, 0, 5, 300, 3000, Short.MAX_VALUE}; // 对应depth的15 16 17 18 19 20 21 22
+
+    // 建议 Step: 15 ~ 18
+    private static final byte defaultDepth = 15;
+
+    private static final byte maxDepth = (byte) (defaultDepth + maxTries.length - 1);
+
+    private static final Color selectColor = new Color(184, 207, 229);
+
+    private static final Color deselectColor = new ColorUIResource(238, 238, 238);
 
     private static final String completeCube = "UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB";
 
@@ -144,21 +163,7 @@ public final class AutoPlayer extends Panel implements Runnable {
 
     private byte selectColorButtonIndex = -1;
 
-    private static final Color selectColor = new Color(184, 207, 229);
-
-    private static final Color deselectColor = new ColorUIResource(238, 238, 238);
-
     private Search search = new Search();
-
-    // 建议 Step: 15 ~ 18
-    private static final byte defaultDepth = 15;
-
-    // 结果长度跟这个值相关，0, 0, 0, 0, 5, 300, 3000, 300000得到的几率大概是0.1,0.4,1,3,20,70,6,0(%)
-    private static final short[] maxTries = {0, 0, 0, 0, 5, 300, 3000, Short.MAX_VALUE}; // 对应depth的15 16 17 18 19 20 21 22
-
-    private static final byte maxDepth = (byte) (defaultDepth + maxTries.length - 1);
-
-    private boolean DEBUG = false;
 
     public static void main(String[] args) {
         // GraalVM-Native-Image 编译成的exe文件执行时需要这个配置
@@ -286,7 +291,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         this.player.makesureFinished();
 
         // 禁用控制按钮和控制文本。如果想在测试中模拟失败，可以不禁用，这样测试过程中操作就有几率会失败
-        // this.player.setEnabled(false);
+        this.player.setEnabled(false);
         // this.scriptTextArea.setEnabled(false);
 
         // 启动多个线程来查找执行方案
@@ -344,6 +349,7 @@ public final class AutoPlayer extends Panel implements Runnable {
                         this.player.setEnabled(true);
                         this.scriptTextArea.setEnabled(true);
                         this.displayMode = STOPPED;
+                        queue.clear();
                         return;
                     } else {
                         break;
@@ -364,6 +370,7 @@ public final class AutoPlayer extends Panel implements Runnable {
             this.player.setEnabled(true);
             this.scriptTextArea.setEnabled(true);
             this.displayMode = STOPPED;
+            queue.clear();
             return;
         }
         double timeInSecond = (System.nanoTime() - start) / 1000000000.0d;
@@ -393,6 +400,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         this.player.setEnabled(true);
         this.scriptTextArea.setEnabled(true);
         this.displayMode = STOPPED;
+        queue.clear();
     }
 
     public AutoPlayer() {
@@ -533,13 +541,32 @@ public final class AutoPlayer extends Panel implements Runnable {
             };
             this.player.getBoundedRangeModel().addChangeListener(changeListener);
             this.player.addChangeListener(changeListener);
-            this.player.getjToggle().addActionListener(new ActionListener() {
+            this.player.getjToggleButton().addActionListener(new ActionListener() {
                 private boolean openRear = AutoPlayer.this.cmd.getParameter("rearView", true);
 
                 @Override
                 public void actionPerformed(ActionEvent e) {
                     openRear = !openRear;
                     initPanelComponent(openRear);
+                }
+            });
+            this.player.getSpeedButton().addActionListener(new ActionListener() {
+                private final int[] speeds = {30000, 1000, 0};
+
+                private final PolygonIcon[] icons = {new PolygonIcon(new Polygon(new int[]{4, 6, 6, 4}, new int[]{5, 5, 7, 7}, 4), new Dimension(12, 12)),
+                        new PolygonIcon(new Polygon[]{new Polygon(new int[]{2, 4, 4, 2}, new int[]{5, 5, 7, 7}, 4),
+                                new Polygon(new int[]{6, 8, 8, 6}, new int[]{5, 5, 7, 7}, 4)}, new Dimension(12, 12)),
+                        new PolygonIcon(new Polygon[]{new Polygon(new int[]{0, 2, 2, 0}, new int[]{5, 5, 7, 7}, 4),
+                                new Polygon(new int[]{4, 6, 6, 4}, new int[]{5, 5, 7, 7}, 4), new Polygon(new int[]{8, 10, 10, 8}, new int[]{5, 5, 7, 7}, 4)},
+                                new Dimension(12, 12))};
+
+                private int index = 0;
+
+                @Override
+                public void actionPerformed(ActionEvent e) {
+                    AutoPlayer.this.player.getSpeedButton().setIcon(icons[index]);
+                    AutoPlayer.this.defaultMaxProbe = speeds[index];
+                    index = index == 2 ? 0 : index + 1;
                 }
             });
             synchronized (getTreeLock()) {
@@ -1501,7 +1528,7 @@ public final class AutoPlayer extends Panel implements Runnable {
             System.out.println("input: " + cubeString);
         }
 
-        String verify = search.verify(cubeString);
+        String verify = search.verifyAndPrepare(cubeString);
         if (verify != null) {
             return verify;
         }
@@ -1509,14 +1536,14 @@ public final class AutoPlayer extends Panel implements Runnable {
         int depth = defaultDepth;
         String result = null;
         short tries = 0;
-        int maxProbe = 1;
+        int maxProbe = defaultMaxProbe;
         char errkey = '8';
         while (errkey == '8' || errkey == '7') {
-            result = search.solution(depth, maxProbe, 1, 0);
+            result = search.solution(depth, maxProbe, 0, 0);
             errkey = result.length() > 0 ? result.charAt(result.length() - 1) : '0';
             tries = maxTries[depth - 15];
             while (errkey == '8' && tries > 0) {
-                result = search.next(maxProbe, 1, 0);
+                result = search.next(maxProbe, 0, 0);
                 errkey = result.charAt(result.length() - 1);
                 tries--;
             }

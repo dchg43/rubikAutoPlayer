@@ -369,7 +369,7 @@ public class MainProgram extends JFrame {
         mask |= inverse ? Search.INVERSE_SOLUTION : 0;
         mask |= showLength ? Search.APPEND_LENGTH : 0;
         long t = System.nanoTime();
-        String result = search.verify(cubeString);
+        String result = search.verifyAndPrepare(cubeString);
         int n_probe = 0;
         if (result == null) {
             result = search.solution(maxDepth, 100, 1, mask);

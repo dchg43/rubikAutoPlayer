@@ -82,6 +82,9 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
     // 后视图开关按钮
     private AbstractButton jToggleButton;
 
+    // 自动搜索算法速度设置按钮
+    private AbstractButton speedButton;
+
     // 魔方图像
     private Canvas3DAWT canvas = Canvas3DJ2D.createCanvas3D();
 
@@ -126,6 +129,21 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
         this.jToggleButton.setPreferredSize(new Dimension(15 * scaling, 15 * scaling));
         this.jToggleButton.setName("后视图开关");
         this.controlPanel.add("East", this.jToggleButton);
+
+        // 自动搜索算法速度设置按钮
+        this.speedButton = new AbstractButton();
+        //      this.speedButton.setIcon(new PolygonIcon(new Polygon(new int[]{4, 6, 6, 4}, new int[]{5, 5, 7, 7}, 4), new Dimension(12 * scaling, 12 * scaling)));
+        //      this.speedButton.setIcon(new PolygonIcon(
+        //              new Polygon[]{new Polygon(new int[]{2, 4, 4, 2}, new int[]{5, 5, 7, 7}, 4), new Polygon(new int[]{6, 8, 8, 6}, new int[]{5, 5, 7, 7}, 4)},
+        //              new Dimension(12 * scaling, 12 * scaling)));
+        this.speedButton
+                .setIcon(new PolygonIcon(
+                        new Polygon[]{new Polygon(new int[]{0, 2, 2, 0}, new int[]{5, 5, 7, 7}, 4),
+                                new Polygon(new int[]{4, 6, 6, 4}, new int[]{5, 5, 7, 7}, 4), new Polygon(new int[]{8, 10, 10, 8}, new int[]{5, 5, 7, 7}, 4)},
+                        new Dimension(12 * scaling, 12 * scaling)));
+        this.speedButton.setPreferredSize(new Dimension(15 * scaling, 15 * scaling));
+        this.speedButton.setName("自动搜索开关");
+        this.controls.add(this.speedButton);
     }
 
     public void setEnabled(boolean enable) {
@@ -216,8 +234,12 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
         return this.progress;
     }
 
-    public AbstractButton getjToggle() {
+    public AbstractButton getjToggleButton() {
         return this.jToggleButton;
+    }
+
+    public AbstractButton getSpeedButton() {
+        return this.speedButton;
     }
 
     @Override

@@ -40,7 +40,7 @@ public class Search {
 
     public static final int MIN_P1LENGTH_PRE = 7;
 
-    public static final int MAX_DEPTH = 12;
+    public static final int MAX_DEPTH = 15;
 
     private static boolean staticInited = false;
 
@@ -290,7 +290,7 @@ public class Search {
      *          5: Twist error: One corner has to be twisted<br>
      *          6: Parity error: Two corners or two edges have to be exchanged
      */
-    public String verify(String facelets) {
+    public String verifyAndPrepare(String facelets) {
         int count = 0x000000;
         int[] f = new int[54];
         char[] center = new char[]{facelets.charAt(Util.U5), facelets.charAt(Util.R5), facelets.charAt(Util.F5), facelets.charAt(Util.D5),
