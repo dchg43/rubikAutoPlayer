@@ -83,8 +83,8 @@ public final class AutoPlayer extends Panel implements Runnable {
 
     private boolean DEBUG = false;
 
-    // 越小速度越快，越大步骤越短，建议取值：极速0,速度100,较优2000,最优30000
-    private int defaultMaxProbe = 0;
+    // 越小速度越快，越大步骤越短，建议取值：极速0,普通1000,最优30000
+    private int defaultMaxProbe = speeds[1];
 
     // 结果长度跟这个值相关，0, 0, 0, 0, 5, 300, 3000, 300000得到的几率大概是0.1,0.4,1,3,20,70,6,0(%)
     private static final short[] maxTries = {0, 0, 0, 0, 5, 300, 3000, Short.MAX_VALUE}; // 对应depth的15 16 17 18 19 20 21 22
@@ -102,6 +102,17 @@ public final class AutoPlayer extends Panel implements Runnable {
 
     /** 初始化颜色对应表，顺序：front, right, down, back, left, up */
     private static final char[] chars = {'F', 'R', 'D', 'B', 'L', 'U', '0'};
+
+    private static final int[] speeds = {0, 1000, 30000};
+
+    private static final PolygonIcon[] icons = {
+            new PolygonIcon(new Polygon[]{new Polygon(new int[]{0, 2, 2, 0}, new int[]{5, 5, 7, 7}, 4),
+                    new Polygon(new int[]{4, 6, 6, 4}, new int[]{5, 5, 7, 7}, 4), new Polygon(new int[]{8, 10, 10, 8}, new int[]{5, 5, 7, 7}, 4)},
+                    new Dimension(12, 12)),
+            new PolygonIcon(
+                    new Polygon[]{new Polygon(new int[]{2, 4, 4, 2}, new int[]{5, 5, 7, 7}, 4), new Polygon(new int[]{6, 8, 8, 6}, new int[]{5, 5, 7, 7}, 4)},
+                    new Dimension(12, 12)),
+            new PolygonIcon(new Polygon(new int[]{4, 6, 6, 4}, new int[]{5, 5, 7, 7}, 4), new Dimension(12, 12))};
 
     private ScriptPlayer player;
 
@@ -550,23 +561,15 @@ public final class AutoPlayer extends Panel implements Runnable {
                     initPanelComponent(openRear);
                 }
             });
+            this.player.getSpeedButton().setIcon(icons[Arrays.binarySearch(speeds, this.defaultMaxProbe)]);
             this.player.getSpeedButton().addActionListener(new ActionListener() {
-                private final int[] speeds = {30000, 1000, 0};
-
-                private final PolygonIcon[] icons = {new PolygonIcon(new Polygon(new int[]{4, 6, 6, 4}, new int[]{5, 5, 7, 7}, 4), new Dimension(12, 12)),
-                        new PolygonIcon(new Polygon[]{new Polygon(new int[]{2, 4, 4, 2}, new int[]{5, 5, 7, 7}, 4),
-                                new Polygon(new int[]{6, 8, 8, 6}, new int[]{5, 5, 7, 7}, 4)}, new Dimension(12, 12)),
-                        new PolygonIcon(new Polygon[]{new Polygon(new int[]{0, 2, 2, 0}, new int[]{5, 5, 7, 7}, 4),
-                                new Polygon(new int[]{4, 6, 6, 4}, new int[]{5, 5, 7, 7}, 4), new Polygon(new int[]{8, 10, 10, 8}, new int[]{5, 5, 7, 7}, 4)},
-                                new Dimension(12, 12))};
-
-                private int index = 0;
+                private int index = Arrays.binarySearch(speeds, AutoPlayer.this.defaultMaxProbe);
 
                 @Override
                 public void actionPerformed(ActionEvent e) {
+                    index = index == 0 ? 2 : index - 1;
                     AutoPlayer.this.player.getSpeedButton().setIcon(icons[index]);
                     AutoPlayer.this.defaultMaxProbe = speeds[index];
-                    index = index == 2 ? 0 : index + 1;
                 }
             });
             synchronized (getTreeLock()) {

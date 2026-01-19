@@ -132,15 +132,15 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
 
         // 自动搜索算法速度设置按钮
         this.speedButton = new AbstractButton();
-        //      this.speedButton.setIcon(new PolygonIcon(new Polygon(new int[]{4, 6, 6, 4}, new int[]{5, 5, 7, 7}, 4), new Dimension(12 * scaling, 12 * scaling)));
-        //      this.speedButton.setIcon(new PolygonIcon(
-        //              new Polygon[]{new Polygon(new int[]{2, 4, 4, 2}, new int[]{5, 5, 7, 7}, 4), new Polygon(new int[]{6, 8, 8, 6}, new int[]{5, 5, 7, 7}, 4)},
-        //              new Dimension(12 * scaling, 12 * scaling)));
-        this.speedButton
-                .setIcon(new PolygonIcon(
-                        new Polygon[]{new Polygon(new int[]{0, 2, 2, 0}, new int[]{5, 5, 7, 7}, 4),
-                                new Polygon(new int[]{4, 6, 6, 4}, new int[]{5, 5, 7, 7}, 4), new Polygon(new int[]{8, 10, 10, 8}, new int[]{5, 5, 7, 7}, 4)},
-                        new Dimension(12 * scaling, 12 * scaling)));
+        //this.speedButton.setIcon(new PolygonIcon(new Polygon(new int[]{4, 6, 6, 4}, new int[]{5, 5, 7, 7}, 4), new Dimension(12 * scaling, 12 * scaling)));
+        //this.speedButton.setIcon(new PolygonIcon(
+        //        new Polygon[]{new Polygon(new int[]{2, 4, 4, 2}, new int[]{5, 5, 7, 7}, 4), new Polygon(new int[]{6, 8, 8, 6}, new int[]{5, 5, 7, 7}, 4)},
+        //        new Dimension(12 * scaling, 12 * scaling)));
+        //this.speedButton
+        //        .setIcon(new PolygonIcon(
+        //                new Polygon[]{new Polygon(new int[]{0, 2, 2, 0}, new int[]{5, 5, 7, 7}, 4),
+        //                        new Polygon(new int[]{4, 6, 6, 4}, new int[]{5, 5, 7, 7}, 4), new Polygon(new int[]{8, 10, 10, 8}, new int[]{5, 5, 7, 7}, 4)},
+        //                new Dimension(12 * scaling, 12 * scaling)));
         this.speedButton.setPreferredSize(new Dimension(15 * scaling, 15 * scaling));
         this.speedButton.setName("自动搜索开关");
         this.controls.add(this.speedButton);
