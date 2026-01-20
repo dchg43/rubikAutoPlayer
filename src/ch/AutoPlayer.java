@@ -322,7 +322,6 @@ public final class AutoPlayer extends Panel implements Runnable {
                 search[0] = tmp;
                 for (int i = 1; i < process; i++) {
                     search[i] = new Search();
-                    search[i].init();
                 }
             }
         }
@@ -332,6 +331,9 @@ public final class AutoPlayer extends Panel implements Runnable {
                 @Override
                 public void run() {
                     try {
+                        if (!search[t].isInited()) {
+                            search[t].init();
+                        }
                         while (AutoPlayer.this.displayMode == RUNNING) {
                             String random = Tools.randomCube();
                             String solution = searchSolution(search[t], random);
