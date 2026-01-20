@@ -175,7 +175,9 @@ public final class AutoPlayer extends Panel implements Runnable {
 
     private byte selectColorButtonIndex = -1;
 
-    private Search search = new Search();
+    private Search[] search = new Search[1];
+
+    private int process = -1;
 
     public static void main(String[] args) {
         // GraalVM-Native-Image 编译成的exe文件执行时需要这个配置
@@ -307,22 +309,32 @@ public final class AutoPlayer extends Panel implements Runnable {
         // this.scriptTextArea.setEnabled(false);
 
         // 启动多个线程来查找执行方案
-        int process = Runtime.getRuntime().availableProcessors() - 2; // 查找线程数
-        if (process < 1) {
-            process = 1;
-        } else if (process > 8) {
-            process = 8; // 最大线程数
+        if (process == -1) {
+            process = Runtime.getRuntime().availableProcessors() - 2; // 查找线程数
+            if (process < 1) {
+                process = 1;
+            } else if (process > 8) {
+                process = 8; // 最大线程数
+            }
+            if (process > 1) {
+                Search tmp = search[0];
+                search = new Search[process];
+                search[0] = tmp;
+                for (int i = 1; i < process; i++) {
+                    search[i] = new Search();
+                    search[i].init();
+                }
+            }
         }
-        for (int j = 0; j < process; j++) {
+        for (int i = 0; i < process; i++) {
+            final int t = i;
             new Thread() {
                 @Override
                 public void run() {
                     try {
-                        Search search = new Search();
-                        search.init();
                         while (AutoPlayer.this.displayMode == RUNNING) {
                             String random = Tools.randomCube();
-                            String solution = searchSolution(search, random);
+                            String solution = searchSolution(search[t], random);
                             queue.put(new String[]{random, solution});
                         }
                     } catch (InterruptedException e) {
@@ -465,7 +477,8 @@ public final class AutoPlayer extends Panel implements Runnable {
     public void start() {
         initComponents();
         PooledSequentialDispatcherAWT.dispatchConcurrently(this);
-        this.search.init();
+        this.search[0] = new Search();
+        this.search[0].init();
         try {
             while (!this.initialized) // 等待启动完成
             {
@@ -1082,7 +1095,7 @@ public final class AutoPlayer extends Panel implements Runnable {
 
                 AutoPlayer.this.player.makesureFinished();
                 String cubeString = getCubeString(true);
-                String result = searchSolution(AutoPlayer.this.search, cubeString);
+                String result = searchSolution(AutoPlayer.this.search[0], cubeString);
                 if (result.contains("Error")) {
                     String message = "校验不通过：" + getErrMessage(result);
                     JOptionPane.showOptionDialog(AutoPlayer.this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE,
@@ -1331,7 +1344,7 @@ public final class AutoPlayer extends Panel implements Runnable {
                 // 求解并校验
                 AutoPlayer.this.player.makesureFinished();
                 String facelets = getCubeString(true);
-                String result = searchSolution(AutoPlayer.this.search, facelets);
+                String result = searchSolution(AutoPlayer.this.search[0], facelets);
                 if (result.contains("Error")) {
                     String message = "校验不通过：" + getErrMessage(result);
                     JOptionPane.showOptionDialog(AutoPlayer.this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE,
