@@ -45,6 +45,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.WindowConstants;
 import javax.swing.border.Border;
 import javax.swing.border.LineBorder;
@@ -84,7 +85,7 @@ public final class AutoPlayer extends Panel implements Runnable {
     private boolean DEBUG = false;
 
     // 越小速度越快，越大步骤越短，建议取值：极速0,普通1000,最优30000
-    private int defaultMaxProbe = speeds[1];
+    private int defaultMaxProbe = speeds[0];
 
     // 结果长度跟这个值相关，0, 0, 0, 0, 5, 300, 3000, 300000得到的几率大概是0.1,0.4,1,3,20,70,6,0(%)
     private static final short[] maxTries = {0, 0, 0, 0, 5, 300, 3000, Short.MAX_VALUE}; // 对应depth的15 16 17 18 19 20 21 22
@@ -953,7 +954,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         final JFrame frame = new JFrame("AutoPlayer"); // 初始化画布
         frame.setTitle("三阶魔方求解器 by Deng");
         frame.setSize(width, height); // 设置画布大小
-        frame.setPreferredSize(new java.awt.Dimension(width, height));
+        frame.setPreferredSize(new Dimension(width, height));
         frame.setLocationRelativeTo(null);
         frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
         frame.setIconImage(this.appIcon); // 设置窗口图标
@@ -1012,8 +1013,9 @@ public final class AutoPlayer extends Panel implements Runnable {
                 }
             });
         }
-        Panel panelback = new Panel();
+        JPanel panelback = new JPanel();
         frame.add(panelback);
+        panelback.setPreferredSize(frame.getPreferredSize());
         panelback.setBackground(Color.lightGray);
         panelback.setBounds(windowBorder, windowBorder, colorStep * 6 + colorBorder, buttonHeight);
 
