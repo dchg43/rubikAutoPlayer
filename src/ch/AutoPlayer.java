@@ -175,7 +175,9 @@ public final class AutoPlayer extends Panel implements Runnable {
 
     private byte selectColorButtonIndex = -1;
 
-    private Search[] search = new Search[1];
+    private Search[] searchs = new Search[1];
+
+    private Thread[] searchThread = null;
 
     private int process = -1;
 
@@ -300,49 +302,50 @@ public final class AutoPlayer extends Panel implements Runnable {
         for (JButton disButton : this.testDisableList) {
             disButton.setEnabled(false);
         }
-        RubiksCubeCore model = this.player.getCubeModel();
-        model.setQuiet(true);
-        this.player.makesureFinished();
-
         // 禁用控制按钮和控制文本。如果想在测试中模拟失败，可以不禁用，这样测试过程中操作就有几率会失败
         this.player.setEnabled(false);
         // this.scriptTextArea.setEnabled(false);
 
+        RubiksCubeCore model = this.player.getCubeModel();
+        model.setQuiet(true);
+        this.player.makesureFinished();
+
         // 启动多个线程来查找执行方案
-        if (process == -1) {
-            process = Runtime.getRuntime().availableProcessors() - 2; // 查找线程数
-            if (process < 1) {
-                process = 1;
-            } else if (process > 8) {
-                process = 8; // 最大线程数
+        if (this.process == -1) {
+            this.process = Runtime.getRuntime().availableProcessors() - 2; // 查找线程数
+            if (this.process < 1) {
+                this.process = 1;
+            } else if (this.process > 8) {
+                this.process = 8; // 最大线程数
             }
-            if (process > 1) {
-                Search tmp = search[0];
-                search = new Search[process];
-                search[0] = tmp;
-                for (int i = 1; i < process; i++) {
-                    search[i] = new Search();
+            if (this.process > 1) {
+                Search tmp = this.searchs[0];
+                this.searchs = new Search[this.process];
+                this.searchs[0] = tmp;
+                for (int i = 1; i < this.process; i++) {
+                    this.searchs[i] = new Search();
+                    this.searchs[i].init();
                 }
             }
         }
-        for (int i = 0; i < process; i++) {
-            final int t = i;
-            new Thread() {
+        searchThread = new Thread[this.process];
+        for (int i = 0; i < this.process; i++) {
+            final Search search = this.searchs[i];
+            searchThread[i] = new Thread() {
                 @Override
                 public void run() {
                     try {
-                        if (!search[t].isInited()) {
-                            search[t].init();
-                        }
                         while (AutoPlayer.this.displayMode == RUNNING) {
                             String random = Tools.randomCube();
-                            String solution = searchSolution(search[t], random);
+                            String solution = searchSolution(search, random);
                             queue.put(new String[]{random, solution});
                         }
-                    } catch (InterruptedException e) {
+                    } catch (Exception e) {
+                        e.printStackTrace();
                     }
                 }
-            }.start();
+            };
+            searchThread[i].start();
         }
 
         long times = 0;
@@ -360,30 +363,44 @@ public final class AutoPlayer extends Panel implements Runnable {
                 this.scriptTextArea.setText(item[1]);
                 progress.setValue(progress.getMaximum());
                 this.player.makesureFinished();
-                if (!completeCube.equals(getCubeString(false))) {
-                    if (this.displayMode == RUNNING) {
-                        model.setQuiet(false);
-                        String message = "Auto test failed.\n  input: " + item[0] + "\n script: " + item[1] + "\n result: " + getCubeString(false);
-                        JOptionPane.showOptionDialog(this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, this.errorIcon,
-                                CommandParser.DEFAULTOPTION, CommandParser.DEFAULTOPTION[0]);
-                        if (this.buttonTest != null) {
-                            this.buttonTest.setBackground(deselectColor);
-                        }
-                        for (JButton disButton : this.testDisableList) {
-                            disButton.setEnabled(true);
-                        }
-                        this.player.setEnabled(true);
-                        this.scriptTextArea.setEnabled(true);
-                        this.displayMode = STOPPED;
-                        queue.clear();
-                        return;
-                    } else {
-                        break;
+                // 判断执行是否成功
+                if (completeCube.equals(getCubeString(false))) {
+                    continue;
+                }
+
+                // 如果是手动结束算成功
+                if (this.displayMode != RUNNING) {
+                    break;
+                }
+
+                // 校验失败
+                model.setQuiet(false);
+                this.displayMode = STOPPED;
+                queue.clear();
+                String message = "Auto test failed.\n  input: " + item[0] + "\n script: " + item[1] + "\n result: " + getCubeString(false);
+                JOptionPane.showOptionDialog(this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, this.errorIcon,
+                        CommandParser.DEFAULTOPTION, CommandParser.DEFAULTOPTION[0]);
+                if (this.buttonTest != null) {
+                    this.buttonTest.setBackground(deselectColor);
+                }
+                for (JButton disButton : this.testDisableList) {
+                    disButton.setEnabled(true);
+                }
+                this.player.setEnabled(true);
+                this.scriptTextArea.setEnabled(true);
+                for (Thread s : searchThread) {
+                    try {
+                        s.join();
+                    } catch (InterruptedException e) {
                     }
                 }
+                System.out.println(message);
+                return;
             }
-        } catch (Exception e) {
+        } catch (RuntimeException | InterruptedException | IOException e) {
             model.setQuiet(false);
+            this.displayMode = STOPPED;
+            queue.clear();
             String message = "Auto test failed.\n item: " + Arrays.toString(item);
             JOptionPane.showOptionDialog(this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, this.errorIcon,
                     CommandParser.DEFAULTOPTION, CommandParser.DEFAULTOPTION[0]);
@@ -395,13 +412,20 @@ public final class AutoPlayer extends Panel implements Runnable {
             }
             this.player.setEnabled(true);
             this.scriptTextArea.setEnabled(true);
-            this.displayMode = STOPPED;
-            queue.clear();
+            for (Thread s : searchThread) {
+                try {
+                    s.join();
+                } catch (InterruptedException e1) {
+                }
+            }
+            System.out.println(message);
             return;
         }
+
         double timeInSecond = (System.nanoTime() - start) / 1000000000.0d;
         this.player.setScript(null);
         this.scriptTextArea.setText(null);
+
         AbstractCube3DAWT cube = this.player.getCube3D();
         cube.getModel().reset();
         for (int i = 0; i < 6; i++) {
@@ -413,7 +437,10 @@ public final class AutoPlayer extends Panel implements Runnable {
         // 刷新魔方
         this.player.makesureFinished();
         cube.fireStateChanged();
+
         model.setQuiet(false);
+        this.displayMode = STOPPED;
+        queue.clear();
         String message = String.format("完成%d次测试，用时%.2f秒。", times, timeInSecond);
         JOptionPane.showOptionDialog(this, message, "成功", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, this.infoIcon,
                 CommandParser.DEFAULTOPTION, CommandParser.DEFAULTOPTION[0]);
@@ -425,8 +452,12 @@ public final class AutoPlayer extends Panel implements Runnable {
         }
         this.player.setEnabled(true);
         this.scriptTextArea.setEnabled(true);
-        this.displayMode = STOPPED;
-        queue.clear();
+        for (Thread s : searchThread) {
+            try {
+                s.join();
+            } catch (InterruptedException e) {
+            }
+        }
     }
 
     public AutoPlayer() {
@@ -479,8 +510,8 @@ public final class AutoPlayer extends Panel implements Runnable {
     public void start() {
         initComponents();
         PooledSequentialDispatcherAWT.dispatchConcurrently(this);
-        this.search[0] = new Search();
-        this.search[0].init();
+        this.searchs[0] = new Search();
+        this.searchs[0].init();
         try {
             while (!this.initialized) // 等待启动完成
             {
@@ -1097,7 +1128,7 @@ public final class AutoPlayer extends Panel implements Runnable {
 
                 AutoPlayer.this.player.makesureFinished();
                 String cubeString = getCubeString(true);
-                String result = searchSolution(AutoPlayer.this.search[0], cubeString);
+                String result = searchSolution(AutoPlayer.this.searchs[0], cubeString);
                 if (result.contains("Error")) {
                     String message = "校验不通过：" + getErrMessage(result);
                     JOptionPane.showOptionDialog(AutoPlayer.this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE,
@@ -1346,7 +1377,7 @@ public final class AutoPlayer extends Panel implements Runnable {
                 // 求解并校验
                 AutoPlayer.this.player.makesureFinished();
                 String facelets = getCubeString(true);
-                String result = searchSolution(AutoPlayer.this.search[0], facelets);
+                String result = searchSolution(AutoPlayer.this.searchs[0], facelets);
                 if (result.contains("Error")) {
                     String message = "校验不通过：" + getErrMessage(result);
                     JOptionPane.showOptionDialog(AutoPlayer.this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE,
