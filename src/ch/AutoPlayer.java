@@ -374,12 +374,18 @@ public final class AutoPlayer extends Panel implements Runnable {
                 }
 
                 // 校验失败
-                model.setQuiet(false);
-                this.displayMode = STOPPED;
+                this.displayMode = STOPPING;
                 queue.clear();
+                model.setQuiet(false);
                 String message = "Auto test failed.\n  input: " + item[0] + "\n script: " + item[1] + "\n result: " + getCubeString(false);
                 JOptionPane.showOptionDialog(this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, this.errorIcon,
                         CommandParser.DEFAULTOPTION, CommandParser.DEFAULTOPTION[0]);
+                for (Thread s : searchThread) {
+                    try {
+                        s.join();
+                    } catch (InterruptedException e) {
+                    }
+                }
                 if (this.buttonTest != null) {
                     this.buttonTest.setBackground(deselectColor);
                 }
@@ -388,22 +394,23 @@ public final class AutoPlayer extends Panel implements Runnable {
                 }
                 this.player.setEnabled(true);
                 this.scriptTextArea.setEnabled(true);
-                for (Thread s : searchThread) {
-                    try {
-                        s.join();
-                    } catch (InterruptedException e) {
-                    }
-                }
                 System.out.println(message);
+                this.displayMode = STOPPED;
                 return;
             }
         } catch (RuntimeException | InterruptedException | IOException e) {
-            model.setQuiet(false);
-            this.displayMode = STOPPED;
+            this.displayMode = STOPPING;
             queue.clear();
+            model.setQuiet(false);
             String message = "Auto test failed.\n item: " + Arrays.toString(item);
             JOptionPane.showOptionDialog(this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, this.errorIcon,
                     CommandParser.DEFAULTOPTION, CommandParser.DEFAULTOPTION[0]);
+            for (Thread s : searchThread) {
+                try {
+                    s.join();
+                } catch (InterruptedException e1) {
+                }
+            }
             if (this.buttonTest != null) {
                 this.buttonTest.setBackground(deselectColor);
             }
@@ -412,16 +419,13 @@ public final class AutoPlayer extends Panel implements Runnable {
             }
             this.player.setEnabled(true);
             this.scriptTextArea.setEnabled(true);
-            for (Thread s : searchThread) {
-                try {
-                    s.join();
-                } catch (InterruptedException e1) {
-                }
-            }
             System.out.println(message);
+            this.displayMode = STOPPED;
             return;
         }
 
+        this.displayMode = STOPPING;
+        queue.clear();
         double timeInSecond = (System.nanoTime() - start) / 1000000000.0d;
         this.player.setScript(null);
         this.scriptTextArea.setText(null);
@@ -439,11 +443,15 @@ public final class AutoPlayer extends Panel implements Runnable {
         cube.fireStateChanged();
 
         model.setQuiet(false);
-        this.displayMode = STOPPED;
-        queue.clear();
         String message = String.format("完成%d次测试，用时%.2f秒。", times, timeInSecond);
         JOptionPane.showOptionDialog(this, message, "成功", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, this.infoIcon,
                 CommandParser.DEFAULTOPTION, CommandParser.DEFAULTOPTION[0]);
+        for (Thread s : searchThread) {
+            try {
+                s.join();
+            } catch (InterruptedException e) {
+            }
+        }
         if (this.buttonTest != null) {
             this.buttonTest.setBackground(deselectColor);
         }
@@ -452,12 +460,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         }
         this.player.setEnabled(true);
         this.scriptTextArea.setEnabled(true);
-        for (Thread s : searchThread) {
-            try {
-                s.join();
-            } catch (InterruptedException e) {
-            }
-        }
+        this.displayMode = STOPPED;
     }
 
     public AutoPlayer() {
