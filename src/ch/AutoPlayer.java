@@ -340,6 +340,8 @@ public final class AutoPlayer extends Panel implements Runnable {
                             String solution = searchSolution(search, random);
                             queue.put(new String[]{random, solution});
                         }
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
