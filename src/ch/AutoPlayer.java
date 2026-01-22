@@ -175,9 +175,11 @@ public final class AutoPlayer extends Panel implements Runnable {
 
     private byte selectColorButtonIndex = -1;
 
-    private Search[] searchs = new Search[1];
+    private Search search = new Search();
 
-    private Thread[] searchThread = new Thread[0];
+    private Search[] testSearchs;
+
+    private Thread[] testThread = new Thread[0];
 
     private int process = -1;
 
@@ -303,7 +305,7 @@ public final class AutoPlayer extends Panel implements Runnable {
             // this.scriptTextArea.setEnabled(false);
 
             // 之前的线程如果没有结束先结束
-            for (Thread s : searchThread) {
+            for (Thread s : this.testThread) {
                 if (s.isAlive()) {
                     try {
                         s.join();
@@ -326,20 +328,16 @@ public final class AutoPlayer extends Panel implements Runnable {
             } else if (this.process > 8) {
                 this.process = 8; // 最大线程数
             }
-            if (this.process > 1) {
-                Search tmp = this.searchs[0];
-                this.searchs = new Search[this.process];
-                this.searchs[0] = tmp;
-                for (int i = 1; i < this.process; i++) {
-                    this.searchs[i] = new Search();
-                    this.searchs[i].init();
-                }
+            this.testSearchs = new Search[this.process];
+            this.testThread = new Thread[this.process];
+            for (int i = 0; i < this.process; i++) {
+                this.testSearchs[i] = new Search();
+                this.testSearchs[i].init();
             }
         }
-        searchThread = new Thread[this.process];
         for (int i = 0; i < this.process; i++) {
-            final Search search = this.searchs[i];
-            searchThread[i] = new Thread() {
+            final Search search = this.testSearchs[i];
+            this.testThread[i] = new Thread() {
                 @Override
                 public void run() {
                     try {
@@ -355,7 +353,7 @@ public final class AutoPlayer extends Panel implements Runnable {
                     }
                 }
             };
-            searchThread[i].start();
+            this.testThread[i].start();
         }
 
         long times = 0;
@@ -505,8 +503,7 @@ public final class AutoPlayer extends Panel implements Runnable {
     public void start() {
         initComponents();
         PooledSequentialDispatcherAWT.dispatchConcurrently(this);
-        this.searchs[0] = new Search();
-        this.searchs[0].init();
+        this.search.init();
         try {
             while (!this.initialized) // 等待启动完成
             {
@@ -1124,14 +1121,7 @@ public final class AutoPlayer extends Panel implements Runnable {
                 AutoPlayer.this.player.makesureFinished();
                 String cubeString = getCubeString(true);
 
-                // 测试线程如果没有结束需要先等结束，因为Search.solution()方法同一实例不能同时调用
-                if (searchThread.length > 0 && searchThread[0].isAlive()) {
-                    try {
-                        searchThread[0].join();
-                    } catch (InterruptedException e) {
-                    }
-                }
-                String result = searchSolution(AutoPlayer.this.searchs[0], cubeString);
+                String result = searchSolution(AutoPlayer.this.search, cubeString);
                 if (result.contains("Error")) {
                     String message = "校验不通过：" + getErrMessage(result);
                     JOptionPane.showOptionDialog(AutoPlayer.this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE,
@@ -1385,14 +1375,7 @@ public final class AutoPlayer extends Panel implements Runnable {
                 AutoPlayer.this.player.makesureFinished();
                 String facelets = getCubeString(true);
 
-                // 测试线程如果没有结束需要先等结束，因为Search.solution()方法同一实例不能同时调用
-                if (searchThread.length > 0 && searchThread[0].isAlive()) {
-                    try {
-                        searchThread[0].join();
-                    } catch (InterruptedException e) {
-                    }
-                }
-                String result = searchSolution(AutoPlayer.this.searchs[0], facelets);
+                String result = searchSolution(AutoPlayer.this.search, facelets);
                 if (result.contains("Error")) {
                     String message = "校验不通过：" + getErrMessage(result);
                     JOptionPane.showOptionDialog(AutoPlayer.this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE,
