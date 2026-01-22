@@ -177,7 +177,7 @@ public final class AutoPlayer extends Panel implements Runnable {
 
     private Search[] searchs = new Search[1];
 
-    private Thread[] searchThread = null;
+    private Thread[] searchThread = new Thread[0];
 
     private int process = -1;
 
@@ -289,22 +289,30 @@ public final class AutoPlayer extends Panel implements Runnable {
     public void autoTest(long testTimes) {
         // 测试自动求解算法
         synchronized (this) {
-            if (this.displayMode == STARTING) {
-                this.displayMode = RUNNING;
-            } else {
+            if (this.displayMode != STARTING) {
                 return;
             }
-        }
+            if (this.buttonTest != null) {
+                this.buttonTest.setBackground(selectColor);
+            }
+            for (JButton disButton : this.testDisableList) {
+                disButton.setEnabled(false);
+            }
+            // 禁用控制按钮和控制文本。如果想在测试中模拟失败，可以不禁用，这样测试过程中操作就有几率会失败
+            this.player.setEnabled(false);
+            // this.scriptTextArea.setEnabled(false);
 
-        if (this.buttonTest != null) {
-            this.buttonTest.setBackground(selectColor);
+            // 之前的线程如果没有结束先结束
+            for (Thread s : searchThread) {
+                if (s.isAlive()) {
+                    try {
+                        s.join();
+                    } catch (InterruptedException e) {
+                    }
+                }
+            }
+            this.displayMode = RUNNING;
         }
-        for (JButton disButton : this.testDisableList) {
-            disButton.setEnabled(false);
-        }
-        // 禁用控制按钮和控制文本。如果想在测试中模拟失败，可以不禁用，这样测试过程中操作就有几率会失败
-        this.player.setEnabled(false);
-        // this.scriptTextArea.setEnabled(false);
 
         RubiksCubeCore model = this.player.getCubeModel();
         model.setQuiet(true);
@@ -378,19 +386,10 @@ public final class AutoPlayer extends Panel implements Runnable {
                 // 校验失败
                 this.displayMode = STOPPING;
                 queue.clear();
-                for (Thread s : searchThread) {
-                    s.interrupt();
-                }
                 model.setQuiet(false);
                 String message = "Auto test failed.\n  input: " + item[0] + "\n script: " + item[1] + "\n result: " + getCubeString(false);
                 JOptionPane.showOptionDialog(this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, this.errorIcon,
                         CommandParser.DEFAULTOPTION, CommandParser.DEFAULTOPTION[0]);
-                for (Thread s : searchThread) {
-                    try {
-                        s.join();
-                    } catch (InterruptedException e) {
-                    }
-                }
                 if (this.buttonTest != null) {
                     this.buttonTest.setBackground(deselectColor);
                 }
@@ -406,19 +405,10 @@ public final class AutoPlayer extends Panel implements Runnable {
         } catch (RuntimeException | InterruptedException | IOException e) {
             this.displayMode = STOPPING;
             queue.clear();
-            for (Thread s : searchThread) {
-                s.interrupt();
-            }
             model.setQuiet(false);
             String message = "Auto test failed.\n item: " + Arrays.toString(item);
             JOptionPane.showOptionDialog(this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, this.errorIcon,
                     CommandParser.DEFAULTOPTION, CommandParser.DEFAULTOPTION[0]);
-            for (Thread s : searchThread) {
-                try {
-                    s.join();
-                } catch (InterruptedException e1) {
-                }
-            }
             if (this.buttonTest != null) {
                 this.buttonTest.setBackground(deselectColor);
             }
@@ -434,9 +424,6 @@ public final class AutoPlayer extends Panel implements Runnable {
 
         this.displayMode = STOPPING;
         queue.clear();
-        for (Thread s : searchThread) {
-            s.interrupt();
-        }
         double timeInSecond = (System.nanoTime() - start) / 1.0e9d;
         this.player.setScript(null);
         this.scriptTextArea.setText(null);
@@ -457,12 +444,6 @@ public final class AutoPlayer extends Panel implements Runnable {
         String message = String.format("完成%d次测试，用时%.2f秒。", times, timeInSecond);
         JOptionPane.showOptionDialog(this, message, "成功", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, this.infoIcon,
                 CommandParser.DEFAULTOPTION, CommandParser.DEFAULTOPTION[0]);
-        for (Thread s : searchThread) {
-            try {
-                s.join();
-            } catch (InterruptedException e) {
-            }
-        }
         if (this.buttonTest != null) {
             this.buttonTest.setBackground(deselectColor);
         }
@@ -1142,6 +1123,14 @@ public final class AutoPlayer extends Panel implements Runnable {
 
                 AutoPlayer.this.player.makesureFinished();
                 String cubeString = getCubeString(true);
+
+                // 测试线程如果没有结束需要先等结束，因为Search.solution()方法同一实例不能同时调用
+                if (searchThread.length > 0 && searchThread[0].isAlive()) {
+                    try {
+                        searchThread[0].join();
+                    } catch (InterruptedException e) {
+                    }
+                }
                 String result = searchSolution(AutoPlayer.this.searchs[0], cubeString);
                 if (result.contains("Error")) {
                     String message = "校验不通过：" + getErrMessage(result);
@@ -1395,6 +1384,14 @@ public final class AutoPlayer extends Panel implements Runnable {
                 // 求解并校验
                 AutoPlayer.this.player.makesureFinished();
                 String facelets = getCubeString(true);
+
+                // 测试线程如果没有结束需要先等结束，因为Search.solution()方法同一实例不能同时调用
+                if (searchThread.length > 0 && searchThread[0].isAlive()) {
+                    try {
+                        searchThread[0].join();
+                    } catch (InterruptedException e) {
+                    }
+                }
                 String result = searchSolution(AutoPlayer.this.searchs[0], facelets);
                 if (result.contains("Error")) {
                     String message = "校验不通过：" + getErrMessage(result);
