@@ -327,9 +327,7 @@ public class Search {
         preMoveLen = preMovel;
         int depthtemp = length - preMovel;
         if (isRec ? (depth == depthtemp) : (preMovel == 0 || ((0x36FB7 >> lm) & 1) == 0)) {
-            if (depth != depthtemp) {
-                depth = depthtemp;
-            }
+            depth = depthtemp;
             phase1Cubie[0] = cc;
             allowShorter = (depth == MIN_P1LENGTH_PRE && preMovel != 0);
 
@@ -349,7 +347,6 @@ public class Search {
         }
 
         lm = (lm / 3) * 3;
-        //        int preMovel = preMoveLen;
         for (byte m = 0; m < 18; m++) {
             if (m == lm || m == lm - 9 || m == lm + 9) {
                 m += 2;
