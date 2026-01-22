@@ -131,10 +131,10 @@ public class CoordCube {
                 UDSliceConj[i][j >> 1] = (char) d.getUDSlice();
             }
         }
-        for (int i = 0; i < N_SLICE; i++) {
+        for (int i = 0, newj, udslice; i < N_SLICE; i++) {
             for (int j = 0; j < N_MOVES;) {
-                int udslice = UDSliceMove[i][j];
-                int newj = j + 3;
+                udslice = UDSliceMove[i][j];
+                newj = j + 3;
                 for (int k = j + 1; k < newj; k++) {
                     udslice = UDSliceMove[udslice][j];
                     UDSliceMove[i][k] = (char) udslice;
@@ -235,17 +235,14 @@ public class CoordCube {
             int PrunFlag, boolean fullInit) {
         final int SYM_SHIFT = PrunFlag & 0xf;
         final int SYM_E2C_MAGIC = ((PrunFlag >> 4) & 1) == 1 ? CubieCube.SYM_E2C_MAGIC : 0x00000000;
-        final boolean IS_PHASE2 = ((PrunFlag >> 5) & 1) == 1;
         final int INV_DEPTH = (PrunFlag >> 8) & 0xf;
-        final int MAX_DEPTH = (PrunFlag >> 12) & 0xf;
-        final int MIN_DEPTH = (PrunFlag >> 16) & 0xf;
-        final int SEARCH_DEPTH = fullInit ? MAX_DEPTH : MIN_DEPTH;
+        final int SEARCH_DEPTH = (fullInit ? PrunFlag >> 12 : PrunFlag >> 16) & 0xf;
 
         final int SYM_MASK = (1 << SYM_SHIFT) - 1;
         final boolean ISTFP = (rawMove == null);
         final int N_RAW = ISTFP ? N_FLIP : rawMove.length;
         final int N_SIZE = N_RAW * symMove.length;
-        final int N_MOVES = IS_PHASE2 ? 10 : 18;
+        final int N_MOVES = ((PrunFlag >> 5) & 1) == 1 ? 10 : 18;
         final int NEXT_AXIS_MAGIC = N_MOVES == 10 ? 0x42 : 0x92492;
 
         int depth = getPruning(prunTable, N_SIZE) - 1;
@@ -450,12 +447,13 @@ public class CoordCube {
      */
     public int doMovePrun(final CoordCube cc, int m, boolean isPhase1) {
         slice = UDSliceMove[cc.slice][m];
+        m = m << 3;
 
-        flip = FlipMove[cc.flip][CubieCube.Sym8Move[(m << 3) | cc.fsym]];
+        flip = FlipMove[cc.flip][CubieCube.Sym8Move[m | cc.fsym]];
         fsym = (flip & 7) ^ cc.fsym;
         flip >>= 3;
 
-        twist = TwistMove[cc.twist][CubieCube.Sym8Move[(m << 3) | cc.tsym]];
+        twist = TwistMove[cc.twist][CubieCube.Sym8Move[m | cc.tsym]];
         tsym = (twist & 7) ^ cc.tsym;
         twist >>= 3;
 

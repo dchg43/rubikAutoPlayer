@@ -323,37 +323,43 @@ public class Search {
     }
 
     private int phase1PreMoves(int maxl, int lm, final CubieCube cc, long ssym) {
-        preMoveLen = maxPreMoves - maxl;
-        if (isRec ? (depth == length - preMoveLen) : (preMoveLen == 0 || ((0x36FB7 >> lm) & 1) == 0)) {
-            depth = length - preMoveLen;
+        int preMovel = maxPreMoves - maxl;
+        preMoveLen = preMovel;
+        int depthtemp = length - preMovel;
+        if (isRec ? (depth == depthtemp) : (preMovel == 0 || ((0x36FB7 >> lm) & 1) == 0)) {
+            if (depth != depthtemp) {
+                depth = depthtemp;
+            }
             phase1Cubie[0] = cc;
-            allowShorter = (depth == MIN_P1LENGTH_PRE && preMoveLen != 0);
+            allowShorter = (depth == MIN_P1LENGTH_PRE && preMovel != 0);
 
             if (nodeUD[depth + 1].setWithPrun(cc, depth) && phase1(nodeUD[depth + 1], ssym, depth, -1) == 0) {
                 return 0;
             }
         }
 
-        if (maxl == 0 || preMoveLen + MIN_P1LENGTH_PRE >= length) {
+        int minPre = preMovel + MIN_P1LENGTH_PRE;
+        if (maxl == 0 || minPre >= length) {
             return 1;
         }
 
         int skipMoves = CubieCube.getSkipMoves(ssym);
-        if (maxl == 1 || preMoveLen + 1 + MIN_P1LENGTH_PRE >= length) { // last pre move
+        if (maxl == 1 || minPre + 1 >= length) { // last pre move
             skipMoves |= 0x36FB7; // 11 0110 1111 1011 0111
         }
 
         lm = (lm / 3) * 3;
+        //        int preMovel = preMoveLen;
         for (byte m = 0; m < 18; m++) {
             if (m == lm || m == lm - 9 || m == lm + 9) {
                 m += 2;
                 continue;
             }
-            if ((!isRec || m == preMoves[maxPreMoves - maxl]) && (skipMoves & (1 << m)) == 0) {
+            if ((!isRec || m == preMoves[preMovel]) && (skipMoves & (1 << m)) == 0) {
                 CubieCube preMove = preMoveCubes[maxl - 1];
                 CubieCube.CornMult(CubieCube.moveCube[m], cc, preMove);
                 CubieCube.EdgeMult(CubieCube.moveCube[m], cc, preMove);
-                preMoves[maxPreMoves - maxl] = m;
+                preMoves[preMovel] = m;
                 if (phase1PreMoves(maxl - 1, m, preMove, ssym & CubieCube.moveCubeSym[m]) == 0) {
                     return 0;
                 }
@@ -415,12 +421,13 @@ public class Search {
         for (int p2switch = 0, p2switchMask = (1 << p2switchMax) - 1; p2switch < p2switchMax; p2switch++) {
             // 0 normal; 1 lastmove; 2 lastmove + premove; 3 premove
             if (((p2switchMask >> p2switch) & 1) != 0) {
-                p2switchMask &= ~(1 << p2switch);
                 ret = initPhase2(p2corn, p2csym, p2edge, p2esym, p2mid, edgei, corni);
                 if (ret == 0 || ret > 2) {
                     break;
                 } else if (ret == 2) {
                     p2switchMask &= 0x4 << p2switch; // 0->2; 1=>3; 2=>N/A
+                } else {
+                    p2switchMask &= ~(1 << p2switch);
                 }
             }
             if (p2switchMask == 0) {
@@ -477,8 +484,8 @@ public class Search {
             return prun - maxDep;
         }
 
-        int depth2;
-        for (depth2 = maxDep; depth2 >= prun; depth2--) {
+        int depth2 = maxDep;
+        for (; depth2 >= prun; depth2--) {
             int ret = phase2(p2edge, p2esym, p2corn, p2csym, p2mid, depth2, depth, 10);
             if (ret < 0) {
                 break;
@@ -607,7 +614,8 @@ public class Search {
             for (byte power = 0; power < 3; power++) {
                 byte m = (byte) (axis + power);
 
-                if (isRec && m != move[length - maxl] || skipMoves != 0 && (skipMoves & (1 << m)) != 0) {
+                int len = length - maxl;
+                if (isRec && m != move[len] || skipMoves != 0 && (skipMoves & (1 << m)) != 0) {
                     continue;
                 }
 
@@ -645,8 +653,10 @@ public class Search {
 
                 m = CubieCube.urfMove[2][m];
 
-                move[length - maxl] = m;
-                valid = Math.min(valid, length - maxl);
+                move[len] = m;
+                if (valid > len) {
+                    valid = len;
+                }
                 int ret = phase1opt(nodeUD[maxl], nodeRL[maxl], nodeFB[maxl], ssym & CubieCube.moveCubeSym[m], maxl - 1, axis);
                 if (ret == 0) {
                     return 0;

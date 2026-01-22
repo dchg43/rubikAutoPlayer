@@ -396,8 +396,8 @@ public final class AutoPlayer extends Panel implements Runnable {
                 }
                 this.player.setEnabled(true);
                 this.scriptTextArea.setEnabled(true);
-                System.out.println(message);
                 this.displayMode = STOPPED;
+                System.out.println(message);
                 return;
             }
         } catch (RuntimeException | InterruptedException | IOException e) {
@@ -421,8 +421,8 @@ public final class AutoPlayer extends Panel implements Runnable {
             }
             this.player.setEnabled(true);
             this.scriptTextArea.setEnabled(true);
-            System.out.println(message);
             this.displayMode = STOPPED;
+            System.out.println(message);
             return;
         }
 
