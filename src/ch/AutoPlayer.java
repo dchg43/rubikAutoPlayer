@@ -313,6 +313,7 @@ public final class AutoPlayer extends Panel implements Runnable {
                     }
                 }
             }
+            queue.clear();
             this.displayMode = RUNNING;
         }
 
@@ -383,7 +384,7 @@ public final class AutoPlayer extends Panel implements Runnable {
 
                 // 校验失败
                 this.displayMode = STOPPING;
-                queue.clear();
+                queue.clear(); // 防止队列满时线程不退出
                 model.setQuiet(false);
                 String message = "Auto test failed.\n  input: " + item[0] + "\n script: " + item[1] + "\n result: " + getCubeString(false);
                 JOptionPane.showOptionDialog(this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, this.errorIcon,
@@ -402,7 +403,7 @@ public final class AutoPlayer extends Panel implements Runnable {
             }
         } catch (RuntimeException | InterruptedException | IOException e) {
             this.displayMode = STOPPING;
-            queue.clear();
+            queue.clear(); // 防止队列满时线程不退出
             model.setQuiet(false);
             String message = "Auto test failed.\n item: " + Arrays.toString(item);
             JOptionPane.showOptionDialog(this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, this.errorIcon,
@@ -421,7 +422,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         }
 
         this.displayMode = STOPPING;
-        queue.clear();
+        queue.clear(); // 防止队列满时线程不退出
         double timeInSecond = (System.nanoTime() - start) / 1.0e9d;
         this.player.setScript(null);
         this.scriptTextArea.setText(null);
