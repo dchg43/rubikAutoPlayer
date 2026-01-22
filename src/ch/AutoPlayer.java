@@ -378,6 +378,9 @@ public final class AutoPlayer extends Panel implements Runnable {
                 // 校验失败
                 this.displayMode = STOPPING;
                 queue.clear();
+                for (Thread s : searchThread) {
+                    s.interrupt();
+                }
                 model.setQuiet(false);
                 String message = "Auto test failed.\n  input: " + item[0] + "\n script: " + item[1] + "\n result: " + getCubeString(false);
                 JOptionPane.showOptionDialog(this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, this.errorIcon,
@@ -403,6 +406,9 @@ public final class AutoPlayer extends Panel implements Runnable {
         } catch (RuntimeException | InterruptedException | IOException e) {
             this.displayMode = STOPPING;
             queue.clear();
+            for (Thread s : searchThread) {
+                s.interrupt();
+            }
             model.setQuiet(false);
             String message = "Auto test failed.\n item: " + Arrays.toString(item);
             JOptionPane.showOptionDialog(this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, this.errorIcon,
@@ -428,7 +434,10 @@ public final class AutoPlayer extends Panel implements Runnable {
 
         this.displayMode = STOPPING;
         queue.clear();
-        double timeInSecond = (System.nanoTime() - start) / 1000000000.0d;
+        for (Thread s : searchThread) {
+            s.interrupt();
+        }
+        double timeInSecond = (System.nanoTime() - start) / 1.0e9d;
         this.player.setScript(null);
         this.scriptTextArea.setText(null);
 
@@ -1300,6 +1309,10 @@ public final class AutoPlayer extends Panel implements Runnable {
 
                     if (AutoPlayer.this.displayMode == RUNNING) {
                         AutoPlayer.this.displayMode = STOPPING;
+                        try {
+                            queue.put(new String[]{completeCube, ""}); // 让queue.take()快速结束，防止卡阻
+                        } catch (InterruptedException e) {
+                        }
                         AutoPlayer.this.player.stop();
                     } else if (AutoPlayer.this.displayMode == STOPPED) {
                         AutoPlayer.this.displayMode = STARTING;
