@@ -35,8 +35,8 @@ public class MovieControlAWT extends Panel implements ActionListener, ItemListen
 
     public MovieControlAWT() {
         setForeground(Color.black);
-        Dimension preferredSize = new Dimension(15, 15);
-        Dimension initSize = new Dimension(13, 13);
+        Dimension initSize = new Dimension(15, 15);
+        Dimension preferredSize = initSize;
         GridBagLayout gridBagLayout = new GridBagLayout();
         setLayout(gridBagLayout);
 

@@ -48,8 +48,6 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
 
     private static final int STOPPING = 3;
 
-    private static final int scaling = 1;
-
     private volatile boolean isProcessingCurrentSymbol;
 
     private static ConcurrentDispatcherAWT threadPool = new ConcurrentDispatcherAWT();
@@ -91,8 +89,8 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
     private List<JButton> disableButtonWhenRun;
 
     public ScriptPlayer() {
-        Dimension preferredSize = new Dimension(15 * scaling, 15 * scaling);
-        Dimension initSize = new Dimension(13 * scaling, 13 * scaling);
+        Dimension initSize = new Dimension(15, 15);
+        Dimension preferredSize = initSize;
         this.cube3D.setAnimated(true);
         this.cube3D.setModel(this.model);
         this.cube3D.addChangeListener(this.canvas);
@@ -110,12 +108,9 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
         this.controlPanel.add("Center", this.controls);
 
         this.resetButton = new AbstractButton(); // reset重置按钮
-        this.resetButton.setIcon(new PolygonIcon(new Polygon[]{ // 设置重置按钮大小
-                new Polygon(new int[]{2 * scaling, 3 * scaling, 3 * scaling, 2 * scaling}, //
-                        new int[]{2 * scaling, 2 * scaling, 10 * scaling, 10 * scaling}, 4), // 竖条部分
-                new Polygon(new int[]{9 * scaling, 9 * scaling, 4 * scaling}, //
-                        new int[]{2 * scaling, 10 * scaling, 6 * scaling}, 3)}, // 箭头部分
-                initSize)); // 宽高
+        this.resetButton.setIcon(new PolygonIcon(
+                new Polygon[]{new Polygon(new int[]{2, 3, 3, 2}, new int[]{2, 2, 10, 10}, 4), new Polygon(new int[]{9, 9, 4}, new int[]{2, 10, 6}, 3)},
+                initSize));
         this.resetButton.setPreferredSize(preferredSize);
         this.resetButton.setMinimumSize(preferredSize);
         this.resetButton.addActionListener(this);
@@ -124,8 +119,7 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
 
         // 后视图开关按钮
         this.jToggleButton = new ToggleButton();
-        this.jToggleButton
-                .setUnselectedIcon(new PolygonIcon(new Polygon(new int[]{2, 8, 8, 2}, new int[]{3, 3, 9, 9}, 4), new Dimension(12 * scaling, 12 * scaling)));
+        this.jToggleButton.setUnselectedIcon(new PolygonIcon(new Polygon(new int[]{2, 8, 8, 2}, new int[]{3, 3, 9, 9}, 4), initSize));
         this.jToggleButton.setSelectedIcon(new PolygonIcon(
                 new Polygon[]{new Polygon(new int[]{1, 7, 7, 1}, new int[]{2, 2, 8, 8}, 4), new Polygon(new int[]{6, 10, 10, 6}, new int[]{7, 7, 11, 11}, 4)},
                 initSize));
@@ -136,15 +130,6 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
 
         // 自动搜索算法速度设置按钮
         this.speedButton = new AbstractButton();
-        //this.speedButton.setIcon(new PolygonIcon(new Polygon(new int[]{4, 6, 6, 4}, new int[]{5, 5, 7, 7}, 4), initSize));
-        //this.speedButton.setIcon(new PolygonIcon(
-        //        new Polygon[]{new Polygon(new int[]{2, 4, 4, 2}, new int[]{5, 5, 7, 7}, 4), new Polygon(new int[]{6, 8, 8, 6}, new int[]{5, 5, 7, 7}, 4)},
-        //        initSize));
-        //this.speedButton
-        //        .setIcon(new PolygonIcon(
-        //                new Polygon[]{new Polygon(new int[]{0, 2, 2, 0}, new int[]{5, 5, 7, 7}, 4),
-        //                        new Polygon(new int[]{4, 6, 6, 4}, new int[]{5, 5, 7, 7}, 4), new Polygon(new int[]{8, 10, 10, 8}, new int[]{5, 5, 7, 7}, 4)},
-        //                initSize));
         this.speedButton.setPreferredSize(preferredSize);
         this.speedButton.setMinimumSize(preferredSize);
         this.speedButton.setName("自动搜索开关");

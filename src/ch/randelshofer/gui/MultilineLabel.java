@@ -2,8 +2,6 @@ package ch.randelshofer.gui;
 
 import java.awt.Canvas;
 import java.awt.Color;
-import java.awt.Component;
-import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
@@ -243,12 +241,12 @@ public class MultilineLabel extends Canvas {
             this.fontMetrics = graphics.getFontMetrics(graphics.getFont());
         }
         wrapText();
-        Component container = this;
-        Container parent = this.getParent();
-        while (parent != null && parent.isValid()) {
-            container = parent;
-            parent = parent.getParent();
-        }
-        container.validate();
+        //Component container = this;
+        //Container parent = this.getParent();
+        //while (parent != null && parent.isValid()) {
+        //    container = parent;
+        //    parent = parent.getParent();
+        //}
+        //container.validate();
     }
 }
