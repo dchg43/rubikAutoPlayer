@@ -268,13 +268,13 @@ public class Util {
             idx /= p;
         }
         for (int i = 0; i < n - 1; i++) {
-            v = ((int) (extract & 0xfL)) << 2;
+            v = ((int) (extract & 0xf)) << 2;
             extract >>= 4;
-            arr[i] = setVal(arr[i], (int) ((val >> v) & 0xfL), isEdge);
-            m = (1L << v) - 1L;
+            arr[i] = setVal(arr[i], (int) ((val >> v) & 0xf), isEdge);
+            m = (1L << v) - 1;
             val = (val & m) | ((val >> 4) & ~m);
         }
-        arr[n - 1] = setVal(arr[n - 1], (int) (val & 0xfL), isEdge);
+        arr[n - 1] = setVal(arr[n - 1], (int) (val & 0xf), isEdge);
     }
 
     public static int getNPerm(final byte[] arr, int n, boolean isEdge) {
@@ -282,7 +282,7 @@ public class Util {
         long val = 0xFEDCBA9876543210L;
         for (int i = 0; i < n - 1; i++) {
             int v = getVal(arr[i], isEdge) << 2;
-            idx = (n - i) * idx + (int) ((val >> v) & 0xfL);
+            idx = (n - i) * idx + (int) ((val >> v) & 0xf);
             val -= 0x1111111111111110L << v;
         }
         return idx;

@@ -233,9 +233,9 @@ public class Search {
     private void prepareSearch(CubieCube cc) {
         conjMask = (TRY_INVERSE ? 0 : 0x38) | (TRY_THREE_AXES ? 0 : 0x36);
         selfSym = cc.selfSymmetry();
-        conjMask |= ((selfSym >> 16) & 0xffff) == 0L ? 0 : 0x12;
-        conjMask |= ((selfSym >> 32) & 0xffff) == 0L ? 0 : 0x24;
-        conjMask |= ((selfSym >> 48) & 0xffff) == 0L ? 0 : 0x38;
+        conjMask |= ((selfSym >> 16) & 0xffff) == 0 ? 0 : 0x12;
+        conjMask |= ((selfSym >> 32) & 0xffff) == 0 ? 0 : 0x24;
+        conjMask |= ((selfSym >> 48) & 0xffff) == 0 ? 0 : 0x38;
         selfSym &= 0xffffffffffffL;
         maxPreMoves = conjMask > 7 ? 0 : MAX_PRE_MOVES - 1;
 

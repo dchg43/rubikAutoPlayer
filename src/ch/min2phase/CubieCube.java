@@ -216,8 +216,8 @@ public class CubieCube {
 
     public static int getSkipMoves(long ssym) {
         int ret = 0;
-        for (int i = 1; (ssym >>= 1) != 0L; i++) {
-            if ((ssym & 1L) == 1L) {
+        for (int i = 1; (ssym >>= 1) != 0; i++) {
+            if ((ssym & 1) == 1) {
                 ret |= firstMoveSym[i];
             }
         }
