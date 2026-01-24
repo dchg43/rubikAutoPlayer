@@ -1122,8 +1122,8 @@ public final class AutoPlayer extends Panel implements Runnable {
                 AutoPlayer.this.player.makesureFinished();
                 String cubeString = getCubeString(true);
 
-                String result = searchSolution(AutoPlayer.this.search, cubeString);
-                if (result.contains("Error")) {
+                String result = verifyAndPrepare(AutoPlayer.this.search, cubeString);
+                if (result != null) {
                     String message = "校验不通过：" + getErrMessage(result);
                     JOptionPane.showOptionDialog(AutoPlayer.this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE,
                             AutoPlayer.this.errorIcon, CommandParser.DEFAULTOPTION, CommandParser.DEFAULTOPTION[0]);
@@ -1377,7 +1377,7 @@ public final class AutoPlayer extends Panel implements Runnable {
                 String facelets = getCubeString(true);
 
                 String result = searchSolution(AutoPlayer.this.search, facelets);
-                if (result.contains("Error")) {
+                if (result.startsWith("Error")) {
                     String message = "校验不通过：" + getErrMessage(result);
                     JOptionPane.showOptionDialog(AutoPlayer.this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE,
                             AutoPlayer.this.errorIcon, CommandParser.DEFAULTOPTION, CommandParser.DEFAULTOPTION[0]);
@@ -1565,26 +1565,29 @@ public final class AutoPlayer extends Panel implements Runnable {
         cube.getModel().setQuiet(false);
     }
 
+    public String verifyAndPrepare(Search search, String cubeString) {
+        if (cubeString.length() < 54) {
+            return cubeString;
+        }
+        return search.verifyAndPrepare(cubeString);
+    }
+
     /**
      * 搜索自动复原方案
      * @param cubeString 类似 UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB
      * @return 输出类似 R2 F' L
      */
     public String searchSolution(Search search, String cubeString) {
-        if (cubeString.length() < 54) {
-            return cubeString;
-        }
         if (this.DEBUG) {
             System.out.println("input: " + cubeString);
         }
 
-        String verify = search.verifyAndPrepare(cubeString);
-        if (verify != null) {
-            return verify;
+        String result = verifyAndPrepare(search, cubeString);
+        if (result != null) {
+            return result;
         }
 
         int depth = defaultDepth;
-        String result = null;
         short tries = 0;
         int maxProbe = defaultMaxProbe;
         char errkey = '8';
