@@ -91,7 +91,7 @@ public final class AutoPlayer extends Panel implements Runnable {
     private static final short[] maxTries = {0, 0, 0, 0, 5, 300, 3000, Short.MAX_VALUE}; // 对应depth的15 16 17 18 19 20 21 22
 
     // 建议 Step: 15 ~ 18
-    private static final byte defaultDepth = 15;
+    private static final byte defaultDepth = 16;
 
     private static final byte maxDepth = (byte) (defaultDepth + maxTries.length - 1);
 
@@ -1594,7 +1594,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         while (errkey == '8' || errkey == '7') {
             result = search.solution(depth, maxProbe, 0, 0);
             errkey = result.length() > 0 ? result.charAt(result.length() - 1) : '0';
-            tries = maxTries[depth - 15];
+            tries = maxTries[depth - 16];
             while (errkey == '8' && tries > 0) {
                 result = search.next(maxProbe, 0, 0);
                 errkey = result.charAt(result.length() - 1);
