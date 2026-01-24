@@ -233,9 +233,9 @@ public class Search {
     private void prepareSearch(CubieCube cc) {
         conjMask = (TRY_INVERSE ? 0 : 0x38) | (TRY_THREE_AXES ? 0 : 0x36);
         selfSym = cc.selfSymmetry();
-        conjMask |= ((selfSym >> 16) & 0xffff) != 0 ? 0x12 : 0;
-        conjMask |= ((selfSym >> 32) & 0xffff) != 0 ? 0x24 : 0;
-        conjMask |= ((selfSym >> 48) & 0xffff) != 0 ? 0x38 : 0;
+        conjMask |= ((selfSym >> 16) & 0xffff) == 0L ? 0 : 0x12;
+        conjMask |= ((selfSym >> 32) & 0xffff) == 0L ? 0 : 0x24;
+        conjMask |= ((selfSym >> 48) & 0xffff) == 0L ? 0 : 0x38;
         selfSym &= 0xffffffffffffL;
         maxPreMoves = conjMask > 7 ? 0 : MAX_PRE_MOVES - 1;
 
@@ -565,6 +565,7 @@ public class Search {
                 } else if (ret == 2) {
                     break;
                 }
+                // else continue; // ret == 1
             }
         }
         return 1;
@@ -717,7 +718,7 @@ public class Search {
                 m += (0x42 >> m) & 3;
             } else if (ret < -2) {
                 break;
-            } else {
+            } else { // ret >= 0
                 move[depth] = Util.ud2std[m];
                 return ret;
             }
