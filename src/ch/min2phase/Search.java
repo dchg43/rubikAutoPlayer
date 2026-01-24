@@ -237,11 +237,12 @@ public class Search {
         conjMask |= ((selfSym >> 32) & 0xffff) == 0 ? 0 : 0x24;
         conjMask |= ((selfSym >> 48) & 0xffff) == 0 ? 0 : 0x38;
         selfSym &= 0xffffffffffffL;
-        maxPreMoves = conjMask > 7 ? 0 : MAX_PRE_MOVES - 1;
+        int tmpPreMoves = MAX_PRE_MOVES - 1;
+        maxPreMoves = conjMask > 7 ? 0 : tmpPreMoves;
 
         for (int i = 0; i < 6; i++) {
             urfCubieCube[i].copy(cc);
-            urfCoordCube[i].setWithPrun(urfCubieCube[i], MAX_PRE_MOVES - 1);
+            urfCoordCube[i].setWithPrun(urfCubieCube[i], tmpPreMoves);
             cc.URFConjugate();
             if (i == 2 || i == 5) {
                 cc.invCubieCube();
@@ -349,6 +350,7 @@ public class Search {
             skipMoves |= 0x36FB7; // 11 0110 1111 1011 0111
         }
 
+        maxl--;
         lm = (lm / 3) * 3;
         for (byte m = 0; m < 18; m++) {
             if (m == lm || m == lm - 9 || m == lm + 9) {
@@ -356,11 +358,11 @@ public class Search {
                 continue;
             }
             if ((!isRec || m == preMoves[preMovel]) && (skipMoves & (1 << m)) == 0) {
-                CubieCube preMove = preMoveCubes[maxl - 1];
+                CubieCube preMove = preMoveCubes[maxl];
                 CubieCube.CornMult(CubieCube.moveCube[m], cc, preMove);
                 CubieCube.EdgeMult(CubieCube.moveCube[m], cc, preMove);
                 preMoves[preMovel] = m;
-                if (phase1PreMoves(maxl - 1, m, preMove, ssym & CubieCube.moveCubeSym[m])) {
+                if (phase1PreMoves(maxl, m, preMove, ssym & CubieCube.moveCubeSym[m])) {
                     return true;
                 }
             }
@@ -398,9 +400,13 @@ public class Search {
         }
         ++probe;
 
+        CubieCube a, b, prod;
         for (int i = valid; i < depth; i++) {
-            CubieCube.CornMult(phase1Cubie[i], CubieCube.moveCube[move[i]], phase1Cubie[i + 1]);
-            CubieCube.EdgeMult(phase1Cubie[i], CubieCube.moveCube[move[i]], phase1Cubie[i + 1]);
+            a = phase1Cubie[i];
+            b = CubieCube.moveCube[move[i]];
+            prod = phase1Cubie[i + 1];
+            CubieCube.CornMult(a, b, prod);
+            CubieCube.EdgeMult(a, b, prod);
         }
         valid = depth;
 
@@ -497,7 +503,8 @@ public class Search {
         if (depth2 != maxDep) { // At least one solution has been found.
             solution = new Solution();
             solution.setArgs(verbose, urfIdx, depth);
-            for (int i = 0; i <= depth + depth2; i++) {
+            depth2 += depth;
+            for (int i = 0; i <= depth2; i++) {
                 solution.appendSolMove(move[i]);
             }
             for (int i = preMoveLen - 1; i >= 0; i--) {
