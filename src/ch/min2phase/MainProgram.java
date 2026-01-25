@@ -260,7 +260,7 @@ public class MainProgram extends JFrame {
                 public void actionPerformed(ActionEvent evt) {
                     // +++++++++++++++++++++++++++++ Call Random function from package org.kociemba.twophase
                     // ++++++++++++++++++++
-                    String r = Tools.randomCube();
+                    String r = new String(Tools.randomCube());
                     jTextPane1.setText(r);
                     // ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
                     for (int i = 0; i < 6; i++) {
@@ -369,7 +369,7 @@ public class MainProgram extends JFrame {
         mask |= inverse ? Search.INVERSE_SOLUTION : 0;
         mask |= showLength ? Search.APPEND_LENGTH : 0;
         long t = System.nanoTime();
-        String result = search.verifyAndPrepare(cubeString);
+        String result = search.verifyAndPrepare(cubeString.toCharArray());
         int n_probe = 0;
         if (result == null) {
             result = search.solution(maxDepth, 100, 1, mask);

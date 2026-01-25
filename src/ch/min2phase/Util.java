@@ -218,7 +218,7 @@ public class Util {
         return ccRet;
     }
 
-    public static String toFaceCube(final CubieCube cc) {
+    public static char[] toFaceCube(final CubieCube cc) {
         char[] f = new char[54];
         char[] ts = {'U', 'R', 'F', 'D', 'L', 'B'};
         for (int i = 0; i < 54; i++) {
@@ -238,7 +238,7 @@ public class Util {
                 f[edgeFacelet[e][(n + ori) % 2]] = ts[edgeFacelet[j][n] / 9];
             }
         }
-        return new String(f);
+        return f;
     }
 
     public static int getNParity(int idx, int n) {

@@ -42,6 +42,8 @@ public class Search {
 
     public static final int MAX_DEPTH = 15;
 
+    private static final byte[] centerIndex = {Util.U5, Util.R5, Util.F5, Util.D5, Util.L5, Util.B5};
+
     private static boolean staticInited = false;
 
     private boolean inited = false;
@@ -291,16 +293,14 @@ public class Search {
      *          5: Twist error: One corner has to be twisted<br>
      *          6: Parity error: Two corners or two edges have to be exchanged
      */
-    public String verifyAndPrepare(String facelets) {
+    public String verifyAndPrepare(char[] facelets) {
         int count = 0x000000;
         int[] f = new int[54];
-        char[] center = new char[]{facelets.charAt(Util.U5), facelets.charAt(Util.R5), facelets.charAt(Util.F5), facelets.charAt(Util.D5),
-                facelets.charAt(Util.L5), facelets.charAt(Util.B5)};
         for (int i = 0; i < 54; i++) {
-            char a = facelets.charAt(i);
+            char a = facelets[i];
             int j;
             for (j = 0; j < 6; j++) {
-                if (a == center[j]) {
+                if (a == facelets[centerIndex[j]]) {
                     f[i] = j;
                     break;
                 }
@@ -393,10 +393,10 @@ public class Search {
      *          1: at least 1 + maxDep2 moves away, Try next power
      *          2: at least 2 + maxDep2 moves away, Try next axis
      */
-    private boolean phase2PreInit() {
+    private byte phase2PreInit() {
         isRec = false;
         if (probe >= (solution == null ? probeMax : probeMin)) {
-            return true;
+            return 0;
         }
         ++probe;
 
@@ -476,7 +476,11 @@ public class Search {
         if (preMoveLen > 0) {
             preMoves[preMoveLen - 1] = lastPre;
         }
-        return ret == 0;
+        if (ret == 0) {
+            return 0;
+        } else {
+            return 2;
+        }
     }
 
     private int phase2Init(int p2corn, int p2csym, int p2edge, int p2esym, int p2mid, int edgei, int corni) {
@@ -523,13 +527,13 @@ public class Search {
      *          1: Try Next Power
      *          2: Try Next Axis
      */
-    private int phase1(CoordCube node, long ssym, int maxl, int lm) {
+    private byte phase1(CoordCube node, long ssym, int maxl, int lm) {
         if (node.getPrun() == 0 && maxl < 5) {
             if (allowShorter || maxl == 0) {
                 depth -= maxl;
-                boolean ret = phase2PreInit();
+                byte ret = phase2PreInit();
                 depth += maxl;
-                return ret ? 0 : 2;
+                return ret;
             } else {
                 return 1;
             }
@@ -566,7 +570,7 @@ public class Search {
 
                 move[depth - maxl] = m;
                 valid = Math.min(valid, depth - maxl);
-                int ret = phase1(nodeUD[maxl], ssym & CubieCube.moveCubeSym[m], maxl - 1, axis);
+                byte ret = phase1(nodeUD[maxl], ssym & CubieCube.moveCubeSym[m], maxl - 1, axis);
                 if (ret == 0) {
                     return 0;
                 } else if (ret == 2) {
@@ -615,7 +619,7 @@ public class Search {
         if (ud.getPrun() == 0 && rl.getPrun() == 0 && fb.getPrun() == 0 && maxl < 5) {
             maxDep = maxl;
             depth = length - maxl;
-            return phase2PreInit();
+            return phase2PreInit() == 0;
         }
 
         int skipMoves = CubieCube.getSkipMoves(ssym);

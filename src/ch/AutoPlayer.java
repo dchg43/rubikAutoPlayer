@@ -99,7 +99,7 @@ public final class AutoPlayer extends Panel implements Runnable {
 
     private static final Color deselectColor = new ColorUIResource(238, 238, 238);
 
-    private static final String completeCube = "UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB";
+    private static final char[] completeCube = "UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB".toCharArray();
 
     /** 初始化颜色对应表，顺序：front, right, down, back, left, up */
     private static final char[] chars = {'F', 'R', 'D', 'B', 'L', 'U', '0'};
@@ -133,7 +133,7 @@ public final class AutoPlayer extends Panel implements Runnable {
 
     private Map<String, Integer> keyMap = new HashMap<>();
 
-    LinkedBlockingQueue<String[]> queue = new LinkedBlockingQueue<>(32); // 使用先进先出阻塞队列，队列长度32
+    LinkedBlockingQueue<Object[]> queue = new LinkedBlockingQueue<>(32); // 使用先进先出阻塞队列，队列长度32
 
     private List<JButton> testDisableList = new ArrayList<>(5);
 
@@ -283,7 +283,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        String facelets = getCubeString(false);
+        char[] facelets = getCubeString(false);
         cleanAndResetCube(facelets);
     }
 
@@ -343,9 +343,9 @@ public final class AutoPlayer extends Panel implements Runnable {
                 public void run() {
                     try {
                         while (AutoPlayer.this.displayMode == RUNNING) {
-                            String random = Tools.randomCube();
+                            char[] random = Tools.randomCube();
                             String solution = searchSolution(search, random);
-                            queue.put(new String[]{random, solution});
+                            queue.put(new Object[]{random, solution});
                         }
                     } catch (InterruptedException e) {
                         Thread.currentThread().interrupt();
@@ -359,21 +359,21 @@ public final class AutoPlayer extends Panel implements Runnable {
 
         long times = 0;
         long start = System.nanoTime();
-        String[] item = null;
+        Object[] item = null;
         try {
             ScriptNode scriptNode;
             BoundedRangeModel progress = this.player.getBoundedRangeModel();
             for (; times < testTimes && this.displayMode == RUNNING; times++) {
                 model.reset();
                 item = queue.take();
-                setCubeByString(item[0], this.colors);
-                scriptNode = this.scriptParser.parse(item[1]);
+                setCubeByString((char[]) item[0], this.colors);
+                scriptNode = this.scriptParser.parse((String) item[1]);
                 this.player.setScript(scriptNode);
-                this.scriptTextArea.setText(item[1]);
+                this.scriptTextArea.setText((String) item[1]);
                 progress.setValue(progress.getMaximum());
                 this.player.makesureFinished();
                 // 判断执行是否成功
-                if (completeCube.equals(getCubeString(false))) {
+                if (Arrays.equals(completeCube, getCubeString(false))) {
                     continue;
                 }
 
@@ -386,7 +386,8 @@ public final class AutoPlayer extends Panel implements Runnable {
                 this.displayMode = STOPPING;
                 queue.clear(); // 防止队列满时线程不退出
                 model.setQuiet(false);
-                String message = "Auto test failed.\n  input: " + item[0] + "\n script: " + item[1] + "\n result: " + getCubeString(false);
+                String message = "Auto test failed.\n  input: " + new String((char[]) item[0]) + "\n script: " + item[1] + "\n result: "
+                        + new String(getCubeString(false));
                 JOptionPane.showOptionDialog(this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, this.errorIcon,
                         CommandParser.DEFAULTOPTION, CommandParser.DEFAULTOPTION[0]);
                 if (this.buttonTest != null) {
@@ -867,7 +868,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         String facelets = this.cmd.getParameter("facelets");
         if (facelets != null) {
             if (facelets.trim().length() == 54) {
-                setCubeByString(facelets, this.colors);
+                setCubeByString(facelets.toCharArray(), this.colors);
             } else {
                 showError("Invalid parameter 'facelets' provides " + facelets.trim().length() + " instead of 54.");
             }
@@ -1080,7 +1081,7 @@ public final class AutoPlayer extends Panel implements Runnable {
                 // 判断魔方是否有旋转，因为编辑功能是基于魔方未旋转状态，如果有旋转，设置方块颜色时会错位
                 if (!cube.getModel().isSolved()) {
                     // 重置魔方状态，保留块的颜色和顺序
-                    String facelets = getCubeString(false);
+                    char[] facelets = getCubeString(false);
                     cleanAndResetCube(facelets);
                     AutoPlayer.this.player.makesureFinished();
                 }
@@ -1120,7 +1121,7 @@ public final class AutoPlayer extends Panel implements Runnable {
                 }
 
                 AutoPlayer.this.player.makesureFinished();
-                String cubeString = getCubeString(true);
+                char[] cubeString = getCubeString(true);
 
                 String result = verifyAndPrepare(AutoPlayer.this.search, cubeString);
                 if (result != null) {
@@ -1180,7 +1181,7 @@ public final class AutoPlayer extends Panel implements Runnable {
                 }
 
                 // Random stick by Call Random function
-                String facelets = Tools.randomCube();
+                char[] facelets = Tools.randomCube();
                 setCubeByString(facelets, AutoPlayer.this.colors);
             }
         });
@@ -1226,7 +1227,7 @@ public final class AutoPlayer extends Panel implements Runnable {
                 // 判断魔方是否有旋转，因为编辑时仍然能执行反序，如果有旋转，设置方块颜色时会错位
                 if (!cube.getModel().isSolved()) {
                     // 有旋转，重置为旋转前状态
-                    String facelets = getCubeString(false);
+                    char[] facelets = getCubeString(false);
                     cleanAndResetCube(facelets);
                     AutoPlayer.this.player.makesureFinished();
                 }
@@ -1290,7 +1291,7 @@ public final class AutoPlayer extends Panel implements Runnable {
                     if (AutoPlayer.this.displayMode == RUNNING) {
                         AutoPlayer.this.displayMode = STOPPING;
                         try {
-                            queue.put(new String[]{completeCube, ""}); // 让queue.take()快速结束，防止卡阻
+                            queue.put(new Object[]{completeCube, ""}); // 让queue.take()快速结束，防止卡阻
                         } catch (InterruptedException e) {
                         }
                         AutoPlayer.this.player.stop();
@@ -1374,7 +1375,7 @@ public final class AutoPlayer extends Panel implements Runnable {
 
                 // 求解并校验
                 AutoPlayer.this.player.makesureFinished();
-                String facelets = getCubeString(true);
+                char[] facelets = getCubeString(true);
 
                 String result = searchSolution(AutoPlayer.this.search, facelets);
                 if (result.startsWith("Error")) {
@@ -1535,7 +1536,7 @@ public final class AutoPlayer extends Panel implements Runnable {
      * 用于编辑和自动复原功能，这两个是基于魔方未旋转状态，如果有旋转，设置和获取方块颜色时会错位
      * @param facelets 类似 UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB
      */
-    private void cleanAndResetCube(String facelets) {
+    private void cleanAndResetCube(char[] facelets) {
         // 复制一份颜色表，已经添加到colorCurrent的从该表去除，用于去重
         ArrayList<Color> colorList = new ArrayList<>();
         for (Color c : this.colors) {
@@ -1565,9 +1566,9 @@ public final class AutoPlayer extends Panel implements Runnable {
         cube.getModel().setQuiet(false);
     }
 
-    public String verifyAndPrepare(Search search, String cubeString) {
-        if (cubeString.length() < 54) {
-            return cubeString;
+    public String verifyAndPrepare(Search search, char[] cubeString) {
+        if (cubeString == null) {
+            return "Error 9";
         }
         return search.verifyAndPrepare(cubeString);
     }
@@ -1577,9 +1578,9 @@ public final class AutoPlayer extends Panel implements Runnable {
      * @param cubeString 类似 UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB
      * @return 输出类似 R2 F' L
      */
-    public String searchSolution(Search search, String cubeString) {
+    public String searchSolution(Search search, char[] cubeString) {
         if (this.DEBUG) {
-            System.out.println("input: " + cubeString);
+            System.out.println("input: " + new String(cubeString));
         }
 
         String result = verifyAndPrepare(search, cubeString);
@@ -1620,7 +1621,7 @@ public final class AutoPlayer extends Panel implements Runnable {
      * 初始状态应该获取到的序列为：UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB
      * check: 是否校验魔方是否完整
     */
-    public String getCubeString(boolean check) {
+    public char[] getCubeString(boolean check) {
         AbstractCube3DAWT cube = this.player.getCube3D();
         // 复制一份字符表，已经添加到colorMap的从该表去除，用于去重
         ArrayList<Character> charList = new ArrayList<>();
@@ -1640,7 +1641,7 @@ public final class AutoPlayer extends Panel implements Runnable {
             }
         }
         if (check && colorMap.size() < 6) {
-            return "Error 9";
+            return null;
         }
 
         tmp.removeAll(colorMap.keySet());
@@ -1695,7 +1696,7 @@ public final class AutoPlayer extends Panel implements Runnable {
             searchInput[sideFacelet[i]] = colorMap.get(cube.getStickerColor(sideLocation, 4));
         }
 
-        return new String(searchInput);
+        return searchInput;
     }
 
     /**
@@ -1703,18 +1704,17 @@ public final class AutoPlayer extends Panel implements Runnable {
      * @param cubeString 形如：UUUUUUUUURRRRRRRRRFFFFFFFFFDDDDDDDDDLLLLLLLLLBBBBBBBBB
      * @param curColors 对应颜色序列，长度需要7，顺序为U R F D L B
      */
-    public void setCubeByString(String cubeString, ArrayList<Color> curColors) {
+    public void setCubeByString(char[] cubeString, ArrayList<Color> curColors) {
         Map<Character, Color> colorMap = new HashMap<>();
         for (int i = 0; i < chars.length; i++) {
             colorMap.put(chars[i], curColors.get(i));
         }
 
-        char[] randomChars = cubeString.toCharArray();
         AbstractCube3DAWT cube = this.player.getCube3D();
         final int[] sideMap = {5, 1, 0, 2, 4, 3}; // 对应Tools.randomCube()得到的 U R F D L B
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 9; j++) {
-                char index = randomChars[i * 9 + j];
+                char index = cubeString[i * 9 + j];
                 if (colorMap.containsKey(index)) {
                     cube.setStickerColor(sideMap[i], j, colorMap.get(index));
                 } else {
