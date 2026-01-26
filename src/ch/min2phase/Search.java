@@ -325,7 +325,7 @@ public class Search {
 
     private boolean phase1PreMoves(int maxl, int lm, final CubieCube cc, long ssym) {
         int preMovel = maxPreMoves - maxl;
-        preMoveLen = preMovel;
+        preMoveLen = preMovel; // preMoveLen值最后一次递归生效
         int depthtemp = length - preMovel;
         if (isRec ? (depth == depthtemp) : (preMovel == 0 || ((0x36FB7 >> lm) & 1) == 0)) {
             depth = depthtemp;
@@ -358,11 +358,10 @@ public class Search {
                 continue;
             }
             if ((!isRec || m == preMoves[preMovel]) && (skipMoves & (1 << m)) == 0) {
-                CubieCube preMove = preMoveCubes[maxl];
-                CubieCube.CornMult(CubieCube.moveCube[m], cc, preMove);
-                CubieCube.EdgeMult(CubieCube.moveCube[m], cc, preMove);
+                CubieCube.CornMult(CubieCube.moveCube[m], cc, preMoveCubes[maxl]);
+                CubieCube.EdgeMult(CubieCube.moveCube[m], cc, preMoveCubes[maxl]);
                 preMoves[preMovel] = m;
-                if (phase1PreMoves(maxl, m, preMove, ssym & CubieCube.moveCubeSym[m])) {
+                if (phase1PreMoves(maxl, m, preMoveCubes[maxl], ssym & CubieCube.moveCubeSym[m])) {
                     return true;
                 }
             }

@@ -1046,6 +1046,10 @@ public class RubiksCubeCore implements Cloneable {
         }
     }
 
+    public boolean isQuiet() {
+        return this.quiet;
+    }
+
     @Override
     public Object clone() {
         try {

@@ -609,6 +609,9 @@ public abstract class AbstractCube3DAWT implements RubikListener {
         }
         long jCurrentTimeMillis = System.nanoTime();
         for (int j = 1; j < i; j++) {
+            if (this.model.isQuiet()) {
+                return;
+            }
             synchronized (this.model) {
                 Iterator<TransformNode> iterators = transforms.iterator();
                 while (iterators.hasNext()) {

@@ -346,7 +346,9 @@ public class ScriptPlayer implements Player, Runnable, ChangeListener, ActionLis
     }
 
     public void reset() {
+        this.model.setQuiet(true);
         stop();
+        this.model.setQuiet(false);
         synchronized (this) {
             this.scriptIndex = 0;
             this.progress.setValue(0);
