@@ -425,9 +425,10 @@ public final class AutoPlayer extends Panel implements Runnable {
         this.displayMode = STOPPING;
         queue.clear(); // 防止队列满时线程不退出
         double timeInSecond = (System.nanoTime() - start) / 1.0e9d;
+
+        // 刷新魔方
         this.player.setScript(null);
         this.scriptTextArea.setText(null);
-
         AbstractCube3DAWT cube = this.player.getCube3D();
         cube.getModel().reset();
         for (int i = 0; i < 6; i++) {
@@ -436,7 +437,6 @@ public final class AutoPlayer extends Panel implements Runnable {
                 cube.setStickerColor(i, j, c);
             }
         }
-        // 刷新魔方
         this.player.makesureFinished();
         cube.fireStateChanged();
 
@@ -1243,12 +1243,16 @@ public final class AutoPlayer extends Panel implements Runnable {
                 StringBuilder result = new StringBuilder();
                 for (int i = splits.length - 1; i >= 0; i--) {
                     String tmp = splits[i];
-                    if (tmp.length() <= 1) {
+                    if (tmp.length() <= 1) { // 形如U D
                         result.append(tmp).append('\'');
-                    } else if (tmp.charAt(tmp.length() - 1) == '\'') {
-                        result.append(tmp.substring(0, tmp.length() - 1)).append(' ');
-                    } else {
-                        result.append(tmp); // .append('\'');
+                    } else if (tmp.charAt(tmp.length() - 1) == '\'') { // 形如U' D2'
+                        result.append(tmp.substring(0, tmp.length() - 1));
+                        if (tmp.length() == 2) {
+                            result.append(' ');
+                        }
+                    } else { // 形如U2 D2
+                        // result.append(tmp).append('\''); // 这样旋转方向也是逆着的，但是长度会变长
+                        result.append(tmp); // 这样长度不会变，但是旋转方向也不是反着的
                     }
                     result.append(' ');
                 }

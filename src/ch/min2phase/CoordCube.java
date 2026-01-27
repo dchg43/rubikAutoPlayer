@@ -445,7 +445,7 @@ public class CoordCube {
     /**
      * @return pruning value
      */
-    public int doMovePrun(final CoordCube cc, int m, boolean isPhase1) {
+    public int doMovePrun(final CoordCube cc, int m) {
         slice = UDSliceMove[cc.slice][m];
         m = m << 3;
 
