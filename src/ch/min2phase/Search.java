@@ -331,7 +331,6 @@ public class Search {
             depth = depthtemp;
             phase1Cubie[0] = cc;
             allowShorter = (depth == MIN_P1LENGTH_PRE && preMovel != 0);
-
             if (nodeUD[depth + 1].setWithPrun(cc, depth) && phase1(nodeUD[depth + 1], ssym, depth, -1) == 0) {
                 return true;
             }
@@ -347,7 +346,7 @@ public class Search {
 
         int skipMoves = CubieCube.getSkipMoves(ssym);
         if (maxl == 1 || minPre + 1 == length) { // last pre move
-            skipMoves |= 0x36FB7; // 11 0110 1111 1011 0111
+            skipMoves |= 0x36FB7; // 0011 0110 1111 1011 0111
         }
 
         maxl--;
@@ -606,7 +605,6 @@ public class Search {
             CoordCube ud = urfCoordCube[0 + urfIdx];
             CoordCube rl = urfCoordCube[1 + urfIdx];
             CoordCube fb = urfCoordCube[2 + urfIdx];
-
             if (ud.getPrun() <= length && rl.getPrun() <= length && fb.getPrun() <= length && phase1opt(ud, rl, fb, selfSym, length, -1)) {
                 return solution == null ? "Error 8" : solution.toString();
             }
@@ -650,7 +648,6 @@ public class Search {
 
                 // RL Axis
                 m = CubieCube.urfMove[2][m];
-
                 int prun_rl = Math.max(nodeRL[maxl].doMovePrun(rl, m), USE_CONJ_PRUN ? nodeRL[maxl].doMovePrunConj(rl, m) : 0);
                 if (prun_rl > maxl) {
                     break;
@@ -660,12 +657,10 @@ public class Search {
 
                 // FB Axis
                 m = CubieCube.urfMove[2][m];
-
                 int prun_fb = Math.max(nodeFB[maxl].doMovePrun(fb, m), USE_CONJ_PRUN ? nodeFB[maxl].doMovePrunConj(fb, m) : 0);
                 if (prun_ud == prun_rl && prun_rl == prun_fb && prun_fb != 0) {
                     prun_fb++;
                 }
-
                 if (prun_fb > maxl) {
                     break;
                 } else if (prun_fb == maxl) {
@@ -673,11 +668,11 @@ public class Search {
                 }
 
                 m = CubieCube.urfMove[2][m];
-
                 move[len] = m;
                 if (valid > len) {
                     valid = len;
                 }
+
                 boolean ret = phase1opt(nodeUD[maxl], nodeRL[maxl], nodeFB[maxl], ssym & CubieCube.moveCubeSym[m], maxl - 1, axis);
                 if (ret) {
                     return true;
@@ -726,6 +721,7 @@ public class Search {
                 m += (0x42 >> m) & 3 & (maxl - prun);
                 continue;
             }
+
             int ret = phase2(edgex, esymx, cornx, csymx, midx, maxl - 1, depth + 1, m);
             if (ret == -1) {
                 continue;
