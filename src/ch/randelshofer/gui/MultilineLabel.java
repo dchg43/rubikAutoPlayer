@@ -205,7 +205,7 @@ public class MultilineLabel extends Canvas {
             int height = this.fontMetrics.getHeight();
             for (String line : this.lines) {
                 int length = cur + line.length();
-                if (this.selectionEnd <= length) {
+                if (this.selectionEnd < length) {
                     int iMax = Math.max(0, this.selectionStart - cur);
                     int x = insets.left + this.fontMetrics.stringWidth(line.substring(0, iMax));
                     int weight = this.fontMetrics.stringWidth(line.substring(iMax, Math.max(0, Math.min(line.length(), this.selectionEnd - cur))));

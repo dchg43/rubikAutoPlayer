@@ -176,6 +176,8 @@ public class Util {
     // 值范围：[0, 17]
     public static final byte[] ud2std = {Ux1, Ux2, Ux3, Rx2, Fx2, Dx1, Dx2, Dx3, Lx2, Bx2, Rx1, Rx3, Fx1, Fx3, Lx1, Lx3, Bx1, Bx3};
 
+    public static final char[] ts = {'U', 'R', 'F', 'D', 'L', 'B'};
+
     // 值范围: [0, 17]
     public static final byte[] std2ud = new byte[18];
 
@@ -220,7 +222,6 @@ public class Util {
 
     public static char[] toFaceCube(final CubieCube cc) {
         char[] f = new char[54];
-        char[] ts = {'U', 'R', 'F', 'D', 'L', 'B'};
         for (int i = 0; i < 54; i++) {
             f[i] = ts[i / 9];
         }

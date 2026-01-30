@@ -104,6 +104,28 @@ public final class AutoPlayer extends Panel implements Runnable {
     /** 初始化颜色对应表，顺序：front, right, down, back, left, up */
     private static final char[] chars = {'F', 'R', 'D', 'B', 'L', 'U', '0'};
 
+    private static final int[] sideMap = {5, 1, 0, 2, 4, 3}; // 对应Tools.randomCube()得到的 U R F D L B
+
+    // CORNER_MAP[CornerSide][cornerLoc % 4] （详见图片<块的命名>）
+    private static final int[][] CORNER_MAP = {{0, 6, 2, 8}, {2, 8, 0, 6}, {0, 2, 8, 6}, {0, 6, 2, 8}, {2, 8, 0, 6}, {6, 8, 2, 0}};
+
+    // EDGE_MAP[edgeSide][edgeLoc]
+    private static final int[][] EDGE_MAP = { //
+            {1, 3, 7, 0, 5, 0, 0, 0, 0, 0, 0, 0}, // 0
+            {0, 0, 0, 1, 3, 7, 0, 5, 0, 0, 0, 0}, // 1
+            {0, 0, 1, 0, 0, 5, 0, 0, 7, 0, 0, 3}, // 2
+            {0, 0, 0, 0, 0, 0, 1, 3, 7, 0, 5, 0}, // 3
+            {0, 5, 0, 0, 0, 0, 0, 0, 0, 1, 3, 7}, // 4
+            {7, 0, 0, 5, 0, 0, 1, 0, 0, 3, 0, 0}}; // 5
+
+    // input产生顺序：up 0, right 9, front 18, down 27, left 36, back 45 （详见图片<求解映射表>）
+    private static final int[][] cornerFacelet = {{6, 18, 38}, {27, 44, 24}, {8, 9, 20}, {29, 26, 15}, {2, 45, 11}, {35, 17, 51}, {0, 36, 47}, {33, 53, 42}};
+
+    private static final int[][] edgeFacelet = {{19, 7}, {41, 21}, {25, 28}, {5, 10}, {12, 23}, {32, 16}, {46, 1}, {14, 48}, {52, 34}, {3, 37}, {39, 50},
+            {30, 43}};
+
+    private static final int[] sideFacelet = {22, 13, 31, 49, 40, 4};
+
     private static final int[] speeds = {0, 1000, 30000};
 
     private static final PolygonIcon[] icons = {
@@ -1653,21 +1675,6 @@ public final class AutoPlayer extends Panel implements Runnable {
             colorMap.put(tmp.get(i), charList.remove(0));
         }
 
-        // CORNER_MAP[CornerSide][cornerLoc % 4] （详见图片<块的命名>）
-        final int[][] CORNER_MAP = {{0, 6, 2, 8}, {2, 8, 0, 6}, {0, 2, 8, 6}, {0, 6, 2, 8}, {2, 8, 0, 6}, {6, 8, 2, 0}};
-        // EDGE_MAP[edgeSide][edgeLoc]
-        final int[][] EDGE_MAP = { //
-                {1, 3, 7, 0, 5, 0, 0, 0, 0, 0, 0, 0}, // 0
-                {0, 0, 0, 1, 3, 7, 0, 5, 0, 0, 0, 0}, // 1
-                {0, 0, 1, 0, 0, 5, 0, 0, 7, 0, 0, 3}, // 2
-                {0, 0, 0, 0, 0, 0, 1, 3, 7, 0, 5, 0}, // 3
-                {0, 5, 0, 0, 0, 0, 0, 0, 0, 1, 3, 7}, // 4
-                {7, 0, 0, 5, 0, 0, 1, 0, 0, 3, 0, 0}}; // 5
-
-        // input产生顺序：up 0, right 9, front 18, down 27, left 36, back 45 （详见图片<求解映射表>）
-        final int[][] cornerFacelet = {{6, 18, 38}, {27, 44, 24}, {8, 9, 20}, {29, 26, 15}, {2, 45, 11}, {35, 17, 51}, {0, 36, 47}, {33, 53, 42}};
-        final int[][] edgeFacelet = {{19, 7}, {41, 21}, {25, 28}, {5, 10}, {12, 23}, {32, 16}, {46, 1}, {14, 48}, {52, 34}, {3, 37}, {39, 50}, {30, 43}};
-        final int[] sideFacelet = {22, 13, 31, 49, 40, 4};
         RubiksCubeCore initModel = new RubiksCubeCore();
 
         // 从RubiksCubeCore中根据旋转情况计算每个块的实际位置
@@ -1715,7 +1722,6 @@ public final class AutoPlayer extends Panel implements Runnable {
         }
 
         AbstractCube3DAWT cube = this.player.getCube3D();
-        final int[] sideMap = {5, 1, 0, 2, 4, 3}; // 对应Tools.randomCube()得到的 U R F D L B
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 9; j++) {
                 char index = cubeString[i * 9 + j];

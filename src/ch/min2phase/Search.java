@@ -501,8 +501,7 @@ public class Search {
         if (depth2 != maxDep) { // At least one solution has been found.
             solution = new Solution();
             solution.setArgs(verbose, urfIdx, depth);
-            depth2 += depth;
-            for (int i = 0; i <= depth2; i++) {
+            for (int i = 0; i <= depth2 + depth; i++) {
                 solution.appendSolMove(move[i]);
             }
             for (int i = preMoveLen - 1; i >= 0; i--) {

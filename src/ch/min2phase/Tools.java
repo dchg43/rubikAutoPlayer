@@ -264,10 +264,9 @@ public class Tools {
     }
 
     private static char[] randomState(byte[] cp, byte[] co, byte[] ep, byte[] eo, Random gen) {
-        int parity;
         int cntUE = ep == STATE_RANDOM ? 12 : countUnknown(ep);
         int cntUC = cp == STATE_RANDOM ? 8 : countUnknown(cp);
-        int cpVal, epVal;
+        int cpVal, epVal, parity;
         if (cntUE < 2) { // ep != STATE_RANDOM
             if (ep == STATE_SOLVED) {
                 epVal = parity = 0;
