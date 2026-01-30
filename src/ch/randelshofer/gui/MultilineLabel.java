@@ -194,8 +194,9 @@ public class MultilineLabel extends Canvas {
         paint(g);
     }
 
+    // synchronized用于防止绘图过程中selectionStart变更导致异常
     @Override
-    public void paint(Graphics g) {
+    public synchronized void paint(Graphics g) {
         // 绘制选择图层
         Insets insets = getInsets();
         if (this.selectionEnd > this.selectionStart) {
@@ -205,7 +206,7 @@ public class MultilineLabel extends Canvas {
             int height = this.fontMetrics.getHeight();
             for (String line : this.lines) {
                 int length = cur + line.length();
-                if (this.selectionEnd < length) {
+                if (this.selectionEnd <= length) {
                     int iMax = Math.max(0, this.selectionStart - cur);
                     int x = insets.left + this.fontMetrics.stringWidth(line.substring(0, iMax));
                     int weight = this.fontMetrics.stringWidth(line.substring(iMax, Math.max(0, Math.min(line.length(), this.selectionEnd - cur))));
