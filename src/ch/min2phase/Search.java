@@ -323,6 +323,10 @@ public class Search {
         return null;
     }
 
+    /**
+     * @return  true: Found <br>
+     *         false: not found
+     */
     private boolean phase1PreMoves(int maxl, int lm, final CubieCube cc, long ssym) {
         int preMovel = maxPreMoves - maxl;
         preMoveLen = preMovel; // preMoveLen值最后一次递归生效
@@ -387,8 +391,8 @@ public class Search {
     }
 
     /**
-     * @return  0: Found or Probe limit exceeded
-     *          1: at least 1 + maxDep2 moves away, Try next power
+     * @return  0: Found or Probe limit exceeded <br>
+     *          1: at least 1 + maxDep2 moves away, Try next power <br>
      *          2: at least 2 + maxDep2 moves away, Try next axis
      */
     private byte phase2PreInit() {
@@ -477,6 +481,10 @@ public class Search {
         }
     }
 
+    /**
+     * @return  0: Found or Probe limit exceeded <br>
+     *         >0: at least 1 + maxDep moves away, Try next power
+     */
     private int phase2Init(int p2corn, int p2csym, int p2edge, int p2esym, int p2mid, int edgei, int corni) {
         int comba = CoordCube.CCombPConj[CubieCube.Perm2CombP[corni >> 4]][CubieCube.SymMultInv[edgei & 0xf][corni & 0xf]];
         int combb = CoordCube.CCombPConj[CubieCube.Perm2CombP[p2corn]][CubieCube.SymMultInv[p2esym][p2csym]];
@@ -516,16 +524,17 @@ public class Search {
     }
 
     /**
-     * @return  0: Found or Probe limit exceeded
-     *          1: Try Next Power
+     * @return  0: Found or Probe limit exceeded <br>
+     *          1: Try Next Power <br>
      *          2: Try Next Axis
      */
     private byte phase1(CoordCube node, long ssym, int maxl, int lm) {
         if (node.getPrun() == 0 && maxl < 5) {
             if (allowShorter || maxl == 0) {
+                int oldDepth = depth;
                 depth -= maxl;
                 byte ret = phase2PreInit();
-                depth += maxl;
+                depth = oldDepth;
                 return ret;
             } else {
                 return 1;
@@ -612,8 +621,8 @@ public class Search {
     }
 
     /**
-     * @return  0: Found or Probe limit exceeded
-     *          1: Try Next Power
+     * @return  0: Found or Probe limit exceeded <br>
+     *          1: Try Next Power <br>
      *          2: Try Next Axis
      */
     private boolean phase1opt(CoordCube ud, CoordCube rl, CoordCube fb, long ssym, int maxl, int lm) {
@@ -681,8 +690,10 @@ public class Search {
         return false;
     }
 
-    // -1: no solution found
-    // X: solution with X moves shorter than expectation. Hence, the length of the solution is depth - X
+    /**
+     * @return -1: no solution found <br>
+     *          X: solution with X moves shorter than expectation. Hence, the length of the solution is depth - X
+     */
     private int phase2(int edge, int esym, int corn, int csym, int mid, int maxl, int depth, int lm) {
         if (edge == 0 && corn == 0 && mid == 0) {
             return maxl;
@@ -766,24 +777,26 @@ public class Search {
                 moves[length++] = curMove;
                 return;
             }
+            int temp = length - 1;
             int axisCur = curMove / 3;
-            int axisLast = moves[length - 1] / 3;
+            int axisLast = moves[temp] / 3;
             if (axisCur == axisLast) {
-                int pow = (curMove % 3 + moves[length - 1] % 3 + 1) % 4;
+                int pow = ((curMove % 3) + (moves[temp] % 3) + 1) % 4;
                 if (pow == 3) {
                     length--;
                 } else {
-                    moves[length - 1] = (byte) (axisCur * 3 + pow);
+                    moves[temp] = (byte) (axisCur * 3 + pow);
                 }
                 return;
             }
-            if (length > 1 && axisCur % 3 == axisLast % 3 && axisCur == moves[length - 2] / 3) {
-                int pow = (curMove % 3 + moves[length - 2] % 3 + 1) % 4;
+            temp--;
+            if (temp >= 0 && axisCur % 3 == axisLast % 3 && axisCur == moves[temp] / 3) {
+                int pow = ((curMove % 3) + (moves[temp] % 3) + 1) % 4;
                 if (pow == 3) {
                     length--;
-                    moves[length - 1] = moves[length];
+                    moves[temp] = moves[length];
                 } else {
-                    moves[length - 2] = (byte) (axisCur * 3 + pow);
+                    moves[temp] = (byte) (axisCur * 3 + pow);
                 }
                 return;
             }
