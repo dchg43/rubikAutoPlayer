@@ -343,13 +343,16 @@ public final class AutoPlayer extends Panel implements Runnable {
         model.setQuiet(true);
         this.player.makesureFinished();
 
-        // 启动多个线程来查找执行方案
+        // 获取需要的线程数
         if (this.process == -1) {
             this.process = Runtime.getRuntime().availableProcessors() - 2; // 查找线程数
             if (this.process < 1) {
                 this.process = 1;
             } else if (this.process > 8) {
                 this.process = 8; // 最大线程数
+            }
+            if (this.process > this.queue.remainingCapacity()) {
+                this.process = this.queue.remainingCapacity() <= 0 ? 1 : this.queue.remainingCapacity();
             }
             this.testSearchs = new Search[this.process];
             this.testThread = new Thread[this.process];
@@ -358,6 +361,7 @@ public final class AutoPlayer extends Panel implements Runnable {
                 this.testSearchs[i].init();
             }
         }
+        // 启动多个线程来查找执行方案
         for (int i = 0; i < this.process; i++) {
             final Search search = this.testSearchs[i];
             this.testThread[i] = new Thread() {
@@ -1317,7 +1321,8 @@ public final class AutoPlayer extends Panel implements Runnable {
                     if (AutoPlayer.this.displayMode == RUNNING) {
                         AutoPlayer.this.displayMode = STOPPING;
                         try {
-                            queue.put(new Object[]{completeCube, ""}); // 让queue.take()快速结束，防止卡阻
+                            AutoPlayer.this.queue.clear();
+                            AutoPlayer.this.queue.put(new Object[]{completeCube, ""}); // 让queue.take()快速结束，防止卡阻
                         } catch (InterruptedException e) {
                         }
                         AutoPlayer.this.player.stop();
