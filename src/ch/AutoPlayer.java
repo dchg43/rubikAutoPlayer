@@ -84,6 +84,8 @@ public final class AutoPlayer extends Panel implements Runnable {
 
     private boolean DEBUG = false;
 
+    private static final int[] speeds = {0, 1000, 30000};
+
     // 越小速度越快，越大步骤越短，建议取值：极速0,普通1000,最优30000
     private int defaultMaxProbe = speeds[0];
 
@@ -125,8 +127,6 @@ public final class AutoPlayer extends Panel implements Runnable {
             {30, 43}};
 
     private static final int[] sideFacelet = {22, 13, 31, 49, 40, 4};
-
-    private static final int[] speeds = {0, 1000, 30000};
 
     private static final PolygonIcon[] icons = {
             new PolygonIcon(new Polygon[]{new Polygon(new int[]{0, 2, 2, 0}, new int[]{5, 5, 7, 7}, 4),
@@ -1635,7 +1635,7 @@ public final class AutoPlayer extends Panel implements Runnable {
             depth++;
             if (depth >= maxDepth) {
                 if (depth == maxDepth) {
-                    maxProbe = 10000;
+                    maxProbe = speeds[2];
                 } else {
                     break;
                 }

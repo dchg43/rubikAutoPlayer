@@ -351,13 +351,27 @@ public class Tools {
     public static char[] fromScramble(final int[] scramble, int size) {
         CubieCube c1 = new CubieCube(true);
         CubieCube c2 = new CubieCube();
-        CubieCube tmp;
-        for (int i = 0; i < size; i++) {
+        //CubieCube tmp;
+        //for (int i = 0; i < size; i++) {
+        //    CubieCube.CornMult(c1, CubieCube.moveCube[scramble[i]], c2);
+        //    CubieCube.EdgeMult(c1, CubieCube.moveCube[scramble[i]], c2);
+        //    tmp = c1;
+        //    c1 = c2;
+        //    c2 = tmp;
+        //}
+        int i = 0;
+        while (i < size - 1) {
             CubieCube.CornMult(c1, CubieCube.moveCube[scramble[i]], c2);
             CubieCube.EdgeMult(c1, CubieCube.moveCube[scramble[i]], c2);
-            tmp = c1;
-            c1 = c2;
-            c2 = tmp;
+            i++;
+            CubieCube.CornMult(c2, CubieCube.moveCube[scramble[i]], c1);
+            CubieCube.EdgeMult(c2, CubieCube.moveCube[scramble[i]], c1);
+            i++;
+        }
+        if (i < size) {
+            CubieCube.CornMult(c1, CubieCube.moveCube[scramble[i]], c2);
+            CubieCube.EdgeMult(c1, CubieCube.moveCube[scramble[i]], c2);
+            return Util.toFaceCube(c2);
         }
         return Util.toFaceCube(c1);
     }
