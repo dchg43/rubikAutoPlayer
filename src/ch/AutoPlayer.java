@@ -1127,7 +1127,7 @@ public final class AutoPlayer extends Panel implements Runnable {
         });
 
         // 校验按钮
-        // 有一种错误的魔方序列校验应该失败，但是却校验成功并给出解法，但是实际无法复原
+        // 有一种错误的魔方序列校验应该失败，但是却校验成功并给出解法。在求解中已经校验了这种情况
         // 错误序列如一个对向中心块互换。
         // 所有这些错误序列给的复原解法执行后最终都会变成这个序列 DUDUUUDUDRRRRRRRRRFFFFFFFFFUDUDDDUDULLLLLLLLLBBBBBBBBB
         final JButton buttonCheck = new JButton("check");
@@ -1265,28 +1265,11 @@ public final class AutoPlayer extends Panel implements Runnable {
                 }
 
                 // 将旋转序列反序
-                String[] splits = script.split(" +|\n");
-                StringBuilder result = new StringBuilder();
-                for (int i = splits.length - 1; i >= 0; i--) {
-                    String tmp = splits[i];
-                    if (tmp.length() <= 1) { // 形如U D
-                        result.append(tmp).append('\'');
-                    } else if (tmp.charAt(tmp.length() - 1) == '\'') { // 形如U' D2'
-                        result.append(tmp.substring(0, tmp.length() - 1));
-                        if (tmp.length() == 2) {
-                            result.append(' ');
-                        }
-                    } else { // 形如U2 D2
-                        // result.append(tmp).append('\''); // 这样旋转方向也是逆着的，但是长度会变长
-                        result.append(tmp); // 这样长度不会变，但是旋转方向也不是反着的
-                    }
-                    result.append(' ');
-                }
-                String newScript = result.toString();
+                script = reverseSolution(script);
 
                 // 写回反序序列并执行
                 try {
-                    doParameter("script", newScript);
+                    doParameter("script", script);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -1411,6 +1394,14 @@ public final class AutoPlayer extends Panel implements Runnable {
                 String result = searchSolution(AutoPlayer.this.search, facelets);
                 if (result.startsWith("Error")) {
                     String message = "校验不通过：" + getErrMessage(result);
+                    JOptionPane.showOptionDialog(AutoPlayer.this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE,
+                            AutoPlayer.this.errorIcon, CommandParser.DEFAULTOPTION, CommandParser.DEFAULTOPTION[0]);
+                    return;
+                }
+                // 测试反序后的方案能否还原原始状态，如果不能说明方案是错的
+                if (!Arrays.equals(facelets, Tools.fromScramble(reverseSolution(result)))) {
+                    // 只有中心块位置错误这一种情况前边未校验
+                    String message = "校验不通过：需交换任意一对中心块的位置。";
                     JOptionPane.showOptionDialog(AutoPlayer.this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE,
                             AutoPlayer.this.errorIcon, CommandParser.DEFAULTOPTION, CommandParser.DEFAULTOPTION[0]);
                     return;
@@ -1560,6 +1551,30 @@ public final class AutoPlayer extends Panel implements Runnable {
             break;
         }
         return result;
+    }
+
+    // 将旋转序列反序
+    private String reverseSolution(String solution) {
+        String[] splits = solution.split(" +|\n");
+        StringBuilder result = new StringBuilder();
+        for (int i = splits.length - 1; i >= 0; i--) {
+            String tmp = splits[i];
+            if (tmp.length() == 0) {
+                continue;
+            } else if (tmp.length() == 1) { // 形如U D
+                result.append(tmp).append('\'');
+            } else if (tmp.charAt(tmp.length() - 1) == '\'') { // 形如U' D2'
+                result.append(tmp.substring(0, tmp.length() - 1));
+                if (tmp.length() == 2) {
+                    result.append(' ');
+                }
+            } else { // 形如U2 D2
+                // result.append(tmp).append('\''); // 这样旋转方向也是逆着的，但是长度会变长
+                result.append(tmp); // 这样长度不会变，但是旋转方向也不是反着的
+            }
+            result.append(' ');
+        }
+        return result.toString();
     }
 
     /**

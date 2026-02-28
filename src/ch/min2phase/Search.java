@@ -21,6 +21,13 @@ package ch.min2phase;
  * A much faster and smaller implemention of Two-Phase Algorithm. (二阶段算法，又叫Kociemba's Algorithm)<br>
  * Symmetry is used to reduce memory used.<br>
  * Total Memory used is about 1MB.<br>
+ *
+ * 代码来源：https://github.com/cs0x7f/min2phase.git
+ * python参考：https://github.com/muodov/kociemba/tree/master/kociemba/pykociemba
+ * C参考：https://github.com/smartmx/CubeSpinner/blob/master/src/twophase.c
+ * C参考：https://github.com/muodov/kociemba/tree/master/kociemba/ckociemba
+ * 从上边代码可以看出，python和C代码都是由java代码翻译过去的，但是java代码也不是原始的，应该是C/C++代码翻译的，但是找不到最初的代码了。
+ *
  * @author Shuang Chen
  */
 public class Search {

@@ -1,29 +1,21 @@
 魔方小站 http://www.rubik.com.cn/beginner.htm
 http://www.rubik.com.cn/newplayer/RubikPlayer.jar
 
+代码来源
 https://github.com/cs0x7f/min2phase.git
 min2phase-master.zip
 
-https://rubiks-cube-solver.com/zh/     部分求解失败
+python代码：https://github.com/muodov/kociemba/tree/master/kociemba/pykociemba
+C代码：https://github.com/muodov/kociemba/tree/master/kociemba/ckociemba
+
+C代码：https://github.com/smartmx/CubeSpinner/blob/master/src/twophase.c
+
+从上边代码可以看出，python和C代码都是由java代码翻译过去的，但是java代码也不是原始的，应该是C/C++代码翻译的，但是找不到最初的代码了。
+
+https://rubiks-cube-solver.com/zh/     部分求解会失败
 说明：https://www.shanjiejingshuo.com/quzhan/263.html
 
-页面打不开，一致是loading状态：
-https://cube-solver.com/#id=3
-
-
-java自动求解，标星多：https://github.com/cs0x7f/min2phase  // ok, 有界面
-java求解器带界面：https://github.com/BrianUribe6/CubeRD	// Android
-
-https://github.com/thatc0der/3x3x3-Rubiks-Cube-Solver	// Android
-
-Using the Lego Mindstorm NXT, this code can be used to solve a 3x3 Rubik's cube. It uses leJOS plugin for Eclipse
-java：https://github.com/shubham7109/Rubik-s-Cube-Solving-Algorithm.git
-
-无界面：https://github.com/jpasko/rubiks_cube_solver  // 死循环不会退出
-
 java use AI：https://github.com/ChauhanRohan-RC/Cube?tab=readme-ov-file
-
-
 
 
 

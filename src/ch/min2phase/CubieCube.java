@@ -353,34 +353,36 @@ public class CubieCube {
      * -6: Parity error: Two corners or two edges have to be exchanged
      */
     public int verify() {
+        int mask = 0;
         int sum = 0;
-        int edgeMask = 0;
-        for (int e = 0; e < 12; e++) {
-            edgeMask |= 1 << (ea[e] >> 1);
-            sum ^= ea[e] & 1;
+        for (int i = 0; i < 12; i++) {
+            mask |= 1 << (ea[i] >> 1);
+            sum ^= ea[i] & 1;
         }
-        if (edgeMask != 0xfff) {
-            return 2;// missing edges
+        if (mask != 0xfff) {
+            return 2; // missing edges
         }
         if (sum != 0) {
-            return 3;
+            return 3; // flipped edge
         }
-        int cornMask = 0;
-        sum = 0;
-        for (int c = 0; c < 8; c++) {
-            cornMask |= 1 << (ca[c] & 7);
-            sum += ca[c] >> 3;
+
+        mask = 0;
+        // sum = 0; // sum already be 0
+        for (int i = 0; i < 8; i++) {
+            mask |= 1 << (ca[i] & 7);
+            sum += ca[i] >> 3;
         }
-        if (cornMask != 0xff) {
-            return 4;// missing corners
+        if (mask != 0xff) {
+            return 4; // missing corners
         }
         if (sum % 3 != 0) {
-            return 5;// twisted corner
+            return 5; // twisted corner
         }
+
         if ((Util.getNParity(Util.getNPerm(ea, 12, true), 12) ^ Util.getNParity(getCPerm(), 8)) != 0) {
-            return 6;// parity error
+            return 6; // parity error
         }
-        return 0;// cube ok
+        return 0; // cube ok
     }
 
     public long selfSymmetry() {
