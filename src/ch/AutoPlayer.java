@@ -1146,15 +1146,13 @@ public final class AutoPlayer extends Panel implements Runnable {
                     return;
                 }
 
-                AutoPlayer.this.player.makesureFinished();
-                char[] cubeString = getCubeString(true);
-
-                String result = verifyAndPrepare(AutoPlayer.this.search, cubeString);
+                // 校验只需要使用最快的MaxProbe
+                int oldMaxProbe = AutoPlayer.this.defaultMaxProbe;
+                AutoPlayer.this.defaultMaxProbe = speeds[0];
+                String result = getSolution();
+                // 恢复原始MaxProbe
+                AutoPlayer.this.defaultMaxProbe = oldMaxProbe;
                 if (result != null) {
-                    String message = "校验不通过：" + getErrMessage(result);
-                    JOptionPane.showOptionDialog(AutoPlayer.this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE,
-                            AutoPlayer.this.errorIcon, CommandParser.DEFAULTOPTION, CommandParser.DEFAULTOPTION[0]);
-                } else {
                     String message = "校验通过，可求解。";
                     JOptionPane.showOptionDialog(AutoPlayer.this, message, "成功", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE,
                             AutoPlayer.this.infoIcon, CommandParser.DEFAULTOPTION, CommandParser.DEFAULTOPTION[0]);
@@ -1391,19 +1389,8 @@ public final class AutoPlayer extends Panel implements Runnable {
                 AutoPlayer.this.player.makesureFinished();
                 char[] facelets = getCubeString(true);
 
-                String result = searchSolution(AutoPlayer.this.search, facelets);
-                if (result.startsWith("Error")) {
-                    String message = "校验不通过：" + getErrMessage(result);
-                    JOptionPane.showOptionDialog(AutoPlayer.this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE,
-                            AutoPlayer.this.errorIcon, CommandParser.DEFAULTOPTION, CommandParser.DEFAULTOPTION[0]);
-                    return;
-                }
-                // 测试反序后的方案能否还原原始状态，如果不能说明方案是错的
-                if (!Arrays.equals(facelets, Tools.fromScramble(reverseSolution(result)))) {
-                    // 只有中心块位置错误这一种情况前边未校验
-                    String message = "校验不通过：需交换任意一对中心块的位置。";
-                    JOptionPane.showOptionDialog(AutoPlayer.this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE,
-                            AutoPlayer.this.errorIcon, CommandParser.DEFAULTOPTION, CommandParser.DEFAULTOPTION[0]);
+                String result = getSolution();
+                if (result == null) {
                     return;
                 }
 
@@ -1610,6 +1597,29 @@ public final class AutoPlayer extends Panel implements Runnable {
         cube.getModel().reset();
         setCubeByString(facelets, colorCurrent);
         cube.getModel().setQuiet(false);
+    }
+
+    private String getSolution() {
+        // 求解并校验
+        this.player.makesureFinished();
+        char[] facelets = getCubeString(true);
+
+        String result = searchSolution(this.search, facelets);
+        if (result.startsWith("Error")) {
+            String message = "校验不通过：" + getErrMessage(result);
+            JOptionPane.showOptionDialog(this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, this.errorIcon,
+                    CommandParser.DEFAULTOPTION, CommandParser.DEFAULTOPTION[0]);
+            return null;
+        }
+        // 测试反序后的方案能否还原原始状态，如果不能说明方案是错的
+        if (!Arrays.equals(facelets, Tools.fromScramble(reverseSolution(result)))) {
+            // 只有中心块位置错误这一种情况前边未校验
+            String message = "校验不通过：需交换任意一对中心块的位置。";
+            JOptionPane.showOptionDialog(this, message, "失败", JOptionPane.DEFAULT_OPTION, JOptionPane.ERROR_MESSAGE, this.errorIcon,
+                    CommandParser.DEFAULTOPTION, CommandParser.DEFAULTOPTION[0]);
+            return null;
+        }
+        return result;
     }
 
     public String verifyAndPrepare(Search search, char[] cubeString) {
