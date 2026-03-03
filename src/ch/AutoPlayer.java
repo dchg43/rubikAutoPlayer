@@ -1386,9 +1386,6 @@ public final class AutoPlayer extends Panel implements Runnable {
                 }
 
                 // 求解并校验
-                AutoPlayer.this.player.makesureFinished();
-                char[] facelets = getCubeString(true);
-
                 String result = getSolution();
                 if (result == null) {
                     return;
@@ -1399,12 +1396,6 @@ public final class AutoPlayer extends Panel implements Runnable {
                 if (cube.isEditMode()) {
                     buttonEdit.setBackground(deselectColor);
                     cube.setEditMode(false);
-                }
-
-                // 有旋转，重置为旋转前状态
-                if (!cube.getModel().isSolved()) {
-                    cleanAndResetCube(facelets);
-                    AutoPlayer.this.player.makesureFinished();
                 }
 
                 // 自动执行复位方法
@@ -1602,7 +1593,14 @@ public final class AutoPlayer extends Panel implements Runnable {
     private String getSolution() {
         // 求解并校验
         this.player.makesureFinished();
-        char[] facelets = getCubeString(true);
+        char[] facelets = getCubeString(false);
+
+        // 有旋转，重置为旋转前状态
+        if (!this.player.getCube3D().getModel().isSolved()) {
+            cleanAndResetCube(facelets);
+            AutoPlayer.this.player.makesureFinished();
+            facelets = getCubeString(false);
+        }
 
         String result = searchSolution(this.search, facelets);
         if (result.startsWith("Error")) {
